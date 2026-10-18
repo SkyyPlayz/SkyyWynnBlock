@@ -23,7 +23,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 191-193 UT bands, less Mana, mob hit cap 35%, Fortune +3 a level, skip fix, no hits through walls, island respawn fixes + pond.
 - Pins (tools/deploy_set.py SET = HANDOFF): Gear 0.3.29, Armory 0.1.39, Skills 0.4.53, Collections 0.2.28, WorldGen 0.7.5, Bazaar 0.1.22,
   Sacks 0.8.24, Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Wardrobe 0.2.10, Pets 0.4.4, Islands 0.5.21, Cooking 0.1.12, Trees 0.3.24,
-  Menu 0.3.40, Classes 0.1.39, Quests 0.4.2, Rebirth 0.3.5, Core 1.0.1. Nothing running, nothing pinned-but-undeployed.
+  Menu 0.3.40, Classes 0.1.39, Quests 0.4.2, Rebirth 0.3.5, Core 1.0.1.
+- RUNNING (10-18 evening, Skyy: "Now, lean round"): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary /
+  secondary weapon (Priest Wand + Soul Cage, Warrior Sword + Spear); docs/answered/ui.md 2026-10-18 CLASS PICKER CARDS.
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 195, 194.
@@ -39,7 +41,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    class ratings research/Class-Roles-Sheet.md; P0 inventory DONE in research/balance/): P1 pacing model tools/balance_model.py ->
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
-3. Small queued rounds: Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
+3. Small queued rounds: Armory Soul Cage locks faster (Skyy 10-18: "make the soul cage lock on to a target faster"; soul.stabilize
+   1.75 .. 1.0 s -> about half + migration), Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
    Smithing XP rows, Shards Soul Cage totem recipe (orb by item id - same bug as beta 20), per-profile world chests (SkyyExploration,
    research/Per-Player-Loot-Survey.md: refill never, sparkles), Infinite Water Bucket mid game (SkyyGear), our own bench-tier keeper,
    SkyyZones (protected areas + titles), tooltips bigger + colour coded (Style Guide 15: kit, then Pets, then every mod), Cooking ING_TIER v3,
