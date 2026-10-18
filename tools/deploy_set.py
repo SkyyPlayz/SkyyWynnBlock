@@ -20,7 +20,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.32"), ("SkyySacks", "0.8.22"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.27"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.21"), ("SkyyGear", "0.3.24"), ("SkyySkills", "0.4.51"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.21"), ("SkyyGear", "0.3.25"), ("SkyySkills", "0.4.51"),
     ("SkyyAccessories", "0.5.26"), ("SkyyClasses", "0.1.38"), ("SkyyMenu", "0.3.39"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
     ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.23"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -391,6 +391,8 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # FLOOR SkyyGear 0.3.25 (2026-10-18, lifelong multitool merge): no rollback below 0.3.25 after the first merge (0.3.24 has no multitool kind and
+    # would hand merged players a Crude pickaxe) - restore recipe: mtmerge/history/<pk> + the hatchet document in mtmerge/<pk>.log.
     # Movement 2 (2026-10-18): Gear 0.3.24 + Skills 0.4.51 + Accessories 0.5.26 + Core 1.0.1 share tools/skyymove.py - deploy / roll back TOGETHER, and set
     # Server Setup move.armoryJump = yield BEFORE a rollback (the engine saves the skyy_move_jump modifier with the player).
     # metals G2/A1 (2026-10-18): Gear 0.3.23 tools + Armory 0.1.33 weapons + Bazaar 0.1.21 deploy together; never roll Armory below 0.1.33 or Gear below
