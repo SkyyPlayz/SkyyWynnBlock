@@ -574,3 +574,6 @@ Order matters: R1+R2 deploy together (no half state), R4 after R1-R3 are tested 
 8. Void Particle strength: current ladder falls 8-12 points short of the "15% shorter per rebirth" goal for rebirths 4-5; raise the ranks to +4% (Echoes) and +3% (Insight)? [yes]
 9. Keep buff: +30% x h/(h+120) (cap +30%) on ALL XP? [yes]
 10. Replace the 8-arm per-skill rebirth points with the one VP currency (Hand Echo covers the minor skills)? [yes]
+
+## Skyy's answers (2026-10-18, popups; docs/answered/skills.md) - these WIN over the defaults above
+1 total points in the tree (BL3) | 2 one point per level | 3 full points + a coin refund for leftover dust | 4 capstone 1 point after 25 | 5 rising coin respec + 1 free per rebirth | 6 light skills 2 x 4 | 7 VP respec costs a Void Charm | 8 stronger XP ranks (~15% shorter each rebirth) | 9 keep buff flat +0.25% per unspent VP, no cap (re-run the spend-vs-keep math) | 10 one shared VP currency
