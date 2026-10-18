@@ -22,8 +22,9 @@ Writes (all ORIGINAL pixels; no game file is read):
   art/hub-tab-icons/hubrow_<hub>.png (+ _on)  one per hub for the hub row (home, character, ..., settings)
   art/hub-tab-icons/manifest.json          per icon: hub, tab, label, files, bytes, sha256, min contrast; size + fade rules
   --sheet PATH                             the review contact sheet (every icon behind its word on the Sky tab, normal + active)
+  --compare PATH                           the Storage > Supplies review sheet (its tab row + the approved satchel it follows)
 
-Run:   python tools/art/make_hub_tab_icons.py [--sheet <png>]     (deterministic: two runs = same bytes)
+Run:   python tools/art/make_hub_tab_icons.py [--sheet <png>] [--compare <png>]     (deterministic: two runs = same bytes)
 Check: python tools/art/make_hub_tab_icons.py --check             (prints one line per check, ALL OK / N FAILED, exit 1 on fail)
 """
 import hashlib, json, math, os, sys
@@ -47,6 +48,8 @@ PAL3 = {
     "pink": ["#3a1424", "#5e2238", "#8a3650", "#b5506a", "#d97488", "#f0a2ae", "#fbd2d4"],
     "skin": ["#3b2018", "#5e3424", "#8a5236", "#b4744c", "#d39a6c", "#ecc293", "#f8e2c4"],
     "hair": ["#1e100c", "#331b12", "#4c2a18", "#683c20", "#86522c", "#a46d3e"],
+    # the APPROVED black-leather satchel's ramp (art/accessory-bag-icon manifest "leather_v2", Skyy 2026-10-08) - the Supplies tab
+    "bleather": ["#0f0b16", "#18131f", "#221b28", "#2d2431", "#3a2e3b", "#4c3e47", "#67565c", "#8c7a7a"],
 }
 for _k, _v in PAL3.items():
     if _k not in M.PAL:
@@ -348,6 +351,32 @@ def t_profiles():
 
 
 # ====================================================================== STORAGE hub (teal / leather / steel)
+def t_supplies():
+    """Storage > Supplies (SkyyCooking: the Potion Flask + Food Pouch): the approved black-leather satchel (art/accessory-bag-icon look -
+    stepped flap, strap tongue, gold clasp; no booster gems - those belonged to the bag of charms) with a red potion flask and a tied
+    brown food pouch peeking out of its top"""
+    ic = Icon("supplies")
+    # behind the bag: the food pouch (right) and the potion flask (left)
+    ic.add(ellipse(46, 24, 8.5, 7.5), "leather", base=0.58, grad=0.55, pattern=folds(1.1, 0.06), line=True)     # food pouch
+    ic.add(poly([(42, 18), (50, 18), (52.5, 12.5), (39.5, 12.5)]), "leather", base=0.7, grad=0.4, bevel=0.7)         # its ruffled top
+    ic.add(rect(41.5, 17, 50.5, 19.3), "gold", base=0.6, bevel=0, cast=False)                                     # the tie
+    ic.add(circle(25, 24.5, 9.5), "red", mode="sphere", base=0.62, line=True)                                        # flask body
+    ic.add(rect(22, 12, 28, 17), "glass", base=0.6, grad=0.4, bevel=0.7, line=True)                             # neck
+    ic.add(rrect(21, 7, 29, 12.5, 1.2), "wood", base=0.62, grad=0.5, bevel=0.8, line=True)                          # cork
+    ic.px(21, 20, "#f7a493"); ic.px(22, 19, "#f7a493")
+    # the satchel: a soft rounded body with a thin side gusset, a rounded flap with a stitched hem, the strap tongue + gold clasp
+    ic.add(rrect(13.5, 31, 56, 62, 7), "bleather", base=0.38, grad=0.4, bevel=0.6)                                 # side gusset
+    ic.add(rrect(10, 33, 51, 64, 7), "bleather", base=0.6, grad=0.5, bevel=1.0, pattern=folds(0.55, 0.05), line=True)   # body
+    ic.add(poly([(10, 33), (51, 33), (56, 31), (14.5, 31)]), "bleather", base=0.85, bevel=0, cast=False)            # top lip
+    flap = union(rect(9, 31, 52, 41), rrect(9, 31, 52, 48, 8))
+    ic.add(flap, "bleather", base=0.74, grad=0.55, bevel=1.1, line=True)                                            # front flap
+    ic.add(diff(rrect(11.5, 31, 49.5, 45.8, 6.5), rrect(12.5, 31, 48.5, 44.8, 5.5), rect(0, 0, 72, 38)), "bleather", base=0.98, bevel=0, cast=False)   # stitched hem
+    ic.add(union(rect(27.5, 37, 33.5, 53), rrect(27.5, 37, 33.5, 56, 3)), "bleather", base=0.84, grad=0.5, bevel=0.9, line=True)   # strap tongue
+    ic.add(rrect(24.5, 48.5, 36.5, 52.5, 1.0), "gold", base=0.62, grad=0.6, bevel=0.8, line=True)                  # clasp bar
+    ic.add(circle(30.5, 50.5, 1.3), "gold", mode="sphere", base=0.85, bevel=0, cast=False)
+    return ic
+
+
 def t_requip():
     ic = Icon("requip")
     ic.add(diff(ering(36, 10.5, 5, 5, 2.8, 2.8), rect(31, 10.5, 36, 16)), "gold", base=0.6, bevel=0)  # hanger hook
@@ -756,6 +785,7 @@ TABS = [
     ("storage", "requip", "Requip", t_requip, "a steel chestplate with teal pauldrons hanging on a gold clothes hanger"),
     ("storage", "vault", "Vault", t_vault, "a round steel vault door (bolt ring, side hinge) with a gold spoked wheel"),
     ("storage", "bank", "Bank", t_bank, "a stone bank with four columns, a green roof, a gold coin in the pediment and steps"),
+    ("storage", "supplies", "Supplies", t_supplies, "the approved black-leather satchel (stepped flap, strap tongue, gold clasp) with a red potion flask and a tied brown food pouch peeking out of its top"),
     ("market", "bazaar", "Bazaar", t_bazaar, "a market stall: green / cream striped scalloped awning, wooden counter, fruit and a crate"),
     ("market", "auctions", "Auctions", t_auctions, "an auction gavel (mahogany head, gold bands) over its round sound block"),
     ("market", "merchants", "Merchants", t_merchants, "gold balance scales with a coin on one pan and an emerald on the other"),
@@ -908,6 +938,30 @@ def build_sheet(icons):
     return cv.png()
 
 
+def build_compare(icons):
+    """the Supplies review sheet: the Storage tab row (normal + active) with Supplies next to its neighbours, Supplies alone at 4x
+    (source / normal / on), and the approved 64 px satchel item icon it follows (art/accessory-bag-icon, our own art)"""
+    items = [t for t in TABS if t[0] == "storage"]
+    wui = tab_w(len(items)); gap = 10
+    W = max(60 + len(items) * (wui * 2 + gap), 1300); H = 640
+    cv = Canvas(W, H, BG)
+    cv.text(24, 20, "STORAGE > SUPPLIES TAB PICTURE - NEXT TO ITS NEIGHBOURS", GOLDT, 3)
+    cv.text(24, 50, "ROW 1 NORMAL (TAB), ROW 2 ACTIVE (TAB_SELECTED + _ON), @2X. MOCK FONT, NOT THE GAME FONT.", DIM, 2)
+    for r, (state, mode) in enumerate((("Tab", "normal"), ("Tab_Selected", "on"))):
+        for k, t in enumerate(items):
+            draw_tab(cv, 24 + k * (wui * 2 + gap), 80 + r * 100, wui, state, icons[(t[0], t[1])][mode][0], t[2])
+    y = 290
+    cv.text(24, y, "SUPPLIES AT 4X: SOURCE / NORMAL / ON          THE APPROVED SATCHEL ITEM ICON (64 PX, 4X)", DIM, 2)
+    d = icons[("storage", "supplies")]
+    for j, img in enumerate((d["base"], d["normal"][0], d["on"][0])):
+        cv.checker(24 + j * 300, y + 28, 288, 288, (52, 56, 74), (44, 48, 64))
+        cv.blit(img, 24 + j * 300, y + 28, 4)
+    bag = os.path.join(ROOT, "art", "accessory-bag-icon", "Common", "Icons", "ItemsGenerated", "SkyyAccessories_Bag_Menu.png")
+    cv.checker(24 + 3 * 300 + 20, y + 28, 256, 256, (52, 56, 74), (44, 48, 64))
+    cv.blit(P.read_png(open(bag, "rb").read()), 24 + 3 * 300 + 20, y + 28, 4)
+    return cv.png()
+
+
 # ====================================================================== write
 def sha(b):
     return hashlib.sha256(b).hexdigest()
@@ -953,6 +1007,11 @@ def main(argv):
         with open(p, "wb") as fh:
             fh.write(build_sheet(icons))
         print("wrote contact sheet", p)
+    if "--compare" in argv:
+        p = argv[argv.index("--compare") + 1]
+        with open(p, "wb") as fh:
+            fh.write(build_compare(icons))
+        print("wrote the Supplies comparison sheet", p)
 
 
 # ====================================================================== validator
@@ -964,11 +1023,11 @@ def check_all(argv):
     man = json.load(open(os.path.join(OUT, "manifest.json"), encoding="utf-8"))
     files = dict((f["path"], f) for f in man["files"])
     want = set(fname(t[0], t[1], m) for t in ALL for m in ("normal", "on"))
-    check(len(TABS) == 32 and len(ROW) == 8 and not any(t[1] == "multitool" for t in TABS),
-          "32 hub tabs (Hubs-Spec 1.2 minus Multitool, merged into Upgrade) + 8 hub-row icons in the generator")
+    check(len(TABS) == 33 and len(ROW) == 8 and not any(t[1] == "multitool" for t in TABS),
+          "33 hub tabs (Hubs-Spec 1.2 minus Multitool, merged into Upgrade, + Storage > Supplies) + 8 hub-row icons in the generator")
     check(set(files) == want, "manifest file list = the %d expected files" % len(want))
     present = set(f for f in os.listdir(OUT) if f.endswith(".png"))
-    extra = present - want - {"contact-sheet.png"}
+    extra = present - want - {"contact-sheet.png", "supplies-compare.png"}
     check(not extra, "no stray PNGs in art/hub-tab-icons %s" % (sorted(extra) or ""))
     src = open(os.path.abspath(__file__), encoding="utf-8").read()
     forbidden = ["Assets" + ".zip", "Hytale" + "Server", "App" + "Data", "User" + "Data"]

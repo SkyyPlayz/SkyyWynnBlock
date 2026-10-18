@@ -171,6 +171,16 @@
    "min_contrast_x_target_on": 1.047
   },
   {
+   "hub": "storage",
+   "tab": "supplies",
+   "label": "Supplies",
+   "shows": "the approved black-leather satchel (stepped flap, strap tongue, gold clasp) with a red potion flask and a tied brown food pouch peeking out of its top",
+   "file": "storage_supplies.png",
+   "min_contrast_x_target": 1.065,
+   "file_on": "storage_supplies_on.png",
+   "min_contrast_x_target_on": 1.036
+  },
+  {
    "hub": "market",
    "tab": "bazaar",
    "label": "Bazaar",
@@ -571,6 +581,16 @@
    "path": "storage_bank_on.png",
    "bytes": 718,
    "sha256": "41e0cd726f240b271a9ec4093c491ffa39a52d3efb00e7efa6e26ad5a2f4c531"
+  },
+  {
+   "path": "storage_supplies.png",
+   "bytes": 1103,
+   "sha256": "0b360e88a4dccbd99f9448fbfa1ec5fdf28f3a6077f833daaeab9da4bd4c2825"
+  },
+  {
+   "path": "storage_supplies_on.png",
+   "bytes": 1105,
+   "sha256": "1921429321c774464b84f9583c2c748613bb01961a23e8931c823adb813c48e3"
   },
   {
    "path": "market_bazaar.png",
