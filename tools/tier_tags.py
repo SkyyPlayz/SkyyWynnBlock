@@ -323,7 +323,14 @@ A1_WEAPONS = tuple("Weapon_%s_%s_SkyWynn" % (_f, _g) for _f in A1_FAMILIES for _
 for _id_g in A1_WEAPONS:
     _w_g = _id_g.split("_")[-2]
     _add(_id_g, metal_tier(_w_g), "armory_metal", "SkyyArmory")
-AR_IDS = frozenset(A1_WEAPONS)
+# SkyyArmory 0.1.34 (round A2, spec 4.1 Group B; rows added by the Movement 2 builder at the main session's request 2026-10-18): the 10
+# vanilla metal families in the 8 zone metals / alloys (Weapon_<Family>_<M>_SkyWynn - the zone partner's vanilla item with our art + numbers).
+# Owner SkyyArmory (its lang writes the "T5 Lead - " tags itself); family armory_metal like A1.
+A2_FAMILIES = ("Sword", "Longsword", "Axe", "Battleaxe", "Mace", "Club", "Daggers", "Spear", "Shortbow", "Shield")
+A2_WEAPONS = tuple("Weapon_%s_%s_SkyWynn" % (_f, _g) for _f in A2_FAMILIES for _g in G2_METALS[1:])
+for _id_g in A2_WEAPONS:
+    _add(_id_g, metal_tier(_id_g.split("_")[-2]), "armory_metal", "SkyyArmory")
+AR_IDS = frozenset(A1_WEAPONS + A2_WEAPONS)
 
 
 # ------------------------------------------------------------------------------------------------ rarity-tagged items (no T-number)
