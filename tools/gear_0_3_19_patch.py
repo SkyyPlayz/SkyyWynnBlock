@@ -90,6 +90,11 @@ drop roll, our own modifiers. Nothing of theirs is copied, shipped, recoloured o
         ChunkStore ticking system ordered BEFORE BenchSystems$ProcessingBenchTick that, on a Salvagebench, moves a pack stack carrying a
         non-craft document out of ProcessingBenchBlock.getInputContainer() into its output container (counted before / after, never lost),
         plus a chat line to the player who has its ProcessingBenchWindow open.
+     i) SMOKE FIX: "armor box: <id> has a non-additive armor stat" was one WARN per Armory piece (88 at the first smoke test, Skyy's dev
+        badge counts them): now GearABox.naNote writes one gear.log line per piece and naSay ONE summary WARN per start ("armor box: N
+        armor pieces keep the vanilla box (non-additive armor stat), e.g. A, B, C - full list in gear.log"); a later asset reload = INFO.
+        The in-play "<id> has a non-additive armor stat modifier - under-level armor keeps it" likewise: a gear.log LOCK line per id (once
+        per run) and at most ONE WARN per run ("under-level armor: some pieces keep a non-additive modifier - see gear.log").
   9. VOID CHARMS WORDING (folded in by the local rebuild; Skyy 2026-10-17: "i noticed they are still called accessory's in the settings";
      model tools/accessories_0_5_24_patch.py): player-visible "Accessory Bag" meaning the charm feature -> "Void Charms" - the bench-rule
      line ("... accessory in your Void Charms - or craft it at a ..."), the Identify / Appraisal Tool lines ("... accessory in your Void
@@ -1305,6 +1310,54 @@ rep(r'''  if (t != null && ((Long) t[0]).longValue() == ep && now - ((Long) t[1]
   try { ic = @ITM@.getAssetMap().getAssetMap().size(); } catch (Throwable x0) { ic = -1; }
   if (t != null && ((Long) t[0]).longValue() == ep && t.length > 9 && ((Integer) t[9]).intValue() == ic
       && ((Integer) t[5]).intValue() == top && ex.equals(t[6])) return t;          // critic fix 6: the config epoch / the item count, no 60 s expiry''')
+
+# smoke fix (local rebuild): the non-additive armor-box notes = ONE summary WARN per start (GearABox.naSay), the full list in gear.log
+rep(r'''# hide one item type; false = nothing to hide (not a target, already hidden, nothing in the maps, shared, non-additive)
+M(gabox, r"""
+public static synchronized boolean hide(@ITM@ item, java.util.IdentityHashMap own) {''',
+    r'''# smoke fix (local rebuild): the armor pieces with a non-additive armor stat (The Armory: one per piece = 88 WARN lines at the first smoke
+# test) - noted here (gear.log line each), said ONCE as a summary WARN by naSay after a hide pass; a reload that adds more = an INFO line
+F(gabox, "public static final java.util.concurrent.ConcurrentHashMap NA = new java.util.concurrent.ConcurrentHashMap();")
+F(gabox, "public static volatile int NA_SAID = 0;")
+M(gabox, r"""
+public static void naNote(String id) {
+  if (id == null) return;
+  if (NA.putIfAbsent(id, Boolean.TRUE) == null) @PKG@.GearLog.line("ABOX non-additive " + id + " - it keeps the vanilla box (levelled the 0.2.4 way)");
+}""")
+M(gabox, r"""
+public static synchronized String naSay() {
+  int n = NA.size();
+  if (n <= NA_SAID) return null;
+  java.util.ArrayList l = new java.util.ArrayList(NA.keySet());
+  java.util.Collections.sort(l);
+  StringBuilder ex = new StringBuilder();
+  for (int i = 0; i < l.size() && i < 3; i++) { if (i > 0) ex.append(", "); ex.append((String) l.get(i)); }
+  String msg = "armor box: " + n + " armor pieces keep the vanilla box (non-additive armor stat), e.g. " + ex.toString() + (n > 3 ? ", ..." : "") + " - full list in gear.log";
+  if (NA_SAID == 0) @PKG@.Gear.warn(msg);
+  else @PKG@.Gear.info(msg + " (more after an asset reload)");
+  NA_SAID = n;
+  return msg;
+}""")
+# hide one item type; false = nothing to hide (not a target, already hidden, nothing in the maps, shared, non-additive)
+M(gabox, r"""
+public static synchronized boolean hide(@ITM@ item, java.util.IdentityHashMap own) {''')
+rep(r'''    @PKG@.Gear.warnOnce("aboxcalc:" + id, "armor box: " + id + " has a non-additive armor stat - it keeps the vanilla box (levelled the 0.2.4 way)");''',
+    r'''    naNote(id);          // smoke fix: no WARN per piece - one summary (naSay), the list in gear.log''')
+rep(r'''  if (n > 0 && STARTED) @PKG@.Gear.info("armor box: hidden on " + n + " reloaded gear armor type(s) - players who joined before the reload keep the vanilla box on those until they rejoin");''',
+    r'''  if (n > 0 && STARTED) @PKG@.Gear.info("armor box: hidden on " + n + " reloaded gear armor type(s) - players who joined before the reload keep the vanilla box on those until they rejoin");
+  naSay();          // smoke fix: new non-additive pieces of the reload (an INFO line after the first summary)''')
+rep(r'''  int n = applyAll(true);
+  return "vanilla armor box hidden on " + SNAP.size()''',
+    r'''  int n = applyAll(true);
+  naSay();          // smoke fix: ONE summary WARN for every non-additive piece (the list in gear.log)
+  return "vanilla armor box hidden on " + SNAP.size()''')
+
+# smoke fix 2 (local rebuild): the in-play under-level note = a gear.log line per id + at most ONE WARN per server run
+rep(r'''      } else if (id != null) @PKG@.Gear.warnOnce("lockcalc:" + id, id + " has a non-additive armor stat modifier - under-level armor keeps it (spec 3.5 part 4)");''',
+    r'''      } else if (id != null && @PKG@.Gear.once("lockcalc:" + id)) {          // smoke fix 2: a gear.log line per id, ONE WARN per run
+        @PKG@.GearLog.line("LOCK non-additive " + id + " - under-level armor keeps its non-additive armor stat modifier (spec 3.5 part 4)");
+        @PKG@.Gear.warnOnce("lockcalc-any", "under-level armor: some pieces keep a non-additive modifier - see gear.log");
+      }''')
 
 # ================================================================================================================ 9: Void Charms wording
 # Skyy 2026-10-17: "i noticed they are still called accessory's in the settings" (model: tools/accessories_0_5_24_patch.py)

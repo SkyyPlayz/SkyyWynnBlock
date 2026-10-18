@@ -101,7 +101,9 @@ GEN318 = os.path.join(HERE, "build_skyygear_0.3.18.py")
 S319_NEW = {"GearPackId": "the pack table (tools/pack_drops.py as packed columns) + the swap guard",
             "GearPack": "the Mythic boss bags (mythicBag, rollers, swapVeto, bossRoll; SkyyMobs 0.1.10 mob:fn:boss)",
             "GearPackGive": "review H2: the world task that puts a won boss bag into its winner's inventory (else feet, else the boss)"}
-S319_MUST = {"GearAnvil": "local rebuild: the Identify / Appraisal Tool lines say Void Charms (patch item 9)",
+S319_MUST = {"GearABox": "smoke fix: the non-additive armor-box notes = one summary WARN per start (naNote / naSay), the list in gear.log",
+             "GearArmor": "smoke fix 2: the under-level non-additive note = a gear.log line per id, one WARN per run",
+             "GearAnvil": "local rebuild: the Identify / Appraisal Tool lines say Void Charms (patch item 9)",
              "GearFn": "critic fix 2: gear:fn:roll mode 8 - a swap / UT / Mythic output plain, no Smithing XP for pack pieces",
              "GearRoll": "critic fix 1: unidDoc - a UT / Mythic table piece found = plain Normal",
              "GearTag": "critic fix 1: spread - no bags of a UT / Mythic table piece",
@@ -644,6 +646,23 @@ def _h319(L, K):
     kc(sb_ == [True, True, True, False] and not bool(Pack.salvBlocked(RC, None)) and not bool(Pack.salvBlocked("Armor_Iron_Chest", md_("Armor_Iron_Chest", "drop")))
        and not bool(GPI.salvage(None)) and Pack.salvVeto(None, None) is None,
        "X8: salvBlocked = a pack piece with a drop / chest / boss document (a crafted one, an undocumented one, a vanilla id: no): %s" % sb_)
+    AB = P("GearABox")
+    na0, ns0 = AB.NA.size(), int(AB.NA_SAID)
+    AB.NA.clear()
+    AB.NA_SAID = 0
+    for z_ in ("ZZ_C", "ZZ_A", "ZZ_B", "ZZ_A"):
+        AB.naNote(z_)
+    m1 = AB.naSay()
+    m2 = AB.naSay()
+    AB.naNote("ZZ_D")
+    m3 = AB.naSay()
+    kc(m1 is not None and str(m1) == "armor box: 3 armor pieces keep the vanilla box (non-additive armor stat), e.g. ZZ_A, ZZ_B, ZZ_C - full list in gear.log"
+       and m2 is None and m3 is not None and str(m3).startswith("armor box: 4 armor pieces") and int(AB.NA_SAID) == 4
+       and len([x for x in logs() if "ABOX non-additive ZZ_" in x]) == 4,
+       "X9: naNote logs each piece once to gear.log, naSay says ONE summary (sorted examples), nothing new = silent, more later = once more: %s / %s" % (m1, m3))
+    AB.NA.clear()
+    AB.NA_SAID = ns0
+    K.notes.append("X9: %d non-additive armor pieces were noted before the test (stand-ins)" % na0)
     cfg()
     k_ = int(GPI.idx(RC))
     g0 = bool(Data.isGear(RC))
@@ -1153,6 +1172,13 @@ def run_static():
               and "Requip's SALVAGE button" in svb and s.index("public static boolean salvBlocked(") < i_sv < i_pre
               and '"Salvagebench".equalsIgnoreCase(b[i].id)' in s,
               "X8: salvVeto reads item + resource inputs, blocks a non-craft document, points to Requip SALVAGE")
+        check("naNote(id);          // smoke fix" in s and 'has a non-additive armor stat - it keeps the vanilla box (levelled the 0.2.4 way)");' not in s
+              and s.count("naSay();          // smoke fix") == 2 and s.index("public static synchronized String naSay()") < s.index("public static synchronized boolean hide(@ITM@ item, java.util.IdentityHashMap own)"),
+              "X9: no WARN per non-additive armor piece any more - naNote (gear.log) + one naSay summary after start() / a reload")
+        check('@PKG@.GearLog.line("LOCK non-additive " + id' in s and '@PKG@.Gear.once("lockcalc:" + id)' in s
+              and '"lockcalc-any", "under-level armor: some pieces keep a non-additive modifier - see gear.log"' in s
+              and "under-level armor keeps it (spec 3.5 part 4)\");" not in s,
+              "X10: the under-level non-additive note = a gear.log line per id, at most one WARN per run")
         check("PKD.coin_keys(_ARMJ[-1])" in s and "no table id carries a Value / Price / Sell / Coin / Worth field" in s,
               "X7: the build's coin-loop guard (tools/pack_drops.py coin_keys on the installed Armory jar)")
         i_cp = s.index('event_system(gcrp, "GearCraftPreSys"')
