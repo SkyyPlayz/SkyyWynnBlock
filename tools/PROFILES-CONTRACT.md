@@ -85,7 +85,7 @@ public static String pkey(java.util.UUID u) {
   player, so a crash-recovery rollback in SkyyProfiles' own 30 s window cannot eat the kit). Overflow that does not fit the inventory
   becomes a claim (`/class kit`), never dropped on the ground.
 - **SkyyCoins:** starter coins per profile (a new profile starts fresh). `coins:fn:*` resolve the active profile.
-- **SkyySkills:** XP, per-class combat XP and perks per profile.
+- **SkyySkills:** XP, per-class combat XP and perks per profile. Since 0.4.50 also the mined-ore budget (Smelting Fortune, research/Metals-Tools-Fortune-Spec.md 2.3): `ore.<Ore_* id>=<n>` lines in the same `players/<pkey>.properties` (same atomic save as the XP), +1 per raw ore a natural Mining break or its Mining Fortune extras gave, capped per id at `smelt.fortune.budgetMax`; a new profile starts at 0. Bridge `skill:fn:oreBudget` apply(Object[]{ UUID, String oreId, Integer n }) -> Integer, always the ACTIVE profile (n > 0 take up to n -> granted, 0 = balance, < 0 give -n back -> added; bad args 0). Rolling back below 0.4.50 drops the ore.* lines on that profile's next save (budget lost, nothing else).
 - **SkyySacks:** pool, processing queues and crafts.log lines per profile (key in the log line).
 - **SkyyAccessories:** bag (`bags/<pkey>`), Accessory Power pick (`power/<pkey>.properties` power= / switched=, none = Balance) and the retired-bag marker (`retired/<pkey>.properties`) per profile.
 - **SkyyCollections:** counts per profile.
