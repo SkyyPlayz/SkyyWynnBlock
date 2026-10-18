@@ -303,3 +303,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Movement 2: speed + jump bonuses work with The Armory (DEPLOYED 2026-10-18, backup deploy-20261018-0144) | [2026-10](2026-10.md) |
 | Vanilla-style metal weapons in the 8 new metals (DEPLOYED 2026-10-18, backup deploy-20261018-0153) | [2026-10](2026-10.md) |
 | Collection gates for new metal tool tier-ups + Supplies tab picture (DEPLOYED 2026-10-18, backup deploy-20261018-0214) | [2026-10](2026-10.md) |
+| Lifelong multitool merge + small Gear fixes (DEPLOYED 2026-10-18, backup deploy-20261018-0249) | [2026-10](2026-10.md) |

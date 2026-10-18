@@ -10,23 +10,22 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (deployed 2026-10-17/18, TEST-CHECKLIST 172-188; details per number in docs/tests/2026-10.md)
+## LIVE NOW (deployed 2026-10-17/18, TEST-CHECKLIST 172-189; details per number in docs/tests/2026-10.md)
 - 172-176: Void Charms rename everywhere, Potion Flask + Food Pouch, Teleport page + /back + homes, Breach x Mark, Requip food fix, Nestkeeper ON.
 - 177 ores round (WorldGen / Accessories Furnace Charm / Sacks / Collections / Bazaar / Skills; the five roll back TOGETHER).
 - 178 PR #17 Armory sets as mob drops; 179 Salvagebench guard; 180 starter wand leap; 181 zone Mining sets + armor weight text + starter
   quest class gear; 182 Fortune + big-tree log pickup fix; 183 HUD ability icons; 184 15-step tier renumber + Mage PA4 Meteor from the Rift;
   185 metal tools + 76 metal weapons + Bazaar 0.1.21; 186 Movement 2 (speed + jump vs The Armory); 187 80 vanilla-style metal weapons.
 - Pins now: Gear 0.3.24, Armory 0.1.34, Skills 0.4.51, Accessories 0.5.26, Core 1.0.1, Sacks 0.8.22, Collections 0.2.26, WorldGen 0.7.4,
-  Bazaar 0.1.21, Auctions 0.1.13, Classes 0.1.38, Trees 0.3.23, Quests 0.4.1, Hud 0.3.32 (all: tools/deploy_set.py SET + HANDOFF).
+  Bazaar 0.1.21, Auctions 0.1.13, Classes 0.1.38, Trees 0.3.23, Quests 0.4.1, Hud 0.3.32, Menu 0.3.39 (Gear now 0.3.25, Collections 0.2.27) (all: tools/deploy_set.py SET + HANDOFF).
 
 ## RUNNING / JUST BUILT
-- Overnight (Skyy: "work through your whole todo list ... pich what fits the existing build"): last batch running = Gear 0.3.25 (lifelong
-  multitool merge, accBp cache, GearReq red row, A2 Charged Attack trust), Collections 0.2.27 (tier-up gates for the new metal steps),
-  Menu 0.3.39 (Supplies tab picture) - Collections + Menu DEPLOYED (TEST 188). Each: critic -> pin -> smoke -> deploy. Locks: LOCAL-RESUME.md.
+- Overnight (Skyy: "work through your whole todo list ... pich what fits the existing build"): DONE - every round deployed (TEST 176-189);
+  nothing running. Locks: LOCAL-RESUME.md (empty).
 - Cobb (Skyy's Grok bot) does design / specs / reviews only; all builds local (LOCAL-RESUME.md, CLOUD-RESUME.md "Cloud build trial").
 
 ## FOR SKYY THIS MORNING
-- Test: TEST-CHECKLIST 176-187 (newest first matter most: 188, 187, 186, 185, 184).
+- Test: TEST-CHECKLIST 176-187 (newest first matter most: 189, 188, 187, 186, 185, 184).
 - Overnight defaults to OK or change: OPEN-QUESTIONS.md lines marked "[default taken overnight ...]" (ore gate speeds, Quirk models not
   shipped, PA4 auto-fire, Onyxium vs Lumen, UT lines OFF, spawn factors, Nestkeeper, joszza, structures).
 - Art to look at: models-local/art/metals/_sheets/weapons-c.png (sent in chat).

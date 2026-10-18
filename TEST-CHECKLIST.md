@@ -214,3 +214,4 @@ tests always come first.
 186. Speed + jump bonuses no longer paused by The Armory
 187. 80 new metal swords / axes / bows / spears / shields etc.
 188. Metal tool tier-ups gated by collections; Supplies tab picture
+189. Merge lifelong pickaxe + hatchet into one multitool (two stat sets)
