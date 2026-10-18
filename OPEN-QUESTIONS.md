@@ -22,6 +22,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
+- ORE HITS (Gear 0.3.22): an ore 1-2 tiers above your pickaxe takes ~2.5x the hits (gate.nextFactor 0.4) instead of the spec's 10x, so today's pickaxe steps don't get 4x slower; Bronze items keep the 15-23 level band. OK? [default taken overnight: yes; gate.nextFactor 0.1 = strict spec]
 - UT LINES for the 5 Armory UT sets + a Zone 4 Cloth UT ("The Auditor's", our own Cindercloth copy) - draft rows in research/UT-Lines-Draft.md. Ship them? [default taken overnight: OFF - the sets keep not dropping until Skyy approves]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
@@ -29,6 +30,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### bags  (answers -> docs/answered/bags.md, topic `bags`)
 
 ### classes  (answers -> docs/answered/classes.md, topic `classes`)
+- MAGE PA4 Meteor from the Rift (Classes 0.1.38): fires automatically on every staff blink landing whenever Meteor is ready (an escape blink spends Meteor too); -10% applies to every Meteor with the node (not Starfall). OK? [default taken overnight: yes, as built; Server Setup ab.Meteor.rift turns it off]
 
 ### pets  (answers -> docs/answered/pets.md, topic `pets`)
 - NESTKEEPER (research/Nestkeeper-Pack-Check.md): ask Aures to allow recoloured element dragons (only Plain + Tundra exist)? [yes, ask]
