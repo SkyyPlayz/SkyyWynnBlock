@@ -41,6 +41,10 @@ LIVE: TEST 191-193 (Islands 0.5.20 deployed 10-18 09:06).
 
 USAGE 10-18 ~12:20: weekly 83% (resets 2026-10-20 09:00 MDT) -> only finish + deploy what is built; Level-Bands-20 RUNNING (Skyy go: tier_tags + Gear 0.3.29, then Mobs 0.1.12 / Armory 0.1.37 / Collections / Bazaar / Auctions); Armory 0.1.36 wand x2 RUNNING; chests, bucket, SkyyZones, bench keeper WAIT for the reset.
 
+LEVEL-BANDS BATCH (10-18 eve, deploy TOGETHER after one final review): Gear 0.3.29, Collections 0.2.28, WorldGen 0.7.5, Bazaar 0.1.22, Sacks 0.8.24,
+   Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Armory 0.1.39 (+ tier_tags v3 / skyyench / test_tier_tags commit). Also built, lean: Wardrobe 0.2.10 (pet icons; needs review).
+   Skills 0.4.53 (no XP caps, Fortune uncap, level cap 50+10, alloy XP, Farming XP) building. Armory 0.1.38 PINNED (TT v2). Follow-up: SkyyShards totem recipe orb item-id bug.
+
 ## NEXT (after Skyy's answers)
 0. QUEUE 10-18 (Skyy answers in docs/answered): Level-Bands-20 build (research/Level-Bands-20-Spec.md; cap 50 +10/rebirth, Mushroom 15th crop)
    after Gear 0.3.28 pins -> Gear 0.3.29 -> Mobs 0.1.12 -> Armory -> Collections -> Bazaar -> Auctions together; Skills 0.4.53 (doubleDropMax
