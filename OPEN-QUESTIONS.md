@@ -14,6 +14,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### project  (answers -> docs/answered/project.md, topic `project`)
 
 ### world  (answers -> docs/answered/world.md, topic `world`)
+- ZONE GATHERING + SEEDS + CROP ISLANDS (research/Zone-Gathering-Spec.md, 10 questions with defaults; Q1 = what 100 / +200 / +500 means - spec reads it as 100 / 300 / 800 planted crops per crop-island tier). Answer before that round starts.
 - ORE SPAWN FACTORS (SkyyWorldGen 0.7.3, Server Setup > World Gen > Ore veins): base boost Thorium / Cobalt / Adamantite x1.15; Lead / Chromium / Slag x0.85 of the boosted base (= 0.98x vanilla); Zone 5 Mithril x0.85 of Adamantite, Titanium x0.85 of that; Gold added to Zones 4-5 at the Zone 1-3 rate. OK? [yes, as built]
 - ZONE 5 MITHRIL: the old Mithril sphere veins were taken off Zone 5 (Mithril there now comes from the Adamantite copies, so it is not doubled); Zone 4 Mithril unchanged. OK? [yes]
 - STRUCTURES (research/Structure-Mods-Survey.md 2026-10-17 block): send the drafted ask to joszza now? [yes]
