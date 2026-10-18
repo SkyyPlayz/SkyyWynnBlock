@@ -30,6 +30,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   shipped, PA4 auto-fire, Onyxium vs Lumen, UT lines OFF, spawn factors, Nestkeeper, joszza, structures).
 - Art to look at: models-local/art/metals/_sheets/weapons-c.png (sent in chat).
 
+## FIRST: BETA BUG LIST (docs/tests/2026-10-17-beta-bugs.md, 19 bugs, PR #18) - triage -> research/Beta-Bugs-Triage-2026-10-17.md, then fix
+   rounds per mod (Skyy's test fixes come first). Gear 0.3.27 (UT bands + elite sources) PINNED, deploys when the game closes.
+
 ## NEXT (after Skyy's answers)
 1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
    Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
