@@ -296,3 +296,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Salvagebench guard (rolled pieces: Requip salvage only) (DEPLOYED 2026-10-17, backup deploy-20261017-1924) | [2026-10](2026-10.md) |
 | Starter wands get the hold leap (DEPLOYED 2026-10-17, backup deploy-20261017-2204) | [2026-10](2026-10.md) |
 | Zone Mining sets + armor weight text + starter quest class gear (DEPLOYED 2026-10-17, backup deploy-20261017-2220) | [2026-10](2026-10.md) |
+| Fortune round + big-tree log pickup fix (DEPLOYED 2026-10-17, backup deploy-20261017-2243) | [2026-10](2026-10.md) |

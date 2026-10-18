@@ -207,3 +207,4 @@ tests always come first.
 179. Salvagebench refuses rolled Armory pieces (moves them out), crafted pieces still salvage
 180. Wood / Rotten / Tribal wand hold leap
 181. Camp quest: full class armor set + secondary weapon (free identify); 8 zone Mining sets; armor weight in flavor text
+182. Big Fens trees: all logs picked up; Mining Fortune uncapped; Smelting Fortune on mined ore
