@@ -236,6 +236,7 @@ Berry bushes (3 blocks, no seed), Mushrooms (`Plant_Seeds_Mushroom` exists), App
 | 4 | T10 / T11 / T12 | Chilli / Cotton / Rice | P5, P6, P6 |
 | 5 | T13 / T14 / T15 | Potato / Onion / **Mushroom** (default 15th) | P7, P7, - |
 
+- SPORES (Skyy 10-18, gear.md): Mushroom is planted from SPORES, never 'seeds' - every shown name / text says Mushroom Spores; our Eternal one = `Plant_Spores_Mushroom_Eternal` ("Eternal Mushroom Spores"); vanilla id `Plant_Seeds_Mushroom` kept, display name only.
 - 15th crop (Q12): default Mushroom - it already has a vanilla seed, a Farming collection and cave biomes (Zone 5 caves); no Eternal seed
   yet (add `Plant_Seeds_Mushroom_Eternal` of ours). Alternatives: our own Zone 5 crop (like our own ore per zone, needs art), or the herbs
   as a 3-step side ladder.
