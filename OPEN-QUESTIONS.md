@@ -23,6 +23,9 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
+- UT DROP RATE (Gear 0.3.27): with UTs only from elites / mini bosses / dungeons, today's odds give ~0.12% per elite kill (6% bag x 2% orange). Raise it? [default: raise utdrop.mob for elites to ~2% orange of a 25% bag = ~0.5% per elite kill - say a number]
+- UT BANDS vs ZONE LEVELS: alloy bands don't match zone level bands (Cinder 39-47 starts inside zone 3's 30-45; Lumen 50-60 sits below zone 5's 60-75). Re-band the alloys to sit at the END of each zone? [default: yes, in the elements / UT round]
+- BOSS LIST: Skeleton_Elite is in bosses.roles (so it drops Mythic bags); Goblin Duke / Trork Chieftain - full bosses or mini bosses? [default: Skeleton_Elite = elite (UT, no Mythic); Duke + Chieftain stay full bosses]
 - ORE GATE TIGHTENED (Gear 0.3.23, spec default): now that every ladder step has a pickaxe, ores 2+ steps above your pickaxe take the spec's slow hits again (e.g. Thorium pick on Cobalt 10 -> 40, Iron pick on Lead ~8 -> 40). [default taken overnight: spec as approved; Server Setup gate.nextByLadder off + gate.oreFloor 'Lead,Chromium,Slag,Titanium' = exactly the 0.3.22 hits]
 - ONYXIUM vs LUMEN: Onyxium is parked at T16 but its weapons equal Mithril's, so the new Titanium / Lumen weapons (Armory 0.1.33) out-damage Onyxium. [default taken overnight: leave; re-band Onyxium up when its zone is built]
 - ORE HITS (Gear 0.3.22): an ore 1-2 tiers above your pickaxe takes ~2.5x the hits (gate.nextFactor 0.4) instead of the spec's 10x, so today's pickaxe steps don't get 4x slower; Bronze items keep the 15-23 level band. OK? [default taken overnight: yes; gate.nextFactor 0.1 = strict spec]
