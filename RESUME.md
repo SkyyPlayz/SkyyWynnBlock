@@ -31,6 +31,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Trial rules + undo: CLOUD-RESUME.md "Cloud build trial". Metals source of truth (Cobb): SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md (outside the repo).
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
 - Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
+- WAITING FOR GAME CLOSE: deploy SkyyArmory 0.1.31 (starter wands get the hold leap; pinned 10-17).
 - NEXT (Skyy picks): LOCAL-RESUME queue (mining armor Z2-Z5, metal art, Fortune + metal tools / weapons), UT lines for 5 UT sets (spec Q1),
   crossbows (TASK-crossbows-from-vanilla.md), OPEN-QUESTIONS answers. Salvagebench guard live (Gear 0.3.20, TEST 179).
 - Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
