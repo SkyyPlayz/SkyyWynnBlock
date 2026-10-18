@@ -212,3 +212,4 @@ tests always come first.
 184. New T1-T15 metal tags, ore hit speeds (never slower), pickaxe Fortune +10, Mage PA4 rift Meteor
 185. New metal tools + tier-ups, 76 new metal weapons, soul cage branch, Bazaar unchanged
 186. Speed + jump bonuses no longer paused by The Armory
+187. 80 new metal swords / axes / bows / spears / shields etc.

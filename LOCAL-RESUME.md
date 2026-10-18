@@ -25,7 +25,6 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
-| SkyyArmory | Local | A2: 80 vanilla-style metal weapons (Armory 0.1.34) - built, critic running | local, no PR | 2026-10-18 | Review |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
