@@ -25,6 +25,7 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
+| SkyyGear | Local | Salvagebench hook: rolled pack pieces cannot be salvaged at the placed Salvagebench (Gear 0.3.20; Skyy "Yes, Requip only") | local, no PR | 2026-10-17 | Building |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
