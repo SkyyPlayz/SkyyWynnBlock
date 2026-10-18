@@ -54,3 +54,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### ui  (answers -> docs/answered/ui.md, topic `ui`)
 
 ## Pet eggs (research/Pet-Eggs-Spec.md, asked 2026-10-15)  (answers -> docs/answered/pets.md, topic `pets`)
+- [classes] COPPER STAFF MANA (2026-10-18, from Armory 0.1.39 review): the Copper Staff costs 20 Mana of a 40 Mana pool at its new first level Lv 1 (50%, over the 40% rule); Skyy's locked wand/staff cost table - drop it to 15? [keep 20; the pool passes 40% at Lv 3] -> answer goes to docs/answered/classes.md
