@@ -50,3 +50,22 @@ and we micro-adjust by feel. Where answers / decisions go: docs/answered/<topic>
 1. Build the shared pacing model (a script under tools/ that prints XP/h, coins/h, drops/h per activity and level).
 2. Tune level curves + XP per action. 3. Combat + classes. 4. Gear / accessories / pets (the 35/30/20/15 split).
 5. Gathering + crafting. 6. Economy. 7. Rebirth + skill trees (with the Skill-Trees-3 build). 8. Skyy plays, we adjust.
+
+## 8. THE PLAN (Skyy 2026-10-18: "lets make a plan. to complete that list, what needs done in what order?")
+Each phase = one round (build -> review -> deploy) + Skyy plays and reports; later phases build on earlier numbers. P0 runs on
+OpenRouter / Jev (cheap) before the weekly reset; P1+ after 2026-10-20. Rough cost: one full round ~5-10% of the weekly budget.
+
+| Phase | What | Mods | Why this order |
+|---|---|---|---|
+| P0 | Inventory: dump every current number (XP tables, curves, mob / class / gear / pet / charm stats, drop rates, prices, costs) into research/balance/*.md tables | none (read-only) | the model needs today's numbers |
+| P1 | Pacing model `tools/balance_model.py` + the target table (level vs hours per zone, coins and drops per hour) | tools only | every later phase is tuned against it |
+| P2 | Skill-tree engine + dust removal + migration (Skill-Trees-3 R1 + R2) | SkyyTrees, SkyySkills, SkyyMenu | trees change points, perks and abilities - combat and skill numbers depend on them |
+| P3 | XP: one curve shape for class + skills, XP per action, skills trail class 3-5 | SkyySkills, SkyyCollections (XP sources), SkyyCooking, SkyyExploration | levels set the clock for everything else |
+| P4 | Combat core: class stats + weight / speed, Mana / Stamina, class trees + abilities (Skill-Trees-3 R3 classes), mob curve, elites / bosses | SkyyClasses, SkyyTrees, SkyyGear (player curves), SkyyArmory (weapon numbers), SkyyMobs | needs P3 levels; the four power sources sit on top of it |
+| P5 | Power sources 35/30/20/15: weapons / tools, armor (3x best vs plain), Void Charms, pets, reforge / rarity, UT / Mythic rates | SkyyGear, SkyyArmory, SkyyAccessories, SkyyPets, SkyyMobs (drops) | splits the power the P4 baseline defines |
+| P6 | Gathering + crafting: collection sizes, tier-up / armor costs, hits per block, crops / totems, smelting / cooking / alchemy, F-pickup tier lock + zone spawns | SkyyCollections, SkyyGear, SkyySkills, SkyyWorldGen, SkyySacks, SkyyCooking | uses P3 XP and P5 tool / armor power |
+| P7 | Economy: coins per hour, Bazaar / AH / shop prices, sinks, death coin loss, buy-across rules | SkyyBazaar, SkyyAuctions, SkyyMerchants, SkyyCoins, SkyyIslands (death) | prices follow the P6 gathering speeds |
+| P8 | Rebirth: Void Particles, Nexus upgrades, keep buff, rebirths past 5 default, skill trees for the skills (Skill-Trees-3 R3-R4) | SkyyRebirth, SkyyTrees, SkyySkills | rebirth speed-up is measured against the finished first run |
+| P9 | Whole first-run check with the model (no hour without a level + a gear upgrade) + Skyy's feel pass | any | final tune |
+
+Play-test after P3, P4, P5, P6 and P7 (one TEST-CHECKLIST section each).
