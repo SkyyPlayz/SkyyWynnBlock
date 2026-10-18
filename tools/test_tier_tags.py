@@ -1,6 +1,7 @@
 """Test tools/tier_tags.py (research/Tier-Tags-Plan.md round T0).   python tools/test_tier_tags.py   (exit 0 = PASS)
 
-Checks: the 15-step ladder (TT_VERSION 2, SkyyGear 0.3.22 round G1: T1 Copper .. T15 Lumen, Onyxium T16, Crude shares T1) + display(internal)
+Checks (TT_VERSION 3, SkyyGear 0.3.29 = 20 levels per zone: METAL_BANDS / ZONE_TOPS / LEVEL_BANDS / LEVEL_CRUDE 5, the 15 tree + 15 crop tiers,
+the Mushroom spores, the Foraging / Farming / Fishing armor rows): the 15-step ladder (TT_VERSION 2, SkyyGear 0.3.22 round G1: T1 Copper .. T15 Lumen, Onyxium T16, Crude shares T1) + display(internal)
 + the TT_VERSION 1 -> 2 renumber map; the tier for sample ids of every family; family counts (plan 1.2); every vanilla id in the table exists
 in Assets.zip (the cached copy, tools/serverjar.py - read-only; skipped with a note when no copy exists); the Enchanted rows =
 tools/skyyench.py TABLE (minus Cobblestone / Rubble) at their base's tier; TOOL_METALS starts with SkyyGear's TOOL_TIERS words (the SET pin's
@@ -24,7 +25,7 @@ def ok(cond, what):
 
 
 # ---- ladder
-ok(TT.TT_VERSION == "2" and TT.LADDER == ("Copper", "Iron", "Bronze", "Thorium", "Lead", "Dusk", "Cobalt", "Chromium", "Azurvane", "Adamantite",
+ok(TT.TT_VERSION == "3" and TT.LADDER == ("Copper", "Iron", "Bronze", "Thorium", "Lead", "Dusk", "Cobalt", "Chromium", "Azurvane", "Adamantite",
                                           "Slag", "Cinder", "Mithril", "Titanium", "Lumen", "Onyxium"), "the 15-step ladder + Onyxium T16")
 ok(TT.GEAR_INTERNAL == ("Crude", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium"), "Gear's internal tiers")
 ok([TT.display(i) for i in range(8)] == [1, 1, 2, 4, 7, 10, 13, 16], "display(internal) = the ladder step of Gear's tier word")
@@ -49,12 +50,19 @@ for bad in (lambda: TT.display(8), lambda: TT.to_internal(0), lambda: TT.to_inte
 SAMPLES = {
     "Ore_Copper": "T1 Copper", "Ore_Iron": "T2 Iron", "Ore_Thorium": "T4 Thorium", "Ore_Cobalt": "T7 Cobalt", "Ore_Onyxium": "T16 Onyxium",
     "Ingredient_Bar_Bronze": "T3 Bronze", "Ingredient_Bar_Copper": "T1 Copper", "Ingredient_Bar_Mithril": "T13 Mithril",
-    "Wood_Oak_Trunk": "T1 Copper", "Wood_Apple_Trunk": "T1 Copper", "Wood_Maple_Trunk": "T2 Iron", "Wood_Dry_Trunk": "T4 Thorium",
-    "Wood_Redwood_Trunk": "T7 Cobalt", "Wood_Sallow_Trunk": "T10 Adamantite", "Wood_Fig_Blue_Trunk": "T10 Adamantite",
-    "Plant_Crop_Wheat_Item": "T1 Copper", "Plant_Crop_Carrot_Item": "T2 Iron", "Plant_Crop_Potato_Item": "T16 Onyxium",
-    "Plant_Seeds_Wheat": "T1 Copper", "Plant_Seeds_Onion_Eternal": "T16 Onyxium",
-    "Skyy_Ench_Copper": "T1 Copper", "Skyy_Ench_Oak": "T1 Copper", "Skyy_Ench_Wheat": "T1 Copper", "Skyy_Ench_Potato": "T16 Onyxium",
-    "Skyy_Ench_Adamantite": "T10 Adamantite", "Skyy_Ench_Sallow": "T10 Adamantite", "Skyy_Ench_Stick": "T1 Crude",
+    # TT_VERSION 3 (spec 5 / 6): 15 tree tiers + 15 crop tiers, 3 per zone
+    "Wood_Oak_Trunk": "T1 Copper", "Wood_Apple_Trunk": "T2 Iron", "Wood_Maple_Trunk": "T3 Bronze", "Wood_Dry_Trunk": "T4 Thorium",
+    "Wood_Gumboab_Trunk": "T6 Dusk", "Wood_Redwood_Trunk": "T9 Azurvane", "Wood_Sallow_Trunk": "T12 Cinder", "Wood_Fig_Blue_Trunk": "T14 Titanium",
+    "Wood_Crystal_Trunk": "T15 Lumen", "Wood_Stormbark_Trunk": "T15 Lumen", "Wood_Ice_Trunk": "T9 Azurvane",
+    "Plant_Crop_Wheat_Item": "T1 Copper", "Plant_Crop_Carrot_Item": "T3 Bronze", "Plant_Crop_Turnip_Item": "T6 Dusk",
+    "Plant_Crop_Potato_Item": "T13 Mithril", "Plant_Crop_Onion_Item": "T14 Titanium", "Plant_Crop_Mushroom_Cap_Brown": "T15 Lumen",
+    "Plant_Seeds_Wheat": "T1 Copper", "Plant_Seeds_Onion_Eternal": "T14 Titanium", "Plant_Seeds_Mushroom": "T15 Lumen",
+    "Plant_Spores_Mushroom_Eternal": "T15 Lumen",
+    "Skyy_Ench_Copper": "T1 Copper", "Skyy_Ench_Oak": "T1 Copper", "Skyy_Ench_Wheat": "T1 Copper", "Skyy_Ench_Potato": "T13 Mithril",
+    "Skyy_Ench_Adamantite": "T10 Adamantite", "Skyy_Ench_Sallow": "T12 Cinder", "Skyy_Ench_Stick": "T1 Crude", "Skyy_Ench_Mushroom": "T15 Lumen",
+    "Skyy_Ench_Beech": "T2 Iron", "Skyy_Ench_CrystalLog": "T15 Lumen",
+    "Armor_Foraging_F1_Head": "T1 Copper", "Armor_Foraging_F2_Legs": "T3 Bronze", "Armor_Foraging_Crystalwood_Chest": "T15 Lumen",
+    "Armor_Farming_P7_Hands": "T14 Titanium", "Armor_Farming_Mushroom_Head": "T15 Lumen", "Armor_Fishing_A5_Head": "T10 Adamantite",
     "Tool_Pickaxe_Crude": "T1 Crude", "Tool_Pickaxe_Wood": "T1 Crude", "Tool_Hoe_Copper": "T1 Copper", "Tool_Pickaxe_Scrap": "T1 Copper",
     "Tool_Sickle_Steel_Rusty": "T2 Iron", "Tool_Hatchet_Onyxium": "T16 Onyxium", "Tool_Pickaxe_Cobalt": "T7 Cobalt", "Tool_Hammer_Crude": "T1 Crude",
     "Weapon_Staff_Wood": "T1 Crude", "Weapon_Wand_Wood_Rotten": "T1 Crude", "Weapon_Wand_Tribal": "T2 Iron", "Weapon_Staff_Onyxium": "T16 Onyxium",
@@ -77,15 +85,19 @@ ok(TT.described("Wood_Oak_Trunk", "  x  ") == "T1 Copper - x", "described trims"
 # ores01 (SkyyWorldGen 0.7.3): + 4 zone ore blocks / raw ores / ingots + 4 alloys (owner SkyyWorldGen); the Enchanted ingots of the new
 # metals (tools/skyyench.py TABLE_ORES, SkyyCollections 0.2.25) take their base's tier -> enchanted 55 + those rows
 ENCH_ORES = [t for t in getattr(EN, "TABLE_ORES", []) if t[2] in TT.ROWS]
-COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 55 + len(ENCH_ORES), "tool": 34, "armory": 11,
+# SkyyCollections 0.2.28 (level-bands): + the six Enchanted alloys (tools/skyyench.py TABLE_ALLOYS - not in its TABLE), at their alloy bar's tier
+ENCH_ALLOYS = [t for t in getattr(EN, "TABLE_ALLOYS", []) if t[2] in TT.ROWS]
+COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 15, "seed": 28, "spore": 2, "enchanted": 56 + len(ENCH_ORES) + len(ENCH_ALLOYS), "foraging_armor": 60,
+          "farming_armor": 60, "fishing_armor": 20, "tool": 34, "armory": 11,          # 0.3.29: + the Mushroom (crop, 2 spores, its Enchanted item), the gathering armor rows
           "can": 6 + 10, "harvester": 4 + 12, "forever_tool": 27, "armory_metal": 76 + 80, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5,
           "mining_armor": 32}          # SkyyGear 0.3.23 (G2): + the forever tools of Bronze + the 8 zone metals (pickaxe / hatchet / multitool 27), cans Mithril + 9, Harvesters Cobalt / Adamantite / Mithril + 9 (TT.OWN_IDS); SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
-ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 55 + len(ENCH_ORES), "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
-ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool")) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal")), "owners")
-ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool")) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
+ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 15 + 28 + 2 + 56 + len(ENCH_ORES) + len(ENCH_ALLOYS), "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
+_GA = TT.ids_in("foraging_armor") + TT.ids_in("farming_armor") + TT.ids_in("fishing_armor")
+ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + _GA) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal")), "owners")
+ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + _GA) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
    and TT.tag_for("Tool_WaterCan_Copper") == "T1 Copper" and TT.tag_for("Tool_WaterCan_Iron") == "T2 Iron"
    and TT.tag_for("Tool_WaterCan_Adamantite") == "T10 Adamantite" and TT.tag_for("Tool_Sickle_Harvester_Crude") == "T1 Crude"
    and TT.tag_for("Tool_Sickle_Harvester_Thorium") == "T4 Thorium", "SkyyGear 0.3.12 own ids: the can T1 Crude .. T10 Adamantite, the Harvester .. T4 Thorium")
@@ -137,7 +149,8 @@ ok("DynamicSeasons" in TT.shadowed("Plant_Seeds_Wheat") and TT.shadowed("Plant_C
 
 # ---- Enchanted = skyyench TABLE at the base's tier
 ench_keys = [t[0] for t in EN.TABLE]
-ok(sorted(TT.ids_in("enchanted") + list(TT.ENCH_UNTAGGED)) == sorted(EN.IDS), "Enchanted ids = skyyench.IDS")
+ok(sorted(TT.ids_in("enchanted") + list(TT.ENCH_UNTAGGED)) == sorted(EN.IDS + [EN.PREFIX + t[0] for t in ENCH_ALLOYS]), "Enchanted ids = skyyench.IDS + TABLE_ALLOYS")
+ok(len(ENCH_ALLOYS) == 6 and [TT.tag_for(EN.PREFIX + t[0]) for t in ENCH_ALLOYS] == ["T3 Bronze", "T6 Dusk", "T9 Azurvane", "T12 Cinder", "T15 Lumen", "T3 Electrum"], "the Enchanted alloys take their alloy bar's tag")
 for t in EN.TABLE:
     eid = EN.PREFIX + t[0]
     if eid in TT.ENCH_UNTAGGED:
@@ -167,16 +180,50 @@ for bad in (lambda: TT.rarity_tag("Shiny", "Egg"), lambda: TT.rarity_tag("Rare",
         pass
 
 # ---- band rule (LEVEL_BANDS = the level.material band starts of the ladder metals)
-for lv, want in ((0, 1), (5, 1), (9, 1), (10, 1), (14, 1), (15, 2), (16, 2), (17, 3), (20, 4), (22, 5), (24, 6), (25, 7), (27, 7), (28, 8), (31, 9),
-                 (34, 9), (35, 10), (37, 11), (39, 12), (40, 13), (44, 13), (45, 14), (49, 14), (50, 15), (60, 15)):
+for lv, want in ((0, 1), (3, 1), (7, 1), (8, 2), (14, 2), (15, 3), (19, 3), (20, 4), (27, 4), (28, 5), (35, 6), (40, 7), (47, 7), (48, 8), (55, 9),
+                 (60, 10), (68, 11), (75, 12), (80, 13), (87, 13), (88, 14), (94, 14), (95, 15), (103, 15), (150, 15)):
     ok(TT.tier_for_level(lv) == want, "tier_for_level(%d) = %d, want %d" % (lv, TT.tier_for_level(lv), want))
 ok(TT.tier_for_level(40, "Weapon_Sword_Onyxium") == 16, "Onyxium id = T16")
-ok(TT.level_tag(1) == "T1 Crude" and TT.level_tag(9) == "T1 Crude" and TT.level_tag(10) == "T1 Copper" and TT.level_tag(15) == "T2 Iron"
-   and TT.level_tag(22) == "T5 Lead" and TT.level_tag(5, "Armor_Onyxium_Head") == "T16 Onyxium", "level_tag")
-ok(TT.combat_tag("Armor_Bronze_Head", 15) == "T3 Bronze" and TT.combat_tag("Armor_Wood_Chest", 1) == "T1 Crude" and TT.combat_tag("Armor_Kweebec_Chest", 15) == "T2 Iron"
+ok(TT.level_tag(1) == "T1 Crude" and TT.level_tag(4) == "T1 Crude" and TT.level_tag(5) == "T1 Copper" and TT.level_tag(8) == "T2 Iron"
+   and TT.level_tag(28) == "T5 Lead" and TT.level_tag(5, "Armor_Onyxium_Head") == "T16 Onyxium", "level_tag")
+ok(TT.combat_tag("Armor_Bronze_Head", 15) == "T3 Bronze" and TT.combat_tag("Armor_Wood_Chest", 1) == "T1 Crude" and TT.combat_tag("Armor_Kweebec_Chest", 6) == "T1 Copper"
    and TT.combat_tag("Armor_Cloth_Wool_Chest", 1) == "T1 Crude", "combat_tag: metal word first, else the level band")
 ok([t for _l, t in TT.LEVEL_BANDS] == list(range(15, 1, -1)) and [l for l, _t in TT.LEVEL_BANDS] == sorted([l for l, _t in TT.LEVEL_BANDS], reverse=True),
    "LEVEL_BANDS: one start per step T2..T15, highest first")
+
+# ---- TT_VERSION 3 (SkyyGear 0.3.29, research/Level-Bands-20-Spec.md 1): METAL_BANDS / ZONE_TOPS / family remap / the gathering ladders
+_MB = [(1, 8), (8, 15), (15, 23), (20, 28), (28, 35), (35, 43), (40, 48), (48, 55), (55, 63), (60, 68), (68, 75), (75, 83), (80, 88), (88, 95),
+       (95, 103), (100, 108)]
+ok([TT.band(w) for w in TT.LADDER] == _MB and TT.band("Crude") == TT.band("Wood") == TT.band("Armor_Copper") == (1, 8) and TT.band("Stone") is None,
+   "METAL_BANDS = Skyy's approved table (Copper 1-8 ... Lumen 95-103, Onyxium 100-108)")
+ok(all(TT.tier_for_level(TT.band(w)[0]) == TT.metal_tier(w) for w in TT.LADDER[:15]), "every metal's band start shows its own T")
+ok(TT.ZONE_TOPS == (20, 40, 60, 80, 100) and [TT.zone_of_level(x) for x in (1, 20, 21, 40, 41, 60, 61, 80, 81, 100, 140)] == [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 5],
+   "ZONE_TOPS + zone_of_level")
+ok(TT.LEVEL_CRUDE == 5 and TT.LEVEL_CRUDE_V2 == 10 and TT.LEVEL_BANDS_V2[0] == (50, 15) and TT.LEVEL_BANDS[0] == (95, 15) and TT.LEVEL_BANDS[-1] == (8, 2),
+   "LEVEL_BANDS / _V2 ends")
+
+
+def _lt(lv, bands, crude):          # spec 1.1: the 59 family starts keep the T they show (old LEVEL_BANDS_V2 / LEVEL_CRUDE_V2 vs new)
+    t = next((t_ for l_, t_ in bands if lv >= l_), 1)
+    return (t, t == 1 and lv < crude)
+
+
+_FAM_OLD = (5, 10, 15, 20, 25, 30, 35, 40, 45)
+ok([TT.remap_family_start(x) for x in _FAM_OLD] == [3, 6, 8, 20, 40, 50, 60, 80, 91], "remap_family_start = spec 1.1 (3, 6, 8, 20, 40, 50, 60, 80, 91)")
+ok(all(_lt(x, TT.LEVEL_BANDS_V2, TT.LEVEL_CRUDE_V2) == _lt(TT.remap_family_start(x), TT.LEVEL_BANDS, TT.LEVEL_CRUDE) for x in _FAM_OLD),
+   "every non-metal family keeps its T (and its Crude word) after the remap")
+ok(sorted(TT.LOGS) == list(range(1, 16)) and all(len(v) >= 2 for v in TT.LOGS.values()) and len(TT.ids_in("log")) == 34
+   and len(TT.LOG_TIERS_V2) == 34 and TT.LOG_TIERS_V2["Wood_Maple_Trunk"] == 2, "15 tree tiers, 34 trunks once; the v2 table kept")
+ok([TT.tier("Plant_Crop_%s_Item" % c) for c in TT.CROP_LADDER[:14]] == list(range(1, 15)) and TT.CROP_LADDER[-1] == "Mushroom"
+   and dict(TT.CROPS)["Potato"] == 13 and len(TT.CROPS) == 14 and TT.CROP_TIERS_V2["Plant_Crop_Potato_Item"] == 16, "15 crop tiers (Mushroom 15th)")
+ok(TT.spore_name("Plant_Seeds_Mushroom") == "Mushroom Spores" and TT.spore_name("Plant_Spores_Mushroom_Eternal") == "Eternal Mushroom Spores"
+   and TT.spore_name("Plant_Seeds_Wheat") is None and TT.family("Plant_Seeds_Mushroom") == "spore" and not TT.shadowed("Plant_Seeds_Mushroom")
+   and "Plant_Spores_Mushroom_Eternal" in TT.CO_IDS, "the Mushroom is planted from SPORES (Skyy), family spore, not shadowed")
+ok([TT.tier(TT.gather_armor_id("Foraging", c, "Head")) for _t, c, _l, _n in TT.FORAGING_ARMOR] == list(range(1, 16))
+   and [c for _t, c, _l, _n in TT.FORAGING_ARMOR if c.startswith("F") and c[1:].isdigit()] == ["F1", "F2", "F3", "F4", "F5"]
+   and [t for t, c, _l, _n in TT.FORAGING_ARMOR if c in ("F1", "F2", "F3", "F4", "F5")] == [1, 3, 6, 9, 12]
+   and [t for t, c, _l, _n in TT.FARMING_ARMOR if c.startswith("P") and c[1:].isdigit()] == [1, 3, 5, 7, 10, 11, 14]
+   and [TT.tier("Armor_Fishing_A%d_Legs" % k) for k in range(1, 6)] == [1, 2, 4, 7, 10], "gathering armor: old ids at the new slots, Fishing unchanged")
 
 # ---- TOOL_METALS starts with SkyyGear's TOOL_TIERS words at display(internal) (Bronze: its own step T3 above Iron's internal tier; the SET
 # pin's build script, text only), then the zone metals + alloys
@@ -203,7 +250,7 @@ except Exception as e:     # no cached copy / no game: the table checks above st
 if az:
     with zipfile.ZipFile(az) as z:
         ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
-    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS and i not in TT.AR_IDS]   # AR_IDS: SkyyArmory's build   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
+    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS and i not in TT.AR_IDS and i not in TT.CO_IDS]   # AR_IDS: SkyyArmory's build   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
     missing = sorted(i for i in vanilla if i not in ids)
     ok(not missing, "not in Assets.zip: %s" % missing)
     ok(not [i for i in TT.WG_IDS if i in ids], "ores01: no SkyyWorldGen id exists in Assets.zip")

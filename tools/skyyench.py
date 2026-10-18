@@ -213,6 +213,30 @@ assert sorted(EXTERNAL_INPUTS) == sorted(t[2] for t in TABLE_ORES if t[2].endswi
 assert not [t for t in TABLE if t[2] in EXTERNAL_INPUTS and t[7][1] in EXTERNAL_INPUTS], "an external input needs a vanilla look base"
 assert all(PREFIX + r[0] in RETIRED_TO and r[3] in VANILLA_ENCH for _i, r in RETIRED_C1) and all(c in CATS for _v, c in VANILLA_ENCH.values())
 assert all(t[1] in ("I", "R") and 1 <= t[4] <= 3 for t in TABLE)
+# ---- round level-bands (SkyyCollections 0.2.28; Skyy 2026-10-18 docs/answered/gear.md COLLECTION UNLOCK LADDER + ALLOYS: "and enchanted bronze when
+# both reach 6. use that pattern for all of the alloys. (and you can either craft 100 bronze into enchanted bronze, or smelt enchanted iron and
+# copper together for enchanted bronze."): the six Enchanted ALLOYS. Alloys have no collection, so these rows are NOT in TABLE (SkyySacks /
+# SkyyBazaar / tools/tier_tags.py read TABLE and stay as they are); a build that ships or lists them opts in by reading TABLE_ALLOYS (SkyyCollections
+# 0.2.28 ships them; the Bazaar / Sacks pick them up at their next build). Column 3 = the FIRST parent collection (its tier VI line lists the
+# recipe; SkyyCollections also lists it at the second parent's tier VI - both must be reached, ALLOY_PARENTS); column 4 = that tier (6).
+TABLE_ALLOYS = [
+    ("Bronze",   "I", "Ingredient_Bar_Bronze",            "Copper",     6, "Mining", "Enchanted Bronze Ingot",   ("ingot", "Ingredient_Bar_Bronze")),
+    ("Dusk",     "I", "Ingredient_Bar_Dusk_SkyWynn",      "Thorium",    6, "Mining", "Enchanted Dusk Ingot",     ("ingot", "Ingredient_Bar_Iron")),
+    ("Azurvane", "I", "Ingredient_Bar_Azurvane_SkyWynn",  "Cobalt",     6, "Mining", "Enchanted Azurvane Ingot", ("ingot", "Ingredient_Bar_Iron")),
+    ("Cinder",   "I", "Ingredient_Bar_Cinder_SkyWynn",    "Adamantite", 6, "Mining", "Enchanted Cinder Ingot",   ("ingot", "Ingredient_Bar_Iron")),
+    ("Lumen",    "I", "Ingredient_Bar_Lumen_SkyWynn",     "Mithril",    6, "Mining", "Enchanted Lumen Ingot",    ("ingot", "Ingredient_Bar_Iron")),
+    ("Electrum", "I", "Ingredient_Bar_Electrum_SkyWynn",  "Gold",       6, "Mining", "Enchanted Electrum Ingot", ("ingot", "Ingredient_Bar_Iron")),
+]
+ALLOY_PARENTS = {"Bronze": ("Copper", "Iron"), "Dusk": ("Thorium", "Lead"), "Azurvane": ("Cobalt", "Chromium"), "Cinder": ("Adamantite", "Slag"),
+                 "Lumen": ("Mithril", "Titanium"), "Electrum": ("Gold", "Silver")}          # = SkyyWorldGen WG_ALLOYS (input A, input B)
+ALLOY_EXTERNAL = dict((t[2], "SkyyWorldGen") for t in TABLE_ALLOYS if t[2].endswith("_SkyWynn"))
+ALLOY_TINT = {"Dusk": ((168, 114, 110), 0.70), "Azurvane": ((70, 140, 222), 0.70), "Cinder": ((190, 54, 20), 0.75),
+              "Lumen": ((255, 242, 192), 0.70), "Electrum": ((232, 228, 198), 0.65)}          # SkyyWorldGen 0.7.3 alloy palettes (bright step)
+ALLOY_LABEL = {"Bronze": "Bronze Ingots", "Dusk": "Dusk Ingots", "Azurvane": "Azurvane Ingots", "Cinder": "Cinder Ingots",
+               "Lumen": "Lumen Ingots", "Electrum": "Electrum Ingots"}
+assert [t[0] for t in TABLE_ALLOYS] == list(ALLOY_PARENTS) and all(t[3] == ALLOY_PARENTS[t[0]][0] and t[4] == 6 for t in TABLE_ALLOYS)
+assert not set(t[0] for t in TABLE_ALLOYS) & set(KEYS) and sorted(ALLOY_TINT) == sorted(t[0] for t in TABLE_ALLOYS if t[2] in ALLOY_EXTERNAL)
+assert sorted(ALLOY_LABEL) == sorted(ALLOY_PARENTS) and not set(ALLOY_EXTERNAL) & set(EXTERNAL_INPUTS)
 for _t in TABLE:
     assert all(c.isalnum() for c in _t[0]) and '"' not in _t[6] and "\\" not in _t[6] and "|" not in _t[6], _t
 

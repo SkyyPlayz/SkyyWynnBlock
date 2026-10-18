@@ -13,6 +13,19 @@ Cinder, Mithril, Titanium, Lumen - each one tier above the last (so the tier tag
   T1 Copper (and Crude / Wood / Scrap), T2 Iron (and Steel), T3 Bronze, T4 Thorium, T5 Lead, T6 Dusk, T7 Cobalt, T8 Chromium, T9 Azurvane,
   T10 Adamantite, T11 Slag, T12 Cinder, T13 Mithril, T14 Titanium, T15 Lumen, T16 Onyxium.
 Every tag keeps its WORD and gets the new number (TT_VERSION 1 = 2026-10-15: T1 Crude .. T8 Onyxium = Gear internal + 1; OLD_TO_NEW maps it).
+
+20 LEVELS PER ZONE (TT_VERSION 3, SkyyGear 0.3.29 round level-bands, research/Level-Bands-20-Spec.md 1 / 5 / 6; Skyy 2026-10-18
+docs/answered/gear.md "im changing it so we have 20 levels per zone. so bronze gear would be like 15-23 thorium would start at 20" + on the
+table "perfect! make sure all the gear follows that. tools, weapons, armor. ... (make sure the Tiers listed in the items flavor text get updated
+too, to match the new order.)" + "we have 15 tiers of mining armor sets. we need to update foraging, and farming, to match"):
+  METAL_BANDS = THE level band of every metal (min, cap) - tools, weapons, combat armor, Mining sets, gathering armor by T, Untiered by zone.
+  Zone z starts at 20 x (z - 1) (Zone 1 at Lv 1); its three steps start at base, base + 8, base + 15 (Copper 1-8, Iron 8-15, Bronze 15-23,
+  Thorium 20-28 ... Lumen 95-103, Onyxium 100-108). ZONE_TOPS = the mob zone tops 20 / 40 / 60 / 80 / 100 (was 20 / 30 / 45 / 60 / 75).
+  LEVEL_BANDS (start -> T) = METAL_BANDS' ladder starts (Lv 1-7 T1, 8-14 T2, 15-19 T3, 20-27 T4 ... 95+ T15); LEVEL_CRUDE 10 -> 5.
+  The ladder NUMBERS of metals do not change (T1 Copper .. T15 Lumen, T16 Onyxium); the GATHERING ladders do: 15 tree tiers (LOGS: 3 per zone,
+  spec 5 table), 15 crop tiers (CROPS + the 15th crop Mushroom, planted from SPORES - Skyy "make sure they use spores, not seeds"), and the
+  Foraging / Farming armor ladders at T1 .. T15 (FORAGING_ARMOR / FARMING_ARMOR; Fishing keeps its 5 sets at T1 / T2 / T4 / T7 / T10).
+  The TT_VERSION 2 tables stay for proofs and one-time migrations: LEVEL_BANDS_V2, LEVEL_CRUDE_V2, METAL_BANDS_V2, LOG_TIERS_V2, CROP_TIERS_V2.
 Code keeps its 0-based internal tool tier (SkyyGear TOOL_TIERS, Shards documents, line caps: 0 = Crude .. 7 = Onyxium = GEAR_INTERNAL);
 what players SEE is the ladder number: display(internal) = metal_tier(GEAR_INTERNAL[internal]). No saved data changes.
 
@@ -31,7 +44,11 @@ API
     metal_tier(word)       -> ladder T of a metal word (TOOL_METALS: Gear's tool words + the zone metals / alloys), None if no metal
     metal_word(word)       -> the word a tag shows for it (Crude / Wood -> Crude, Scrap -> Copper, Steel -> Iron)
     tier_for_level(lv, id) -> ladder T of a weapon / armor from its SkyyGear level band start (LEVEL_BANDS; ids with Onyxium = T16)
-    level_tag(lv, id)      -> its tag: "T1 Crude" (Lv 0-9), "T1 Copper" (10-14), "T2 Iron" ... (SkyyGear's combat armor flavour tag)
+    level_tag(lv, id)      -> its tag: "T1 Crude" (Lv 0-4), "T1 Copper" (5-7), "T2 Iron" (8-14) ... (SkyyGear's combat armor flavour tag)
+    band(metal)            -> METAL_BANDS[metal] = (min, cap) (Crude / Wood / Armor_Copper = Copper's 1-8; None = no metal)
+    zone_of_level(lv)      -> the zone 1-5 of a mob / chest level (ZONE_TOPS: <= 20 Zone 1, <= 40 Zone 2, <= 60 Zone 3, <= 80 Zone 4, else 5)
+    remap_family_start(s)  -> a TT_VERSION 2 non-metal family band start -> today's (spec 1.1: the old -> new metal anchors, straight lines)
+    spore_name(id)         -> "Mushroom Spores" / "Eternal Mushroom Spores" for the spore ids (None = not a spore item)
     combat_tag(id, lv)     -> the combat armor flavour tag: the id's metal word first ("T3 Bronze"), else level_tag
     renumber(old_display)  -> the TT_VERSION 1 number (T1 Crude .. T8 Onyxium) -> today's (for the L1 rebuilds of baked tables)
 
@@ -47,7 +64,7 @@ Left untagged on purpose: stone / dirt / sand, Silver / Gold / Prisma, gems, mob
 the Enchanted Cobblestone / Rubble.
 """
 
-TT_VERSION = "2"
+TT_VERSION = "3"          # 3 = 20 levels per zone + the 15-step gathering ladders (SkyyGear 0.3.29); 2 = the 15-step metal ladder (0.3.22)
 LADDER = ("Copper", "Iron", "Bronze", "Thorium", "Lead", "Dusk", "Cobalt", "Chromium", "Azurvane", "Adamantite", "Slag", "Cinder",
           "Mithril", "Titanium", "Lumen", "Onyxium")        # index = display tier - 1 (T1 .. T16); Crude shares T1 (word "Crude")
 GEAR_INTERNAL = ("Crude", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium")   # SkyyGear's internal tool tier 0-7
@@ -124,15 +141,77 @@ def metal_word(word):
     return "Crude" if word in CRUDE_WORDS else (word if word in LADDER else noun(t))
 
 
-# weapon / armor level bands (the SkyyGear level.material band STARTS of the ladder metals: Copper 10, Iron 15, Bronze 17 (spec 3.1 slot),
-# Thorium 20, Lead 22, Dusk 24, Cobalt 25, Chromium 28, Azurvane 31, Adamantite 35, Slag 37, Cinder 39, Mithril 40, Titanium 45, Lumen 50);
-# (lowest level, T), highest first. Java mirrors (SkyyGear GearView.tierFor, SkyyBazaar / SkyyAuctions sort) are built from this table.
-LEVEL_BANDS = ((50, 15), (45, 14), (40, 13), (39, 12), (37, 11), (35, 10), (31, 9), (28, 8), (25, 7), (24, 6), (22, 5), (20, 4), (17, 3),
-               (15, 2))
+# ------------------------------------------------------------------------------------------------ THE level bands (TT_VERSION 3)
+# Skyy 2026-10-18 (approved table, research/Level-Bands-20-Spec.md 1): 20 levels per zone; zone z's base = 20 x (z - 1) (Zone 1: Lv 1); its 3 steps
+# start at base, base + 8, base + 15 and each ends where the next step starts (the alloy runs 3 levels into the next zone; the last two = the
+# same pattern past 100, Q2 default). ONE band per metal everywhere: tools, weapons, combat armor, the Mining sets, gathering armor (by T), the
+# Untiered rows (the zone's alloy). Crude / Wood / Armor_Copper share Copper's band. Every build imports THIS table (Gear, Armory, Mobs, Bazaar,
+# Auctions) - the next re-band is one edit here.
+ZONE_TOPS = (20, 40, 60, 80, 100)          # the mob zone tops (TT_VERSION 2 / SkyyMobs 0.1.10: 20, 30, 45, 60, 75)
+ZONE_TOPS_V2 = (20, 30, 45, 60, 75)
+ZONE_STEPS = (0, 8, 15)                    # a zone's three steps start at base + these
+
+
+def _zone_base(z):
+    return 20 * (z - 1)
+
+
+METAL_BANDS = {}
+for _i, _w in enumerate(LADDER):
+    _z, _s = _i // 3 + 1, _i % 3
+    _lo = max(1, _zone_base(_z) + ZONE_STEPS[_s])          # Zone 1 starts at Lv 1
+    _hi = (_zone_base(_z) + ZONE_STEPS[_s + 1]) if _s < 2 else (_zone_base(_z + 1) + 3)
+    METAL_BANDS[_w] = (_lo, _hi)
+for _w in ("Crude", "Wood", "Armor_Copper"):
+    METAL_BANDS[_w] = METAL_BANDS["Copper"]
+assert [METAL_BANDS[_w] for _w in LADDER] == [(1, 8), (8, 15), (15, 23), (20, 28), (28, 35), (35, 43), (40, 48), (48, 55), (55, 63), (60, 68),
+                                               (68, 75), (75, 83), (80, 88), (88, 95), (95, 103), (100, 108)], "Skyy's approved band table"
+# TT_VERSION 2 (SkyyGear 0.3.22 - 0.3.28 level.material defaults; Armor_Copper 1-18, Crude / Wood 1-13) - kept for proofs + migrations
+METAL_BANDS_V2 = {"Crude": (1, 13), "Wood": (1, 13), "Copper": (10, 18), "Armor_Copper": (1, 18), "Iron": (15, 23), "Bronze": (15, 23),
+                  "Thorium": (20, 28), "Lead": (22, 30), "Dusk": (24, 32), "Cobalt": (25, 38), "Chromium": (28, 40), "Azurvane": (31, 41),
+                  "Adamantite": (35, 43), "Slag": (37, 45), "Cinder": (39, 47), "Mithril": (40, 49), "Titanium": (45, 55), "Lumen": (50, 60),
+                  "Onyxium": (40, 49)}
+assert set(METAL_BANDS_V2) == set(METAL_BANDS)
+
+
+def band(metal):
+    """(min, cap) of a metal word (METAL_BANDS), None = no metal"""
+    return METAL_BANDS.get(metal)
+
+
+def zone_of_level(level):
+    """the zone 1-5 of a mob / chest level (ZONE_TOPS); above the last top = 5"""
+    for _z, _t in enumerate(ZONE_TOPS[:-1]):
+        if level <= _t:
+            return _z + 1
+    return len(ZONE_TOPS)
+
+
+# spec 1.1: a NON-metal family band start (cloth, leather, Stone, Doomed, Prisma ...) maps through the old -> new metal anchors (straight lines,
+# rounded half up) so every family keeps the T it shows; width stays SkyyGear level.bandWidth 8
+FAMILY_ANCHORS = ((1, 1), (15, 8), (20, 20), (25, 40), (35, 60), (40, 80), (49, 100))
+
+
+def remap_family_start(s):
+    """a TT_VERSION 2 family band start (1-49) -> today's start"""
+    for (_a, _b), (_c, _d) in zip(FAMILY_ANCHORS, FAMILY_ANCHORS[1:]):
+        if _a <= s <= _c:
+            return int(_b + (s - _a) * float(_d - _b) / (_c - _a) + 0.5)
+    raise AssertionError("remap_family_start: %r outside 1-49" % s)
+
+
+# weapon / armor level bands = the band STARTS of the ladder metals (Iron 8, Bronze 15, Thorium 20, Lead 28, Dusk 35, Cobalt 40, Chromium 48,
+# Azurvane 55, Adamantite 60, Slag 68, Cinder 75, Mithril 80, Titanium 88, Lumen 95); (lowest level, T), highest first. Java mirrors (SkyyGear
+# GearView.tierFor, SkyyBazaar / SkyyAuctions sort) are built from this table.
+LEVEL_BANDS = ((95, 15), (88, 14), (80, 13), (75, 12), (68, 11), (60, 10), (55, 9), (48, 8), (40, 7), (35, 6), (28, 5), (20, 4), (15, 3),
+               (8, 2))
+assert LEVEL_BANDS == tuple((METAL_BANDS[_w][0], metal_tier(_w)) for _w in reversed(LADDER[1:15])), "LEVEL_BANDS = METAL_BANDS' starts"
+LEVEL_BANDS_V2 = ((50, 15), (45, 14), (40, 13), (39, 12), (37, 11), (35, 10), (31, 9), (28, 8), (25, 7), (24, 6), (22, 5), (20, 4), (17, 3),
+                  (15, 2))          # TT_VERSION 2 (SkyyGear 0.3.22 - 0.3.28), proofs only
 
 
 def tier_for_level(level, item_id=""):
-    """weapon / armor band: Lv 0-14 T1, 15-16 T2, 17-19 T3, 20-21 T4 ... 45-49 T14, 50+ T15 (LEVEL_BANDS); Onyxium ids T16"""
+    """weapon / armor band: Lv 0-7 T1, 8-14 T2, 15-19 T3, 20-27 T4 ... 88-94 T14, 95+ T15 (LEVEL_BANDS); Onyxium ids T16"""
     if "Onyxium" in (item_id or ""):
         return metal_tier("Onyxium")
     for lo, t in LEVEL_BANDS:
@@ -141,11 +220,12 @@ def tier_for_level(level, item_id=""):
     return 1
 
 
-LEVEL_CRUDE = 10          # below the Copper band start a T1 weapon / armor says "Crude" (TT_VERSION 1 showed Lv 0-9 as T1 Crude)
+LEVEL_CRUDE = 5           # below this a T1 weapon / armor says "Crude" (Lv 3 Stone "T1 Crude", Lv 6 Scrap "T1 Copper", as before the re-band)
+LEVEL_CRUDE_V2 = 10       # TT_VERSION 1 / 2
 
 
 def level_tag(level, item_id=""):
-    """the tag of a weapon / armor from its level band start: 'T1 Crude' (Lv 0-9), 'T1 Copper' (10-14), 'T2 Iron', ... 'T16 Onyxium'"""
+    """the tag of a weapon / armor from its level band start: 'T1 Crude' (Lv 0-4), 'T1 Copper' (5-7), 'T2 Iron' (8-14), ... 'T16 Onyxium'"""
     t = tier_for_level(level, item_id)
     return tag_text(t, "Crude" if t == 1 and level < LEVEL_CRUDE else None)
 
@@ -194,31 +274,67 @@ for _m, _t in ALLOYS:
     WORDS["Ingredient_Bar_%s_SkyWynn" % _m] = _m
 WG_IDS = frozenset(i for i, r in ROWS.items() if r[2] == "SkyyWorldGen")      # made by SkyyWorldGen's build (not in Assets.zip)
 
-# logs = the forest ZONE tier (plan C4) at the hatchet metal that cuts them: F1 Grove Copper, F2 Autumn / Azure Iron, F3 Savanna Thorium,
-# F4 Northern Cobalt, F5 Wastes Adamantite; Orchard side group Copper (TT_VERSION 2: T1 / T2 / T4 / T7 / T10)
+# logs (TT_VERSION 3, research/Level-Bands-20-Spec.md 5 - Skyy "we just need to split each zone into 3 tiers of trees"): 15 tree tiers, 3 per zone
+# (Zone 1 Emerald Grove + Autumn / Azure forests, Zone 2 savanna / desert, Zone 3 Borea / north, Zone 4 wastes / volcanic, Zone 5 jungle) at the
+# hatchet metal that cuts them at normal speed (T1 Copper .. T15 Lumen; the 15-step hatchet ladder exists since SkyyGear 0.3.23). All 34 vanilla
+# trunks placed once. The first name of each group = its Foraging armor set (FORAGING_ARMOR).
 LOGS = {
-    1: ("Oak", "Birch", "Beech", "Ash", "Aspen",
-        "Apple", "Amber", "Stormbark", "Windwillow", "Wisteria_Wild", "Palm", "Ice", "Sadwillow"),     # F1 Grove + Orchard (M1)
-    2: ("Maple", "Azure"),                                                                              # F2
-    4: ("Gumboab", "Dry", "Bottletree", "Palo"),                                                        # F3
-    7: ("Redwood", "Fir", "Cedar", "Poisoned", "Spiral"),                                               # F4
-    10: ("Sallow", "Burnt", "Petrified", "Bamboo", "Camphor", "Banyan", "Jungle", "Fig_Blue", "Fire", "Crystal"),   # F5
+    1: ("Oak", "Birch"),
+    2: ("Beech", "Ash", "Aspen", "Apple"),
+    3: ("Maple", "Azure"),
+    4: ("Dry", "Palm"),
+    5: ("Bottletree", "Amber"),
+    6: ("Gumboab", "Palo"),
+    7: ("Fir", "Cedar"),
+    8: ("Spiral", "Poisoned", "Windwillow"),
+    9: ("Redwood", "Ice"),
+    10: ("Burnt", "Sadwillow"),
+    11: ("Petrified", "Wisteria_Wild"),
+    12: ("Sallow", "Fire"),
+    13: ("Jungle", "Bamboo"),
+    14: ("Banyan", "Camphor", "Fig_Blue"),
+    15: ("Crystal", "Stormbark"),
 }
 for _t in sorted(LOGS):
     for _w in LOGS[_t]:
         _add("Wood_%s_Trunk" % _w, _t, "log", "SkyyCollections")
+# TT_VERSION 2 (5 zone tiers F1-F5 at T1 / T2 / T4 / T7 / T10 + the Orchard side group at T1): proofs / migrations only
+_LOGS_V2 = {1: ("Oak", "Birch", "Beech", "Ash", "Aspen", "Apple", "Amber", "Stormbark", "Windwillow", "Wisteria_Wild", "Palm", "Ice", "Sadwillow"),
+            2: ("Maple", "Azure"), 4: ("Gumboab", "Dry", "Bottletree", "Palo"), 7: ("Redwood", "Fir", "Cedar", "Poisoned", "Spiral"),
+            10: ("Sallow", "Burnt", "Petrified", "Bamboo", "Camphor", "Banyan", "Jungle", "Fig_Blue", "Fire", "Crystal")}
+LOG_TIERS_V2 = dict(("Wood_%s_Trunk" % _w, _t) for _t, _ws in _LOGS_V2.items() for _w in _ws)
+assert sorted(LOG_TIERS_V2) == sorted(i for i, r in ROWS.items() if r[1] == "log") and len(LOG_TIERS_V2) == 34
 
-# crops = the LOCKED Farmer's Workbench pairs (Gathering-Progression-Spec 2.3, P1-P7) at the tool that harvests them at normal speed
-# (Gathering-Shards-Spec 7.3, newer: pair Mk = internal hoe / sickle tier k; plan C5) at that metal's ladder step (TT_VERSION 2): P1 Wheat /
-# Lettuce = T1 Copper, P2 Carrot / Corn = T2 Iron, P3 T4 Thorium, P4 T7 Cobalt, P5 T10 Adamantite, P6 T13 Mithril, P7 Potato / Onion = T16
-# Onyxium (Potato is the LAST pair, not an early crop). Seeds + eternal seeds = their crop
-CROPS = tuple((_c, display(_k)) for _k, _cs in ((1, ("Wheat", "Lettuce")), (2, ("Carrot", "Corn")), (3, ("Cauliflower", "Turnip")),
-                                                 (4, ("Pumpkin", "Aubergine")), (5, ("Tomato", "Chilli")), (6, ("Cotton", "Rice")),
-                                                 (7, ("Potato", "Onion"))) for _c in _cs)
+# crops (TT_VERSION 3, spec 6): 15 crop tiers, 3 per zone, in the LOCKED Farmer's Workbench pair order (P1 Wheat / Lettuce ... P7 Potato / Onion)
+# + the 15th crop Mushroom (spec Q12 default; planted from SPORES - Skyy 2026-10-18 "make sure they use spores, not seeds"). Seeds + Eternal seeds
+# = their crop. CROPS = the 14 Plant_Crop_<Crop>_Item crops (the pair crops), (crop, T); the Mushroom rows are their own (MUSHROOM_ROWS).
+CROP_LADDER = ("Wheat", "Lettuce", "Carrot", "Corn", "Cauliflower", "Turnip", "Pumpkin", "Aubergine", "Tomato", "Chilli", "Cotton", "Rice",
+               "Potato", "Onion", "Mushroom")          # index = T - 1
+CROPS = tuple((_c, _i + 1) for _i, _c in enumerate(CROP_LADDER) if _c != "Mushroom")
 for _c, _t in CROPS:
     _add("Plant_Crop_%s_Item" % _c, _t, "crop", "SkyyCollections")
     _add("Plant_Seeds_" + _c, _t, "seed", "SkyyCollections")
     _add("Plant_Seeds_%s_Eternal" % _c, _t, "seed", "SkyyCollections")
+# the Mushroom: the vanilla cap (the Farming collection's / Enchanted Mushroom's item), the vanilla spore bag (id Plant_Seeds_Mushroom kept, its
+# NAME says Mushroom Spores) and our Eternal spores (made by SkyyCollections' build, CO_IDS - not in Assets.zip). Family "spore" (not "seed":
+# DynamicSeasons does not shadow them, and every shown name says spores - SPORE_NAMES)
+MUSHROOM_ROWS = (("Plant_Crop_Mushroom_Cap_Brown", "crop"), ("Plant_Seeds_Mushroom", "spore"), ("Plant_Spores_Mushroom_Eternal", "spore"))
+for _id, _f in MUSHROOM_ROWS:
+    _add(_id, CROP_LADDER.index("Mushroom") + 1, _f, "SkyyCollections")
+SPORE_NAMES = {"Plant_Seeds_Mushroom": "Mushroom Spores", "Plant_Spores_Mushroom_Eternal": "Eternal Mushroom Spores"}
+CO_IDS = frozenset(["Plant_Spores_Mushroom_Eternal"])          # made by SkyyCollections' build (not in Assets.zip)
+
+
+def spore_name(item_id):
+    """the shown name of a spore item ("Mushroom Spores"), None = not one"""
+    return SPORE_NAMES.get(item_id)
+
+
+# TT_VERSION 2 (the pairs at their hoe metal: P1 T1, P2 T2, P3 T4, P4 T7, P5 T10, P6 T13, P7 T16; no Mushroom): proofs / migrations only
+CROP_TIERS_V2 = dict(("Plant_Crop_%s_Item" % _c, _t) for _t, _cs in ((1, ("Wheat", "Lettuce")), (2, ("Carrot", "Corn")), (4, ("Cauliflower", "Turnip")),
+                                                                     (7, ("Pumpkin", "Aubergine")), (10, ("Tomato", "Chilli")), (13, ("Cotton", "Rice")),
+                                                                     (16, ("Potato", "Onion"))) for _c in _cs)
+assert sorted(CROP_TIERS_V2) == sorted("Plant_Crop_%s_Item" % _c for _c, _t in CROPS)
 
 
 # Enchanted materials (SkyyCollections' own items, tools/skyyench.py TABLE): the tier of the base; Cobblestone / Rubble stay untagged
@@ -248,6 +364,14 @@ ENCH_OWN = {"Skyy_Ench_Stick": 1}
 for _e, _t in sorted(ENCH_OWN.items()):
     _add(_e, _t, "enchanted", "SkyyCollections")
     WORDS[_e] = "Crude"
+# round level-bands (SkyyCollections 0.2.28, Skyy 2026-10-18 "and enchanted bronze when both reach 6. use that pattern for all of the alloys"):
+# the six Enchanted alloys (tools/skyyench.py TABLE_ALLOYS - not in its TABLE: alloys have no collection) take their alloy bar's tier and word
+# (T3 Bronze, T6 Dusk, T9 Azurvane, T12 Cinder, T15 Lumen, T3 Electrum)
+ENCH_ALLOYS = tuple((_t[0], _t[2]) for _t in _EN.TABLE_ALLOYS)
+for _k, _b in ENCH_ALLOYS:
+    _add("Skyy_Ench_" + _k, ROWS[_b][0], "enchanted", "SkyyCollections")
+    if _b in WORDS:
+        WORDS["Skyy_Ench_" + _k] = WORDS[_b]
 
 # vanilla tools (plan 1.2: 32 + 2 hammers) -> SkyyGear (round T2); tier = the metal word after the family (its ladder T; word metal_word)
 TOOLS = ("Tool_Hammer_Crude", "Tool_Hammer_Iron",
@@ -268,7 +392,7 @@ ARMORY_VANILLA = tuple("Weapon_Staff_" + m for m in ("Wood", "Copper", "Iron", "
     ("Weapon_Wand_Wood", "Weapon_Wand_Wood_Rotten", "Weapon_Wand_Tribal")
 for _id in ARMORY_VANILLA:
     _w = _id.split("_")[2]
-    _add(_id, metal_tier(_w) or {"Tribal": tier_for_level(15)}[_w], "armory", "SkyyArmory")   # Tribal = SkyyGear's Lv 15 row -> T2 Iron
+    _add(_id, metal_tier(_w) or {"Tribal": tier_for_level(remap_family_start(15))}[_w], "armory", "SkyyArmory")   # Tribal = SkyyGear's Tribal row (TT 3: Lv 8) -> T2 Iron
     if _w in CRUDE_WORDS:
         WORDS[_id] = "Crude"
 
@@ -313,6 +437,41 @@ for _fam_g, _ids_g in (("forever_tool", G2_FOREVER), ("harvester", G2_HARVESTERS
         _w_g = _id_g.split("_")[-2] if _id_g.endswith("_SkyWynn") else _id_g.split("_")[-1]
         _add(_id_g, metal_tier(_w_g), _fam_g, "SkyyGear")
 OWN_IDS = OWN_IDS | frozenset(G2_FOREVER + G2_HARVESTERS + G2_CANS)
+# SkyyGear 0.3.29 (round level-bands, research/Level-Bands-20-Spec.md 5 + 6; Skyy 2026-10-18 "we have 15 tiers of mining armor sets. we need to
+# update foraging, and farming, to match"): the GATHERING ARMOR ladders. Foraging + Farming = 15 sets at T1 .. T15 (tag = the ladder noun, like
+# the logs / crops they gather: "T3 Bronze"); the old set ids keep their ids and looks at new tier slots (Foraging F1 = T1, F2 = T3, F3 = T6,
+# F4 = T9, F5 = T12; Farming P1 = T1, P2 = T3, P3 = T5, P4 = T7, P5 = T10, P6 = T11, P7 = T14), the new ones are Armor_<Skill>_<Tree / Crop>_<Slot>.
+# Fishing keeps its 5 angler sets at their metal (T1 / T2 / T4 / T7 / T10). (T, id code, look = the tree / crop / metal, set name). Made by
+# SkyyGear's build (OWN_IDS). GATHER_SLOTS = the engine's ArmorSlot order.
+GATHER_SLOTS = ("Head", "Chest", "Hands", "Legs")
+FORAGING_ARMOR = ((1, "F1", "Oak", "Grove Bark"), (2, "Beech", "Beech", "Beech Bark"), (3, "F2", "Maple", "Autumn Bark"),
+                  (4, "Dry", "Dry", "Dry Bark"), (5, "Bottletree", "Bottletree", "Bottletree Bark"), (6, "F3", "Gumboab", "Savanna Bark"),
+                  (7, "Fir", "Fir", "Fir Bark"), (8, "Spiral", "Spiral", "Spiral Bark"), (9, "F4", "Redwood", "Northern Bark"),
+                  (10, "Burnt", "Burnt", "Burnt Bark"), (11, "Petrified", "Petrified", "Petrified Bark"), (12, "F5", "Sallow", "Wastes Bark"),
+                  (13, "Jungle", "Jungle", "Jungle Bark"), (14, "Banyan", "Banyan", "Banyan Bark"), (15, "Crystalwood", "Crystalwood", "Crystalwood Bark"))
+FARMING_ARMOR = ((1, "P1", "Wheat", "Wheat Harvest"), (2, "Lettuce", "Lettuce", "Lettuce Harvest"), (3, "P2", "Carrot", "Carrot Harvest"),
+                 (4, "Corn", "Corn", "Corn Harvest"), (5, "P3", "Cauliflower", "Cauliflower Harvest"), (6, "Turnip", "Turnip", "Turnip Harvest"),
+                 (7, "P4", "Pumpkin", "Pumpkin Harvest"), (8, "Aubergine", "Aubergine", "Aubergine Harvest"), (9, "Tomato", "Tomato", "Tomato Harvest"),
+                 (10, "P5", "Chilli", "Chilli Harvest"), (11, "P6", "Cotton", "Cotton Harvest"), (12, "Rice", "Rice", "Rice Harvest"),
+                 (13, "Potato", "Potato", "Potato Harvest"), (14, "P7", "Onion", "Onion Harvest"), (15, "Mushroom", "Mushroom", "Mushroom Harvest"))
+FISHING_ARMOR = tuple((metal_tier(_m), "A%d" % (_k + 1), _m, _m + " Angler") for _k, _m in enumerate(("Copper", "Iron", "Thorium", "Cobalt", "Adamantite")))
+GATHER_ARMOR = (("Foraging", FORAGING_ARMOR), ("Farming", FARMING_ARMOR), ("Fishing", FISHING_ARMOR))
+assert [r[0] for r in FORAGING_ARMOR] == list(range(1, 16)) == [r[0] for r in FARMING_ARMOR] and [r[0] for r in FISHING_ARMOR] == [1, 2, 4, 7, 10]
+assert [r[2] for r in FORAGING_ARMOR] == [LOGS[_t][0] if _t != 15 else "Crystalwood" for _t in range(1, 16)], "a Foraging set = its tier's key tree"
+assert [r[2] for r in FARMING_ARMOR] == list(CROP_LADDER), "a Farming set = its tier's crop"
+
+
+def gather_armor_id(skill, code, slot):
+    return "Armor_%s_%s_%s" % (skill, code, slot)
+
+
+GA_IDS = []
+for _sk, _rows in GATHER_ARMOR:
+    for _t, _code, _look, _nm in _rows:
+        for _sl in GATHER_SLOTS:
+            _add(gather_armor_id(_sk, _code, _sl), _t, _sk.lower() + "_armor", "SkyyGear")
+            GA_IDS.append(gather_armor_id(_sk, _code, _sl))
+OWN_IDS = OWN_IDS | frozenset(GA_IDS)
 # SkyyArmory 0.1.33 (round A1, spec 4.1 Group A; rows added by the SkyyGear 0.3.23 builder at the main session's request 2026-10-18): the 9
 # metal families in the 8 zone metals / alloys (Weapon_<Family>_<M>_SkyWynn; the Monk gauntlets Weapon_Fist_Gauntlets_*, the Priest soul cage
 # Weapon_Wand_SoulCage_*) + the Thorium / Cobalt / Adamantite / Mithril crossbows the Armory ladder lacked (Weapon_Crossbow_<M>_Wynn). Owner
@@ -439,4 +598,4 @@ def families():
     return sorted(set(r[1] for r in ROWS.values()))
 
 
-del _m, _t, _w, _c, _k, _b, _id, _h, _f, _i, _e
+del _m, _t, _w, _c, _k, _b, _id, _h, _f, _i, _e, _z, _s, _lo, _hi, _sk, _rows, _code, _look, _nm, _sl
