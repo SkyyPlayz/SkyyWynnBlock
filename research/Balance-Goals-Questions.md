@@ -2,7 +2,7 @@
 
 Why this file exists: Skyy said "I'm not a game dev ... I'd prefer if you did the balancing based on my rough goals. then we micro adjust
 based on feel" + "Come up with a list of important questions so we can set all the base goals properly" (docs/answered/skills.md 10-18).
-Answers here set the targets for research/Balance-Pass-Spec.md. Each question has today's default in [brackets]. When Skyy answers,
+ANSWERED 2026-10-18: Skyy took ALL defaults ("Take the defaults for all 23 balance questions; I'll adjust by feel later.", skills.md). Answers here set the targets for research/Balance-Pass-Spec.md. Each question has today's default in [brackets]. When Skyy answers,
 record the words in docs/answered/<topic>.md (qa_append.py) and tick the line here. Index: INDEX.md (research/).
 
 Already set (10-18): ~10 h per zone for Zones 1-3; first rebirth after 40-50 h; each later rebirth a bit shorter; level cap 50 first run,
