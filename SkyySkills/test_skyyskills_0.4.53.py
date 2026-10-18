@@ -60,7 +60,7 @@ EXPECT = {"Acro": ["~m falls", "~m takeFall"],                                  
           "PerkCfg": ["~<clinit>", "~m ensureDefaults", "~m read"], "Perks": ["~m chance", "~m chanceU", "~m fortune"],
           "MobXp": ["~m lvBase"], "SkillCfg": ["~<clinit>", "~m combatXp2", "~m load"],                 # combat.max 0 + levels.runCap
           "RecipeXp": ["~m classify"],                                                               # SkyyAlloy
-          "SkillDefs": ["+f RUN_CAP", "~<clinit>", "~m capMax", "~m levelCap"],
+          "SkillDefs": ["+f CAP_MAX", "+f RUN_CAP", "~<clinit>", "~m capMax", "~m levelCap"],
           "SkillCap": ["+m capT", "+m lvD", "+m lvK", "+m runBase", "+m totalOf", "~m cap", "~m fetch", "~m into", "~m level", "~m need", "~m progress"],
           "Farm3": ["~m lvIn"], "Overall": ["~m listText", "~m sums"], "ClassMana": ["~m amountFor"], "ClassPower": ["~m boostRegen", "~m classLevel"],
           "ManaRegen": ["~m classPct"], "ClassCurve": ["~m deliver"], "OwnCurve": ["~m deliver"], "SkillRb": ["~m facts"], "SkillRunFn": ["~m apply"],
@@ -295,7 +295,19 @@ def run_lc(out, jar, scratch, _home):
         NREB["p-r"] = n
         SC.CACHE.clear()
         got.append((int(SC.level("p-r", MIN, big)), int(SC.level("p-r", ARCH, big))))
-    K.eq(got, [(50, 50), (60, 60), (70, 70), (80, 80), (90, 90), (100, 100), (110, 110)], "LC rebirth 0..6: Mining + Archery caps 50 / 60 / ... / 100 / 110")
+    K.eq(got, [(50, 50), (60, 60), (70, 70), (80, 80), (90, 90), (100, 100), (100, 100)], "LC rebirth 0..6: Mining + Archery caps 50 / 60 / ... / 100, then 100")
+    K.check(int(SD.CAP_MAX) == 100, "LC levels.capMax 100 on a fresh file")
+    late = []
+    for n in range(5, 11):
+        NREB["p-r"] = n
+        SC.CACHE.clear()
+        late.append((int(SC.level("p-r", MIN, big)), int(SC.level("p-r", ARCH, big)), int(SC.cap("p-r", MIN))))
+    K.eq(late, [(100, 100, 100)] * 6, "LC rebirths 5..10: the cap stays 100 (levels.capMax, Skyy: 100 till more zones)")
+    K.check(int(SC.need("p-r", MIN, big)) == 0 and str(SC.progress("p-r", MIN, big)) == "MAX", "LC rebirth 10: MAX at 100, XP keeps counting")
+    SD.CAP_MAX = 0
+    SC.CACHE.clear()
+    K.check(int(SC.level("p-r", MIN, big)) == 150, "LC levels.capMax 0 = no clamp (rebirth 10 -> 150)")
+    SD.CAP_MAX = 100
     K.notes.append("LC caps by rebirth: %s" % got)
     NREB["p-r"] = 2
     SC.CACHE.clear()

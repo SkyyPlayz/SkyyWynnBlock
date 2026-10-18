@@ -19,7 +19,8 @@
   3. LEVEL CAP 50 + 10 A REBIRTH (popup 2026-10-18 LEVEL CAP PER REBIRTH: "Start 50, +10 each"): new row levels.runCap (Levels, default 50,
      0-100, 0 = off = the table max; a fresh file has levels.runCap=50, an older file no line = 50): every skill and class skill but Exploration caps at
      min(levels.runCap, its table max) + SkyyRebirth's raise (rebirth:fn:cap is now asked with this base; SkyyRebirth 0.3.5 caps.levels 10 x
-     rebirths) - 50 / 60 / 70 / 80 / 90 / 100 at rebirth 0 - 5 (and the 0.4.35 flat levels above the table after that). Exploration keeps its
+     rebirths) - 50 / 60 / 70 / 80 / 90 / 100 at rebirth 0 - 5, then 100 (new row levels.capMax 100, 0 = no clamp; Skyy "leave the lvl
+     cap at 100 for now till we add more zones"; rebirths past 5 still run). Exploration keeps its
      table (SkyyRebirth never raises or resets it). XP keeps counting past the cap (unchanged). The capped level is used everywhere the
      level counts: perks, Fortune, Mana per class level, class power, Mana regen per class level, the Overall Level (+ the Farming average),
      /skills + Stats ("level 50 of 50" -> MAX), skill:fn:level / run (SkyyRebirth's "class at max level" = the cap), the curve notices.
@@ -5021,7 +5022,9 @@ FARM_LIST = "50,91,137,189,256,330,417,512,621,736,866,953,1038,1115,1187,1247,1
 L.append(NC53_MARK)   # 0.4.53: Nc53Mig's run-once marker (a fresh file only)
 RC53_L = ["# Level cap before rebirths (SkyySkills 0.4.53, Skyy: Start 50, +10 each): every skill and class skill but Exploration caps here on",
           "# the first run; each rebirth adds SkyyRebirth's caps.levels (+10). 0 means the list max. Levels you already had stay.",
-          "levels.runCap=50"]   # a missing line (an older file) reads the same 50
+          "levels.runCap=50",
+          "# levels.capMax: the highest cap any rebirth reaches (Skyy: 100 for now, till more zones). 0 means no clamp.",
+          "levels.capMax=100"]   # a missing line (an older file) reads the same 50 / 100
 L.extend(RC53_L)
 L.append("")
 L.extend(FA53_HEAD)   # 0.4.53: Fa53Mig's block - a fresh file carries it (marker + the list); an old file gets the same block once
@@ -5591,6 +5594,9 @@ public static boolean rebirthResets(int s) {
 defs.addField(CtField.make("public static final int CAP_EXTRA_MAX = 1000;", defs))
 # 0.4.53 (Skyy 2026-10-18 "Start 50, +10 each"): levels.runCap - the first-run level cap of every rebirth-reset slot (0 = off = the table max)
 defs.addField(CtField.make("public static volatile int RUN_CAP = 50;", defs))
+# 0.4.53 (Skyy 2026-10-18 "allow rebirths past 5 so you can keep upgrading. but leave the lvl cap at 100 for now till we add more zones."):
+# levels.capMax - the highest level cap any rebirth reaches (0 = no clamp)
+defs.addField(CtField.make("public static volatile int CAP_MAX = 100;", defs))
 defs.addMethod(CtNewMethod.make("""
 public static long stepTop(long[] c) {
   int max = c.length - 1;
@@ -8510,6 +8516,8 @@ public static synchronized String load() {{
     C_DEFAULT = lng(p, "combat.default", 5L);
     long rc53 = lng(p, "levels.runCap", 50L);   // 0.4.53: the first-run level cap (0 = off = the table max)
     {PKG}.SkillDefs.RUN_CAP = rc53 < 0L ? 0 : (rc53 > 100L ? 100 : (int) rc53);
+    long cm53 = lng(p, "levels.capMax", 100L);   // 0.4.53: the clamp of every rebirth-raised cap (0 = none)
+    {PKG}.SkillDefs.CAP_MAX = cm53 < 0L ? 0 : (cm53 > 1000L ? 1000 : (int) cm53);
     double cm = dbl(p, "classSkill.xpMultiplier", {CLS_MULT_DEF});
     CLASS_MULT = (Double.isNaN(cm) || cm < 0.0) ? 0.0 : (cm > 100.0 ? 100.0 : cm);
     {PKG}.AcroCfg.read(p);
@@ -8957,6 +8965,8 @@ scap.addMethod(CtNewMethod.make(J14(r"""
 public static int capT(String k, int s, long total) {
   if (s < 0 || s >= @PKG@.SkillDefs.N) return 0;
   int c = runBase(s) + extra(k, s);   // 0.4.53: the first-run cap + SkyyRebirth's raise (0.4.35: the table max + the raise)
+  int cm = @PKG@.SkillDefs.CAP_MAX;   // 0.4.53 (Skyy "leave the lvl cap at 100 for now"): levels.capMax clamps it (0 = no clamp)
+  if (cm > 0 && @PKG@.SkillDefs.rebirthResets(s) && c > cm) c = cm;
   int f = @PKG@.LvFloor.floorOf(k, s, total);   // 0.4.53: a level the profile already had is never lowered
   return f > c ? f : c;
 }"""), scap))
@@ -20387,6 +20397,9 @@ CFG_ROWS = [
     ("levels.runCap", "Level cap before rebirths", "levels", "int", "50", "0", "100", "step=5", "", "live,danger",
      "First-run skill + class level cap; each rebirth adds +10. 0 = list max. Not Exploration.",
      "reload"),
+    # 0.4.53 (Skyy 2026-10-18 "allow rebirths past 5 ... leave the lvl cap at 100 for now till we add more zones"): the clamp
+    ("levels.capMax", "Highest level cap", "levels", "int", "100", "0", "1000", "step=10", "", "live,danger",
+     "No rebirth raises a skill or class level cap above this (0 = no clamp). XP keeps counting.", "reload"),
     # ---- gathering: the XP rules (key families) + felled trees
     # 0.4.14 (Skyy 2026-10-02 tool levels answer (4): "Bigger boost for all 3") - the gathering pace; sickle swings (Tool-Levels-Spec question 3)
     ("gather.boost.skills", "Gathering pace skills", "gathering", "text", "Foraging,Farming", "", "300", "", "", "live",
@@ -20899,7 +20912,7 @@ assert DEFAULTS.count(ZO_MARK_ID) == 1 and all(_dp.get(_k) == _v for _k, _v in [
 _k48 = [_r[0] for _r in CFG_ROWS]
 assert _k48.index("perk.fortuneGuard") == _k48.index("perk.fortuneMax") + 1 and _k48.count("perk.fortuneGuard") == 1
 print("config rows: %d (%d tables), %d not in the default file (zero perk stats, adv)" % (len(CFG_ROWS), sum(1 for _r in CFG_ROWS if _r[3] == "table"), len(_absent)))
-assert len(CFG_ROWS) == 276, ("0.4.53: + levels.runCap; 0.4.50: + perk.treeFortuneUncapped, smelt.fortune.placed, smelt.fortune.budgetMax; 0.4.48: + perk.fortuneGuard; 0.4.44: + acro.rollKey + 9 acro.dodgeStyle.*; 0.4.43: + 9 rows (6 hp.regen.*, fell.otherLogsPercent, mining.xpMultiplier, the hp.regen.show action); 0.4.42: + 3 rows (sound.fortune + id, fortune.sparkle); 0.4.39: + 8 rows (sounds 7, rebirth.stats); 0.4.37: + 11 rows (perfect dodge 6, ranching 3, orchard.ids, overall.farmingAverage); 0.4.36: + rebirth.coinFactor; 0.4.35: + farming.tierUpXpFactor; 0.4.26: + perk.fortuneMax; 0.4.5 had 159 rows + 10 Overall Level / base Mana rows (Overall-Level-Spec 4.9) + divinity.healXpPerHpSelf + "
+assert len(CFG_ROWS) == 277, ("0.4.53: + levels.runCap, levels.capMax; 0.4.50: + perk.treeFortuneUncapped, smelt.fortune.placed, smelt.fortune.budgetMax; 0.4.48: + perk.fortuneGuard; 0.4.44: + acro.rollKey + 9 acro.dodgeStyle.*; 0.4.43: + 9 rows (6 hp.regen.*, fell.otherLogsPercent, mining.xpMultiplier, the hp.regen.show action); 0.4.42: + 3 rows (sound.fortune + id, fortune.sparkle); 0.4.39: + 8 rows (sounds 7, rebirth.stats); 0.4.37: + 11 rows (perfect dodge 6, ranching 3, orchard.ids, overall.farmingAverage); 0.4.36: + rebirth.coinFactor; 0.4.35: + farming.tierUpXpFactor; 0.4.26: + perk.fortuneMax; 0.4.5 had 159 rows + 10 Overall Level / base Mana rows (Overall-Level-Spec 4.9) + divinity.healXpPerHpSelf + "
                               "3 crossbow extras (meter, sound, hint); 0.4.8: - mana.magicBase / mana.magicClasses + the mana.classBase "
                               "table + the read-only spell.manaDivisor; 0.4.10: + classSkill.xpMultiplier; 0.4.12: + the 4 class curve "
                               "rows + mana.regen.inCombat + the mana.regen.show action; 0.4.14: + the 15 rows of N14_L; 0.4.15: + the "
