@@ -221,3 +221,4 @@ tests always come first.
 193. Island respawn + sky snap + camp clear + island pond
 194. Wand launch ~12 blocks + one-handed Soul Orb / menu item + guaranteed vein + feller + 12 new dishes + furnace queue / fuel / ready lists
 195. Map in every zone + mob level plates + wand hold right = block + second egg hatches
+196. Level bands batch: bands + ladder + alloys + gathering armor + no XP caps + pet portraits + Soul Cage takes any orb

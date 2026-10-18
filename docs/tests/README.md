@@ -310,3 +310,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Island respawn fixes, no sky snap, camp clear, island pond (DEPLOYED 2026-10-18, backup deploy-20261018-0906) | [2026-10](2026-10.md) |
 | Wand launch fix, one-handed Soul Orb + menu item, guaranteed vein + feller, new dishes, furnace lists (DEPLOYED 2026-10-18, backup deploy-20261018-1011) | [2026-10](2026-10.md) |
 | BetterMap in every zone, mob level plates, wand right-click block, egg hatch fix (DEPLOYED 2026-10-18, backup deploy-20261018-1155) | [2026-10](2026-10.md) |
+| Level bands: 20 levels per zone, collection ladder, alloys x2, gathering armor buff, no XP caps (DEPLOYED 2026-10-18, backup deploy-20261018-1352) | [2026-10](2026-10.md) |
