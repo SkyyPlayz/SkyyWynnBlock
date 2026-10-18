@@ -32,7 +32,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
 - Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
 - RUNNING (overnight): G1 Gear 0.3.22 (15-step renumber) -> L1 lang rebuilds -> G2 tools + A1/A2 metal weapons; Hud 0.3.32 (icons default Show);
-  lint MENU_PATTERN + skyyeggs; then "Movement 2" (research/Armory-Movement-Conflict.md) once Gear is free.
+  then "Movement 2" (research/Armory-Movement-Conflict.md) once Gear is free.
 - NEXT (Skyy picks): LOCAL-RESUME queue (mining armor Z2-Z5, metal art, Fortune + metal tools / weapons), UT lines for 5 UT sets (spec Q1),
   crossbows (TASK-crossbows-from-vanilla.md), OPEN-QUESTIONS answers. Salvagebench guard live (Gear 0.3.20, TEST 179).
 - Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
@@ -50,7 +50,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    zone gathering spots + seeds locked behind collections + crop islands for Eternal seeds
    (100 / +200 / +500) - world.md 10-17.
 5. Small list: smelting accessory, lifelong multitool merge, Hud ability icons (6 classes), Mage PA4 (Armory blink bridge), structure mods +
-   joszza draft, flip lint MENU_PATTERN_FAIL, skyyeggs ORDER, Profiles carry Accessory Power / retired files.
+   joszza draft, Profiles carry Accessory Power / retired files.
 6. IDEA (Skyy "dont change now"): research/Zone-Tiers-Idea.md - 3 gathering tiers per zone (2 ores + own alloy; metals = mining sets + tools
    only, combat gear drops only), end of Zone 4 at Lv 50, Zone 5 after rebirth; Silver/Gold kept for charms.
 7. LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression (sections stay separate), SkyyCore 1.0.1 HubBar.

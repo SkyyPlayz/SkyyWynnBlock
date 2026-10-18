@@ -627,7 +627,7 @@ if _kit_users:
 #   pager        pager( / "< Prev" in a script with hub pages (scroll lists; grid / storage pages mark their line menu-pattern-ok)
 #   tab-row      tab_row( in a script with hub pages (a hub page has at most ONE sub-tab row: hub_page(sub=True) + HubBar.subTab)
 # One line per (file, rule) with the count and the first lines. MENU_PATTERN_FAIL = True after sweep S4 turns them into FAILs.
-MENU_PATTERN_FAIL = False
+MENU_PATTERN_FAIL = True    # flipped 2026-10-17 (all newest scripts pass); allow a line with a  # menu-pattern-ok  marker, a dev probe via MP_EXEMPT_MODS
 MP_RULES = (
     ("menu-button", re.compile(r'HUB_MENU_TEXT|hub_menu_button\(|"<\s?Menu"'), False),
     ("old-shell", re.compile(r"\bhub_(?:big_)?shell\("), False),
@@ -635,6 +635,9 @@ MP_RULES = (
     ("pager", re.compile(r'\bpager\(|"<\s?Prev'), True),
     ("tab-row", re.compile(r"\btab_row\("), True),
 )
+# retired one-session UI probes (not player menus) are exempt; a /back-command label go(..., "Back", n) is not a menu button
+MP_EXEMPT_MODS = ("SkyyUiProbe", "SkyyUiProbeB")
+MP_CMD_LABEL_RE = re.compile(r'\bgo\(')
 MP_HUB_RE = re.compile(r"\bhub_(?:page|shell|big_shell)\(")
 
 
@@ -650,6 +653,8 @@ def menu_pattern_warnings(rel, text):
         for name, rx, hub_only in MP_RULES:
             if hub_only and not hubby:
                 continue
+            if name == "back-text" and MP_CMD_LABEL_RE.search(code):
+                continue
             if rx.search(code):
                 hits.setdefault(name, []).append(i)
     out = []
@@ -663,7 +668,7 @@ def menu_pattern_warnings(rel, text):
 
 for mod, f in sorted(newest.items()):
     _src = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
-    if KIT_IMPORT_RE.search(_src):
+    if KIT_IMPORT_RE.search(_src) and mod not in MP_EXEMPT_MODS:
         (fails if MENU_PATTERN_FAIL else warns).extend(menu_pattern_warnings(f, _src))
 
 print("SkyWynn lint: %d files, newest build scripts: %s" % (len(files), ", ".join("%s %s" % (m, vkey(p)) for m, p in sorted(newest.items()))))

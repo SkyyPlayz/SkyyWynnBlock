@@ -77,13 +77,13 @@ def parse_id(item_id):
 
 
 # ---------------------------------------------------------------------------------------------------------------- roll 1: which pet
-# Default best -> worst order per category (spec 2.2 = SkyyPets 0.3.1 Pet kinds, ordered by start rarity, summonable first, home zone,
+# Default best -> worst order per category (SkyyPets 0.4.3 roster adds included; spec 2.2 = SkyyPets 0.3.1 Pet kinds, ordered by start rarity, summonable first, home zone,
 # main stat, table order). Server Setup row pets.egg.order.<category> (comma list); a kind in no list is placed by its start rarity.
 ORDER = {
-    "Mining": ["Goat", "Warthog", "Meerkat", "Mouse"],
-    "Farming": ["Rabbit", "Bunny", "Chicken", "Corgi", "Frog"],
-    "Foraging": ["Bear", "Turkey", "Cat", "Squirrel"],
-    "Exploration": ["Camel", "Horse", "Gecko", "Rat"],
+    "Mining": ["CrystalGolem", "Goat", "Warthog", "Molerat", "Meerkat", "Mouse"],
+    "Farming": ["Mosshorn", "Bison", "Rabbit", "Bunny", "Chicken", "Corgi", "Frog"],
+    "Foraging": ["Bear", "Moose", "Turkey", "Owl", "Cat", "Squirrel"],
+    "Exploration": ["Camel", "Horse", "Antelope", "Deer", "Gecko", "Rat"],
     "Combat": ["Ram", "Skrill", "VoidEye", "Hawk", "Mouflon", "VoidCrawler", "Wolf", "Tusker", "Skeleton", "SkeletonKnight", "VoidLarva",
                "Boar", "Fox", "Dog"],
 }
