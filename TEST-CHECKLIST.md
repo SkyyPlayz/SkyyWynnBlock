@@ -208,3 +208,4 @@ tests always come first.
 180. Wood / Rotten / Tribal wand hold leap
 181. Camp quest: full class armor set + secondary weapon (free identify); 8 zone Mining sets; armor weight in flavor text
 182. Big Fens trees: all logs picked up; Mining Fortune uncapped; Smelting Fortune on mined ore
+183. HUD ability icons for every class, dimmed on cooldown
