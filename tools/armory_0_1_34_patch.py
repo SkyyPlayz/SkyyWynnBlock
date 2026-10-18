@@ -26,7 +26,8 @@ NUMBERS (spec 4.3 "exact numbers aren't important"; nothing existing moves): eve
   of each hit, the backstab AngledDamage, the bow head shot), the guard StaminaCost Value, MaxDurability and the spear projectile Damage =
   A1's nm_interp (GEOMETRIC on Cobb's 15-step ladder between the nearest vanilla metals that have that number, Onyxium never an anchor; Titanium
   / Lumen go on by the Adamantite -> Mithril step), 2 decimals like A1's SWORD / DAGGER rows (so the twins match A1's Bo / kunai numbers),
-  durability whole (critic M: all 8 spears get the spear durability series + vanilla's 0.56 loss a hit, though the vanilla Thorium / Cobalt
+  durability and the spear projectile Damage whole (smoke fix: the engine's Projectile codec reads Damage as an int - "27.85" failed to
+  decode and stopped the server; BaseDamage / StaminaCost stay 2-decimal floats like the live A1 / 0.1.29 numbers) (critic M: all 8 spears get the spear durability series + vanilla's 0.56 loss a hit, though the vanilla Thorium / Cobalt
   spears have none - no new spear lasts forever while Slag+ wear out). NEVER DOWN ALONG THE LADDER (critic L3 rule of A1's crossbows): each new value is floored at the highest value of every
   lower step (vanilla or new) - where vanilla itself dips (Mithril durability 220 < Adamantite 500) the new metals hold the higher value.
   Above-Onyxium: Titanium / Lumen can beat the parked Onyxium (T16) - kept on purpose like A1 (Onyxium is re-banded when its zone is built);
@@ -176,7 +177,7 @@ for _f, _txt in VW_FAMS:
                 ser_[p] = vw_series(vals, True)
             elif p == ("SpearProjectile",):
                 vals = dict((m_, resolve("prj", "Spear_" + m_)["Damage"]) for m_ in VW_ANCHORS if az_has("prj", "Spear_" + m_))
-                ser_[p] = vw_series(vals, False)
+                ser_[p] = vw_series(vals, True)          # smoke fix: Projectile "Damage" is an INT in the engine codec (IntegerCodec) - whole numbers
             else:
                 vals = dict((m_, vw_at(d_.get("InteractionVars") or {}, p)) for m_, d_ in res_.items() if m_ != "Onyxium")
                 vals = dict((m_, v_) for m_, v_ in vals.items() if v_ is not None)

@@ -6385,7 +6385,7 @@ for _f, _txt in VW_FAMS:
                 ser_[p] = vw_series(vals, True)
             elif p == ("SpearProjectile",):
                 vals = dict((m_, resolve("prj", "Spear_" + m_)["Damage"]) for m_ in VW_ANCHORS if az_has("prj", "Spear_" + m_))
-                ser_[p] = vw_series(vals, False)
+                ser_[p] = vw_series(vals, True)          # smoke fix: Projectile "Damage" is an INT in the engine codec (IntegerCodec) - whole numbers
             else:
                 vals = dict((m_, vw_at(d_.get("InteractionVars") or {}, p)) for m_, d_ in res_.items() if m_ != "Onyxium")
                 vals = dict((m_, v_) for m_, v_ in vals.items() if v_ is not None)

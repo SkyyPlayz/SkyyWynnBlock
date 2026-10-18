@@ -193,6 +193,32 @@ def run_jar(out, jar, scratch, home):
     sp = [(w, items["Weapon_Spear_%s_SkyWynn" % w].get("MaxDurability"), items["Weapon_Spear_%s_SkyWynn" % w].get("DurabilityLossOnHit")) for w in NEW8]
     K.check(all(isinstance(d, int) and l == 0.56 for _w, d, l in sp) and [d for _w, d, _l in sp] == sorted(d for _w, d, _l in sp),
             "J: all 8 spears wear out (durability on the ladder, 0.56 a hit, never down): %s" % sp)
+    def tleaves(x, p=()):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                for r in tleaves(v, p + (k,)):
+                    yield r
+        elif isinstance(x, list):
+            for n, v in enumerate(x):
+                for r in tleaves(v, p + (n,)):
+                    yield r
+        elif isinstance(x, (int, float)) and not isinstance(x, bool):
+            yield p, x
+    FLOATS = ("BaseDamage", "StaminaCost")          # float-typed in the engine (live: A1 / 0.1.29 great shield + Bo hits are fractions)
+    frac = []
+    for i in NEW_IDS:
+        f, w = i.split("_")[1], i.split("_")[2]
+        for p, v in tleaves(items[i]):
+            if isinstance(v, float) and v != int(v) and not [k for k in FLOATS if k in p]:
+                pv = [at(ares("Weapon_%s_%s" % (f, m)), p) for m in van if ("Weapon_%s_%s" % (f, m)) in aidx]          # the family's vanilla values
+                if not [x for x in pv if isinstance(x, float)]:          # (a fallback recipe's TimeSeconds 4.5 = vanilla Adamantite's)
+                    frac.append("%s %s=%s" % (i, "/".join(str(x) for x in p), v))
+    for n in sorted(nb - na):
+        if n.endswith(".json") and n.startswith("Server/Projectiles/"):          # (the appearance models are vanilla copies + our texture path)
+            for p, v in tleaves(json.loads(zb.read(n))):
+                if isinstance(v, float) and v != int(v):
+                    frac.append("%s %s=%s" % (os.path.basename(n), "/".join(str(x) for x in p), v))
+    K.check(not frac, "J: no new JSON number is a fraction where the engine / vanilla uses whole numbers (projectile Damage, durability ...): %s" % frac[:4])
     K.check(not bad_num, "J: all %d numbers = the independent ladder recomputation from Assets.zip: %s" % (n_num, bad_num[:3]))
     K.check(not never_down, "J: no new number is below any lower ladder step's (vanilla or new): %s" % never_down[:3])
     sw = [(w, items["Weapon_Sword_%s_SkyWynn" % w]["InteractionVars"]["Swing_Left_Damage"]["Interactions"][0]["DamageCalculator"]["BaseDamage"]["Physical"])
@@ -229,7 +255,7 @@ def run_jar(out, jar, scratch, home):
     bad_sp = []
     pvals = dict((m, json.loads(az.read(pidx["Spear_" + m]).decode("utf-8-sig")).get("Damage")) for m in van if ("Spear_" + m) in pidx)
     pvals = dict((m, v) for m, v in pvals.items() if isinstance(v, (int, float)))
-    pexp = expect(pvals, False)
+    pexp = expect(pvals, True)          # smoke fix: the projectile Damage is an int (engine IntegerCodec)
     for w in NEW8:
         sid = "SkyyArmory_Spear_%s_SkyWynn" % w
         pj = json.loads(zb.read("Server/Projectiles/Player/SkyyArmory/%s.json" % sid))
@@ -285,6 +311,32 @@ def run_exec(out, jar, scratch, home):
     K.eq([int(D.wandIndex("Weapon_Wand_Lead_SkyWynn")), int(D.kunaiIndex("Weapon_Kunai_Lumen_SkyWynn"))], [8, 15], "X: A1's indexes unchanged")
     K.eq([int(D.soulRank(t)) for t in range(16)], [0, 1, 2, 3, 4, 5, 6, 7, 3, 4, 4, 5, 5, 6, 6, 7], "X: soul ranks unchanged")
     K.eq(int(D.wandIndex("Weapon_Sword_Lead_SkyWynn")), -1, "X: a new sword is no wand")
+    # the 8 thrown-spear projectiles through the ENGINE's Projectile codec (smoke fix: a fractional Damage stopped the server). Parent is the asset
+    # loader's and Appearance an asset-key field validated against the model store (absent in a bare JVM) - both decoded apart: Appearance must be
+    # a model file of this jar; every other field goes through Projectile.CODEC.decodeJson
+    P = JClass("com.hypixel.hytale.server.core.asset.type.projectile.config.Projectile")
+    AEI, ADT = JClass("com.hypixel.hytale.assetstore.AssetExtraInfo"), JClass("com.hypixel.hytale.assetstore.AssetExtraInfo$Data")
+    RJR, Paths = JClass("com.hypixel.hytale.codec.util.RawJsonReader"), JClass("java.nio.file.Paths")
+
+    def pdecode(key, node):
+        ei = AEI(Paths.get(key + ".json"), ADT(P.class_, key, None))
+        try:
+            o = P.CODEC.decodeJson(RJR.fromJsonString(json.dumps(node)), ei)
+            return o, [str(x) for x in ei.getUnknownKeys()], None
+        except Exception as e:
+            return None, [], str(e)[:160]
+    o, uk, err = pdecode("ctl", {"Damage": 27.85})
+    K.check(err is not None, "X: control - the engine codec refuses a fractional projectile Damage (%s)" % err)
+    zb = zipfile.ZipFile(jar)
+    bad = []
+    for k in NK:
+        sid = "SkyyArmory_Spear_" + k
+        node = json.loads(zb.read("Server/Projectiles/Player/SkyyArmory/%s.json" % sid))
+        rest = dict((a_, b_) for a_, b_ in node.items() if a_ not in ("Parent", "Appearance"))
+        o, uk, err = pdecode(sid, rest)
+        if err or uk or o is None or int(o.getDamage()) != node["Damage"] or ("Server/Models/Projectiles/SkyyArmory/%s.json" % node["Appearance"]) not in zb.namelist():
+            bad.append("%s: %s %s" % (sid, err, uk))
+    K.check(not bad, "X: the 8 spear projectiles decode through the engine's Projectile codec (int Damage, no unknown key, our appearance): %s" % bad[:3])
     K.save()
 
 
