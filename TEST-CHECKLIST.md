@@ -220,3 +220,4 @@ tests always come first.
 192. Fortune +3 a level no cap + weapon bags typed at identify + Pole-Vault skip + no hits through walls
 193. Island respawn + sky snap + camp clear + island pond
 194. Wand launch ~12 blocks + one-handed Soul Orb / menu item + guaranteed vein + feller + 12 new dishes + furnace queue / fuel / ready lists
+195. Map in every zone + mob level plates + wand hold right = block + second egg hatches
