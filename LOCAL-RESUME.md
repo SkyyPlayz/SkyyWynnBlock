@@ -25,6 +25,9 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
+| SkyyGear | Local | G2: metal tools (~55) on the 15-step ladder (Gear 0.3.23) | local, no PR | 2026-10-17 | Building |
+| SkyyArmory | Local | A1: 9 weapon families x 8 new metals + crossbow gaps (Armory 0.1.33) | local, no PR | 2026-10-17 | Building |
+| SkyyBazaar | Local | 0.1.21: close money loops + tier remap | local, no PR | 2026-10-17 | Building |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
