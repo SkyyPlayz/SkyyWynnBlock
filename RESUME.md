@@ -32,6 +32,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 
 ## FIRST: BETA BUG LIST (docs/tests/2026-10-17-beta-bugs.md, 19 bugs, PR #18) - triage -> research/Beta-Bugs-Triage-2026-10-17.md, then fix
    rounds per mod (Skyy's test fixes come first). Gear 0.3.27 (UT bands + elite sources) PINNED, deploys when the game closes.
+   Bugs #7 #8 #10 #14 #18 PARKED (Skyy 10-18 "disregard for now"). Starter-island POND (watering can + fishing, world.md 10-18) added
+   to the running Islands 0.5.20 bug round.
 
 ## NEXT (after Skyy's answers)
 1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
