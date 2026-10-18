@@ -205,3 +205,4 @@ tests always come first.
 177. Zone ores (Lead/Chromium/Slag/Titanium), alloys + Electrum, Furnace Charm I-V + Eternal Flame, ore + Charcoal collections, Bazaar listings
 178. Armory armor / weapons drop from mobs, Mythic boss bags, Mythic/UT craft block, Alteration keeps rolls, salvage via Requip
 179. Salvagebench refuses rolled Armory pieces (moves them out), crafted pieces still salvage
+180. Wood / Rotten / Tribal wand hold leap

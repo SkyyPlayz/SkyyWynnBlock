@@ -205,7 +205,19 @@ for _w in CAN_TIERS:
     _add("Tool_WaterCan_" + _w, metal_tier(_w), "can", "SkyyGear")
 for _w in HARVESTER_TIERS:
     _add("Tool_Sickle_Harvester_" + _w, metal_tier(_w), "harvester", "SkyyGear")
-OWN_IDS = frozenset(["Tool_WaterCan_" + _w for _w in CAN_TIERS] + ["Tool_Sickle_Harvester_" + _w for _w in HARVESTER_TIERS])
+# SkyyGear 0.3.21 (LOCAL-RESUME queue 1, Skyy 2026-10-17 Quirk's approved sets): the zone MINING ARMOR sets - each zone's metal + alloy
+# retexture that zone's vanilla base armor; tier + word = their ingot's (ZONE_METALS / ALLOYS above: "T4 Lead", "T5 Azurvane"). Made by
+# SkyyGear's build (not in Assets.zip). Ids end in the slot word (SkyyGear reads the slot from the last id part); Armor_Lead_* is
+# TerrariaToolsWeapons' - hence Armor_Mining_<Metal>_<Slot>.
+MINING_ARMOR_SLOTS = ("Head", "Chest", "Hands", "Legs")
+MINING_ARMOR = (("Lead", 4), ("Dusk", 4), ("Chromium", 5), ("Azurvane", 5), ("Slag", 6), ("Cinder", 6), ("Titanium", 7), ("Lumen", 7))
+assert all(dict([(_m, _t) for _m, _t, _h in ZONE_METALS] + list(ALLOYS))[_m] == _t for _m, _t in MINING_ARMOR)
+for _m, _t in MINING_ARMOR:
+    for _sl in MINING_ARMOR_SLOTS:
+        _add("Armor_Mining_%s_%s" % (_m, _sl), _t, "mining_armor", "SkyyGear")
+        WORDS["Armor_Mining_%s_%s" % (_m, _sl)] = _m
+OWN_IDS = frozenset(["Tool_WaterCan_" + _w for _w in CAN_TIERS] + ["Tool_Sickle_Harvester_" + _w for _w in HARVESTER_TIERS]
+                    + ["Armor_Mining_%s_%s" % (_m, _sl) for _m, _t in MINING_ARMOR for _sl in MINING_ARMOR_SLOTS])
 
 
 # ------------------------------------------------------------------------------------------------ rarity-tagged items (no T-number)
