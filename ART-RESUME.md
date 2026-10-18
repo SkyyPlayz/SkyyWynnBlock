@@ -42,6 +42,48 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
+### FARMING ARMOR - 15 crop sets (Quirk: a few design ideas per crop first, then build) - listed 2026-10-18
+Skyy 2026-10-18: "get a list of all 15 armor sets we need to make, in art-resume in the repo. along with all the crops they will be
+mottled after. (ill have quirk come up with a few design ideas for each, then we can have her make them.)" + "send those 7 designs with
+the list of the 15 we need." Why 15: Farming gets 15 tiers like Mining (docs/answered/gear.md 2026-10-18; research/Level-Bands-20-Spec.md section 6).
+**Vanilla check (Assets.zip, 2026-10-18): Hytale has NO wheat / crop / farmer ARMOR.** Its armor sets are the metals, Bronze, Cloth
+(Cotton / Linen / Silk / Wool / Cindercloth), Leather, Wood, Kweebec, Prisma, Steel, Trork, Trooper, Diving. What you remember is
+probably the player COSMETICS: `Common/Cosmetics/Head/StrawHat`, `Face_Accessories/MouthWheat` (wheat stalk in the mouth), the
+`Farmer` dress and `Farmer_Vest` overtops - cosmetics only, good for look ideas, not armor. Today's game uses 7 stand-ins
+(`Armor_Farming_P1..P7`, the vanilla Cotton robe recoloured).
+**Existing designs (concepts, not models):** 7 crop sets, v2 2026-10-06, Skyy "i love the design" -
+`research/cloud/gathering-armor-art/farming-sheet.png` (+ README section 3, `research/cloud/Crop-Armor-Spec.md`). Family look: straw-hat
+farmer, rolled sleeves, apron + pocket, belt, each set MADE FROM its crop; each tier a bit cooler (same rule as Foraging).
+
+| Zone | Tier | Crop (vanilla id) | Gear levels | Design status |
+|---|---|---|---|---|
+| 1 | T1 | Wheat (`Plant_Crop_Wheat`) | 1-8 | concept: woven wheat-straw hat + shirt, rope belt with wheat ears, sheaves on the shoulders |
+| 1 | T2 | Lettuce (`Plant_Crop_Lettuce`) | 8-15 | NEW - needs ideas |
+| 1 | T3 | Carrot (`Plant_Crop_Carrot`) | 15-23 | concept: ridged carrot crown with green tops, carrot-orange apron, leaf straps |
+| 2 | T4 | Corn (`Plant_Crop_Corn`) | 20-28 | NEW - needs ideas |
+| 2 | T5 | Cauliflower (`Plant_Crop_Cauliflower`) | 28-35 | concept: cauliflower-head hat in a ring of veined leaves, cream curd shirt, leaf apron + gloves |
+| 2 | T6 | Turnip (`Plant_Crop_Turnip`) | 35-43 | NEW - needs ideas |
+| 3 | T7 | Pumpkin (`Plant_Crop_Pumpkin`) | 40-48 | concept: ribbed pumpkin crown + rind brim, ribbed apron, vine scarf + gloves |
+| 3 | T8 | Aubergine (`Plant_Crop_Aubergine`) | 48-55 | NEW - needs ideas |
+| 3 | T9 | Tomato (`Plant_Crop_Tomato`) | 55-63 | NEW - needs ideas |
+| 4 | T10 | Chilli (`Plant_Crop_Chilli`) | 60-68 | concept: wide sombrero with dried chillies, chilli ristra bandolier, maroon apron, red bandana |
+| 4 | T11 | Cotton (`Plant_Crop_Cotton`) | 68-75 | concept: pale woven hat with cotton bolls, long white cotton coat with boll buttons, canvas apron with a row of bolls |
+| 4 | T12 | Rice (`Plant_Crop_Rice`) | 75-83 | NEW - needs ideas |
+| 5 | T13 | Potato (`Plant_Crop_Potato`) | 80-88 | NEW - needs ideas |
+| 5 | T14 | Onion (`Plant_Crop_Onion`) | 88-95 | concept: red-onion dome crown with a green sprout on a papery purple brim, allium flower, papery purple coat, golden-skin apron |
+| 5 | T15 | Mushroom (planted from SPORES, `Plant_Seeds_Mushroom`; many kinds - Cap Red / Brown, Glowing Blue / Purple ...) | 95-103 | NEW - needs ideas; the top set, most impressive |
+
+(Check the crop ids against Assets.zip before modelling. The vanilla ids end in `_Item` for the held crop; the names above are the crops.)
+**Ideas first:** for each crop, 2-3 design ideas that fit the family look; Skyy picks; then build.
+**The 7 concepts were drawn as a 7-step ladder.** In the 15-step ladder Cauliflower (T5), Pumpkin (T7), Cotton (T11) and Onion (T14) sit
+higher, so re-check how cool each one is when its row is redone. **Build rules:**
+- 4 pieces per set (Head, Chest, Hands, Legs) in vanilla CHARACTER armor format, like `Common/Items/Armors/Iron/`.
+- At least vanilla texture density.
+- Colours sampled from the crop in game.
+- Files go to `art/gathering-armor/Common/Items/Armors/SkyyFarming/<Crop>/`, icons `Armor_Farming_<Crop>_<Piece>.png`.
+- Quirk's vanilla-derived files stay in the PRIVATE art folder, read at build time.
+
+
 ### Void Charms menu icon - DONE 2026-10-17 (Skyy picked "A - gold chain + glow", docs/answered/ui.md; live in SkyyMenu 0.3.37+): `art/void-charms-icon/` (sheet.png; generator `tools/art/make_void_charms_icon.py`). Skyy: "lets change the icon for void charms to be more fitting" + picked "a glowing void amulet on a chain" -> candidate A chosen (B / C = variations). Replaces the satchel at `Skyy_Menu_Icon_AccessoryBag`; also a faded hub tab version for character_accessories.
 
 ### 17. SkyWynn Menu item - new emblem - DONE 2026-10-10 (main session stand-in agent: art/menu-emblem/, sheet.png; wiring = next SkyyMenu round). Continue item 14 with F1 Ash
