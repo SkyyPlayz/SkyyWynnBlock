@@ -36,7 +36,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 3. Wynn elements (research/Wynn-Elements-Spec.md, 10 questions) - big round after answers.
 4. Zone gathering spots + seeds behind collections + crop islands: spec research/Zone-Gathering-Spec.md (10 questions) - build after answers.
 5. Authors to ask (Skyy sends): Fyrrage, Elemental Knights, stonedturtle, SlverSkull, joszza (draft in research/Structure-Mods-Survey.md),
-   Quirk (ship her multitool / harvester models?), Serj (optional).
+   Serj (optional). (Quirk + Cobb are Skyy's own Grok agents - their art is ours to use, Skyy 10-18.)
 6. LATER (Skyy): Beastmastery, Void Particles, totems, mod compression (sections stay separate), SkyyCore 1.0.2 HubBar.
 
 ## Never forget

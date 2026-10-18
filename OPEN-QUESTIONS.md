@@ -24,7 +24,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
 - ORE GATE TIGHTENED (Gear 0.3.23, spec default): now that every ladder step has a pickaxe, ores 2+ steps above your pickaxe take the spec's slow hits again (e.g. Thorium pick on Cobalt 10 -> 40, Iron pick on Lead ~8 -> 40). [default taken overnight: spec as approved; Server Setup gate.nextByLadder off + gate.oreFloor 'Lead,Chromium,Slag,Titanium' = exactly the 0.3.22 hits]
-- QUIRK'S PRIVATE MULTITOOL / HARVESTER MODELS: ship them in the jar, or keep vanilla / generated models? [default taken overnight: not shipped - vanilla models with her textures where they fit]
 - ONYXIUM vs LUMEN: Onyxium is parked at T16 but its weapons equal Mithril's, so the new Titanium / Lumen weapons (Armory 0.1.33) out-damage Onyxium. [default taken overnight: leave; re-band Onyxium up when its zone is built]
 - ORE HITS (Gear 0.3.22): an ore 1-2 tiers above your pickaxe takes ~2.5x the hits (gate.nextFactor 0.4) instead of the spec's 10x, so today's pickaxe steps don't get 4x slower; Bronze items keep the 15-23 level band. OK? [default taken overnight: yes; gate.nextFactor 0.1 = strict spec]
 - UT LINES for the 5 Armory UT sets + a Zone 4 Cloth UT ("The Auditor's", our own Cindercloth copy) - draft rows in research/UT-Lines-Draft.md. Ship them? [default taken overnight: OFF - the sets keep not dropping until Skyy approves]
