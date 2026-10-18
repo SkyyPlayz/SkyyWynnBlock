@@ -43,7 +43,8 @@ LIVE: TEST 191-193 (Islands 0.5.20 deployed 10-18 09:06).
 0. QUEUE 10-18 (Skyy answers in docs/answered): Level-Bands-20 build (research/Level-Bands-20-Spec.md; cap 50 +10/rebirth, Mushroom 15th crop)
    after Gear 0.3.28 pins -> Gear 0.3.29 -> Mobs 0.1.12 -> Armory -> Collections -> Bazaar -> Auctions together; Skills 0.4.53 (doubleDropMax
    no cap + cap 50 first run); per-profile world chests in SkyyExploration (research/Per-Player-Loot-Survey.md, refill never, sparkles);
-   Infinite Water Bucket MID GAME (SkyyGear, research/Farming-Mods-Survey.md s3); Cooking 0.1.12 own dishes RUNNING.
+   Infinite Water Bucket MID GAME (SkyyGear, research/Farming-Mods-Survey.md s3); Cooking 0.1.12 (12 own dishes) BUILT -> in review;
+   our own bench-tier keeper (lean round, idea from MIT Workbench Tier Keeper; then drop KeepBenchTiers / Tier Keeper).
 1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
    Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
 2. Dragon pet: probe DONE 10-18; spec research/Dragon-Pet-Spec.md (8 questions; Aures message in section 8) - after elements (Pets 0.4.4).
