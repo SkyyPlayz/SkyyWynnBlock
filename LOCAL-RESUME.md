@@ -25,6 +25,8 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
+| SkyyGear (+ tools/tier_tags.py) | Local | G1: 15-step tier renumber + ore gates + tool power (Gear 0.3.22) | local, no PR | 2026-10-17 | Building |
+| SkyyHud | Local | ability icons on the HUD ability bar | local, no PR | 2026-10-17 | Building |
 | SkyyTrees, SkyySkills, SkyySacks | Local | Fortune round F1-F3 (research/Metals-Tools-Fortune-Spec.md; Skyy "Yes, all defaults") | local, no PR | 2026-10-17 | Building |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
