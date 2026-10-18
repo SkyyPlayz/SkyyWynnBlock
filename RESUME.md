@@ -34,7 +34,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
    Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
 2. Aures dragon pet (research/Nestkeeper-Pack-Check.md section 5: needs an in-game look + ride probe first).
-3. Wynn elements (research/Wynn-Elements-Spec.md, 10 questions) - big round after answers.
+3. WYNN ELEMENTS NOW (Skyy 10-18: before the big UT batch; all 10 answers in gear.md): build spec research/Wynn-Elements-Build-Spec.md
+   (Fable, writing) -> builders per its split. Also running: Gear 0.3.26 review (5 Armory UTs ON; Quirk tool fix list below), Skills 0.4.52 mana round.
+   QUIRK FIX LIST (her 4 tool models): root node R-Attachment not Pelvis (held-item, not character format); handle at the origin (moved ~206 / 271
+   units); head along Z (turn 90 deg); a bit bigger (0.74x / 0.77x vanilla); Lumen gem faces have 4 see-through corner texels.
 4. Zone gathering spots + seeds behind collections + crop islands: spec research/Zone-Gathering-Spec.md (10 questions) - build after answers.
 5. Authors to ask (Skyy sends): Fyrrage, Elemental Knights, stonedturtle, SlverSkull, joszza (draft in research/Structure-Mods-Survey.md),
    Serj (optional). (Quirk + Cobb are Skyy's own Grok agents - their art is ours to use, Skyy 10-18.)
