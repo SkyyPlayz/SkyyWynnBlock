@@ -58,8 +58,8 @@ Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec
    then every other metal item in the inventory. Excluded: charms, bench accessories, dropped vanilla tools (scythe, hoe),
    Foraging / Farming armor, fishing (waits for a full fishing build). The zone palette cards are enough (no per-metal cards).
 3. METALS BUILD (unassigned until Skyy says): ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
-   STATUS 2026-10-17 (local): ores + spawn rules + smelting + alloys + Electrum + Furnace Charm are LIVE (TEST-CHECKLIST 177; research/
-   Zone-Ores-Alloys-Spec.md). Still open: Fortune upgrades (spec 5), metal tools / weapons / mining sets per metal (need SkyyGear after
+   STATUS 2026-10-17 (local): ores + spawn rules + smelting + alloys + Electrum + Furnace Charm are LIVE (TEST-CHECKLIST 177;
+   research/Zone-Ores-Alloys-Spec.md). Still open: Fortune upgrades (spec 5), metal tools / weapons / mining sets per metal (need SkyyGear after
    PR #17 + SkyyArmory), the 15-step tool tier ladder question (spec 2), real art instead of the build-time recolour placeholders (item 2).
 
 ## Rules
