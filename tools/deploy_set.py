@@ -259,6 +259,21 @@ def tune_perfect_parries(world):
         open(tmp, "w", encoding="utf-8").write(json.dumps(d, indent=2))
         os.replace(tmp, cfg)
         print("Perfect Parries: %d per-class fields written for world %s" % (added, world))
+    # 2026-10-18 Skyy (popup "The '43 / 75' isn't Health - it's Perfect Parries' POSTURE meter, and it overwrites (then deletes) our
+    # '[Lv 23]' level plate" -> "Hide posture numbers (Recommended)"): enablePostureDisplay true -> false ONCE per world (run-once marker
+    # next to the file), only while it still holds the mod's default true; bytes kept (one token replaced). Parries / stagger unchanged.
+    import re
+    pc = os.path.join(d_, "parry_config.json")
+    mark = os.path.join(d_, ".skywynn-posture-off")
+    if os.path.isfile(pc) and not os.path.exists(mark):
+        raw = open(pc, "rb").read()
+        new, n = re.subn(rb'("enablePostureDisplay"\s*:\s*)true', rb'\1false', raw, count=1)
+        if n:
+            tmp = pc + ".tmp"
+            open(tmp, "wb").write(new)
+            os.replace(tmp, pc)
+            print("Perfect Parries: posture numbers over mobs switched off for world %s (level plates stay visible)" % world)
+        open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-18: enablePostureDisplay set false once (Skyy). Delete this file to let the deploy do it again.\n")
 
 
 def sync_bettermap_worlds(world):
