@@ -34,6 +34,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    rounds per mod (Skyy's test fixes come first). Gear 0.3.27 (UT bands + elite sources) PINNED, deploys when the game closes.
    Bugs #7 #8 #10 #14 #18 PARKED (Skyy 10-18 "disregard for now"). Starter-island POND (watering can + fishing, world.md 10-18) added
    to the running Islands 0.5.20 bug round.
+   Gear 0.3.28 (Fortune 3/level, no cap) BUILT -> Bronze cap 33 levels fix -> review. Knock-on: Skills 0.4.53 must lift perk.doubleDropMax
+   (still caps level/accessory/pet/armor Fortune at 100%). Fishing cap 20% waits for the fishing overhaul. Mobs 0.1.11 + Quests 0.4.2 BUILT, in review.
 
 ## NEXT (after Skyy's answers)
 1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
