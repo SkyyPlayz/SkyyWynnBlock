@@ -51,13 +51,18 @@ Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec
 1. MINING ARMOR Z2-Z5 into SkyyForaging. Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
    Z4 Slag/Cinder, Z5 Titanium/Lumen. Inputs: `SkyWynn-PRIVATE-art\mining-armor\Z2_Thorium..Z5_Mithril` (each set retextures
    that zone's vanilla base armor). Ship our textures + item defs that point at the vanilla models.
-2. METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
+2. METAL VOLUME ART: MERGED INTO ITEM 3 (Skyy 2026-10-17; the metals build does the art too). Kept for reference. Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
    cards, her approved Titanium + Lumen tools as the sample, skywynn-custom-weapons-list.md, skywynn-metal-items-inventory.md).
    Make: ore + bar for Lead, Chromium, Slag, Titanium; bars only for Dusk, Azurvane, Cinder, Lumen (+ Electrum = Gold + Silver);
    all 9 weapon families (Wand, Crossbow, Spellbook, Kunai, Bo, Gauntlets, Soul Cage, Great Shield, Mage staff) in all 8 new metals;
    then every other metal item in the inventory. Excluded: charms, bench accessories, dropped vanilla tools (scythe, hoe),
    Foraging / Farming armor, fishing (waits for a full fishing build). The zone palette cards are enough (no per-metal cards).
-3. METALS BUILD (unassigned until Skyy says): ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
+3. METALS BUILD: ASSIGNED TO LOCAL by Skyy 2026-10-17. Art + build in one go (item 2 metal volume art is merged into this).
+   FULLY SPECCED: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md` (private, never commit). Ores, spawn, smelting, alloys, Fortune, tools/weapons.
+   Locked: tiers Copper T1, Iron T2, Bronze T3, Thorium T4, Lead T5, Dusk T6, Cobalt T7, Chromium T8, Azurvane T9, Adamantite T10, Slag T11,
+   Cinder T12, Mithril T13, Titanium T14, Lumen T15; alloy picks open the next zone. Existing tier specs keep their numbers (Lead = today's T5
+   Adamantite specs, Dusk = Mithril's), new tiers use the same step pattern. Block durability scales by tier (each new zone feels like Crude on Copper).
+   Fortune has NO cap: each full 100% = a guaranteed extra drop, the remainder = chance of one more.
    STATUS 2026-10-17 (local): ores + spawn rules + smelting + alloys + Electrum + Furnace Charm are LIVE (TEST-CHECKLIST 177;
    research/Zone-Ores-Alloys-Spec.md). Still open: Fortune upgrades (spec 5), metal tools / weapons / mining sets per metal (need SkyyGear after
    PR #17 + SkyyArmory), the 15-step tool tier ladder question (spec 2), real art instead of the build-time recolour placeholders (item 2).
