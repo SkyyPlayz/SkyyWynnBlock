@@ -619,10 +619,10 @@ def zone_of(tier):
 
 
 def tag_of(tier):
-    """the tier tag our tooltip shows first in a pack item's flavour line ("T3 Iron"; tools/tier_tags.py numbering)"""
+    """the tier tag our tooltip shows first in a pack item's flavour line ("T2 Iron", "T1 Crude"; tools/tier_tags.py numbering + word)"""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import tier_tags as TT
-    return TT.tag_text(TT.metal_tier(TIER_WORD[tier]))
+    return TT.tag_text(TT.metal_tier(TIER_WORD[tier]), TT.metal_word(TIER_WORD[tier]))
 
 
 def active_sets():
