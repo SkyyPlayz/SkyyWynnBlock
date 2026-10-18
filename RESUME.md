@@ -47,7 +47,7 @@ USAGE 10-18 ~12:20: weekly 83% (resets 2026-10-20 09:00 MDT) -> only finish + de
    no cap + cap 50 first run); per-profile world chests in SkyyExploration (research/Per-Player-Loot-Survey.md, refill never, sparkles);
    Infinite Water Bucket MID GAME (SkyyGear, research/Farming-Mods-Survey.md s3); Cooking 0.1.12 (12 own dishes) BUILT -> in review;
    our own bench-tier keeper (lean round, idea from MIT Workbench Tier Keeper; then drop KeepBenchTiers / Tier Keeper).
-   Classes next round: Sacred Heal cooldown 14/16 -> 8/10 s defaults + migration (classes.md 10-18). Auctions: forced save uses copyEntity (same NPE as Pets 0.4.3).
+   Classes next round: Sacred Heal cooldown 14/16 -> 8 s (all stances) defaults + migration (classes.md 10-18). Auctions: forced save uses copyEntity (same NPE as Pets 0.4.3).
    TOOLTIPS bigger + colour coded (Style Guide 15): kit tooltip helper, then Pets (after the 0.4.4 egg fix), then every mod's next round.
 1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
    Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
