@@ -35,7 +35,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
 2. Aures dragon pet (research/Nestkeeper-Pack-Check.md section 5: needs an in-game look + ride probe first).
 3. WYNN ELEMENTS NOW (Skyy 10-18: before the big UT batch; all 10 answers in gear.md): build spec research/Wynn-Elements-Build-Spec.md
-   (Fable, writing) -> builders per its split. Gear 0.3.26 (5 Armory UTs) DEPLOYED (TEST 190). Running: Skills 0.4.52 mana round.
+   DONE (10 questions for Skyy + 6 probes) -> wave 1 Mobs / Gear 0.3.28 / Classes, wave 2 Pets / Accessories / Menu. Gear 0.3.26 (5 Armory UTs) DEPLOYED (TEST 190). Running: Skills 0.4.52 mana round.
    QUIRK FIX LIST (her 4 tool models): root node R-Attachment not Pelvis (held-item, not character format); handle at the origin (moved ~206 / 271
    units); head along Z (turn 90 deg); a bit bigger (0.74x / 0.77x vanilla); Lumen gem faces have 4 see-through corner texels.
 4. Zone gathering spots + seeds behind collections + crop islands: spec research/Zone-Gathering-Spec.md (10 questions) - build after answers.
