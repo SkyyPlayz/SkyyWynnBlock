@@ -45,6 +45,8 @@ LEVEL-BANDS BATCH (10-18 eve, deploy TOGETHER after one final review): Gear 0.3.
    Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Armory 0.1.39 (+ tier_tags v3 / skyyench / test_tier_tags commit). Also built, lean: Wardrobe 0.2.10 (pet icons; needs review).
    Skills 0.4.53 (no XP caps, Fortune uncap, level cap 50+10, alloy XP, Farming XP) building. Armory 0.1.38 PINNED (TT v2). Follow-up: SkyyShards totem recipe orb item-id bug.
 
+SKILL TREES 3 (Skyy 10-18: "the biggest thing right now"): Borderlands-style rows, free row abilities, no free upgrades, drop dust, rebirth Void Particles
+   (spend vs keep = XP buff). Spec research/Skill-Trees-3-Spec.md being written now (Jev-heavy); BUILD after the weekly reset 10-20.
 BALANCE PASS (Skyy 10-18, skills.md last line): research + spec research/Balance-Pass-Spec.md - all skills + class level ~same steady rate, ~10 h/zone Z1-3,
    first rebirth 40-50 h, later rebirths shorter; class stats tuned to role. START AFTER THE WEEKLY RESET (10-20 09:00) - weekly 91% on 10-18.
    Also queued: XP caps in Cooking (maxXpPerMinute 1.5M) / Guilds (xpMaxPerCheck) / Exploration (chunks.maxPaidPerWorld) -> 0; Enchanted alloy Smithing XP rows.
