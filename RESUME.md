@@ -10,7 +10,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (deployed 2026-10-17/18, TEST-CHECKLIST 172-187; details per number in docs/tests/2026-10.md)
+## LIVE NOW (deployed 2026-10-17/18, TEST-CHECKLIST 172-188; details per number in docs/tests/2026-10.md)
 - 172-176: Void Charms rename everywhere, Potion Flask + Food Pouch, Teleport page + /back + homes, Breach x Mark, Requip food fix, Nestkeeper ON.
 - 177 ores round (WorldGen / Accessories Furnace Charm / Sacks / Collections / Bazaar / Skills; the five roll back TOGETHER).
 - 178 PR #17 Armory sets as mob drops; 179 Salvagebench guard; 180 starter wand leap; 181 zone Mining sets + armor weight text + starter
@@ -22,11 +22,11 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 ## RUNNING / JUST BUILT
 - Overnight (Skyy: "work through your whole todo list ... pich what fits the existing build"): last batch running = Gear 0.3.25 (lifelong
   multitool merge, accBp cache, GearReq red row, A2 Charged Attack trust), Collections 0.2.27 (tier-up gates for the new metal steps),
-  Menu 0.3.39 (Supplies tab picture). Each: critic -> pin -> smoke -> deploy. Locks: LOCAL-RESUME.md.
+  Menu 0.3.39 (Supplies tab picture) - Collections + Menu DEPLOYED (TEST 188). Each: critic -> pin -> smoke -> deploy. Locks: LOCAL-RESUME.md.
 - Cobb (Skyy's Grok bot) does design / specs / reviews only; all builds local (LOCAL-RESUME.md, CLOUD-RESUME.md "Cloud build trial").
 
 ## FOR SKYY THIS MORNING
-- Test: TEST-CHECKLIST 176-187 (newest first matter most: 187, 186, 185, 184).
+- Test: TEST-CHECKLIST 176-187 (newest first matter most: 188, 187, 186, 185, 184).
 - Overnight defaults to OK or change: OPEN-QUESTIONS.md lines marked "[default taken overnight ...]" (ore gate speeds, Quirk models not
   shipped, PA4 auto-fire, Onyxium vs Lumen, UT lines OFF, spawn factors, Nestkeeper, joszza, structures).
 - Art to look at: models-local/art/metals/_sheets/weapons-c.png (sent in chat).

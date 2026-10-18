@@ -26,8 +26,6 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
 | SkyyGear | Local | Gear 0.3.25: multitool merge, accBp cache, GearReq red row, CAD trust for A2 weapons | local, no PR | 2026-10-18 | Building |
-| SkyyCollections | Local | 0.2.27: tier-up tokens for the new metal tool steps | local, no PR | 2026-10-18 | Building |
-| SkyyMenu (+ art) | Local | 0.3.39: Supplies tab picture pair | local, no PR | 2026-10-18 | Building |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
