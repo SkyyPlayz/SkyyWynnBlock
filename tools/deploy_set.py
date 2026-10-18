@@ -19,9 +19,9 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.19"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.18"), ("SkyySkills", "0.4.48"),
-    ("SkyyAccessories", "0.5.24"), ("SkyyClasses", "0.1.37"), ("SkyyMenu", "0.3.38"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.20"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.25"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.20"), ("SkyyGear", "0.3.18"), ("SkyySkills", "0.4.49"),
+    ("SkyyAccessories", "0.5.25"), ("SkyyClasses", "0.1.37"), ("SkyyMenu", "0.3.38"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
     ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.22"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -69,7 +69,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.7.2"),
+    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.7.3"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -391,6 +391,13 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # ores (2026-10-17, research/Zone-Ores-Alloys-Spec.md): WorldGen 0.7.3 (new ores / ingots / alloys) + Collections 0.2.25 (their collections +
+    # Enchanted ingot recipes) + Sacks 0.8.20 + Accessories 0.5.25 (acc:smelt with the profile-key field) deploy and roll back TOGETHER.
+    _ores = [_v(_p.get("SkyyCollections", "0")) >= (0, 2, 25), _v(_p.get("SkyyWorldGen", "0")) >= (0, 7, 3),
+             _v(_p.get("SkyySacks", "0")) >= (0, 8, 20), _v(_p.get("SkyyAccessories", "0")) >= (0, 5, 25),
+             _v(_p.get("SkyyBazaar", "0")) >= (0, 1, 20)]
+    if any(_ores) and not all(_ores):
+        print("STOP: the ores round deploys together - SkyyWorldGen 0.7.3+, SkyyCollections 0.2.25+, SkyySacks 0.8.20+, SkyyAccessories 0.5.25+, SkyyBazaar 0.1.20+ (pin all five or none)"); return 1
     # shards03 (2026-10-14): Collections 0.2.15 routes fish / animal / fruit XP to Fishing / Ranching / Orchard (SkyySkills 0.4.38+). Shards 0.3 FLOOR as 0.2.
     if _v(_p.get("SkyyCollections", "0")) >= (0, 2, 15) and _v(_p.get("SkyySkills", "0")) < (0, 4, 38):
         print("STOP: SkyyCollections 0.2.15+ needs SkyySkills 0.4.38+ (new skill XP routes)"); return 1

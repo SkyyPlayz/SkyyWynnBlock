@@ -202,3 +202,4 @@ tests always come first.
 174. C:/Program Files/Git/back, /sethome + /home, Teleport page tiles + Arrange, /warpadmin icons
 175. Server Setup says Void Charms, not Accessories
 176. Void Charms texts, Arrange Prev/Next, Breach x Mark, Requip leaves Pouch food, Nestkeeper dragons
+177. Zone ores (Lead/Chromium/Slag/Titanium), alloys + Electrum, Furnace Charm I-V + Eternal Flame, ore + Charcoal collections, Bazaar listings

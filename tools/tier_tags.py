@@ -11,6 +11,7 @@ ONE ladder: T1 Crude, T2 Copper, T3 Iron, T4 Thorium, T5 Cobalt, T6 Adamantite, 
 
 API
     tag_for(id)            -> "T2 Copper" (None = untagged)
+    word(id)               -> "Copper" / "Lead" (the tag's word: WORDS for the ores01 zone metals, else the ladder noun)
     tier(id)               -> 2 (display tier, 1-8) or None;  internal(id) -> 1 (0-based) or None
     family(id) / owner(id) -> "ore" / "SkyyCollections" (None = not in the table)
     ids_for(owner) / ids_in(family) -> sorted ids
@@ -18,12 +19,16 @@ API
                               None = visible; the key is still written (it shows once that mod is off), never counted as a visible tag
     described(id, text)    -> "T2 Copper - <text>" (text empty / None -> "T2 Copper"); the tag is always the FIRST phrase
     display(internal_tier) -> internal + 1;  to_internal(display_tier) -> display - 1
-    tag_text(display_tier[, noun]) -> "T3 Iron";  ladder_tag(n, word) -> "T2 Totem" (own ladders: Totem, Loot, Bench, Talisman)
+    tag_text(display_tier[, noun]) -> "T3 Iron";  ladder_tag(n, word) -> "T2 Totem" (own ladders: Totem, Loot, Bench, Talisman, Charm)
     metal_tier(word)       -> display tier of a tool metal word (Gear TOOL_TIERS + 1), None if not a ladder metal
     tier_for_level(lv, id) -> display tier of a weapon / armor from its SkyyGear level band (plan 1.2; ids with Onyxium = T8)
 
 Owners (plan section 3, one writer per key): SkyyCollections = vanilla MATERIAL keys (ores, bars, logs, crops, seeds) +
-its Enchanted items; SkyyGear = vanilla tool / weapon / armor keys; SkyyArmory = its 11 vanilla staff / wand keys (Gear must skip them).
+its Enchanted items; SkyyGear = vanilla tool / weapon / armor keys; SkyyArmory = its 11 vanilla staff / wand keys (Gear must skip them);
+SkyyWorldGen = its OWN zone metals (round ores01, SkyyWorldGen 0.7.3, research/Zone-Ores-Alloys-Spec.md 2.5: Lead / Chromium / Slag /
+Titanium ore blocks + raw ores + ingots and the Dusk / Azurvane / Cinder / Lumen alloy ingots - ids WG_IDS, not in Assets.zip).
+Zone metals show their OWN word at the zone partner's tier (WORDS): "T4 Lead", "T5 Azurvane" (Skyy 2026-10-17 popup "Yes, build with
+defaults (Recommended)" = spec Q6 "T4 Lead", "T5 Chromium", "T6 Slag", "T7 Titanium" until the 3-tiers-per-zone re-band, "dont change now").
 Weapons / armor / gathering armor / rods / fish / totems / accessories / Lost Loot are tagged by their own rounds (T2 / T3) with the
 rules below (tier_for_level, ladder_tag); only the families with fixed id lists live in ROWS today.
 Left untagged on purpose: stone / dirt / sand, Silver / Gold / Prisma, gems, mob drops (hides + leathers too), food, tree seeds,
@@ -33,8 +38,8 @@ the Enchanted Cobblestone / Rubble.
 TT_VERSION = "1"
 LADDER = ("Crude", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium")   # index = internal tier (0-7)
 SEP = " - "                      # format A: "T3 Iron - text"
-OWN_LADDERS = ("Totem", "Loot", "Bench", "Talisman")
-OWNERS = ("SkyyCollections", "SkyyGear", "SkyyArmory")
+OWN_LADDERS = ("Totem", "Loot", "Bench", "Talisman", "Charm")      # ores01: + Charm (the Furnace Charm line, SkyyAccessories 0.5.25)
+OWNERS = ("SkyyCollections", "SkyyGear", "SkyyArmory", "SkyyWorldGen")
 # Hides + leathers are NOT tagged (coordinator 2026-10-15): the plan's Soft T1 ... Prismic T8 order was a PLACEHOLDER (economy.md price
 # order) and Skyy picked "Leave untagged" for things the design gives no real tier - a wrong tag is worse than none.
 
@@ -89,6 +94,7 @@ def tier_for_level(level, item_id=""):
 
 # ------------------------------------------------------------------------------------------------ the fixed-id families
 ROWS = {}            # id -> (display tier, family, owner)
+WORDS = {}           # id -> the word its tag shows instead of the ladder noun (ores01 zone metals: "T4 Lead"); absent = the ladder noun
 
 
 def _add(item_id, t, fam, owner):
@@ -102,6 +108,22 @@ for _m, _t in ORES:
     _add("Ore_" + _m, _t, "ore", "SkyyCollections")
 for _m, _t in ORES + (("Bronze", 3),):
     _add("Ingredient_Bar_" + _m, _t, "bar", "SkyyCollections")
+
+# round ores01 (SkyyWorldGen 0.7.3; research/Zone-Ores-Alloys-Spec.md 2.3 / 2.5 / 3): each zone's NEW metal + its alloy, at the tier of the
+# zone's vanilla partner metal (Zone 2 Thorium T4 ... Zone 5 Mithril T7), tagged with their own word. Zone 1's alloy is vanilla Bronze
+# (row above, T3). Ids end "_SkyWynn" (TerrariaToolsWeapons owns Ore_Lead* / Ingredient_Bar_Lead); SkyyWorldGen's build makes them.
+ZONE_METALS = (("Lead", 4, "Sandstone"), ("Chromium", 5, "Shale"), ("Slag", 6, "Volcanic"), ("Titanium", 7, "Basalt"))   # (word, tier, host)
+ALLOYS = (("Dusk", 4), ("Azurvane", 5), ("Cinder", 6), ("Lumen", 7),     # Thorium+Lead, Cobalt+Chromium, Adamantite+Slag, Mithril+Titanium
+          ("Electrum", 3))   # spec 8 (Skyy 2026-10-17 "add Electrum (Gold + Silver, unlocked at the Bronze furnace tier)"): Bronze's tier T3
+for _m, _t, _h in ZONE_METALS:
+    for _id, _f in (("Ore_%s_%s_SkyWynn" % (_m, _h), "zone_ore_block"), ("Ore_%s_SkyWynn" % _m, "zone_ore"),
+                    ("Ingredient_Bar_%s_SkyWynn" % _m, "zone_bar")):
+        _add(_id, _t, _f, "SkyyWorldGen")
+        WORDS[_id] = _m
+for _m, _t in ALLOYS:
+    _add("Ingredient_Bar_%s_SkyWynn" % _m, _t, "alloy", "SkyyWorldGen")
+    WORDS["Ingredient_Bar_%s_SkyWynn" % _m] = _m
+WG_IDS = frozenset(i for i, r in ROWS.items() if r[2] == "SkyyWorldGen")      # made by SkyyWorldGen's build (not in Assets.zip)
 
 # logs = the forest ZONE tier (plan C4): F1 Grove T2, F2 Autumn / Azure T3, F3 Savanna T4, F4 Northern T5, F5 Wastes T6; Orchard side group T2
 LOGS = {
@@ -145,6 +167,8 @@ import skyyench as _EN        # pure Python table, no game files at import
 ENCH_C1 = tuple((_t[0], _t[2]) for _t in _EN.TABLE_C1 if _t[1] == "I" and _t[2] in ROWS)
 for _k, _b in ENCH_C1:
     _add("Skyy_Ench_" + _k, ROWS[_b][0], "enchanted", "SkyyCollections")
+    if _b in WORDS:                      # ores01: Enchanted Lead Ingot = "T4 Lead" like its base
+        WORDS["Skyy_Ench_" + _k] = WORDS[_b]
 ENCH_UNTAGGED = ENCH_UNTAGGED + tuple("Skyy_Ench_" + _t[0] for _t in _EN.TABLE_C1 if (_t[0], _t[2]) not in ENCH_C1)
 # round tools01 (Skyy 2026-10-16 "make enchanted sticks too"): the Enchanted Stick. Its base (Ingredient_Stick) has no row (sticks are a wood
 # starter material: no vanilla Description key to tag), so its tier is set here: T1 Crude (sticks = the Crude sickle's / bare hands' material)
@@ -242,9 +266,15 @@ def owner(item_id):
     return r[2] if r else None
 
 
+def word(item_id):
+    """the word the tag shows: WORDS (ores01 zone metals) else the ladder noun of its tier (None = untagged)"""
+    t = tier(item_id)
+    return None if t is None else WORDS.get(item_id) or noun(t)
+
+
 def tag_for(item_id):
     t = tier(item_id)
-    return rarity_tag_for(item_id) if t is None else tag_text(t)
+    return rarity_tag_for(item_id) if t is None else tag_text(t, WORDS.get(item_id))
 
 
 def described(item_id, text=None):
@@ -283,4 +313,4 @@ def families():
     return sorted(set(r[1] for r in ROWS.values()))
 
 
-del _m, _t, _w, _c, _k, _b, _id
+del _m, _t, _w, _c, _k, _b, _id, _h, _f

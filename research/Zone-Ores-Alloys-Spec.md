@@ -231,3 +231,14 @@ metals have uses: Furnace Charm tier-ups, alloys, Bazaar, collections. Round `ge
 - CurseForge licences of the surveyed mods (pages not opened; none is packed, so nothing depends on them).
 - Whether vanilla Bronze armor recipes become craftable once Bronze has a recipe (combat gear must stay drops only - B1 / cross-check
   confirm those recipes are already hidden or stay unreachable).
+
+## 8. Added 2026-10-17 (Skyy: "Yes - add Electrum ... and the metals spec's spawn rules ... to this round before deploy.")
+From Cobb's metals spec (sections 1, 3, 4; outside the repo), now part of this round:
+- **Electrum** = 1 Gold bar + 1 Silver bar -> 1 Electrum bar (SkyyAlloy bench), a charm metal; unlocked at Furnace Charm T1 (the Bronze tier),
+  before Zone 2. No ore, no collection.
+- **Spawn rules:** each new ore mirrors its zone's vanilla base ore (same caves / mines, spawn spots, drop behaviour, weights), just slightly
+  rarer. Base ore boost: Thorium, Cobalt, Adamantite and Mithril each slightly MORE common than vanilla; new ores mirror the ADJUSTED base.
+  Lead mirrors adjusted Thorium (Z2), Chromium mirrors Cobalt (Z3), Slag mirrors Adamantite (Z4). Mithril (does not spawn in vanilla today)
+  gets Adamantite's spawn spots + weights, in Zone 5, slightly rarer than Adamantite; Titanium mirrors that Mithril. Silver and Gold: find
+  the zone where each spawns best and use that best rate in EVERY zone. The builder picks the "slightly rarer" factor from the vanilla
+  weights and states it for Skyy's OK.
