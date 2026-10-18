@@ -41,9 +41,7 @@ LIVE: TEST 191-193 (Islands 0.5.20 deployed 10-18 09:06).
 
 USAGE 10-18 ~12:20: weekly 83% (resets 2026-10-20 09:00 MDT) -> only finish + deploy what is built; Level-Bands-20 RUNNING (Skyy go: tier_tags + Gear 0.3.29, then Mobs 0.1.12 / Armory 0.1.37 / Collections / Bazaar / Auctions); Armory 0.1.36 wand x2 RUNNING; chests, bucket, SkyyZones, bench keeper WAIT for the reset.
 
-LEVEL-BANDS BATCH (10-18 eve, deploy TOGETHER after one final review): Gear 0.3.29, Collections 0.2.28, WorldGen 0.7.5, Bazaar 0.1.22, Sacks 0.8.24,
-   Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Armory 0.1.39 (+ tier_tags v3 / skyyench / test_tier_tags commit). Also built, lean: Wardrobe 0.2.10 (pet icons; needs review).
-   Skills 0.4.53 (no XP caps, Fortune uncap, level cap 50+10, alloy XP, Farming XP) building. Armory 0.1.38 PINNED (TT v2). Follow-up: SkyyShards totem recipe orb item-id bug.
+LEVEL-BANDS BATCH DEPLOYED 10-18 (TEST 196): Gear 0.3.29, Collections 0.2.28, WorldGen 0.7.5, Bazaar 0.1.22, Sacks 0.8.24, Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Armory 0.1.39, Skills 0.4.53, Wardrobe 0.2.10.
 
 SKILL TREES 3 (Skyy 10-18: "the biggest thing right now"): Borderlands-style rows, free row abilities, no free upgrades, drop dust, rebirth Void Particles
    (spend vs keep = XP buff). Spec research/Skill-Trees-3-Spec.md being written now (Jev-heavy); BUILD after the weekly reset 10-20.
