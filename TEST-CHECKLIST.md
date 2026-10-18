@@ -209,3 +209,4 @@ tests always come first.
 181. Camp quest: full class armor set + secondary weapon (free identify); 8 zone Mining sets; armor weight in flavor text
 182. Big Fens trees: all logs picked up; Mining Fortune uncapped; Smelting Fortune on mined ore
 183. HUD ability icons for every class, dimmed on cooldown
+184. New T1-T15 metal tags, ore hit speeds (never slower), pickaxe Fortune +10, Mage PA4 rift Meteor

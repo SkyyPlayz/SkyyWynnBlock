@@ -298,3 +298,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Zone Mining sets + armor weight text + starter quest class gear (DEPLOYED 2026-10-17, backup deploy-20261017-2220) | [2026-10](2026-10.md) |
 | Fortune round + big-tree log pickup fix (DEPLOYED 2026-10-17, backup deploy-20261017-2243) | [2026-10](2026-10.md) |
 | HUD ability icons (all classes) (DEPLOYED 2026-10-17, backup deploy-20261017-2250) | [2026-10](2026-10.md) |
+| 15-step tier renumber + ore gates + Mage PA4 Meteor from the Rift (DEPLOYED 2026-10-17, backup deploy-20261017-2348) | [2026-10](2026-10.md) |
