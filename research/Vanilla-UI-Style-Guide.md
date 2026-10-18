@@ -553,3 +553,21 @@ CARD_JAVA = CARD.java("b")                                                    # 
 PICK_JAVA = SUI.java_append(CARD.act, SUI.list_card_button("SkyyXPick" + i, "Choose"))
 DONE_JAVA = SUI.java_append(CARD.act, SUI.state_word(None, "Selected", "success"))
 ```
+
+## 15. Tooltips and flavor text: bigger + colour coded (Skyy 2026-10-18, standing rule)
+
+Skyy: "these are hard to read, make all the flavor text use a slightly bigger font, and color code everything. so you can see what stats it
+gives at a glance" (docs/answered/ui.md). Applies to every hover tooltip on our pages AND every item flavor text we write (lang `<color>` spans).
+
+- Size: tooltip body one step bigger than today (body 13 -> 14 / 15; title 15 -> 16). Item lang text: keep the client's size (we cannot
+  change it), so the colour code carries it there.
+- One colour code everywhere (kit tokens in tools/skyyui.py, same hex in lang `<color>` spans):
+  - title / name: rarity colour (Common white, Uncommon green, Rare blue, Epic purple, Legendary gold, Mythic pink; Untiered orange)
+  - stat NAME: soft white `#d6e4ee`; stat VALUE: green `#7ee08a` when it helps, red `#ff7a7a` when it costs; the number bold
+  - level / XP / progress: gold `#e8c25a`
+  - tier tag (`T3 Iron`): the tier tag colour already in tier_tags.py
+  - requirement lists: the existing red / green (`outOfStock` / `have`)
+  - elements: Fire orange, Water blue, Earth green, Thunder yellow, Air white-teal, Poison lime (match the Wynn elements spec)
+  - minor info (ids, owned since): dim grey `#7f93a6`; actions ("Click: ...") yellow `#ffcc00`
+- Group lines: name / level first, then what it GIVES (coloured values), then requirements, then minor info last.
+- Rollout: kit first (one tooltip helper), then each mod's next round adopts it; Pets (the screenshot) first.
