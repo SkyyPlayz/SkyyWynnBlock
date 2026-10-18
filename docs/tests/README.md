@@ -295,3 +295,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Pack armor + weapons as mob drops (PR #17) (DEPLOYED 2026-10-17, backup deploy-20261017-1831) | [2026-10](2026-10.md) |
 | Salvagebench guard (rolled pieces: Requip salvage only) (DEPLOYED 2026-10-17, backup deploy-20261017-1924) | [2026-10](2026-10.md) |
 | Starter wands get the hold leap (DEPLOYED 2026-10-17, backup deploy-20261017-2204) | [2026-10](2026-10.md) |
+| Zone Mining sets + armor weight text + starter quest class gear (DEPLOYED 2026-10-17, backup deploy-20261017-2220) | [2026-10](2026-10.md) |

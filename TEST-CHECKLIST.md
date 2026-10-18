@@ -206,3 +206,4 @@ tests always come first.
 178. Armory armor / weapons drop from mobs, Mythic boss bags, Mythic/UT craft block, Alteration keeps rolls, salvage via Requip
 179. Salvagebench refuses rolled Armory pieces (moves them out), crafted pieces still salvage
 180. Wood / Rotten / Tribal wand hold leap
+181. Camp quest: full class armor set + secondary weapon (free identify); 8 zone Mining sets; armor weight in flavor text
