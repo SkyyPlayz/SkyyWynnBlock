@@ -5,7 +5,8 @@ there isnt a conflict. so local can keep working while you handle big builds.").
 
 ## Who does what
 
-**STATUS (Skyy 2026-10-17): Cobb is currently NOT building. Everything in RESUME.md and LOCAL-RESUME.md is on the local
+**STATUS 2026-10-19 (Skyy: "grokbot wont be working on the project. every resume list is yours for now."): Cobb / Quirk are off the project; this file is the local session's. Open here: the beta bugs list (item 4) + TASK-crossbows-from-vanilla.md.**
+**OLD STATUS (Skyy 2026-10-17): Cobb is currently NOT building. Everything in RESUME.md and LOCAL-RESUME.md is on the local
 session's table for now. Cobb only does orchestration, design, specs and test-video reviews until Skyy says otherwise.**
 
 | Local session (Skyy's PC) | Cobb (Grok bot, cloud) - NO BUILDING for now (Skyy 2026-10-17) |

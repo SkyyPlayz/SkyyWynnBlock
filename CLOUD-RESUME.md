@@ -8,7 +8,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   items, first add one line per item to `research/cloud/LOG.md`, then DELETE those items here and top the list back up to about 8
   open tasks (ideas: RESUME.md 'Next', OPEN-QUESTIONS.md (open only), the plans in `research/` + `docs/plans/`). Keep this file under ~110 lines.
 - **Cloud limits:** no access to Skyy's PC, the Hytale game files (`HytaleServer.jar`, `Assets.zip`), installed mods or the test world.
-  You cannot build, test or deploy (the "Cloud build trial" below is Skyy's Grok bot, not you). Otherwise only add tasks that need none of that. Any fact you cannot check without the game files: mark it
+  You cannot build, test or deploy. Skyy 2026-10-19: "grokbot wont be working on the project. every resume list is yours for now." - this list is Claude's (local + cloud). Otherwise only add tasks that need none of that. Any fact you cannot check without the game files: mark it
   **UNVERIFIED** and list it under "For the local session" in your output.
 - **Where results go:** new files in `research/cloud/` (one file per task). You may push straight to `main` ONLY changes to this file and
   to `research/cloud/` (always `git pull --rebase --autostash` first). Any change to another file goes through a pull request.
