@@ -41,7 +41,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    class ratings research/Class-Roles-Sheet.md; P0 inventory DONE in research/balance/): P1 pacing model tools/balance_model.py ->
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
-3. Small queued rounds: Armory Soul Cage locks faster (Skyy 10-18: "make the soul cage lock on to a target faster"; soul.stabilize
+3. Small queued rounds: Gear gate.halfFactor default 0.5 -> 1.0 + migration (Skyy 10-18 "All half-tier ores": Copper mines Iron at
+   full speed), Armory Soul Cage locks faster (Skyy 10-18: "make the soul cage lock on to a target faster"; soul.stabilize
    1.75 .. 1.0 s -> about half + migration), Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
    Smithing XP rows, Shards Soul Cage totem recipe (orb by item id - same bug as beta 20), per-profile world chests (SkyyExploration,
    research/Per-Player-Loot-Survey.md: refill never, sparkles), Infinite Water Bucket mid game (SkyyGear), our own bench-tier keeper,
