@@ -50,7 +50,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    dropped (full points + coin refund), light skills 2x4, Void Particles one currency (keep buff +0.25% each, no cap; re-run the spend vs keep
    math), rebirths unlimited (cap stays 100). Rounds R1 engine + R2 migration together, then R3 trees, R4 Rebirth VP + Nexus.
 2. BALANCE PASS P1-P9 (research/Balance-Pass-Spec.md section 8; goals in research/Balance-Goals-Questions.md + the 10-18 popup answers;
-   class ratings research/Class-Roles-Sheet.md; P0 inventory DONE in research/balance/): P1 pacing model tools/balance_model.py ->
+   class ratings research/Class-Roles-Sheet.md; P0 inventory DONE in research/balance/): P1 pacing model balance_model.py (planned, in tools) ->
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
 3. Small queued rounds: Heavy combat armor has no piece at Lv 16-19 since Bronze left the bags (fill in the balance pass), Classes (Sacred Heal 8 s default + migration), Enchanted alloy

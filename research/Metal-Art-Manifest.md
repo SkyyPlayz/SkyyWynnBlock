@@ -1,6 +1,6 @@
 # Metal Art Manifest - new-metal item art (2026-10-17)
 
-Where this sits: `INDEX.md` -> `research/` -> this file. The art for the new-metals build (Cobb's skywynn-metals-build-spec.md,
+Where this sits: `INDEX.md` -> `research/` -> this file. The art for the new-metals build (Cobb's skywynn-metals-build-spec (.md, private folder),
 LOCAL-RESUME.md 'Local build queue' item 2). ART ONLY - nothing is wired into a mod; the next build round wires these (SkyyArmory
 weapons, SkyyGear tools / cans / harvester, SkyyWorldGen ores, SkyyCollections Enchanted ingots, the bar items).
 
@@ -8,7 +8,7 @@ weapons, SkyyGear tools / cans / harvester, SkyyWorldGen ores, SkyyCollections E
 - Output (git-ignored, vanilla-derived - NEVER commit): `models-local/art/metals/<family>/Common/...`; paths below are relative
   to `models-local/art/metals/`; jar path = the part from `Common/`. Contact sheets: `models-local/art/metals/_sheets/`
   (ores-bars, weapons-a, weapons-b, tools). Full machine-readable list: `models-local/art/metals/manifest.json`.
-- Palettes: Quirk's approved cards (SkyWynn-PRIVATE-art/metal-art/metal-palettes/palettes.md), numbers copied into the generator.
+- Palettes: Quirk's approved cards (SkyWynn-PRIVATE-art/metal-art/metal-palettes palettes (.md, private folder)), numbers copied into the generator.
 - Shape donor per metal = the zone's vanilla base tier: Lead / Dusk -> Thorium, Chromium / Azurvane -> Cobalt, Slag / Cinder ->
   Adamantite, Titanium / Lumen -> Mithril. Weapons reuse the existing family generators with that donor's shape + the new colours.
 - Item ids in the table are PROPOSED (following each family's existing id pattern; none is a vanilla id - checked). Art file

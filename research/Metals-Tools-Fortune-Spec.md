@@ -3,7 +3,7 @@
 Where things go: Skyy's answers to the questions at the end -> `docs/answered/gear.md` (`python tools/qa_append.py gear <file> --close "..."`);
 build notes -> each mod's patch script docstring; results -> `docs/log/<YYYY-MM>.md`; queue state -> `LOCAL-RESUME.md` item 3.
 Part 1 (ores, spawn, smelting, alloys, Electrum, Furnace Charm - LIVE, TEST-CHECKLIST 177) = `research/Zone-Ores-Alloys-Spec.md`.
-Source of truth for the locked rules: Cobb's `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md` (outside the repo, read-only;
+Source of truth for the locked rules: Cobb's `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec (.md, private folder)` (outside the repo, read-only;
 sections 2 + 5 used here) + `skywynn-metal-items-inventory.md` + `skywynn-custom-weapons-list.md`. Written 2026-10-17 by a spec agent.
 `research/Metal-Art-Manifest.md` did NOT exist yet when this was written (the art agent, queue item 2, is still making it).
 

@@ -17,7 +17,7 @@ server runs today). Part 2 = defaults found only in the pinned build scripts (`<
 extracted by a free OpenRouter model and spot-checked; its line column is approximate - grep the key in the named script.
 
 Known gaps / uncertain: hits per block, crop growth times and smelting times are vanilla asset data or live in code not reached by the
-extraction - the gathering.md rows from `research/*Spec.md` are DESIGN values, not verified against the build. Per-class Health / Defense
+extraction - the gathering.md rows from the research spec files are DESIGN values, not verified against the build. Per-class Health / Defense
 curves are the `classBoost.*`, `overall.healthPerLevel`, `perk.*` and `mana.*` / `stamina.*` rows (xp.md); target roles are in
 `research/Class-Roles-Sheet.md`. Pet level stats beyond `kind.*` rows and charm craft costs are only as complete as the extraction.
 Regenerate Part 1 by re-reading the live configs (the generator was scratch and is deleted).

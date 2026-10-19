@@ -58,7 +58,7 @@ OpenRouter / Jev (cheap) before the weekly reset; P1+ after 2026-10-20. Rough co
 | Phase | What | Mods | Why this order |
 |---|---|---|---|
 | P0 | Inventory: dump every current number (XP tables, curves, mob / class / gear / pet / charm stats, drop rates, prices, costs) into research/balance/*.md tables | none (read-only) | the model needs today's numbers |
-| P1 | Pacing model `tools/balance_model.py` + the target table (level vs hours per zone, coins and drops per hour) | tools only | every later phase is tuned against it |
+| P1 | Pacing model `balance_model.py (planned, in tools)` + the target table (level vs hours per zone, coins and drops per hour) | tools only | every later phase is tuned against it |
 | P2 | Skill-tree engine + dust removal + migration (Skill-Trees-3 R1 + R2) | SkyyTrees, SkyySkills, SkyyMenu | trees change points, perks and abilities - combat and skill numbers depend on them |
 | P3 | XP: one curve shape for class + skills, XP per action, skills trail class 3-5 | SkyySkills, SkyyCollections (XP sources), SkyyCooking, SkyyExploration | levels set the clock for everything else |
 | P4 | Combat core: class stats + weight / speed, Mana / Stamina, class trees + abilities (Skill-Trees-3 R3 classes), mob curve, elites / bosses | SkyyClasses, SkyyTrees, SkyyGear (player curves), SkyyArmory (weapon numbers), SkyyMobs | needs P3 levels; the four power sources sit on top of it |

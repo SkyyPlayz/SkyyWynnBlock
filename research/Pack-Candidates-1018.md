@@ -48,7 +48,7 @@ Nothing here was tested in game. Answers go in `docs/answered/project.md`; pack 
 - **Fit:** page says "stable 5 only" yet lists file 6.0.0 under 0.7 (Oct 13, 2026); manifest ServerVersion `*`. Not run.
 - **Adds:** Java plugin + assets. 153 `GlymeraSkull_*` placeable blocks (decor, `Furniture.Beds` category, stack 16), 140 `GlymeraHelm_*` helmets (page says 139),
   1 mystery skull + 1 mystery helm (two workbench recipes; `MysteryCraftSystem` swaps the crafted result for a random one). Command `/glymeraheads reload` (OP, re-reads
-  `plugins/GlymeraHeads/helm_overrides.json`, positions only). The helmets have no recipe of their own; they come only from the mystery craft.
+  `GlymeraHeads' helm_overrides.json (plugins folder)`, positions only). The helmets have no recipe of their own; they come only from the mystery craft.
 - **Helmet stats (read from the JSON):** Epic, ItemLevel 50, Physical + Projectile resistance 8% each, +14 Health (Additive), 180 durability, hides hair / ears. Same for every mob.
 - **Level bands:** ItemLevel 50 is zone 3 (T7 Cobalt 40-48 / T8 Chromium 48-55 in `research/Level-Bands-20-Spec.md`), yet the mystery craft needs only Bone + Wildmeat / Iron Bar
   from a zone-1 bench, so it would out-gear zone-1 and zone-2 helmets. We cannot ship an override of their ids. Our code can only re-grade by id at runtime

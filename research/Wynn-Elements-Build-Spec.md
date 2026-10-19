@@ -40,7 +40,7 @@ Line numbers are from those scripts; re-verify at build (a builder derives from 
 | SkyyPets 0.4.3 | `KINDS` (name, skill, rarity, "str:20,cd:15", role, zone) x 39, `STATS` keys with delivery `gear` -> `pets:stats:<uuid>` Map (3749-3795); no element. |
 | SkyyHud 0.3.32 | no damage-number code (the CRIT! popup lives in SkyyGear). Nothing to build here. |
 | SkyyMenu 0.3.39 | Character > Skills tab holds the sub-tab row YOUR STATS / SKILLS (`ST_SUBTABS`, 2695; one scroll list with headings, Menu-Pattern M4). |
-| Engine (HytaleServer.jar 0.7.2, reflect VERIFIED) | `protocol.Color(byte, byte, byte)`; `CombatTextUpdate(float hitAngleDeg, String text, Color color)`; `DamageCause` is an ASSET (`DamageCause.getAssetMap()`, fields PHYSICAL PROJECTILE ... only); Assets `Server/Entity/Damage/`: `Earth Fire Ice Lightning Water Wind Poison Elemental ...` (Fire = Parent Elemental, DamageTextColor #FF6B2B; Poison #228B22); effects `Status/Burn.json` (Fire 5 / s, tint, ModelVFX Burn), `Status/Poison.json` (Poison 10 per 5 s, tint #008000, particles Effect_Poison, 16 s), `Poison_T1..T3`, `Immunity_Poison`. |
+| Engine (HytaleServer.jar 0.7.2, reflect VERIFIED) | `protocol.Color(byte, byte, byte)`; `CombatTextUpdate(float hitAngleDeg, String text, Color color)`; `DamageCause` is an ASSET (`DamageCause.getAssetMap()`, fields PHYSICAL PROJECTILE ... only); Assets `Server/Entity/Damage/`: `Earth Fire Ice Lightning Water Wind Poison Elemental ...` (Fire = Parent Elemental, DamageTextColor #FF6B2B; Poison #228B22); effects Status Burn.json (Fire 5 / s, tint, ModelVFX Burn), Status Poison.json (Poison 10 per 5 s, tint #008000, particles Effect_Poison, 16 s), `Poison_T1..T3`, `Immunity_Poison`. |
 
 ## 2. Data model
 

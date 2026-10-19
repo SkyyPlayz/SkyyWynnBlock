@@ -552,7 +552,7 @@ bridge update. Config through skycfg per CONFIG-CONTRACT.
 
 | Round | Contents | Size |
 |---|---|---|
-| R0 | Balance data table: one file `tools/trees_v3_data.py` with all 19 trees (this spec's section 3-4, after Skyy's answers) | docs, no agents |
+| R0 | Balance data table: one new data file trees_v3_data.py in tools with all 19 trees (this spec's section 3-4, after Skyy's answers) | docs, no agents |
 | R1 | SkyyTrees engine: branch gating, ranks, row grants, respec, point counts; **replace** old node tables (classes first: they have the 5 abilities) | Full |
 | R2 | Migration (section 5) + Dust / Token removal in SkyyTrees + SkyySkills + Menu rows; smoke on a scratch copy | Full (saved data) |
 | R3 | 11 skill trees: perks + upgrades hooked to the existing hook codes (DMG, DD, XP, EXTRA, BREAK ...) one skill per commit; Beastmastery last (needs pet XP) | Full, split |

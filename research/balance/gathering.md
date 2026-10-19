@@ -1493,105 +1493,105 @@ Extracted by a free OpenRouter model (nemotron) from the pinned build script nam
 
 | system | key | value | line (approx) |
 |---|---|---|---|
-| SkyyGear | hits_per_block.crude_pickaxe.lv1.stone | 4 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv1.copper_ore | 8 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv1.iron_ore | 12 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv1.dirt | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv13.stone | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv13.copper_ore | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv13.iron_ore | 5 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_pickaxe.lv13.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv10.stone | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv10.copper_ore | 4 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv10.iron_ore | 8 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv10.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv18.stone | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv18.copper_ore | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv18.iron_ore | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_pickaxe.lv18.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv15.stone | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv15.copper_ore | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv15.iron_ore | 4 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv15.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv23.stone | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv23.copper_ore | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv23.iron_ore | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_pickaxe.lv23.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_hatchet.lv1.oak_log | 5 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_hatchet.lv13.oak_log | 4 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_hatchet.lv10.oak_log | 4 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_hatchet.lv18.oak_log | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_hatchet.lv15.oak_log | 4 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_hatchet.lv23.oak_log | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_shovel.lv1.dirt | 3 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.crude_shovel.lv13.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_shovel.lv10.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.copper_shovel.lv18.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_shovel.lv15.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | hits_per_block.iron_shovel.lv23.dirt | 2 | Tool-Levels-Spec.md §3.3 |
-| SkyyGear | breaking_power.pickaxe_rocks.ladder | 1:0.25, 10:0.35, 15:0.5, 20:0.575, 25:0.661, 35:1, 40:1.15 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_orecopper.ladder | 1:0.125, 10:0.25, 15:0.5, 20:0.575, 25:0.661, 35:0.86, 40:1 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_oreiron.ladder | 1:0.084, 10:0.125, 15:0.25, 20:0.5, 25:0.575, 35:0.747, 40:1 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_orethorium.ladder | 1:0.063, 10:0.084, 15:0.125, 20:0.25, 25:0.287, 35:0.5, 40:0.575 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_oreadamantite.ladder | 1:0.05, 10:0.064, 15:0.084, 20:0.125, 25:0.144, 35:0.25, 40:0.5 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_oremithril.ladder | 1:0.042, 10:0.053, 15:0.063, 20:0.084, 25:0.097, 35:0.126, 40:0.25 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_volcanicrocks.ladder | 1:0.084, 10:0.12, 15:0.17, 20:0.196, 25:0.225, 35:0.34, 40:0.391 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.pickaxe_soils.ladder | 1:0.35, 10:0.5, 15:0.575, 20:0.661, 25:0.76, 35:1, 40:1.15 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.hatchet_woods.ladder | 1:0.2, 10:0.254, 15:0.3, 20:0.5, 25:0.575, 35:0.747, 40:0.86 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | breaking_power.shovel_soils.ladder | 1:0.4, 10:0.508, 15:0.584, 20:0.672, 25:0.773 | Tool-Levels-Spec.md §3.2 |
-| SkyyGear | material_bonus.copper | +3% | Tool-Levels-Spec.md §3.1 |
-| SkyyGear | material_bonus.iron | +4.5% | Tool-Levels-Spec.md §3.1 |
-| SkyyGear | material_bonus.mithril | +12% | Tool-Levels-Spec.md §3.1 |
-| SkyyGear | fortune_per_level | 0.1% per level × material bonus | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.crude_wood.lv1 | 0.10% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.crude_wood.lv13 | 1.30% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.copper.lv10 | 1.03% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.copper.lv18 | 1.85% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.iron.lv15 | 1.57% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.iron.lv23 | 2.40% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.thorium.lv20 | 2.12% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.thorium.lv28 | 2.97% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.cobalt.lv25 | 2.69% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.cobalt.lv38 | 4.08% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.adamantite.lv35 | 3.87% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.adamantite.lv43 | 4.75% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.mithril_onyxium.lv40 | 4.48% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune.mithril_onyxium.lv49 | 5.49% | Tool-Levels-Spec.md §4.1 |
-| SkyyGear | fortune_roll.max_mythic_mining | 13% | Tool-Levels-Spec.md §4.3 |
-| SkyyGear | fortune_roll.max_mythic_foraging | 13% | Tool-Levels-Spec.md §4.3 |
-| SkyyGear | fortune_roll.max_mythic_farming | 10% | Tool-Levels-Spec.md §4.3 |
-| SkyyGear | mining_fortune_per_tool_level | 10 Fortune per level | Metals-Tools-Fortune-Spec.md §2.1 |
-| SkyyGear | mining_fortune_per_tree_level | 10% per level (100% = 1 sure extra drop) | Metals-Tools-Fortune-Spec.md §2.1 |
-| SkyyGear | smelting_fortune_per_tree_level | 10% per level | Metals-Tools-Fortune-Spec.md §2.2 |
-| SkyyGear | smelting_time.copper_bar | 10s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.iron_bar | 14s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.silver_bar | 4s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.gold_bar | 10s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.cobalt_bar | 18s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.thorium_bar | 18s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.mithril_bar | 30s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.adamantite_bar | 20s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.onyxium_bar | 4s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.prisma_bar | 4s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.glass_vial | 10s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.smoothed_rocks | 0s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.dawnstone | 2s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.clay_bricks | 2s | Smithing-Smelting-Spec.md §2.2 |
-| SkyyGear | smelting_time.charcoal | 0 (byproduct) | Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv1.stone | 4 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv1.copper_ore | 8 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv1.iron_ore | 12 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv1.dirt | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv13.stone | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv13.copper_ore | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv13.iron_ore | 5 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_pickaxe.lv13.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv10.stone | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv10.copper_ore | 4 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv10.iron_ore | 8 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv10.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv18.stone | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv18.copper_ore | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv18.iron_ore | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_pickaxe.lv18.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv15.stone | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv15.copper_ore | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv15.iron_ore | 4 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv15.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv23.stone | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv23.copper_ore | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv23.iron_ore | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_pickaxe.lv23.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_hatchet.lv1.oak_log | 5 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_hatchet.lv13.oak_log | 4 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_hatchet.lv10.oak_log | 4 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_hatchet.lv18.oak_log | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_hatchet.lv15.oak_log | 4 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_hatchet.lv23.oak_log | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_shovel.lv1.dirt | 3 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.crude_shovel.lv13.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_shovel.lv10.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.copper_shovel.lv18.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_shovel.lv15.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | hits_per_block.iron_shovel.lv23.dirt | 2 | research/Tool-Levels-Spec.md §3.3 |
+| SkyyGear | breaking_power.pickaxe_rocks.ladder | 1:0.25, 10:0.35, 15:0.5, 20:0.575, 25:0.661, 35:1, 40:1.15 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_orecopper.ladder | 1:0.125, 10:0.25, 15:0.5, 20:0.575, 25:0.661, 35:0.86, 40:1 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_oreiron.ladder | 1:0.084, 10:0.125, 15:0.25, 20:0.5, 25:0.575, 35:0.747, 40:1 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_orethorium.ladder | 1:0.063, 10:0.084, 15:0.125, 20:0.25, 25:0.287, 35:0.5, 40:0.575 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_oreadamantite.ladder | 1:0.05, 10:0.064, 15:0.084, 20:0.125, 25:0.144, 35:0.25, 40:0.5 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_oremithril.ladder | 1:0.042, 10:0.053, 15:0.063, 20:0.084, 25:0.097, 35:0.126, 40:0.25 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_volcanicrocks.ladder | 1:0.084, 10:0.12, 15:0.17, 20:0.196, 25:0.225, 35:0.34, 40:0.391 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.pickaxe_soils.ladder | 1:0.35, 10:0.5, 15:0.575, 20:0.661, 25:0.76, 35:1, 40:1.15 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.hatchet_woods.ladder | 1:0.2, 10:0.254, 15:0.3, 20:0.5, 25:0.575, 35:0.747, 40:0.86 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | breaking_power.shovel_soils.ladder | 1:0.4, 10:0.508, 15:0.584, 20:0.672, 25:0.773 | research/Tool-Levels-Spec.md §3.2 |
+| SkyyGear | material_bonus.copper | +3% | research/Tool-Levels-Spec.md §3.1 |
+| SkyyGear | material_bonus.iron | +4.5% | research/Tool-Levels-Spec.md §3.1 |
+| SkyyGear | material_bonus.mithril | +12% | research/Tool-Levels-Spec.md §3.1 |
+| SkyyGear | fortune_per_level | 0.1% per level × material bonus | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.crude_wood.lv1 | 0.10% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.crude_wood.lv13 | 1.30% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.copper.lv10 | 1.03% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.copper.lv18 | 1.85% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.iron.lv15 | 1.57% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.iron.lv23 | 2.40% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.thorium.lv20 | 2.12% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.thorium.lv28 | 2.97% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.cobalt.lv25 | 2.69% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.cobalt.lv38 | 4.08% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.adamantite.lv35 | 3.87% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.adamantite.lv43 | 4.75% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.mithril_onyxium.lv40 | 4.48% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune.mithril_onyxium.lv49 | 5.49% | research/Tool-Levels-Spec.md §4.1 |
+| SkyyGear | fortune_roll.max_mythic_mining | 13% | research/Tool-Levels-Spec.md §4.3 |
+| SkyyGear | fortune_roll.max_mythic_foraging | 13% | research/Tool-Levels-Spec.md §4.3 |
+| SkyyGear | fortune_roll.max_mythic_farming | 10% | research/Tool-Levels-Spec.md §4.3 |
+| SkyyGear | mining_fortune_per_tool_level | 10 Fortune per level | research/Metals-Tools-Fortune-Spec.md §2.1 |
+| SkyyGear | mining_fortune_per_tree_level | 10% per level (100% = 1 sure extra drop) | research/Metals-Tools-Fortune-Spec.md §2.1 |
+| SkyyGear | smelting_fortune_per_tree_level | 10% per level | research/Metals-Tools-Fortune-Spec.md §2.2 |
+| SkyyGear | smelting_time.copper_bar | 10s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.iron_bar | 14s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.silver_bar | 4s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.gold_bar | 10s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.cobalt_bar | 18s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.thorium_bar | 18s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.mithril_bar | 30s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.adamantite_bar | 20s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.onyxium_bar | 4s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.prisma_bar | 4s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.glass_vial | 10s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.smoothed_rocks | 0s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.dawnstone | 2s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.clay_bricks | 2s | research/Smithing-Smelting-Spec.md §2.2 |
+| SkyyGear | smelting_time.charcoal | 0 (byproduct) | research/Smithing-Smelting-Spec.md §2.2 |
 | SkyyGear | vein_mine_levels | Not specified in provided docs | design |
 | SkyyGear | tree_feller_levels | Not specified in provided docs | design |
-| SkyyShards | crop_island_t1_cost | 100 eternal seeds + 200 dirt + 100 stone + totem parts | Zone-Gathering-Spec.md §5 |
-| SkyyShards | crop_island_t2_upgrade_cost | +200 eternal seeds + 400 dirt + 200 stone | Zone-Gathering-Spec.md §5 |
-| SkyyShards | crop_island_t3_upgrade_cost | +500 eternal seeds + 1000 dirt + 500 stone | Zone-Gathering-Spec.md §5 |
-| SkyyShards | crop_island_t1_plants | 100 | Zone-Gathering-Spec.md §5 |
-| SkyyShards | crop_island_t2_plants | 300 | Zone-Gathering-Spec.md §5 |
-| SkyyShards | crop_island_t3_plants | 800 | Zone-Gathering-Spec.md §5 |
-| SkyyShards | eternal_seed_unlock_tier | Collection IV | Zone-Gathering-Spec.md §4 |
-| SkyyShards | normal_seed_unlock_tier | Collection II | Zone-Gathering-Spec.md §4 |
-| SkyyGear | tool_tier_order | T1 Crude/Copper, T2 Iron, T3 Bronze, T4 Thorium, T5 Lead, T6 Dusk, T7 Cobalt, T8 Chromium, T9 Azurvane, T10 Adamantite, T11 Slag, T12 Cinder, T13 Mithril, T14 Titanium, T15 Lumen | Metals-Tools-Fortune-Spec.md §3.1 |
-| SkyyGear | tool_tier_up_cost_pickaxe | Metal bars (Enchanted where available) | Metals-Tools-Fortune-Spec.md §3.3 |
-| SkyyGear | tool_tier_up_cost_hatchet | Metal bars + Enchanted logs | Metals-Tools-Fortune-Spec.md §3.3 |
-| SkyyGear | tool_tier_up_cost_harvester | Metal bars + crop items | Metals-Tools-Fortune-Spec.md §3.3 |
-| SkyyGear | tool_tier_up_cost_watering_can | Metal bars + crop items | Metals-Tools-Fortune-Spec.md §3.3 |
-| SkyyGear | armor_tier_up_cost | Same ladder as tools, collection tier gates | Metals-Tools-Fortune-Spec.md §3.3 |
+| SkyyShards | crop_island_t1_cost | 100 eternal seeds + 200 dirt + 100 stone + totem parts | research/Zone-Gathering-Spec.md §5 |
+| SkyyShards | crop_island_t2_upgrade_cost | +200 eternal seeds + 400 dirt + 200 stone | research/Zone-Gathering-Spec.md §5 |
+| SkyyShards | crop_island_t3_upgrade_cost | +500 eternal seeds + 1000 dirt + 500 stone | research/Zone-Gathering-Spec.md §5 |
+| SkyyShards | crop_island_t1_plants | 100 | research/Zone-Gathering-Spec.md §5 |
+| SkyyShards | crop_island_t2_plants | 300 | research/Zone-Gathering-Spec.md §5 |
+| SkyyShards | crop_island_t3_plants | 800 | research/Zone-Gathering-Spec.md §5 |
+| SkyyShards | eternal_seed_unlock_tier | Collection IV | research/Zone-Gathering-Spec.md §4 |
+| SkyyShards | normal_seed_unlock_tier | Collection II | research/Zone-Gathering-Spec.md §4 |
+| SkyyGear | tool_tier_order | T1 Crude/Copper, T2 Iron, T3 Bronze, T4 Thorium, T5 Lead, T6 Dusk, T7 Cobalt, T8 Chromium, T9 Azurvane, T10 Adamantite, T11 Slag, T12 Cinder, T13 Mithril, T14 Titanium, T15 Lumen | research/Metals-Tools-Fortune-Spec.md §3.1 |
+| SkyyGear | tool_tier_up_cost_pickaxe | Metal bars (Enchanted where available) | research/Metals-Tools-Fortune-Spec.md §3.3 |
+| SkyyGear | tool_tier_up_cost_hatchet | Metal bars + Enchanted logs | research/Metals-Tools-Fortune-Spec.md §3.3 |
+| SkyyGear | tool_tier_up_cost_harvester | Metal bars + crop items | research/Metals-Tools-Fortune-Spec.md §3.3 |
+| SkyyGear | tool_tier_up_cost_watering_can | Metal bars + crop items | research/Metals-Tools-Fortune-Spec.md §3.3 |
+| SkyyGear | armor_tier_up_cost | Same ladder as tools, collection tier gates | research/Metals-Tools-Fortune-Spec.md §3.3 |
 

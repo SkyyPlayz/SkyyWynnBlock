@@ -188,7 +188,7 @@ How the Kweebec farmer works (`GlymeraFarmer.class`, Java + 1 chest item + 2 NPC
   chunk helper: `TickingPin` (a ChunkStore system that keeps a chunk's block components ticking), `ChunkPreLoadProcessEvent` hook,
   `getChunkIfInMemory/NonTicking` loads, `setBlockTicking`, `pinTicking`.
 - **Work area:** a SQUARE since 6.0.0: `maxWorkRadius` 32 = 65x65 around the chest (changelog: was a circle). Config file
-  `mods/Glymera_GlymeraFarmer/config.json` (scanRadius 16, workDistance 3.5, depositThreshold 16, maxActiveChests 3, enableSpecialCrops).
+  `GlymeraFarmer's config.json (world mods folder)` (scanRadius 16, workDistance 3.5, depositThreshold 16, maxActiveChests 3, enableSpecialCrops).
 - **GlymeraIrrigation** (code only, `IrrigationPlace/Break/UseBlockSystem` + `ChunkFarm` per chunk): farmland within a config radius 1-8
   (default 4) of water stays watered; it only "dehydrates its own blocks" (so a watering can's water is not removed). Idea for us:
   a Rain / Water totem is the same job as this.

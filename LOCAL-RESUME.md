@@ -47,12 +47,12 @@ Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178
 
 Private art inputs live OUTSIDE the repo on Skyy's PC: `Hytale mods WORK\SkyWynn-PRIVATE-art\`. They contain vanilla-derived
 geometry: never commit, upload or share them. Only our textures go in mods, pointing at vanilla models.
-Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md` (locked rules, sections 1-8).
+Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec (.md, private folder)` (locked rules, sections 1-8).
 
 1. DONE 2026-10-17 (Gear 0.3.21, TEST 181). MINING ARMOR Z2-Z5 into SkyyGear (Mining sets live in Gear GearMine; there is no SkyyForaging mod - local 2026-10-17). Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
    Z4 Slag/Cinder, Z5 Titanium/Lumen. Inputs: `SkyWynn-PRIVATE-art\mining-armor\Z2_Thorium..Z5_Mithril` (each set retextures
    that zone's vanilla base armor). Ship our textures + item defs that point at the vanilla models.
-2. DONE 2026-10-17/18 (tools/art/make_metal_items.py, approved; wired in Gear 0.3.23 + Armory 0.1.33 / 0.1.34). METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
+2. DONE 2026-10-17/18 (tools/art/make_metal_items.py, approved; wired in Gear 0.3.23 + Armory 0.1.33 / 0.1.34). METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art (.md, private folder), Quirk's zone palette
    cards, her approved Titanium + Lumen tools as the sample, skywynn-custom-weapons-list.md, skywynn-metal-items-inventory.md).
    Make: ore + bar for Lead, Chromium, Slag, Titanium; bars only for Dusk, Azurvane, Cinder, Lumen (+ Electrum = Gold + Silver);
    all 9 weapon families (Wand, Crossbow, Spellbook, Kunai, Bo, Gauntlets, Soul Cage, Great Shield, Mage staff) in all 8 new metals;
