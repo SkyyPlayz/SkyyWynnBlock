@@ -30,7 +30,7 @@ import urllib.request
 
 API = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "typesafe/jev-router"      # 2026-10-19: ZDR-only (company rule) replaces the old free-model pool
-PROVIDER = {"zdr": True, "data_collection": "deny"}   # sent on EVERY request; never remove
+PROVIDER = {"zdr": True, "data_collection": "deny", "ignore": ["google-vertex", "google-ai-studio"]}   # sent on EVERY request; never remove
 VIDEO_MODEL = "typesafe/jev-router"         # accepts video + audio; Skyy's fallback if it fails: their own Grok bot
 VIDEO_MAX = 40 << 20                         # MB; short clips only (the whole file goes in one request)
 NAMES = ["SkyLordPlayz", "SkyLo", "Skyy_"]          # account / folder names that appear in logs (Skyy_ = our mod prefix, kept below)
@@ -94,6 +94,9 @@ def ask(question, files=(), model=DEFAULT_MODEL, max_chars=400000, do_redact=Tru
             model = VIDEO_MODEL
     else:
         msgs.append({"role": "user", "content": text})
+    low_m = model.lower()
+    if any(g in low_m for g in ("google/", "gemini", "gemma")):
+        raise SystemExit("Refused: Google models are blocked (their safety retention breaks ZDR)")
     if model == "free" or model.endswith(":free"):
         raise SystemExit("Refused: free models have no ZDR endpoints (company rule: ZDR, no training)")
     tries = [model]
