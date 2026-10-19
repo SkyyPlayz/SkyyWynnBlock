@@ -233,3 +233,4 @@ tests always come first.
 205. zone trips: little or no 'Waiting for chunks' (beta bug 4 part)
 206. XP caps gone in Cooking / Guilds / Exploration; Totem Bench uses the lowest-rarity orb
 207. Sacred Heal 8 s; rebirths unlimited; Enchanted alloys pay Smithing XP
+208. retired / offline island worlds + old zones unload when empty and reload on demand (beta bug 4 part)
