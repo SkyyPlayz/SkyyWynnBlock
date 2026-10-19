@@ -24,8 +24,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - Pins (tools/deploy_set.py SET = HANDOFF): Gear 0.3.29, Armory 0.1.39, Skills 0.4.53, Collections 0.2.28, WorldGen 0.7.5, Bazaar 0.1.22,
   Sacks 0.8.24, Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Wardrobe 0.2.10, Pets 0.4.4, Islands 0.5.21, Cooking 0.1.12, Trees 0.3.24,
   Menu 0.3.40, Classes 0.1.39, Quests 0.4.2, Rebirth 0.3.5, Core 1.0.1.
-- RUNNING (10-18 evening, Skyy: "Now, lean round"): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary /
-  secondary weapon (Priest Wand + Soul Cage, Warrior Sword + Spear); docs/answered/ui.md 2026-10-18 CLASS PICKER CARDS.
+- PINNED, NOT DEPLOYED (game was open): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary / secondary
+  weapon (Priest Wand + Soul Cage, Warrior Sword + Spear); reviewed SHIP, harness 144 ok, crosscheck READY, lint 0 fails.
+  Deploy with skill skywynn-deploy when the game is closed. Follow-up: SkyyClasses' /class page icons still show no Soul Cage.
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 195, 194.
