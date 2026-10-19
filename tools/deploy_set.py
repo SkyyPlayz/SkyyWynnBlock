@@ -19,7 +19,7 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.33"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.28"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.33"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.29"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.21"), ("SkyyBazaar", "0.1.22"), ("SkyyGear", "0.3.29"), ("SkyySkills", "0.4.53"),
     ("SkyyAccessories", "0.5.27"), ("SkyyClasses", "0.1.40"), ("SkyyMenu", "0.3.40"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.12"), ("SkyyTrees", "0.3.25"),
@@ -69,7 +69,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.12"), ("SkyyWorldGen", "0.7.5"),
+    ("SkyyMobs", "0.1.13"), ("SkyyWorldGen", "0.7.5"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
