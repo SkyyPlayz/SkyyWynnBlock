@@ -224,3 +224,4 @@ tests always come first.
 196. Level bands batch: bands + ladder + alloys + gathering armor + no XP caps + pet portraits + Soul Cage takes any orb
 197. Create Profile: bigger class cards, emblem + primary + secondary weapon (Priest Soul Cage)
 198. C:/Program Files/Git/class primary + secondary (Soul Cage), no cut tree text, quest widget wraps (beta bugs 13, 15)
+199. furnace Charcoal counts, Collections grid text fits, no mob one-shots (beta bugs 3, 13, 16)

@@ -27,8 +27,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 197 (deployed 10-18 18:14): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary / secondary weapon (Priest
   Wand + Soul Cage, Warrior Sword + Spear). Follow-up: SkyyClasses' /class page icons still show no Soul Cage.
 - 198 (deployed 10-19 07:19): Classes 0.1.40 /class weapons + Soul Cage, Trees 0.3.25 tree text fits, Hud 0.3.33 quest widget wraps.
-- RUNNING: Sacks + Collections builder (beta bugs 11 off-hand refill, 16 furnace Charcoal, 13 Collections grid). Then (Skyy 10-19:
-  "work through the bugs one at a time until you run out" ... "Do 1% or fully out") beta bugs 3, 19, 9, 4 one at a time.
+- 199 (deployed 10-19 12:10): Collections 0.2.29 furnace Charcoal + grid text, Mobs 0.1.13 hit cap on every mob (beta 3, 13, 16).
+  Sacks 0.8.25 (off-hand refill, bug 11) built + reviewed SHIP but NOT pinned (Skyy: "skip for now").
+- NEXT (Skyy 10-19: "work through the bugs one at a time until you run out" ... "Do 1% or fully out"): beta bugs 19, 9, 4.
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
