@@ -32,6 +32,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 200 (deployed 10-19 12:40): Islands 0.5.22 island leftovers despawn + island sky follows the hub (beta 19, 9).
 - 202 (deployed 10-19 12:59): Armory 0.1.40 Soul Cage locks on ~2x faster.
 - 203 (deployed 10-19 13:04): Gear 0.3.30 Copper mines Iron at full speed, no Bronze armor drops.
+- 206 (deployed 10-19 13:47): no XP caps in Cooking / Guilds / Exploration; Shards lowest-rarity orb first.
 - 205 (deployed 10-19 13:27): WorldGen 0.7.6 zone landings pre-loaded, layout pick off the world thread.
 - 204 (deployed 10-19 13:07): Islands 0.5.23 respawn straight onto the island (one world load).
   Nothing running, nothing pinned-but-undeployed (Sacks 0.8.25 off-hand refill built, unpinned: Skyy "skip for now").
@@ -52,8 +53,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    class ratings research/Class-Roles-Sheet.md; P0 inventory DONE in research/balance/): P1 pacing model tools/balance_model.py ->
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
-3. Small queued rounds: Heavy combat armor has no piece at Lv 16-19 since Bronze left the bags (fill in the balance pass), Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
-   Smithing XP rows, Shards totem crafts: use the lowest-rarity rolled orb first (the recipe already takes rolled orbs - checked 10-19), per-profile world chests (SkyyExploration,
+3. Small queued rounds: Heavy combat armor has no piece at Lv 16-19 since Bronze left the bags (fill in the balance pass), Classes (Sacred Heal 8 s default + migration), Enchanted alloy
+   Smithing XP rows,  per-profile world chests (SkyyExploration,
    research/Per-Player-Loot-Survey.md: refill never, sparkles), Infinite Water Bucket mid game (SkyyGear), our own bench-tier keeper,
    SkyyZones (protected areas + titles), tooltips bigger + colour coded (Style Guide 15: kit, then Pets, then every mod), Cooking ING_TIER v3,
    Rebirth "no limit" default (rebirth.max).
