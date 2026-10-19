@@ -316,3 +316,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Beta bugs: furnace Charcoal, Collections text, golem one-shot (DEPLOYED 2026-10-19, backup deploy-20261019-1210) | [2026-10](2026-10.md) |
 | Beta bugs: island leftovers despawn, island sky follows the hub (DEPLOYED 2026-10-19, backup deploy-20261019-1240) | [2026-10](2026-10.md) |
 | Lag: minimap picture flood (DEPLOYED 2026-10-19, backup deploy-20261019-1243) | [2026-10](2026-10.md) |
+| Soul Cage locks on faster (DEPLOYED 2026-10-19, backup deploy-20261019-1259) | [2026-10](2026-10.md) |

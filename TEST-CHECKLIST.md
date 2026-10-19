@@ -227,3 +227,4 @@ tests always come first.
 199. furnace Charcoal counts, Collections grid text fits, no mob one-shots (beta bugs 3, 13, 16)
 200. island camp / boss leftovers despawn after restarts; island sky = hub sky, /time on an island reaches the hub (beta bugs 19, 9)
 201. less stutter: minimap sends at most 16 pictures a second (beta bug 4 part)
+202. Soul Cage Bindings turn solid ~2x faster (0.8 s Copper)

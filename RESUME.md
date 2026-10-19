@@ -30,6 +30,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 199 (deployed 10-19 12:10): Collections 0.2.29 furnace Charcoal + grid text, Mobs 0.1.13 hit cap on every mob (beta 3, 13, 16).
   Sacks 0.8.25 (off-hand refill, bug 11) built + reviewed SHIP but NOT pinned (Skyy: "skip for now").
 - 200 (deployed 10-19 12:40): Islands 0.5.22 island leftovers despawn + island sky follows the hub (beta 19, 9).
+- 202 (deployed 10-19 12:59): Armory 0.1.40 Soul Cage locks on ~2x faster.
+- RUNNING: Islands 0.5.23 one-load respawn (review FIX -> fixing), Gear 0.3.30 ore half speed 1.0 + no Bronze armor drops (review).
 - 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). Other lag fixes queued in the beta-bugs file bug 4
   (respawn = 1 world load, DynamicSeasons tints, pre-generate zone landings, unload empty worlds).
 
@@ -48,8 +50,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
 3. Small queued rounds: ONE SkyyGear round = gate.halfFactor default 0.5 -> 1.0 + migration (Skyy 10-18 "All half-tier ores": Copper
-   mines Iron at full speed) + Armor_Bronze_Ornate_* out of the bag pool (Skyy 10-18 "this should be mining T3 it shouldnt drop"), Armory Soul Cage locks faster (Skyy 10-18: "make the soul cage lock on to a target faster"; soul.stabilize
-   1.75 .. 1.0 s -> about half + migration), Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
+   mines Iron at full speed) + Armor_Bronze_Ornate_* out of the bag pool (Skyy 10-18 "this should be mining T3 it shouldnt drop"), Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
    Smithing XP rows, Shards Soul Cage totem recipe (orb by item id - same bug as beta 20), per-profile world chests (SkyyExploration,
    research/Per-Player-Loot-Survey.md: refill never, sparkles), Infinite Water Bucket mid game (SkyyGear), our own bench-tier keeper,
    SkyyZones (protected areas + titles), tooltips bigger + colour coded (Style Guide 15: kit, then Pets, then every mod), Cooking ING_TIER v3,
