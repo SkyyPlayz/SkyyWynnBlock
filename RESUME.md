@@ -53,7 +53,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
 3. Small queued rounds: Heavy combat armor has no piece at Lv 16-19 since Bronze left the bags (fill in the balance pass), Classes (Sacred Heal 8 s default + migration), XP caps in Cooking / Guilds / Exploration -> 0, Enchanted alloy
-   Smithing XP rows, Shards Soul Cage totem recipe (orb by item id - same bug as beta 20), per-profile world chests (SkyyExploration,
+   Smithing XP rows, Shards totem crafts: use the lowest-rarity rolled orb first (the recipe already takes rolled orbs - checked 10-19), per-profile world chests (SkyyExploration,
    research/Per-Player-Loot-Survey.md: refill never, sparkles), Infinite Water Bucket mid game (SkyyGear), our own bench-tier keeper,
    SkyyZones (protected areas + titles), tooltips bigger + colour coded (Style Guide 15: kit, then Pets, then every mod), Cooking ING_TIER v3,
    Rebirth "no limit" default (rebirth.max).
