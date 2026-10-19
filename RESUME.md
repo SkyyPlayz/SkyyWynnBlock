@@ -26,7 +26,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Profiles 0.1.18, Menu 0.3.40, Classes 0.1.39, Quests 0.4.2, Rebirth 0.3.5, Core 1.0.1.
 - 197 (deployed 10-18 18:14): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary / secondary weapon (Priest
   Wand + Soul Cage, Warrior Sword + Spear). Follow-up: SkyyClasses' /class page icons still show no Soul Cage.
-  Nothing running, nothing pinned-but-undeployed.
+- RUNNING (10-19, Skyy: "yes, do the small beta bugs 15, 16, 11, 13 and the /class Soul Cage icon"): 4 plain Opus builders -
+  Quests (+Hud) bug 15 + quest text wrap, Sacks + Collections bugs 11 + 16 + grid, Trees 0.3.25 Zen text fit, Classes 0.1.40 /class icons.
+  Then one review, pin, deploy (docs/tests/2026-10-17-beta-bugs.md).
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
