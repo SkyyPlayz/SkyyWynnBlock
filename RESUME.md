@@ -54,7 +54,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    class ratings research/Class-Roles-Sheet.md; P0 inventory DONE in research/balance/): P1 pacing model balance_model.py (planned, in tools) ->
    P2 = the skill-tree engine above -> P3 XP -> P4 combat + classes -> P5 power sources (35/30/20/15, pets included) -> P6 gathering +
    crafting (incl. F-pickup tier lock + zone spawns, Zone 5 every crop but mostly its own 3) -> P7 economy -> P8 rebirth -> P9 full-run check.
-3. Small queued rounds: Heavy combat armor has no piece at Lv 16-19 since Bronze left the bags (fill in the balance pass), rebirth vs Bazaar orders (bazaar:fn:closeall is a no-op - check), per-profile world chests (SkyyExploration,
+3. Small queued rounds: Heavy combat armor has no piece at Lv 16-19 since Bronze left the bags (fill in the balance pass), Bazaar 0.2 order book must implement closeall + wouldclose for real (Rebirth relies on it; 0.1.x has no orders - checked 10-19), per-profile world chests (SkyyExploration,
    research/Per-Player-Loot-Survey.md: refill never, sparkles), Infinite Water Bucket mid game (SkyyGear), our own bench-tier keeper,
    SkyyZones (protected areas + titles), tooltips bigger + colour coded (Style Guide 15: kit, then Pets, then every mod), Cooking ING_TIER v3.
 4. Later: UT design (12 armor sets + 32 weapons), Wynn elements build (research/Wynn-Elements-Build-Spec.md), dragon pet
