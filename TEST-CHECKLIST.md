@@ -225,3 +225,4 @@ tests always come first.
 197. Create Profile: bigger class cards, emblem + primary + secondary weapon (Priest Soul Cage)
 198. C:/Program Files/Git/class primary + secondary (Soul Cage), no cut tree text, quest widget wraps (beta bugs 13, 15)
 199. furnace Charcoal counts, Collections grid text fits, no mob one-shots (beta bugs 3, 13, 16)
+200. island camp / boss leftovers despawn after restarts; island sky = hub sky, /time on an island reaches the hub (beta bugs 19, 9)

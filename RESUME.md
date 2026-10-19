@@ -29,7 +29,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 198 (deployed 10-19 07:19): Classes 0.1.40 /class weapons + Soul Cage, Trees 0.3.25 tree text fits, Hud 0.3.33 quest widget wraps.
 - 199 (deployed 10-19 12:10): Collections 0.2.29 furnace Charcoal + grid text, Mobs 0.1.13 hit cap on every mob (beta 3, 13, 16).
   Sacks 0.8.25 (off-hand refill, bug 11) built + reviewed SHIP but NOT pinned (Skyy: "skip for now").
-- NEXT (Skyy 10-19: "work through the bugs one at a time until you run out" ... "Do 1% or fully out"): beta bugs 19, 9, 4.
+- 200 (deployed 10-19 12:40): Islands 0.5.22 island leftovers despawn + island sky follows the hub (beta 19, 9).
+- RUNNING: Hud 0.3.34 minimap tile flood (beta 4 lag part 2) in review. Other lag fixes queued in the beta-bugs file bug 4.
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
