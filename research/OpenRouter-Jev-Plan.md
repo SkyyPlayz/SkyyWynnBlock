@@ -61,7 +61,7 @@ greps, fewer wrong files opened. Refresh it only for changed files (git diff), s
 A different model family catches different bugs. In `skywynn-round`, after the build, the reviewer runs:
 
 ```
-python tools/llm.py --free-only --file <patch> "review for bugs..."
+python tools/llm.py --file <patch> "review for bugs..."
 ```
 
 The reviewer then **verifies** that list. Claude still decides; the outside model only adds leads.

@@ -9,13 +9,14 @@ KEY: never in this repo (it is public). Read from Windows Credential Manager fir
 else from the user environment variable OPENROUTER_API_KEY. The key is never printed or logged.
 
 Usage:
-    python tools/llm.py "question" [--file F ...] [--model free|<openrouter id>] [--max-chars 400000] [--out answer.md] [--no-redact] [--free-only] [--video clip.mp4]
+    python tools/llm.py "question" [--file F ...] [--model <openrouter id>] [--max-chars 400000] [--out answer.md] [--no-redact] [--video clip.mp4]
     python tools/llm.py --check                       (key found? one tiny request, prints the model that answered)
 Video: --video clip.mp4 sends the clip (picture + sound) to the Jev router (VIDEO_MODEL); ask for a timestamped description.
 From Python: import llm; text = llm.ask("question", files=[...])
 
-MODELS: the free pool first (FREE_MODELS in order, then openrouter/free); if it is busy or fails, the paid Jev router
-(typesafe/jev-router) unless --free-only. Free models may keep / train on what is sent - redaction stays on.
+MODELS: the Jev router (typesafe/jev-router) by default. Company rule (2026-10-19): every call is ZDR with no training -
+each request sends provider {"zdr": true, "data_collection": "deny"}, so only zero-data-retention endpoints are used.
+Free models were dropped (they have no ZDR endpoints). Redaction stays on.
 
 REDACTION (default on): before sending, file text is cleaned - player names from UserData (Skyy's account names), UUIDs, chat lines
 ("[Chat]" / "to <player>:"), e-mail addresses and Windows user paths are replaced with placeholders. Game files (Assets.zip,
@@ -28,10 +29,8 @@ import sys
 import urllib.request
 
 API = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "free"                     # Skyy 2026-10-11: "open router has free models. so when possible, id like to use those."
-FALLBACK_MODEL = "typesafe/jev-router"      # paid (cheapest capable) when the free pool is busy / fails; --free-only stops this
-# strong free models first (1M context); openrouter/free last - its router once picked a safety classifier for a plain question
-FREE_MODELS = ["nvidia/nemotron-3-ultra-550b-a55b:free", "thinkingmachines/inkling:free", "google/gemma-4-31b-it:free", "openrouter/free"]
+DEFAULT_MODEL = "typesafe/jev-router"      # 2026-10-19: ZDR-only (company rule) replaces the old free-model pool
+PROVIDER = {"zdr": True, "data_collection": "deny"}   # sent on EVERY request; never remove
 VIDEO_MODEL = "typesafe/jev-router"         # accepts video + audio; Skyy's fallback if it fails: their own Grok bot
 VIDEO_MAX = 40 << 20                         # MB; short clips only (the whole file goes in one request)
 NAMES = ["SkyLordPlayz", "SkyLo", "Skyy_"]          # account / folder names that appear in logs (Skyy_ = our mod prefix, kept below)
@@ -95,10 +94,12 @@ def ask(question, files=(), model=DEFAULT_MODEL, max_chars=400000, do_redact=Tru
             model = VIDEO_MODEL
     else:
         msgs.append({"role": "user", "content": text})
-    tries = (FREE_MODELS + ([] if free_only else [FALLBACK_MODEL])) if model == DEFAULT_MODEL else [model]
+    if model == "free" or model.endswith(":free"):
+        raise SystemExit("Refused: free models have no ZDR endpoints (company rule: ZDR, no training)")
+    tries = [model]
     d, err = None, ""
     for m in tries:
-        req = urllib.request.Request(API, data=json.dumps({"model": m, "messages": msgs}).encode("utf-8"),
+        req = urllib.request.Request(API, data=json.dumps({"model": m, "messages": msgs, "provider": PROVIDER}).encode("utf-8"),
                                      headers={"Authorization": "Bearer " + key(), "Content-Type": "application/json",
                                               "X-Title": "SkyWynn tools/llm.py"})
         try:
@@ -143,8 +144,6 @@ def main(argv):
             red = False; i += 1; continue
         if a == "--video":
             vid = argv[i + 1]; i += 2; continue
-        if a == "--free-only":
-            fo = True; i += 1; continue
         q.append(a); i += 1
     if not q:
         print(__doc__); return 1
