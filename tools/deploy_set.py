@@ -19,7 +19,7 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.33"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.29"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.29"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.22"), ("SkyyBazaar", "0.1.22"), ("SkyyGear", "0.3.29"), ("SkyySkills", "0.4.53"),
     ("SkyyAccessories", "0.5.27"), ("SkyyClasses", "0.1.40"), ("SkyyMenu", "0.3.40"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.12"), ("SkyyTrees", "0.3.25"),
