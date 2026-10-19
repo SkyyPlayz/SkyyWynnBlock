@@ -230,3 +230,4 @@ tests always come first.
 202. Soul Cage Bindings turn solid ~2x faster (0.8 s Copper)
 203. Copper on Iron full speed; no Bronze armor from bags
 204. respawn = one world load, no zone flash / freeze (beta bug 4 part)
+205. zone trips: little or no 'Waiting for chunks' (beta bug 4 part)
