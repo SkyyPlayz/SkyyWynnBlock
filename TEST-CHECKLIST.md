@@ -223,3 +223,4 @@ tests always come first.
 195. Map in every zone + mob level plates + wand hold right = block + second egg hatches
 196. Level bands batch: bands + ladder + alloys + gathering armor + no XP caps + pet portraits + Soul Cage takes any orb
 197. Create Profile: bigger class cards, emblem + primary + secondary weapon (Priest Soul Cage)
+198. C:/Program Files/Git/class primary + secondary (Soul Cage), no cut tree text, quest widget wraps (beta bugs 13, 15)

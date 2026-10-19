@@ -312,3 +312,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | BetterMap in every zone, mob level plates, wand right-click block, egg hatch fix (DEPLOYED 2026-10-18, backup deploy-20261018-1155) | [2026-10](2026-10.md) |
 | Level bands: 20 levels per zone, collection ladder, alloys x2, gathering armor buff, no XP caps (DEPLOYED 2026-10-18, backup deploy-20261018-1352) | [2026-10](2026-10.md) |
 | Bigger class cards on Create Profile (DEPLOYED 2026-10-18, backup deploy-20261018-1814) | [2026-10](2026-10.md) |
+| Beta bugs: /class weapons, tree text fit, quest widget wrap (DEPLOYED 2026-10-19, backup deploy-20261019-0719) | [2026-10](2026-10.md) |
