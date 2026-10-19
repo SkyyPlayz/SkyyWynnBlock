@@ -232,3 +232,4 @@ tests always come first.
 204. respawn = one world load, no zone flash / freeze (beta bug 4 part)
 205. zone trips: little or no 'Waiting for chunks' (beta bug 4 part)
 206. XP caps gone in Cooking / Guilds / Exploration; Totem Bench uses the lowest-rarity orb
+207. Sacred Heal 8 s; rebirths unlimited; Enchanted alloys pay Smithing XP
