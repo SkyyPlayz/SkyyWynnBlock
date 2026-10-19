@@ -11,7 +11,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    (LAST line "deployed N mods") -> `record_deploy.py` -> commit -> `tidy_local.py --yes`.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (all deployed 2026-10-18; TEST-CHECKLIST 191-196, details in docs/tests/2026-10.md)
+## LIVE NOW (all deployed 2026-10-18; TEST-CHECKLIST 191-197, details in docs/tests/2026-10.md)
 - 196 LEVEL-BANDS batch (deploy + roll back TOGETHER, guard + FLOOR in deploy_set): 20 levels per zone (Copper 1-8 ... Lumen 95-103),
   collection ladder I Enchanted / II tools / III armor / IV weapons, alloys via Furnace Charm (both inputs III) + alloy gear at both V +
   Enchanted alloys at both VI, alloys 1+1=2, Bronze Mining set, 15 Foraging + 15 Farming armor tiers (Quirk's farming art), gathering armor
@@ -23,13 +23,13 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 191-193 UT bands, less Mana, mob hit cap 35%, Fortune +3 a level, skip fix, no hits through walls, island respawn fixes + pond.
 - Pins (tools/deploy_set.py SET = HANDOFF): Gear 0.3.29, Armory 0.1.39, Skills 0.4.53, Collections 0.2.28, WorldGen 0.7.5, Bazaar 0.1.22,
   Sacks 0.8.24, Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Wardrobe 0.2.10, Pets 0.4.4, Islands 0.5.21, Cooking 0.1.12, Trees 0.3.24,
-  Menu 0.3.40, Classes 0.1.39, Quests 0.4.2, Rebirth 0.3.5, Core 1.0.1.
-- PINNED, NOT DEPLOYED (game was open): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary / secondary
-  weapon (Priest Wand + Soul Cage, Warrior Sword + Spear); reviewed SHIP, harness 144 ok, crosscheck READY, lint 0 fails.
-  Deploy with skill skywynn-deploy when the game is closed. Follow-up: SkyyClasses' /class page icons still show no Soul Cage.
+  Profiles 0.1.18, Menu 0.3.40, Classes 0.1.39, Quests 0.4.2, Rebirth 0.3.5, Core 1.0.1.
+- 197 (deployed 10-18 18:14): SkyyProfiles 0.1.18 = bigger Create Profile class cards + emblem / primary / secondary weapon (Priest
+  Wand + Soul Cage, Warrior Sword + Spear). Follow-up: SkyyClasses' /class page icons still show no Soul Cage.
+  Nothing running, nothing pinned-but-undeployed.
 
 ## FOR SKYY (while paused)
-- Test TEST-CHECKLIST 196 first (the big one), then 195, 194.
+- Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
 - Server Setup now if wanted: Classes > Sacred Heal cooldown -> 8 (all 4 rows); Rebirth > rebirth.max -> e.g. 1000 (unlimited rebirths).
 - Open choice (OPEN-QUESTIONS): Copper Staff costs 20 Mana of a 40 pool at Lv 1 (50%, over the 40% rule) - drop to 15?
 
