@@ -146,10 +146,10 @@ Never leave finished work only in chat or memory.
   The local session folds `research/cloud/LOG.md` into `docs/log/`. Subagents that need no local files may run in the cloud.
 - **Models:** builders Opus; reviews / cross-checks / web research Sonnet; tiny lookups Haiku; Fable only where it clearly helps (spec
   synthesis, hardest engine builds). Name the model per agent.
-- **OpenRouter side jobs** (local + cloud): `tools/llm.py` for bulk reading / sorting / drafts; only Jev (`typesafe/jev-router`) and
-  free models ($20 / month cap - ask Skyy before any other paid model); redaction on; the key never in the repo / chat / logs; output
+- **OpenRouter side jobs** (local + cloud): `tools/llm.py` for bulk reading / sorting / drafts; only Jev (`typesafe/jev-router`), ZDR-only with
+  no training since 2026-10-19, no free models ($20 / month cap - ask Skyy before any other paid model); redaction on; the key never in the repo / chat / logs; output
   is a lead Claude checks (research/OpenRouter-Jev-Plan.md, CLOUD-RESUME.md).
-  Skyy 2026-10-13: "use JEV wherever you can to reduce your own token cost." -> default to Jev / free models for reading logs, long files,
+  Skyy 2026-10-13: "use JEV wherever you can to reduce your own token cost." -> default to Jev for reading logs, long files,
   agent reports and surveys (ask llm.py a question about the file instead of reading it whole); Claude reads only the short answer.
 - **Sessions:** Skyy starts a fresh main session once a day - never clear or restart the session yourself; just keep RESUME.md + the
   log hand-off ready. Agents start fresh: name the files, don't paste history.
