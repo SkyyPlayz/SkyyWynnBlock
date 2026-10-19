@@ -32,9 +32,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 200 (deployed 10-19 12:40): Islands 0.5.22 island leftovers despawn + island sky follows the hub (beta 19, 9).
 - 202 (deployed 10-19 12:59): Armory 0.1.40 Soul Cage locks on ~2x faster.
 - 203 (deployed 10-19 13:04): Gear 0.3.30 Copper mines Iron at full speed, no Bronze armor drops.
-- RUNNING: Islands 0.5.23 one-load respawn (review fixes in).
+- 204 (deployed 10-19 13:07): Islands 0.5.23 respawn straight onto the island (one world load).
+  Nothing running, nothing pinned-but-undeployed (Sacks 0.8.25 off-hand refill built, unpinned: Skyy "skip for now").
 - 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). Other lag fixes queued in the beta-bugs file bug 4
-  (respawn = 1 world load, DynamicSeasons tints, pre-generate zone landings, unload empty worlds).
+  (DynamicSeasons tints, pre-generate zone landings, unload empty worlds).
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.

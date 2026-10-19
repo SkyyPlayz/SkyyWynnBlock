@@ -318,3 +318,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Lag: minimap picture flood (DEPLOYED 2026-10-19, backup deploy-20261019-1243) | [2026-10](2026-10.md) |
 | Soul Cage locks on faster (DEPLOYED 2026-10-19, backup deploy-20261019-1259) | [2026-10](2026-10.md) |
 | Copper mines Iron at full speed, no Bronze armor drops (DEPLOYED 2026-10-19, backup deploy-20261019-1304) | [2026-10](2026-10.md) |
+| Lag: respawn straight onto the island (DEPLOYED 2026-10-19, backup deploy-20261019-1307) | [2026-10](2026-10.md) |
