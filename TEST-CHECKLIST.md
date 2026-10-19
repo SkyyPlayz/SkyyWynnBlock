@@ -228,3 +228,4 @@ tests always come first.
 200. island camp / boss leftovers despawn after restarts; island sky = hub sky, /time on an island reaches the hub (beta bugs 19, 9)
 201. less stutter: minimap sends at most 16 pictures a second (beta bug 4 part)
 202. Soul Cage Bindings turn solid ~2x faster (0.8 s Copper)
+203. Copper on Iron full speed; no Bronze armor from bags
