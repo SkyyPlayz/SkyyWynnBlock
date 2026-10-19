@@ -30,7 +30,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 199 (deployed 10-19 12:10): Collections 0.2.29 furnace Charcoal + grid text, Mobs 0.1.13 hit cap on every mob (beta 3, 13, 16).
   Sacks 0.8.25 (off-hand refill, bug 11) built + reviewed SHIP but NOT pinned (Skyy: "skip for now").
 - 200 (deployed 10-19 12:40): Islands 0.5.22 island leftovers despawn + island sky follows the hub (beta 19, 9).
-- RUNNING: Hud 0.3.34 minimap tile flood (beta 4 lag part 2) in review. Other lag fixes queued in the beta-bugs file bug 4.
+- 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). Other lag fixes queued in the beta-bugs file bug 4
+  (respawn = 1 world load, DynamicSeasons tints, pre-generate zone landings, unload empty worlds).
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
