@@ -323,3 +323,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | No XP caps in Cooking, Guilds, Exploration; lowest orb first (DEPLOYED 2026-10-19, backup deploy-20261019-1347) | [2026-10](2026-10.md) |
 | Sacred Heal 8 s, no rebirth limit, Enchanted alloy XP (DEPLOYED 2026-10-19, backup deploy-20261019-1408) | [2026-10](2026-10.md) |
 | Lag: empty worlds unload (DEPLOYED 2026-10-19, backup deploy-20261019-1444) | [2026-10](2026-10.md) |
+| Skill Trees 3 (R0-R2), per-profile world chests, Infinite Water Bucket (DEPLOYED 2026-10-20, backup deploy-20261020-1227) | [2026-10](2026-10.md) |
