@@ -42,3 +42,4 @@ Saplings: vanilla already crafts 31 of the 33 saplings at the Farming Bench from
 ## 2026-10-16 pack update (Skyy updated their mods again)
 - Nothing comes back ON: HyFishing 0.7.2 now supports 0.7 but stays OFF by choice (SkyyFishing); Tainted Roots, Saplings From Trees, Better Mob Expansion not updated; Extended Backpacks OFF by choice. DynamicSeasons 7.0.4 fine (>=0.7.0 <0.8).
 - Not packed: DarkMatter Mounts 1.2.7 (ARR, server =0.6.8, needs Ecotale) - ideas only (docs/answered/pets.md).
+- 2026-10-20: KeepBenchTiers (NoeKing) + Workbench Tier Keeper (Samiracle, MIT) OFF for good - SkyyEssentials 0.1.16 keeps bench tiers (our own code; Workbench Tier Keeper MIT notice credited in SkyyEssentials CREDITS.txt). KeepBenchTiers extras lost with it (2 logs -> 4 sticks, no teleporter limit) were already off.
