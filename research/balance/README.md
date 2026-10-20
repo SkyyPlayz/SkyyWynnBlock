@@ -21,3 +21,4 @@ extraction - the gathering.md rows from the research spec files are DESIGN value
 curves are the `classBoost.*`, `overall.healthPerLevel`, `perk.*` and `mana.*` / `stamina.*` rows (xp.md); target roles are in
 `research/Class-Roles-Sheet.md`. Pet level stats beyond `kind.*` rows and charm craft costs are only as complete as the extraction.
 Regenerate Part 1 by re-reading the live configs (the generator was scratch and is deleted).
+- `targets.md` - P1 pacing targets vs today (generated: `python tools/balance_model.py --md`; never hand-edit).
