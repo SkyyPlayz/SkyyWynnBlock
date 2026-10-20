@@ -41,10 +41,11 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Nothing running, nothing pinned-but-undeployed (Sacks 0.8.25 off-hand refill built, unpinned: Skyy "skip for now").
 - 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). All 5 lag suspects now handled (beta-bugs file bug 4).
 
-## RUNNING NOW (2026-10-20)
-- Skill Trees 3 R0+R1+R2 (workflow skywynn-round tag st3r12): Trees 0.4.0, Skills 0.4.55, Classes 0.1.42, Menu 0.3.41 - deploy together.
-- Balance P1 pacing model (plain agent): tools/balance_model.py + research/balance/targets.md.
-- Item 3 in parallel: per-profile world chests (workflow tag expchest, SkyyExploration 0.3.0); Infinite Water Bucket (lean, SkyyGear 0.3.31); our bench-tier keeper (lean, owner mod picked by builder, default SkyyEssentials 0.1.16); Bazaar 0.2 order-book spec (research/Bazaar-Order-Book-Spec.md, Sonnet).
+## RUNNING NOW (2026-10-20; Skyy at work: "figure it out" - take defaults, research when in doubt)
+- DEPLOYED 12:27 (TEST-CHECKLIST 210): Skill Trees 3 R0-R2 (Trees 0.4.0, Classes 0.1.42, Skills 0.4.55, Menu 0.3.41), Exploration 0.3.0 per-profile chests, Gear 0.3.31 Infinite Water Bucket.
+- Built, review running: SkyyEssentials 0.1.16 bench-tier keeper (then pin; switch off KeepBenchTiers in the pack, PACK.md credit Workbench Tier Keeper MIT).
+- Done, not built: research/Bazaar-Order-Book-Spec.md (8 questions sec 12 -> take defaults); tools/balance_model.py + research/balance/targets.md (P1; add to INDEX + research/balance/README).
+- NEXT: Skill Trees 3 R3 (wire the "coming soon" upgrades + raise gates to 0/5/10/15/20/25), then R4 Rebirth VP (strengths: targets.md 5a/5b), then Balance P3...
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
