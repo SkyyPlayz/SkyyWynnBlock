@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-18 ~15:00 MDT; PAUSED until the weekly reset 2026-10-20 09:00 MDT - Skyy: "then we will pause till reset")
+# SkyWynn - RESUME HERE (updated 2026-10-20 09:10 MDT; reset done - working the AFTER THE RESET list top to bottom, Skyy: "when tokens reset at 9 am work through the entire local resume list from top to bottom")
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -40,6 +40,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 204 (deployed 10-19 13:07): Islands 0.5.23 respawn straight onto the island (one world load).
   Nothing running, nothing pinned-but-undeployed (Sacks 0.8.25 off-hand refill built, unpinned: Skyy "skip for now").
 - 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). All 5 lag suspects now handled (beta-bugs file bug 4).
+
+## RUNNING NOW (2026-10-20)
+- Skill Trees 3 R0+R1+R2 (workflow skywynn-round tag st3r12): Trees 0.4.0, Skills 0.4.55, Classes 0.1.42, Menu 0.3.41 - deploy together.
+- Balance P1 pacing model (plain agent): tools/balance_model.py + research/balance/targets.md.
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
