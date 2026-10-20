@@ -44,6 +44,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 ## RUNNING NOW (2026-10-20)
 - Skill Trees 3 R0+R1+R2 (workflow skywynn-round tag st3r12): Trees 0.4.0, Skills 0.4.55, Classes 0.1.42, Menu 0.3.41 - deploy together.
 - Balance P1 pacing model (plain agent): tools/balance_model.py + research/balance/targets.md.
+- Item 3 in parallel: per-profile world chests (workflow tag expchest, SkyyExploration 0.3.0); Infinite Water Bucket (lean, SkyyGear 0.3.31); our bench-tier keeper (lean, owner mod picked by builder, default SkyyEssentials 0.1.16); Bazaar 0.2 order-book spec (research/Bazaar-Order-Book-Spec.md, Sonnet).
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
