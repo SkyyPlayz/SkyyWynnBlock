@@ -234,3 +234,4 @@ tests always come first.
 206. XP caps gone in Cooking / Guilds / Exploration; Totem Bench uses the lowest-rarity orb
 207. Sacred Heal 8 s; rebirths unlimited; Enchanted alloys pay Smithing XP
 208. retired / offline island worlds + old zones unload when empty and reload on demand (beta bug 4 part)
+209. Dynamic Seasons tints off in our worlds: world changes stutter less (no 0.2-0.7 s tint stall); seasons, weather and events still run (pack config, no jar change)

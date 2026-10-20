@@ -32,14 +32,14 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 200 (deployed 10-19 12:40): Islands 0.5.22 island leftovers despawn + island sky follows the hub (beta 19, 9).
 - 202 (deployed 10-19 12:59): Armory 0.1.40 Soul Cage locks on ~2x faster.
 - 203 (deployed 10-19 13:04): Gear 0.3.30 Copper mines Iron at full speed, no Bronze armor drops.
+- 209 (10-19 18:37, pack config): Dynamic Seasons tints off in our worlds (if still a pain: disable the mod).
 - 208 (deployed 10-19 14:44): Islands 0.5.24 + WorldGen 0.7.7 empty worlds unload (files kept), reload on demand.
 - 207 (deployed 10-19 14:08): Sacred Heal 8 s, rebirths unlimited, Enchanted alloy Smithing XP.
 - 206 (deployed 10-19 13:47): no XP caps in Cooking / Guilds / Exploration; Shards lowest-rarity orb first.
 - 205 (deployed 10-19 13:27): WorldGen 0.7.6 zone landings pre-loaded, layout pick off the world thread.
 - 204 (deployed 10-19 13:07): Islands 0.5.23 respawn straight onto the island (one world load).
   Nothing running, nothing pinned-but-undeployed (Sacks 0.8.25 off-hand refill built, unpinned: Skyy "skip for now").
-- 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). Other lag fixes queued in the beta-bugs file bug 4
-  (only DynamicSeasons tints left - pack mod config).
+- 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). All 5 lag suspects now handled (beta-bugs file bug 4).
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.

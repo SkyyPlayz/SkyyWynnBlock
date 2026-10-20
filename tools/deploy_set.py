@@ -276,6 +276,26 @@ def tune_perfect_parries(world):
         open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-18: enablePostureDisplay set false once (Skyy). Delete this file to let the deploy do it again.\n")
 
 
+def seasons_tints_off(world):
+    """Dynamic Seasons (pack mod, BlueOrbit) re-sends its seasonal block tints on every world change (0.2-0.7 s client stall each,
+    beta bug 4 lag). Skyy 2026-10-19 (popup) -> "off in our worlds, if it keeps being a pain we can disable it.": disabledTintsZones
+    [] -> [1, 2, 3, 4] ONCE per world (run-once marker next to the file), only while it is still the mod's empty default; bytes kept
+    (one token replaced). Seasons, weather and events keep running. Undo: put [] back in Dynamic Seasons' own page (keeps marker)."""
+    import re
+    d_ = os.path.join(B.USERDATA, "Saves", world, "mods", "BlueOrbit_DynamicSeasons")
+    sd = os.path.join(d_, "SeasonData.json")
+    mark = os.path.join(d_, ".skywynn-tints-off")
+    if os.path.isfile(sd) and not os.path.exists(mark):
+        raw = open(sd, "rb").read()
+        new, n = re.subn(rb'("disabledTintsZones"\s*:\s*)\[\s*\]', rb'\1[1, 2, 3, 4]', raw, count=1)
+        if n:
+            tmp = sd + ".tmp"
+            open(tmp, "wb").write(new)
+            os.replace(tmp, sd)
+            print("Dynamic Seasons: seasonal tints switched off in zones 1-4 for world %s (seasons keep running)" % world)
+        open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-19: disabledTintsZones set [1, 2, 3, 4] once (Skyy). Delete this file to let the deploy do it again.\n")
+
+
 def sync_bettermap_worlds(world):
     """BetterMap (pack mod, dev.ninesliced) only maps worlds named in its allowedWorlds list (exact names, no wildcard), so every
     zone / island world shows "usage in this world is not tracked". Skyy 2026-10-10: "see if you can get better maps to work in every
@@ -610,6 +630,7 @@ def main():
         retire_in_world(WORLD, mod)
     sync_bettermap_worlds(WORLD)
     tune_perfect_parries(WORLD)
+    seasons_tints_off(WORLD)
     for key in PACK_DISABLED:
         disable_third_party(WORLD, key)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))
