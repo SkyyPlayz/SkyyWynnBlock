@@ -437,6 +437,11 @@ for _fam_g, _ids_g in (("forever_tool", G2_FOREVER), ("harvester", G2_HARVESTERS
         _w_g = _id_g.split("_")[-2] if _id_g.endswith("_SkyWynn") else _id_g.split("_")[-1]
         _add(_id_g, metal_tier(_w_g), _fam_g, "SkyyGear")
 OWN_IDS = OWN_IDS | frozenset(G2_FOREVER + G2_HARVESTERS + G2_CANS)
+# SkyyGear 0.3.31 (Skyy 2026-10-18 "lets make something similar" + popup "Mid game"): our own Infinite Water Bucket - crafted only with a T4
+# Thorium lifelong watering can or better, so it carries that tier ("T4 Thorium"). Family "bucket"; made by SkyyGear's build (OWN_IDS).
+IWB_ID = "Tool_SkyyInfiniteWaterBucket"
+_add(IWB_ID, metal_tier("Thorium"), "bucket", "SkyyGear")
+OWN_IDS = OWN_IDS | frozenset([IWB_ID])
 # SkyyGear 0.3.29 (round level-bands, research/Level-Bands-20-Spec.md 5 + 6; Skyy 2026-10-18 "we have 15 tiers of mining armor sets. we need to
 # update foraging, and farming, to match"): the GATHERING ARMOR ladders. Foraging + Farming = 15 sets at T1 .. T15 (tag = the ladder noun, like
 # the logs / crops they gather: "T3 Bronze"); the old set ids keep their ids and looks at new tier slots (Foraging F1 = T1, F2 = T3, F3 = T6,

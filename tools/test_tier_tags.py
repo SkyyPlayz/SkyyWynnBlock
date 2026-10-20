@@ -90,14 +90,15 @@ ENCH_ALLOYS = [t for t in getattr(EN, "TABLE_ALLOYS", []) if t[2] in TT.ROWS]
 COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 15, "seed": 28, "spore": 2, "enchanted": 56 + len(ENCH_ORES) + len(ENCH_ALLOYS), "foraging_armor": 60,
           "farming_armor": 60, "fishing_armor": 20, "tool": 34, "armory": 11,          # 0.3.29: + the Mushroom (crop, 2 spores, its Enchanted item), the gathering armor rows
           "can": 6 + 10, "harvester": 4 + 12, "forever_tool": 27, "armory_metal": 76 + 80, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5,
-          "mining_armor": 32}          # SkyyGear 0.3.23 (G2): + the forever tools of Bronze + the 8 zone metals (pickaxe / hatchet / multitool 27), cans Mithril + 9, Harvesters Cobalt / Adamantite / Mithril + 9 (TT.OWN_IDS); SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
+          "mining_armor": 32, "bucket": 1}          # SkyyGear 0.3.31: + the Infinite Water Bucket (T4 Thorium, TT.OWN_IDS)
+          #          # SkyyGear 0.3.23 (G2): + the forever tools of Bronze + the 8 zone metals (pickaxe / hatchet / multitool 27), cans Mithril + 9, Harvesters Cobalt / Adamantite / Mithril + 9 (TT.OWN_IDS); SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
 ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 15 + 28 + 2 + 56 + len(ENCH_ORES) + len(ENCH_ALLOYS), "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
 _GA = TT.ids_in("foraging_armor") + TT.ids_in("farming_armor") + TT.ids_in("fishing_armor")
-ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + _GA) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal")), "owners")
-ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + _GA) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
+ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + TT.ids_in("bucket") + _GA) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal")), "owners")
+ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + TT.ids_in("bucket") + _GA) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
    and TT.tag_for("Tool_WaterCan_Copper") == "T1 Copper" and TT.tag_for("Tool_WaterCan_Iron") == "T2 Iron"
    and TT.tag_for("Tool_WaterCan_Adamantite") == "T10 Adamantite" and TT.tag_for("Tool_Sickle_Harvester_Crude") == "T1 Crude"
    and TT.tag_for("Tool_Sickle_Harvester_Thorium") == "T4 Thorium", "SkyyGear 0.3.12 own ids: the can T1 Crude .. T10 Adamantite, the Harvester .. T4 Thorium")
