@@ -44,7 +44,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 ## RUNNING NOW (2026-10-20; Skyy at work: "figure it out" - take defaults, research when in doubt)
 - DEPLOYED 12:27 (TEST-CHECKLIST 210): Skill Trees 3 R0-R2 (Trees 0.4.0, Classes 0.1.42, Skills 0.4.55, Menu 0.3.41), Exploration 0.3.0 per-profile chests, Gear 0.3.31 Infinite Water Bucket.
 - DEPLOYED 12:41 (TEST-CHECKLIST 211): SkyyEssentials 0.1.16 benches keep their tier (KeepBenchTiers + WorkbenchTierKeeper off for good).
-- RUNNING: workflows st3r3a (class trees: Trees 0.4.1 / Classes 0.1.43 / Armory 0.1.41), st3r3b (skill-tree hooks in reader mods; may list FOR SKYYTREES changes to fold in), bazaar02 (SkyyBazaar 0.2.0).
+- RUNNING: workflows st3r3a (class trees: Trees 0.4.1 / Classes 0.1.43 / Armory 0.1.41), st3r3b (skill-tree hooks in reader mods; may list FOR SKYYTREES changes to fold in), bazaar02 (SkyyBazaar 0.2.0). Also zones01 (NEW SkyyZones 0.1.0 Z0+Z1) and rebirth04 (SkyyRebirth 0.4.0 Void Particles). Skyy: "keep going down the list. dont stop until the entire list is done".
 - Done, not built: research/Bazaar-Order-Book-Spec.md (8 questions sec 12 -> take defaults); tools/balance_model.py + research/balance/targets.md (P1; add to INDEX + research/balance/README).
 - NEXT: Skill Trees 3 R3 (wire the "coming soon" upgrades + raise gates to 0/5/10/15/20/25), then R4 Rebirth VP (strengths: targets.md 5a/5b), then Balance P3...
 
