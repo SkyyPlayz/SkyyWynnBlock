@@ -40,33 +40,22 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - **Answering the local session (2026-10-07):** messages from the local session arrive by SendMessage; reply by appending a
   "## <date time> <title>" block to `research/cloud/OUTBOX.md` and pushing to main (the local cloud-link mod picks it up in ~3 min).
 
-## Cloud build trial - ENDED 2026-10-17 (Cobb stopped building; PR #17 merged + rebuilt locally; kept for reference) (Skyy 2026-10-17, ONE round - words in docs/answered/project.md 2026-10-17 lines)
+## Cloud build trial - ENDED
 
-- **Builder = Skyy's Grok bot** (Skyy 2026-10-17: "im using a grok bot for my cloud build. not our claude cloud"); it reads RESUME.md +
-  this file. Claude cloud sessions do NOT build during the trial (their old limits stand).
-- **Split:** the Grok builder runs the ONE big build Skyy hands it (spec -> build / patch scripts -> critics -> fix). The local session
-  keeps deploys, smoke tests, small bug fixes and small fixes, and stays off the trial's mods until its PR lands.
-- **Server jar:** download `HytaleServer.jar` fresh from Hytale's official Maven repo (Server Manual:
-  https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual), the version matching Skyy's installed `latest`.
-  Put it only in git-ignored `tools/dev/scratch/<task>/`, delete it after. NEVER commit, attach, upload or re-share it (Hytale EULA,
-  public repo). Same for any other game file.
-- **Assets.zip is not on Maven:** steps that read it (vanilla-derived art, `tools/skyyui.py` / `tools/tier_tags.py` asset checks,
-  `tools/ci/lint.py` asset ids) cannot run here - mark them UNVERIFIED in the PR.
-- **Hand-off:** everything through ONE pull request (scripts, patch, harness, spec; no jars). The local session reviews, merges,
-  rebuilds against the real install (that build is the one trusted), cross-checks, smoke tests, pins and deploys.
-- **The job (Skyy 2026-10-17):** RESUME.md NEXT 3 - armor / weapons from The Armory + Arcane Robes + others as MOB DROPS with our
-  modifiers (SkyyGear + SkyyMobs + loot). Read first: docs/answered/gear.md 2026-10-17 lines, research/Armor-Set-Count.md,
-  research/Pack-Armor-Plan.md, PACK.md (each pack mod's licence + our rules). Our code may only react to their item ids at runtime;
-  never copy / ship their models, textures, recipes or numbers. Recolours of another author's set need that author's OK first (ask list
-  in RESUME NEXT 3 still waits on Skyy) - until then build only with sets already allowed (The Armory CC BY-NC: credit, never sold; Void
-  Armor CC BY-NC) and mark the rest TODO. The local session stays off SkyyGear + SkyyMobs until this PR lands.
-- **Before the trial (undo):** the old rule here read word for word: "You cannot build, test or deploy. Only add tasks that need none of
-  that." - and every build ran locally (plain Agent builders or the saved workflow `skywynn-round`, PROJECT-RULES section 4). To undo:
-  put that sentence back and delete this section + the RESUME.md "CLOUD BUILD TRIAL" line (added in commit dd6731a + the Grok fix after
-  it; log lines 2026-10-17 "cloud build trial"). Keep the docs/answered lines (history).
+The trial ended (Skyy 2026-10-19: "grokbot wont be working on the project. every resume list is yours for now."); builds run locally (plain Agent builders or the saved workflow `skywynn-round`, PROJECT-RULES section 4). History: docs/answered/project.md 2026-10-17 lines.
 
 ## Open tasks (top = next)
 
+<!-- 2026-10-20 local session: list topped up to 8 from RESUME.md 'AFTER THE RESET' + 'RUNNING NOW'. Each is a no-game-file draft: output in
+research/cloud/, start with the decisions followed, end with 'Questions for Skyy' (defaults) + 'For the local session'. -->
+- [ ] Balance P3 XP curves draft -> `research/cloud/Balance-P3-XP-Draft.md`. Read research/balance/targets.md, research/balance/xp.md + the tools/balance_model.py findings: Foraging / Cooking / Alchemy curves too slow, class XP too fast early, "past-life XP discount" idea (rebirth). Propose curves + a table vs targets. Defaults in Questions for Skyy.
+- [ ] P7 economy sink survey -> `research/cloud/Economy-Sinks-Survey.md`. List every coin sink and source now (research/Economy-Audit-1014.md, research/balance/economy.md), the gap to the targets, 5 candidate sinks (Tab, respec, bazaar tax, upgrades) with a default pick.
+- [ ] SkyyZones spec check -> `research/cloud/SkyyZones-Spec-Check.md`. Compare the protected areas + titles plan (RESUME 'Small queued rounds') with research/cloud/Zone-Regen-Spec.md; list gaps, overlaps, config keys (skyycfg contract), commands.
+- [ ] Wynn elements build spec review -> `research/cloud/Wynn-Elements-Review.md`. Review research/Wynn-Elements-Build-Spec.md against research/cloud/Element-System-Spec.md and the Balance goals; flag contradictions, missing numbers, build-order risks.
+- [ ] Dragon pet spec review -> `research/cloud/Dragon-Pet-Review.md`. Review research/Dragon-Pet-Spec.md against docs/answered/pets.md 2026-10-16 lines (Aures block) and research/cloud/Pet-Core-Spec.md; list what is still blocked on Aures / Skyy.
+- [ ] Zone gathering spots spec review -> `research/cloud/Zone-Gathering-Review.md`. Review research/Zone-Gathering-Spec.md against research/cloud/Ore-Regrow-Spec.md and Zone-5 every-crop rule (RESUME P6); list gaps + a test plan.
+- [ ] Fishing rework survey -> `research/cloud/Fishing-Rework-Survey.md`. Compare research/cloud/SkyyFishing-Spec-Draft.md and research/cloud/Fish-Species-Catalog.md with existing CurseForge fishing mods (licences UNVERIFIED if web is blocked); verdict pack / learn / build.
+- [ ] UT design draft (12 armor sets + 32 weapons) -> `research/cloud/UT-Design-Draft.md`. Start from research/UT-Lines-Draft.md, research/cloud/Untiered-Mythic-Spec.md, research/cloud/UT-First-Batch-Build.md; names, themes, tier-tag line, four-power-source role per set / weapon.
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
 out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
@@ -111,9 +100,7 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 <!-- 2026-10-13 local session review: today's art + mockups APPROVED; these follow-ups. One commit + OUTBOX block each. -->
 
 ## Done (delete after logging - see the rules above)
-- [x] Nexus soul flame + 5 sigils (icons v2) - 2026-10-13 - `research/cloud/icons-1013`
-- [x] /rebirth page mockup - 2026-10-13 - `research/cloud/rebirth-page-1013`
-- [x] Shard menu mockup - 2026-10-13 - `research/cloud/shard-menu-1013`
+(none)
 
 ## For the local builder (2026-10-16)
 - Skyy answered many OPEN-QUESTIONS.md items on 2026-10-15 (see research/cloud/OpenQuestions-Answers-2026-10-15.md). Builder: fold these into OPEN-QUESTIONS.md / docs/answered. Items still open for builder + Skyy: L86/L87, L94, L106, L108, L31.
