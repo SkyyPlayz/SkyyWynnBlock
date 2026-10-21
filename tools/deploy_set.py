@@ -19,14 +19,14 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.29"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.33"), ("SkyySkills", "0.4.56"),
+    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.30"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.33"), ("SkyySkills", "0.4.57"),
     ("SkyyAccessories", "0.5.29"), ("SkyyClasses", "0.1.43"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.14"), ("SkyyTrees", "0.4.3"),
+    ("SkyyCooking", "0.1.15"), ("SkyyTrees", "0.4.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.3.1"),
+    ("SkyyExploration", "0.3.2"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.12"),
@@ -65,7 +65,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.11"),
+    ("SkyyFishing", "0.1.12"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -86,7 +86,7 @@ SET = [
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.4.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.4.1"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
-    ("SkyyZones", "0.1.0"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
+    ("SkyyZones", "0.2.0"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
     ("SkyyShards", "0.4.3"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-20, Skill Trees 3): SkyyTrees 0.4.0 + SkyyClasses 0.1.42 + SkyySkills 0.4.55 + SkyyMenu 0.3.41 deploy TOGETHER. Once treesV3 ran on a player file never roll SkyyTrees below 0.4.0 (0.3.x reads a v=3 file as empty trees and its next save rewrites it as v=2, wiping ranks + grandfathered abilities; rolling forward re-runs the update but pays NO second Dust refund - history/treesv3/<pkey>.done; old file in history/treesv3/<pkey>.properties - restore by hand with the server stopped; refunded Dust coins are not taken back). SkyyClasses below 0.1.42 only together with SkyyTrees below 0.4.0.
     # FLOOR (2026-10-20, per-profile chests): never roll SkyyExploration below 0.3.0 (or switch chests.perProfile off) once players opened world chests - shared containers stay empty and each profile's leftovers live only in Skyy_SkyyExploration/chestloot/ (keep it + _cleared/ as recovery).
@@ -94,6 +94,8 @@ SET = [
     # FLOOR (2026-10-20, SkyyBazaar 0.2.0): rollback to 0.1.x is safe ONLY with an empty order book - 0.1.x ignores Skyy_SkyyBazaar/book.properties and its bazaar:fn:closeall answers ok:0 over stranded escrow. Before rolling back: /bazaaradmin book cancelall confirm, every player claims (/bazaar orders or /bazaar claim), then /bazaaradmin book check must say "rollback to 0.1.x SAFE".
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
     # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
+    # FLOOR (2026-10-20, Balance P3 XP): SkyySkills 0.4.57 + Cooking 0.1.15 + Exploration 0.3.2 + Collections 0.2.30 + Fishing 0.1.12 (+ Pets 0.4.7 pet-XP divisors) pin + roll back TOGETHER - newer XP sources on an older Skills land 10-50x XP on the old curve. Never roll Skills below 0.4.57 after CurveP3Mig ran unless you restore Skyy_SkyySkills/history/curve-p3 first and delete curve-p3.properties; never undo only the levels rows; never restore a rebirth-backup/ made before the update.
+    # FLOOR (2026-10-20, SkyyZones 0.2.0 regen): before rolling back below 0.2.0 run /zones restore all (or Server Setup -> Zones -> Regrowing blocks -> Restore all), wait until /zones status shows 0 waiting, then stop the server; regen.properties, regen/ and regions.good.properties may stay (0.1.0 ignores them).
     # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
     # SkyyWorldGen 0.7 (2026-10-15): a jar without the SkyWynnZones2 type cannot decode skywynn_zones2's config.json (one SEVERE
     # "Failed to load world" at boot, every other world fine). Before rolling back to 0.6: players /zone leave, stop the server, delete
