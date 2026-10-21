@@ -237,3 +237,4 @@ tests always come first.
 209. Dynamic Seasons tints off in our worlds: world changes stutter less (no 0.2-0.7 s tint stall); seasons, weather and events still run (pack config, no jar change)
 210. Skill Trees 3 (Borderlands-style rows, no Dust, coin refund), per-profile world chests with sparkles, Infinite Water Bucket
 211. benches keep their upgrade tier when broken and placed again (our own; KeepBenchTiers + Workbench Tier Keeper stay off)
+212. class trees fully live (capstones, Shadow Clone, gates 0/5/10/15/20/25), 26 skill-tree upgrades live, Bazaar buy orders / sell offers, Rebirth Void Particles + keep buff, NEW SkyyZones protection (op)

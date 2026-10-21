@@ -325,3 +325,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Lag: empty worlds unload (DEPLOYED 2026-10-19, backup deploy-20261019-1444) | [2026-10](2026-10.md) |
 | Skill Trees 3 (R0-R2), per-profile world chests, Infinite Water Bucket (DEPLOYED 2026-10-20, backup deploy-20261020-1227) | [2026-10](2026-10.md) |
 | Benches keep their tier when broken (DEPLOYED 2026-10-20, backup deploy-20261020-1239) | [2026-10](2026-10.md) |
+| Skill Trees R3 (class + skill upgrades live), Bazaar order book, Rebirth Void Particles, NEW SkyyZones (DEPLOYED 2026-10-20, backup deploy-20261020-1804) | [2026-10](2026-10.md) |
