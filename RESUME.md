@@ -48,6 +48,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - RUNNING: pets047 (Pets 0.4.7: pet XP divided back to pre-P3 pace), balp4 (Balance P4 combat: Gear 0.3.34, Mobs 0.1.14, Skills 0.4.58, Classes 0.1.44, Armory 0.1.42, Trees 0.4.4; Skyy: fix curves to targets, bigger pools + slower regen).
 - NEXT: (workbench republished 19:30) Rich Seams overshoot: Mining tree Fortune 67.5 at max vs budget 40 (Rich Seams = +10 Fortune/rank via old MFortune node, text says +2% double-ore) -> fix in P5/P6; remaining Skills-side coming-soon (actives, streaks, capstones); P4 combat+classes -> P5 power sources (+ pet XP rescale from P3, Heavy Lv 16-19 gap) -> P6 -> P7 -> P8 -> P9; SkyyZones Z2 regen + Z3/Z4; tooltips pass; Cooking ING_TIER v3; then the Later list.
 
+- AFTER P9 (Skyy 2026-10-20): turn the Class Balance Workbench into a full GAME REVIEW / BALANCE SHEET - overview visual of how all systems connect + a click-in page per area (gathering, gear armor/tool stats + rolls, rarities side by side, pets, accessories, skills/trees, combat, economy, rebirth, zones...), covering everything the pack does (docs/answered/project.md 2026-10-20).
+
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
 - Server Setup now if wanted: Classes > Sacred Heal cooldown -> 8 (all 4 rows); Rebirth > rebirth.max -> e.g. 1000 (unlimited rebirths).
