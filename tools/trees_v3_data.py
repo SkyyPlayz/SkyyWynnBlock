@@ -24,12 +24,18 @@ HOOKS (what makes an upgrade do something today; None = "(coming soon)": shown, 
                                                     that key at (rank x levels per rank) levels - every reader of that node id (SkyySkills,
                                                     SkyyGear, SkyySacks, SkyyFishing, SkyyCooking, SkyyExploration, tree:fn:bonus / level)
                                                     keeps working unchanged; the sum over a tree never passes the old node's max (asserted)
+  ("fx", ((<code>, <per rank>), ...))               R3a (2026-10-20): a CLASS upgrade wired by its effect codes (CLASS_FX below, applied
+                                                    at import): SkyyTrees sends "f.<code>=<rank x per rank, summed over the tree>" in
+                                                    tree:fn:abil and answers tree:fn:bonus "Class.fx.<code>"; FX_OWNER names the mod that
+                                                    applies each code (it lists "Class.fx.<code>" in tree:reads:<mod>; SkyyTrees' own codes
+                                                    are always live). A row's free "fx" hook = ("fx", <code>) (the Assassin's Shadow Clone).
 MAPPING DECISIONS (generator notes, 2026-10-20; Skyy may change any of them):
   - Warrior: the spec's Bulwark Stance / Unbreakable are SkyyClasses' A1-alt A / B = Challenge / Guardian's Oath (research/classes/Warrior.md
     lists Bulwark Stance / Unbreakable as the A1-alts; SkyyClasses ships them as Challenge / Guardian's Oath) - texts show the real names.
   - Monk: the spec names 4 abilities; Cyclone Kick (SkyyClasses A3, the Palm Strike alt) comes free with Fist row 5 (the pattern's "row 5
     of one branch = the fifth ability").
-  - Assassin: Shadow Clone (Executioner row 2) is parked in SkyyClasses - the row shows it as coming later, no ability.
+  - Assassin: Shadow Clone (Executioner row 2) was parked in SkyyClasses; R3a makes it the row's free PASSIVE ability (no new rune):
+    Cloak and Vanishing Act leave a Shadow Clone (fx code ShadowClone, SkyyClasses 0.1.43).
   - A class upgrade named like a modifier hooks the first ability its text names that HAS that modifier (SkyyClasses AB_MODS), else the
     row's / branch's own ability; anything else waits for R3.
   - Skill hooks keep Skyy's locked rules alive: Mining Fortune = tool + a tree node (Rich Seams), Smelting Fortune only in the Smithing tree
@@ -4138,6 +4144,284 @@ def tree(name):
     raise KeyError(name)
 
 
+# ===================================================================================================================================
+# R3a (2026-10-20) THE CLASS-TREE EFFECTS: every class upgrade that was "(coming soon)" gets an ("fx", codes) hook; the capstones too.
+# Skyy (2026-10-18): "in the skill tree, no free upgrades. (i want borderlands style ...)" + 2026-10-20 "if you have any doubt, do research
+# to get good data to base your default on". The numbers are the spec's (section 3) where it gave one; where a mechanic cannot work in
+# Hytale (attack / draw / cast speed and arrow speed are fixed per weapon, mobs do not heal, mob abilities cannot be silenced) the upgrade
+# keeps its idea with the nearest server-side effect and the text says what it really does (NEW_TEXT below). The tree is ONE of the four
+# power sources (weapon + gear + accessories + pets), so a branch stays a few % per rank (research/Class-Roles-Sheet.md: each class buffs
+# its strong stats only). Capstones change how an ability plays (BL2 augments), never a plain stat tax.
+# FX_OWNER: who applies a code ("SkyyTrees" = the player stats SkyyTrees already writes: max Health / Stamina / Mana %, Mana / Stamina regen
+# %; "SkyyArmory" = weapon behaviour; everything else SkyyClasses). "a.<Ability>.<p>" = an ability parameter code (FX_AP), SkyyClasses.
+FX_AP = ("pow", "rad", "dur", "cost", "cd", "stun", "slow", "kb", "dot", "heal", "chain", "bounce", "rep", "mom", "ward", "hot", "radPct",
+         "stars", "rootChance", "stunChance")
+FX_OWNER = dict([(_c, "SkyyTrees") for _c in ("hp", "stam", "mana", "mreg", "sreg")] + [(_c, "SkyyArmory") for _c in ("blinkStep", "smiteReach")])
+# every SkyyClasses code that is not an ability parameter (one line each in SkyyClasses' UpFx; FX_RANKED = the number of ranks matters, so
+# every upgrade using it must give the same per-rank value)
+FX_CLASSES = ("drMelee", "drRanged", "drMagic", "drStill", "drRooted", "kbMelee", "blockSlow", "blockHeal", "wardBoost",
+              "dmgLowHp", "echo5", "killHeal", "redMist", "bannerMove", "bannerLeech", "cleave", "dmgMelee", "debuffWeak", "spreadDebuff",
+              "momChance", "imbueSlow", "imbueHeal", "move", "fistsDmg", "dodgeStun", "flowMove", "comboStam", "comboCap", "flowWard",
+              "stanceSlow", "deflectBack", "fsKillCd", "moveCloak", "dmgBehind", "vanishEcho", "cloakBlind", "vanishHit", "killCloak",
+              "dmgWeapon", "kunaiMark", "ShadowClone", "cloneSplit", "cloneDur", "kunaiChain", "cloneMirror", "bigHitBuff", "clonePull",
+              "lethal", "dmgElite", "kunaiWeak", "dmgDebuff", "poisonWeak", "poisonKillStam", "contagion", "pinVuln", "dmgBow", "dmgFar",
+              "pinBounce", "bowCdRapid", "dmgMarked", "killStam", "dmgFocus", "bowSlow", "tripwire", "netVuln", "bowKb", "netSlow",
+              "rootWeak", "bowSplit", "rainPull", "starFollow", "spellPow", "cdAll", "starCd", "comboSpell", "meteorMove", "overflow",
+              "rangeAll", "beamKillMana", "chanMove", "barrierMreg", "barrierSlow", "lastWard", "healReach", "healFollow", "triage",
+              "overheal", "healMove", "drShieldUp", "bubbleKb", "bubbleDr", "bubbleHold", "spiritDr", "spiritReach", "sanctWeak", "zoneMove",
+              "sanctChain", "sanctMreg", "sanctWard", "sanctDmg",
+              # the 24 capstones
+              "xAegis", "xRumble", "xWarden", "xCrimson", "xDomain", "xFury", "xRiftmaw", "xFracture", "xCascade", "xUntouch", "xPalms",
+              "xNoMind", "xGhost", "xDeicide", "xLotus", "xDeadEye", "xSpider", "xFirestorm", "xCataclysm", "xPrism", "xGlacial",
+              "xMiracle", "xVigil", "xHolyLand")
+FX_RANKED = ("echo5", "cleave", "bowSplit", "kunaiChain", "cloneSplit", "cloneMirror", "pinBounce", "healReach", "a.*.chain")
+# CLASS_FX["<Class>.b<n>.<id>"] = (codes, NEW_TEXT or None, the page's "Now:" line ({v} = the first code's total, {v2} the second's))
+CLASS_FX = {
+    # ---------------- WARRIOR (tank / crowd control): Bulwark = mitigation, Shockwave = AoE stuns, Iron Chain = pulls + party wards
+    "Warrior.b1.r1a": ((("drMelee", 4),), None, "{v}% less melee damage taken"),
+    "Warrior.b1.r1b": ((("hp", 6),), None, "+{v}% max Health"),
+    "Warrior.b1.r3a": ((("kbMelee", 0.5),), None, "your melee hits knock enemies back {v} blocks"),
+    "Warrior.b1.r3b": ((("drRanged", 3),), None, "{v}% less ranged damage taken"),
+    "Warrior.b1.r4a": ((("blockSlow", 12),), "an enemy whose hit you block is slowed 12% per rank for 2s", "a blocked attacker is {v}% slower for 2 s"),
+    "Warrior.b1.r4b": ((("blockHeal", 1),), None, "a blocked hit heals you {v}% of your max Health"),
+    "Warrior.b1.r5b": ((("drStill", 5),), "-5% damage taken per rank while you stand still", "{v}% less damage taken after 1 s standing still"),
+    "Warrior.b1.r6": ((("xAegis", 1),), "Challenge holds until its target dies (30s at most); while it holds, players within 6 blocks of you take 10% less damage, and your blocks slow attackers 40% for 2s",
+                      "Challenge holds until its target falls; allies near you take 10% less; blocks slow 40%"),
+    "Warrior.b2.r2b": ((("a.ShieldShockwave.stunChance", 12),), "12% chance per rank that a Shockwave hit stuns 1s longer", "{v}% chance of a 1 s longer stun"),
+    "Warrior.b2.r3a": ((("a.ShieldShockwave.slow", 10),), None, "Shockwave hits slow enemies {v}% for 3 s"),
+    "Warrior.b2.r3b": ((("a.ShieldShockwave.chain", 1),), None, "each Shockwave also arcs to {v} more enemy(s) at 50%"),
+    "Warrior.b2.r4a": ((("a.ShieldShockwave.stun", 0.25),), "Shockwave stuns +0.25s per rank", "Shockwave stuns +{v} s"),
+    "Warrior.b2.r5a": ((("a.ShieldShockwave.rad", 1),), None, "Shockwave reaches +{v} blocks"),
+    "Warrior.b2.r5b": ((("a.ShieldShockwave.dot", 15),), "shocked enemies take 15% of the hit per second per rank for 3s", "shocked enemies take {v}% of the hit a second for 3 s"),
+    "Warrior.b2.r6": ((("xRumble", 1),), "while your Challenge holds, Shield Shockwave fires by itself every 5s for free (a shield in hand or off-hand) and stuns at least 1.5s",
+                      "Shockwave fires itself every 5 s while your Challenge holds"),
+    "Warrior.b3.r1a": ((("a.RallyingGuard.ward", 3),), None, "Rallying Guard wards your party for {v}% of max Health"),
+    "Warrior.b3.r3b": ((("a.IronChain.heal", 2),), None, "each Iron Chain hit heals you {v}% of max Health"),
+    "Warrior.b3.r4b": ((("wardBoost", 4),), None, "your wards are {v}% stronger"),
+    "Warrior.b3.r5a": ((("a.IronChain.pow", 5),), None, "Iron Chain +{v}% damage"),
+    "Warrior.b3.r5b": ((("a.IronChain.stun", 0.3),), "Iron Chain stuns +0.3s per rank", "Iron Chain stuns +{v} s"),
+    "Warrior.b3.r6": ((("xWarden", 1),), "Iron Chain also yanks every enemy within 8 blocks to you and roots them 2s, and wards your party for 10% of max Health",
+                      "Iron Chain yanks and roots everything within 8 blocks, party wards 10%"),
+    # ---------------- BERSERKER (party damage buffer / sustained melee)
+    "Berserker.b1.r1b": ((("dmgLowHp", 4),), "+4% damage per rank while below 60% Health (swing speed is fixed per weapon)", "+{v}% damage below 60% Health"),
+    "Berserker.b1.r3a": ((("echo5", 40),), None, "every 5th melee hit strikes again for {v}%"),
+    "Berserker.b1.r3b": ((("killHeal", 2),), None, "a kill heals you {v}% of max Health"),
+    "Berserker.b1.r5a": ((("redMist", 50),), None, "leech +{v}% below 30% Health"),
+    "Berserker.b1.r6": ((("xCrimson", 1),), "Blood Frenzy's stacks never fade while you hit something every 3s; leech that would overheal becomes a ward (up to 10% max Health)",
+                        "Frenzy stacks hold while you keep hitting; overheal leech becomes a ward"),
+    "Berserker.b2.r3a": ((("bannerMove", 3),), "your banner gives everyone inside +3% move speed per rank (swing speed is fixed per weapon)", "+{v}% move speed inside your banner"),
+    "Berserker.b2.r5a": ((("bannerLeech", 1),), None, "players inside your banner leech {v}% of their damage"),
+    "Berserker.b2.r6": ((("xDomain", 1),), "your banner follows you and never falls (60% strength); kills inside it add 2s to your Enrage and Blood Frenzy",
+                        "a moving banner at 60% that never falls; kills extend your buffs 2 s"),
+    "Berserker.b3.r1a": ((("cleave", 15),), "melee hits cleave the nearest other enemy within 3 blocks for 15% damage per rank", "melee hits cleave a 2nd enemy for {v}%"),
+    "Berserker.b3.r1b": ((("dmgMelee", 3),), None, "+{v}% melee damage"),
+    "Berserker.b3.r2b": ((("a.Whirlwind.chain", 1),), "each Whirlwind pulse also strikes 1 more enemy per rank within 6 blocks at 50%", "each pulse strikes {v} more enemy(s) at 50%"),
+    "Berserker.b3.r3a": ((("a.Whirlwind.pow", 8),), "Whirlwind spins harder: +8% damage per rank", "Whirlwind +{v}% damage"),
+    "Berserker.b3.r3b": ((("a.Whirlwind.slow", 8),), None, "Whirlwind hits slow {v}% for 3 s"),
+    "Berserker.b3.r4a": ((("a.Whirlwind.dot", 15),), "Whirlwind hits make enemies bleed 15% of the hit per second per rank for 3s", "Whirlwind bleeds {v}% of the hit a second for 3 s"),
+    "Berserker.b3.r5b": ((("a.Earthsplitter.heal", 2),), None, "each Earthsplitter hit heals you {v}% of max Health (5 hits at most)"),
+    "Berserker.b3.r6": ((("xFury", 1),), "Whirlwind becomes a toggle (cast again to stop, 30s max): it moves with you at 70% speed, and each full spin that hits gives back 5 Stamina", "Whirlwind is a toggle: 70% speed, 5 Stamina a spin"),
+    # ---------------- SPELLBLADE (frontline AoE / boss debuffs, Momentum)
+    "Spellblade.b1.r2b": ((("a.RiftCleave.chain", 1),), None, "Rift Cleave arcs to {v} more enemy(s) at 50%"),
+    "Spellblade.b1.r4b": ((("a.RiftCleave.cost", 5),), None, "Rift Cleave costs {v}% less"),
+    "Spellblade.b1.r5a": ((("a.RiftCleave.kb", 0.5),), None, "rift hits push enemies {v} blocks"),
+    "Spellblade.b1.r5b": ((("a.RiftCleave.mom", 1),), None, "+{v} Momentum per Rift Cleave"),
+    "Spellblade.b1.r6": ((("xRiftmaw", 1),), "Rift Cleave always tears a second rift right after the first (60% strength); each cast grants +2 Momentum",
+                         "every Rift Cleave echoes at 60%, +2 Momentum"),
+    "Spellblade.b2.r2b": ((("a.ShatteringArc.dur", 1),), None, "Shattering Arc's Breach +{v} s"),
+    "Spellblade.b2.r3a": ((("debuffWeak", 4),), "Breached or Weakened enemies deal 4% less damage to you per rank", "Breached / Weakened enemies deal {v}% less to you"),
+    "Spellblade.b2.r4a": ((("spreadDebuff", 1),), None, "a Breached / Sundered enemy's death spreads it to {v} more"),
+    "Spellblade.b2.r4b": ((("a.ArcaneBreach.dur", 2), ("a.ShatteringArc.dur", 2), ("a.Sunder.dur", 2)), "Arcane Breach, Shattering Arc and Sunder last +2s per rank", "your debuffs last +{v} s"),
+    "Spellblade.b2.r6": ((("xFracture", 1),), "Sunder's cooldown is halved, and Shattering Arc deals +50% to Sundered enemies", "Sunder cooldown halved; Arc +50% on Sundered"),
+    "Spellblade.b3.r1a": ((("momChance", 20),), None, "{v}% chance a melee hit grants 1 Momentum"),
+    "Spellblade.b3.r3b": ((("a.ShatteringArc.rad", 0.5),), "Shattering Arc reaches +0.5 blocks per rank", "Shattering Arc +{v} blocks"),
+    "Spellblade.b3.r4a": ((("imbueSlow", 10),), None, "imbued hits slow {v}% for 2 s"),
+    "Spellblade.b3.r4b": ((("imbueHeal", 1),), None, "imbued hits heal you {v}% of max Health (twice a second at most)"),
+    "Spellblade.b3.r5a": ((("a.ShatteringArc.rep", 10),), "Shattering Arc hits strike again for 10% per rank", "Shattering Arc hits strike again for {v}%"),
+    "Spellblade.b3.r6": ((("xCascade", 1),), "at full Momentum (20) your next ability is free, reaches +2 blocks and releases a 5-block nova of 10% of a hit per Momentum (all Momentum spent)",
+                         "at 20 Momentum: a free cast, +2 blocks and a Momentum nova"),
+    # ---------------- MONK (speed disruptor / single-target control)
+    "Monk.b1.r1a": ((("move", 4),), None, "+{v}% move speed"),
+    "Monk.b1.r1b": ((("sreg", 10),), None, "Stamina refills {v}% faster"),
+    "Monk.b1.r2a": ((("fistsDmg", 5),), "+5% damage per rank while Hundred Fists runs (punch speed is fixed per weapon)", "+{v}% damage while Hundred Fists runs"),
+    "Monk.b1.r5a": ((("dodgeStun", 0.3),), "a dodge roll stuns enemies it passes (within 1.5 blocks) for 0.3s per rank", "your rolls stun nearby enemies {v} s"),
+    "Monk.b1.r5b": ((("flowMove", 5),), None, "Flowing Form +{v}% move speed"),
+    "Monk.b1.r6": ((("xUntouch", 1),), "during Flowing Form an afterimage strikes every enemy within 2.5 blocks each second (30% of a hit) and gives back 1 Stamina per enemy hit",
+                   "Flowing Form afterimages strike around you every second"),
+    "Monk.b2.r4a": ((("a.PalmStrike.stun", 0.25),), "Palm Strike stuns +0.25s per rank", "Palm Strike stuns +{v} s"),
+    "Monk.b2.r5a": ((("comboStam", 3),), "every 5th combo stack gives back 3 Stamina per rank", "every 5th combo stack gives back {v} Stamina"),
+    "Monk.b2.r5b": ((("comboCap", 2),), "Flowing Form's combo cap +2 per rank", "combo cap +{v}"),
+    "Monk.b2.r6": ((("xPalms", 1),), "at 10+ combo Palm Strike has (almost) no cooldown, and every 5th weapon hit in a row strikes every enemy within 3 blocks for 40%",
+                   "Palm Strike near-free at 10 combo; every 5th hit bursts 3 blocks"),
+    "Monk.b3.r1a": ((("flowWard", 4),), None, "a {v}% max Health ward when Flowing Form ends"),
+    "Monk.b3.r1b": ((("stanceSlow", 10),), "enemies you hit during Still Water are 10% slower per rank for 2s", "your Still Water hits slow {v}% for 2 s"),
+    "Monk.b3.r3a": ((("a.StillWater.cost", 8),), None, "Still Water costs {v}% less"),
+    "Monk.b3.r3b": ((("deflectBack", 20),), "a deflected projectile hits its shooter for 20% of its damage per rank", "deflected shots hit back for {v}%"),
+    "Monk.b3.r6": ((("xNoMind", 1),), "a counter resets your other Monk cooldowns and keeps Still Water up 3s longer (once every 6s)", "a counter resets your cooldowns (6 s apart)"),
+    # ---------------- ASSASSIN (priority killer / debuffer)
+    "Assassin.b1.r1b": ((("a.CloakFirstStrike.pow", 5), ("fsKillCd", 1)), None, "First Strike +{v}%; a First Strike kill: Cloak -{v2} s cooldown"),
+    "Assassin.b1.r2b": ((("move", 3), ("moveCloak", 3)), None, "+{v}% move speed (+{v2}% more while Cloaked)"),
+    "Assassin.b1.r3b": ((("dmgBehind", 4),), None, "+{v}% damage from behind"),
+    "Assassin.b1.r4a": ((("vanishEcho", 1),), "Vanishing Act leaves a second, half-size smoke where you stand 2s later", "a second smoke 2 s after Vanishing Act"),
+    "Assassin.b1.r4b": ((("cloakBlind", 0.3),), "breaking your Cloak with an attack stuns enemies within 3 blocks for 0.3s per rank", "breaking Cloak stuns 3 blocks for {v} s"),
+    "Assassin.b1.r4c": ((("sreg", 4),), None, "Stamina refills {v}% faster"),
+    "Assassin.b1.r5a": ((("vanishHit", 6),), "your first weapon hit within 6s after Vanishing Act deals +6% per rank", "first hit after Vanishing Act +{v}%"),
+    "Assassin.b1.r5b": ((("killCloak", 1),), "a kill while Cloaked (or with the hit that broke it) cloaks you 1s per rank", "a cloaked kill cloaks you {v} s"),
+    "Assassin.b1.r6": ((("xGhost", 1),), "a First Strike kill cloaks you again for 3s at once (once every 8s)", "First Strike kills re-Cloak you (8 s apart)"),
+    "Assassin.b2.r1a": ((("dmgWeapon", 3),), "+3% weapon damage per rank", "+{v}% weapon damage"),
+    "Assassin.b2.r1b": ((("kunaiMark", 15),), None, "a kunai hit marks: your next melee hit on it +{v}%"),
+    "Assassin.b2.r2a": ((("cloneSplit", 1),), "+1 Shadow Clone per rank (each strikes one enemy for 40% of a hit)", "{v} extra clone(s)"),
+    "Assassin.b2.r2b": ((("cloneDur", 1),), None, "clones last +{v} s"),
+    "Assassin.b2.r3a": ((("kunaiChain", 50),), None, "kunai hits bounce to 1 more enemy for {v}%"),
+    "Assassin.b2.r3b": ((("cloneMirror", 5),), "while a Shadow Clone stands, your ability hits strike again from it for 15% +5% per rank", "clones repeat your ability hits at 15% + {v}%"),
+    "Assassin.b2.r3c": ((("bigHitBuff", 3),), "a First Strike or God Killer hit gives +3% damage per rank for 4s (crits are your gear's)", "+{v}% damage for 4 s after a First Strike / God Killer"),
+    "Assassin.b2.r4a": ((("clonePull", 1),), "First Strike pulls its target 3 blocks toward your Shadow Clone and the clone strikes it once (40% of the hit)", "First Strike pulls to your clone, which strikes"),
+    "Assassin.b2.r4b": ((("lethal", 3),), "+3% chance per rank that a weapon hit is Lethal (+50% damage)", "{v}% chance of a Lethal hit (+50%)"),
+    "Assassin.b2.r5b": ((("dmgElite", 5),), None, "+{v}% damage to elites and bosses"),
+    "Assassin.b2.r6": ((("xDeicide", 1),), None, "God Killer + up to 60% by missing Health; a kill resets it"),
+    "Assassin.b3.r1a": ((("a.Toxin.dur", 1),), "Toxin's cloud lasts +1s per rank", "Toxin lasts +{v} s"),
+    "Assassin.b3.r1b": ((("kunaiWeak", 2),), None, "kunai hits weaken the target {v}% for 4 s"),
+    "Assassin.b3.r2a": ((("a.Toxin.pow", 5),), None, "Toxin +{v}% damage"),
+    "Assassin.b3.r3a": ((("a.Toxin.slow", 6),), None, "Toxin slows {v}%"),
+    "Assassin.b3.r3b": ((("dmgDebuff", 3),), None, "+{v}% damage per debuff on the target (3 at most)"),
+    "Assassin.b3.r4b": ((("poisonWeak", 5),), "poisoned enemies deal 5% less damage per rank (mobs do not heal)", "poisoned enemies deal {v}% less to you"),
+    "Assassin.b3.r4c": ((("stam", 4), ("poisonKillStam", 1)), "+4% max Stamina per rank; a poisoned enemy's death gives back 1 Stamina per rank", "+{v}% max Stamina; {v2} Stamina back per poisoned kill"),
+    "Assassin.b3.r5a": ((("a.Toxin.cost", 8),), None, "Toxin costs {v}% less"),
+    "Assassin.b3.r5b": ((("contagion", 1),), None, "a poisoned enemy's death poisons {v} more nearby"),
+    "Assassin.b3.r6": ((("xLotus", 1),), "Toxin stacks on one enemy: every 3rd poison tick from you detonates for 200% of a tick", "every 3rd poison tick detonates for 200%"),
+    # ---------------- ARCHER (crowd control / focus marker, ranged)
+    "Archer.b1.r1b": ((("pinVuln", 4),), None, "Pinned enemies take +{v}% from everyone for 5 s"),
+    "Archer.b1.r2b": ((("dmgBow", 3),), None, "+{v}% bow damage"),
+    "Archer.b1.r3a": ((("dmgFar", 5),), "bow hits from 15+ blocks away deal +5% per rank (arrow speed is fixed per bow)", "+{v}% bow damage from 15+ blocks"),
+    "Archer.b1.r3b": ((("pinBounce", 60),), None, "Pinning Shot roots 1 more enemy for {v}% of the time"),
+    "Archer.b1.r3c": ((("bowCdRapid", 0.2),), "each bow hit takes 0.2s per rank off Rapid Fire's cooldown (draw speed is fixed per bow)", "a bow hit: Rapid Fire -{v} s"),
+    "Archer.b1.r4a": ((("a.RapidFire.pow", 4),), None, "Rapid Fire +{v}% damage"),
+    "Archer.b1.r4b": ((("dmgMarked", 5),), "hits on Marked enemies deal +5% per rank", "+{v}% on Marked enemies"),
+    "Archer.b1.r5a": ((("move", 3), ("killStam", 5)), "+3% move speed per rank; a kill gives back 5 Stamina per rank", "+{v}% move speed; {v2} Stamina back per kill"),
+    "Archer.b1.r5b": ((("dmgFocus", 2),), None, "+{v}% per hit in a row on one target (5 at most)"),
+    "Archer.b1.r6": ((("xDeadEye", 1),), "Rapid Fire deals +50% to rooted (Pinned) enemies, and its hits keep Hunter's Mark on them", "Rapid Fire +50% on Pinned, keeps the Mark"),
+    "Archer.b2.r1a": ((("bowSlow", 3),), None, "bow hits slow {v}% for 2 s"),
+    "Archer.b2.r1b": ((("tripwire", 0.5),), "a dodge roll leaves a snare (6s): the first enemy to touch it is rooted 0.5s per rank", "your rolls leave a {v} s snare"),
+    "Archer.b2.r2c": ((("netVuln", 5),), None, "netted enemies take +{v}%"),
+    "Archer.b2.r3a": ((("bowKb", 0.75),), "bow hits knock enemies back 0.75 blocks per rank", "bow hits knock back {v} blocks"),
+    "Archer.b2.r4a": ((("netSlow", 1),), "after Hunter's Net's root, netted enemies stay 15% slower for 1s per rank", "netted enemies stay slowed {v} s longer"),
+    "Archer.b2.r4b": ((("rootWeak", 5),), "rooted enemies deal 5% less damage to you per rank (mob skills cannot be silenced)", "rooted enemies deal {v}% less to you"),
+    "Archer.b2.r5a": ((("a.HuntersNet.cd", 6),), None, "Hunter's Net cooldown -{v}%"),
+    "Archer.b2.r5b": ((("drRooted", 3),), "-3% damage taken per rank while an enemy within 8 blocks is rooted", "{v}% less damage taken near a rooted enemy"),
+    "Archer.b2.r6": ((("xSpider", 1),), "Hunter's Net holds 2 charges, and an enemy netted twice within 6s is stunned 1.5s", "Net: 2 charges; netted twice = 1.5 s stun"),
+    "Archer.b3.r1a": ((("bowSplit", 35),), "bow hits splash 35% to 1 more enemy per rank within 4 blocks", "bow hits splash {v}% to more enemies"),
+    "Archer.b3.r1b": ((("a.ArrowRain.pow", 3), ("a.ExplosiveArrow.pow", 3), ("a.HuntersNet.pow", 3)), "Arrow Rain, Explosive Arrow and Hunter's Net +3% damage per rank", "area abilities +{v}% damage"),
+    "Archer.b3.r3a": ((("a.ArrowRain.rootChance", 10),), "Arrow Rain hits have a 10% chance to Pin (root) for 0.5s", "{v}% chance a rain hit roots 0.5 s"),
+    "Archer.b3.r3b": ((("stam", 4), ("a.ArrowRain.cost", 5)), None, "+{v}% max Stamina; Arrow Rain costs {v2}% less"),
+    "Archer.b3.r3c": ((("a.ArrowRain.bounce", 20),), None, "rain hits bounce for {v}%"),
+    "Archer.b3.r4b": ((("rainPull", 0.5),), None, "Arrow Rain drags enemies inward {v} blocks a second"),
+    "Archer.b3.r6": ((("xFirestorm", 1),), "an Explosive Arrow that explodes inside your Arrow Rain detonates the whole rain: everything inside takes 150% of the blast (once per rain)",
+                     "Explosive Arrow detonates your Arrow Rain (150%)"),
+    # ---------------- MAGE (burst damage / survival)
+    "Mage.b1.r2a": ((("a.Starfall.stars", 2),), None, "+{v} stars"),
+    "Mage.b1.r2b": ((("starFollow", 1),), None, "stars home onto enemies within 4 blocks"),
+    "Mage.b1.r2c": ((("spellPow", 4),), None, "+{v}% spell damage"),
+    "Mage.b1.r3c": ((("cdAll", 4),), "-4% cooldown on every Mage ability per rank (cast speed is fixed in Hytale)", "every cooldown -{v}%"),
+    "Mage.b1.r4a": ((("a.Meteor.kb", 1.5),), None, "Meteor knocks enemies {v} blocks outward"),
+    "Mage.b1.r4b": ((("starCd", 0.1),), None, "each Starfall hit: Meteor -{v} s cooldown"),
+    "Mage.b1.r5a": ((("comboSpell", 5),), "+5% damage per rank on enemies hit by 2 different spells within 3s", "+{v}% on enemies hit by 2 spells within 3 s"),
+    "Mage.b1.r5b": ((("meteorMove", 4),), None, "+{v}% move speed for 3 s after Meteor"),
+    "Mage.b1.r6": ((("xCataclysm", 1),), "Meteor's impact radius is doubled and it calls down 3 stars of Starfall on the spot", "Meteor radius x2 + 3 stars on impact"),
+    "Mage.b2.r1a": ((("mana", 4),), None, "+{v}% max Mana"),
+    "Mage.b2.r1b": ((("overflow", 6),), None, "at full Mana your next spell +{v}%"),
+    "Mage.b2.r3c": ((("mreg", 5),), None, "Mana refills {v}% faster"),
+    "Mage.b2.r4a": ((("a.ArcaneBeam.bounce", 60),), "beam hits fork to 1 more enemy within 6 blocks for 60%", "beam hits fork for {v}%"),
+    "Mage.b2.r4b": ((("rangeAll", 6),), None, "+{v}% spell range"),
+    "Mage.b2.r4c": ((("beamKillMana", 3),), None, "a beam kill gives back {v}% Mana"),
+    "Mage.b2.r5a": ((("a.ArcaneBeam.rep", 10),), "beam hits strike again for 10% per rank", "beam hits strike again for {v}%"),
+    "Mage.b2.r5b": ((("chanMove", 3),), "+3% move speed per rank while channelling Arcane Beam", "+{v}% move speed while channelling"),
+    "Mage.b2.r6": ((("xPrism", 1),), "Arcane Beam lasts twice as long (4% max Mana a second after its normal time) and gains +2% damage a second held (max +40%)",
+                   "Arcane Beam 2x as long, ramping to +40%"),
+    "Mage.b3.r1a": ((("blinkStep", 1),), "your dodge roll blinks you 4 blocks on and costs Mana instead of Stamina", "your rolls blink 4 blocks for Mana"),
+    "Mage.b3.r1b": ((("drMagic", 2),), "take 2% less damage from projectiles and magic per rank", "{v}% less projectile / magic damage taken"),
+    "Mage.b3.r3a": ((("a.ManaBarrier.pow", 5),), "Mana Barrier soaks 5% more damage per Mana per rank", "Mana Barrier +{v}% per Mana"),
+    "Mage.b3.r3c": ((("barrierMreg", 5),), None, "Mana refills {v}% faster while your barrier is up"),
+    "Mage.b3.r4a": ((("barrierSlow", 8),), None, "attackers inside your barrier are {v}% slower for 2 s"),
+    "Mage.b3.r4b": ((("lastWard", 1),), "once per 60s, a killing blow is cancelled and you get a 1s ward", "a killing blow is cancelled (60 s apart)"),
+    "Mage.b3.r4c": ((("a.ManaBarrier.cd", 5),), None, "Mana Barrier cooldown -{v}%"),
+    "Mage.b3.r6": ((("xGlacial", 1),), "Frost Nova fires by itself when your Mana Barrier breaks (once per 10s), and frozen enemies take +20% spell damage",
+                   "a breaking barrier fires Frost Nova; frozen +20%"),
+    # ---------------- PRIEST (healer / protector)
+    "Priest.b1.r1b": ((("healReach", 1),), "Sacred Heal also reaches 1 more ally per rank up to 20 blocks away at 60%", "Sacred Heal reaches {v} more ally(s) up to 20 blocks"),
+    "Priest.b1.r2a": ((("a.MartyrsGrace.pow", 6),), "Martyr's Grace heals 6% more per rank", "Martyr's Grace +{v}% healing"),
+    "Priest.b1.r2b": ((("cdAll", 4),), "-4% cooldown on every Priest ability per rank (cast speed is fixed in Hytale)", "every cooldown -{v}%"),
+    "Priest.b1.r3b": ((("a.SacredHeal.hot", 3),), "Sacred Heal's heal-over-time +3% of the heal per rank", "heal over time +{v}%"),
+    "Priest.b1.r3c": ((("a.SacredHeal.radPct", 8),), None, "Sacred Heal reach +{v}%"),
+    "Priest.b1.r4a": ((("healFollow", 1),), "Sacred Heal centres on the most hurt party member within 20 blocks", "Sacred Heal centres on the most hurt ally"),
+    "Priest.b1.r4b": ((("triage", 2),), "allies below 40% Health get an extra 2% of max Health per rank from Sacred Heal", "+{v}% max Health to allies below 40%"),
+    "Priest.b1.r4c": ((("mreg", 5),), None, "Mana refills {v}% faster"),
+    "Priest.b1.r5a": ((("overheal", 4),), "Sacred Heal on a full-Health ally gives a ward of 4% of max Health per rank (5s)", "full-Health allies get a {v}% ward"),
+    "Priest.b1.r5b": ((("healMove", 3),), None, "healed allies +{v}% move speed for 3 s"),
+    "Priest.b1.r6": ((("xMiracle", 1),), "Sacred Heal on an ally below 20% Health heals them again in full and cleanses them (8s per ally)", "below 20%: a double heal + cleanse"),
+    "Priest.b2.r1a": ((("wardBoost", 5), ("a.ShieldBubble.pow", 5)), None, "wards and Shield Bubble +{v}%"),
+    "Priest.b2.r1b": ((("drShieldUp", 3),), "-3% damage taken per rank while your Shield Bubble is up or you have a ward", "{v}% less damage taken while shielded"),
+    "Priest.b2.r2c": ((("bubbleKb", 1),), None, "a breaking bubble pushes enemies 3 blocks"),
+    "Priest.b2.r3a": ((("a.ShieldBubble.cost", 6),), None, "Shield Bubble costs {v}% less"),
+    "Priest.b2.r3b": ((("bubbleDr", 4),), "players inside your Shield Bubble take 4% less damage per rank", "{v}% less damage inside your bubble"),
+    "Priest.b2.r4b": ((("hp", 3),), None, "+{v}% max Health"),
+    "Priest.b2.r4c": ((("bubbleHold", 4),), None, "after a bubble breaks, those inside take {v}% less for 3 s"),
+    "Priest.b2.r5a": ((("spiritDr", 0.5),), "a player Guardian Spirit saves takes 50% less damage for 0.5s per rank", "saved players take 50% less for {v} s"),
+    "Priest.b2.r5c": ((("spiritReach", 4),), "Guardian Spirit reaches 4 blocks farther", "Guardian Spirit +{v} blocks"),
+    "Priest.b2.r6": ((("xVigil", 1),), "a Guardian Spirit save also raises a free Shield Bubble on the saved player; the save's wait is 30% shorter", "saves raise a bubble; 30% shorter wait"),
+    "Priest.b3.r1b": ((("dmgWeapon", 3), ("smiteReach", 2)), "your wand bolts deal +3% per rank and keep full damage 2 blocks farther per rank (they already pierce every enemy)", "wand +{v}% damage, full damage +{v2} blocks farther"),
+    "Priest.b3.r3a": ((("sanctWeak", 4),), None, "enemies inside Sanctuary deal {v}% less"),
+    "Priest.b3.r3b": ((("zoneMove", 3),), None, "+{v}% move speed inside your Sanctuary / bubble"),
+    "Priest.b3.r4a": ((("sanctChain", 25),), None, "a heal inside Sanctuary heals everyone inside {v}%"),
+    "Priest.b3.r4b": ((("sanctMreg", 4),), "allies inside your Sanctuary refill Mana 4% faster per rank", "+{v}% Mana regen inside Sanctuary"),
+    "Priest.b3.r4c": ((("sanctWard", 3),), "when Sanctuary ends, everyone inside keeps a ward of 3% of max Health per rank (5s)", "a {v}% ward when Sanctuary ends"),
+    "Priest.b3.r5a": ((("a.Sanctuary.cost", 8),), None, "Sanctuary costs {v}% less"),
+    "Priest.b3.r5b": ((("sanctDmg", 2),), "allies inside your Sanctuary deal +2% damage per rank", "+{v}% damage inside your Sanctuary"),
+    "Priest.b3.r6": ((("xHolyLand", 1),), "Sanctuary holds 2 charges, so 2 can stand at once; allies where they overlap heal 150%, and nobody inside can be knocked back", "2 Sanctuaries; overlap heals 150%, no knockback"),
+}
+CLASS_FREE_FX = {"Assassin.b2.r2": ("ShadowClone", "Cloak / Vanishing Act leave a clone: nearby enemies lose you; then it hits one (60%)")}
+
+
+def fx_codes(u):
+    """the (code, per rank) pairs of an upgrade with an fx hook ([] otherwise)"""
+    h = u.get("hook")
+    return list(h[1]) if h and h[0] == "fx" else []
+
+
+def fx_owner(code):
+    return FX_OWNER.get(code, "SkyyClasses")
+
+
+def _fx_apply():
+    """R3a: puts the fx hooks + texts of CLASS_FX into TREES (only upgrades that had no hook)"""
+    seen = set()
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        for bn, b in enumerate(t["branches"]):
+            for r in b["rows"]:
+                fk = "%s.b%d.r%d" % (t["name"], bn + 1, r["r"])
+                if fk in CLASS_FREE_FX:
+                    assert r["free"] is not None and r["free"]["hook"] is None, fk
+                    r["free"]["hook"] = ("fx", CLASS_FREE_FX[fk][0])
+                    r["free"]["text"] = CLASS_FREE_FX[fk][1]
+                    seen.add(fk)
+                for u in r["ups"]:
+                    k = "%s.b%d.%s" % (t["name"], bn + 1, u["id"])
+                    if k not in CLASS_FX:
+                        continue
+                    assert u["hook"] is None, ("CLASS_FX only wires coming-soon upgrades", k)
+                    codes, nt, now = CLASS_FX[k]
+                    u["hook"] = ("fx", tuple((c, float(v)) for c, v in codes))
+                    if nt:
+                        u["text"] = nt
+                    u["now"] = now
+                    seen.add(k)
+    assert seen == set(CLASS_FX) | set(CLASS_FREE_FX), sorted(set(CLASS_FX) | set(CLASS_FREE_FX) - seen)
+
+
+_fx_apply()
+
+
 def check():
     """the table's own rules (every build script that imports it calls this)"""
     names = [t["name"] for t in TREES]
@@ -4156,12 +4440,33 @@ def check():
                     assert u["id"] not in ids and 1 <= u["max"] <= 5 and u["cost"] == (CAP_COST if r["cap"] else RANK_COST), (t["name"], u)
                     ids.add(u["id"])
                     h = u["hook"]
-                    assert h is None or (h[0] == "mod" and t["kind"] == "class") or (h[0] == "old" and t["kind"] == "skill"), u
+                    assert h is None or (h[0] in ("mod", "fx") and t["kind"] == "class") or (h[0] == "old" and t["kind"] == "skill"), u
+                    assert t["kind"] != "class" or h is not None, ("R3a: every class upgrade is wired", t["name"], u["name"])
+                    for c, v in fx_codes(u):   # R3a: every code is known, has an owner, and a positive per-rank value
+                        assert v > 0 and (c in FX_OWNER or c in FX_CLASSES or (c.startswith("a.") and c.split(".")[-1] in FX_AP and c.count(".") == 2)), (u["name"], c)
+                    assert ("now" in u) == bool(fx_codes(u)), u["name"]
                 f = r["free"]
-                assert f is None or f["hook"] is None or (f["hook"][0] == "abil" and t["kind"] == "class") or (f["hook"][0] == "old" and t["kind"] == "skill")
+                assert f is None or f["hook"] is None or (f["hook"][0] in ("abil", "fx") and t["kind"] == "class") or (f["hook"][0] == "old" and t["kind"] == "skill")
         if t["kind"] == "class":
-            frees = [r["free"]["hook"] for b in t["branches"] for r in b["rows"] if r["free"] and r["free"]["hook"]]
+            frees = [r["free"]["hook"] for b in t["branches"] for r in b["rows"] if r["free"] and r["free"]["hook"] and r["free"]["hook"][0] == "abil"]
             assert len(set(h[1] for h in frees)) == len(frees) and t["branches"][0]["rows"][0]["free"]["hook"][1] == "A1", t["name"]
+    # R3a: a code whose rank count matters has ONE per-rank value; every listed SkyyClasses code is used; ASCII texts
+    per = {}
+    used = set()
+    for t in TREES:
+        for b in t["branches"]:
+            for r in b["rows"]:
+                if r["free"] and r["free"]["hook"] and r["free"]["hook"][0] == "fx":
+                    used.add(r["free"]["hook"][1])
+                for u in r["ups"]:
+                    assert all(ord(ch) < 128 for ch in u["name"] + u["text"] + u.get("now", "")), u["name"]
+                    for c, v in fx_codes(u):
+                        used.add(c)
+                        rk = c if c in FX_RANKED else ("a.*." + c.split(".")[-1] if c.startswith("a.") and "a.*." + c.split(".")[-1] in FX_RANKED else None)
+                        if rk:
+                            assert per.setdefault(c, v) == v, ("one per-rank value for a ranked code", c)
+    assert not [c for c in FX_CLASSES if c not in used], [c for c in FX_CLASSES if c not in used]
+    assert not [c for c in FX_OWNER if c not in used], [c for c in FX_OWNER if c not in used]
     return True
 
 
