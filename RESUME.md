@@ -43,7 +43,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 
 ## RUNNING NOW (2026-10-20 evening; Skyy: "keep going down the list. dont stop until the entire list is done" - defaults, research when in doubt)
 - DEPLOYED today: 210 Skill Trees 3 R0-R2 + chests + water bucket; 211 bench keeper; 212 Skill Trees R3 (class trees live, 26 skill upgrades), Bazaar 0.2.0 order book, Rebirth 0.4.0 VP, NEW SkyyZones 0.1.0.
-- RUNNING: balp3 (Balance P3 XP: Skills 0.4.57, Cooking 0.1.15, Exploration 0.3.2, Collections 0.2.30, Fishing 0.1.12; Lv 50 at ~33 h per Skyy), st3fix (Trees 0.4.2 dead nodes + skill gates + Head Start, Pets 0.4.6 rebirth pet XP, Rebirth 0.4.1 text), st3r3c (Gear/Accessories/Armory coming-soon rows).
+- DEPLOYED 19:18 (TEST-CHECKLIST 213): Trees 0.4.3, Pets 0.4.6, Rebirth 0.4.1, Gear 0.3.33, Accessories 0.5.29 (skill gates, Head Start, R3c upgrades). Workbench republished.
+- RUNNING: balp3 (Balance P3 XP: Skills / Cooking / Exploration / Collections / Fishing), zones02 (SkyyZones 0.2.0 Z2 regen + Z3 if probes clean), P4 combat spec draft (research/Balance-P4-Combat-Spec.md).
 - NEXT: (workbench republished 19:30) Rich Seams overshoot: Mining tree Fortune 67.5 at max vs budget 40 (Rich Seams = +10 Fortune/rank via old MFortune node, text says +2% double-ore) -> fix in P5/P6; remaining Skills-side coming-soon (actives, streaks, capstones); P4 combat+classes -> P5 power sources (+ pet XP rescale from P3, Heavy Lv 16-19 gap) -> P6 -> P7 -> P8 -> P9; SkyyZones Z2 regen + Z3/Z4; tooltips pass; Cooking ING_TIER v3; then the Later list.
 
 ## FOR SKYY (while paused)
