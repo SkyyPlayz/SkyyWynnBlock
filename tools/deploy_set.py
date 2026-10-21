@@ -20,9 +20,9 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.29"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.32"), ("SkyySkills", "0.4.56"),
-    ("SkyyAccessories", "0.5.28"), ("SkyyClasses", "0.1.43"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.14"), ("SkyyTrees", "0.4.2"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.33"), ("SkyySkills", "0.4.56"),
+    ("SkyyAccessories", "0.5.29"), ("SkyyClasses", "0.1.43"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.14"), ("SkyyTrees", "0.4.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -93,7 +93,7 @@ SET = [
     # FLOOR (2026-10-20, Skill Trees R3): SkyyTrees 0.4.1 + SkyyClasses 0.1.43 + SkyyArmory 0.1.41 deploy + roll back TOGETHER (class tree effects; gates41 marker raises class gates, History in history/gates041/); the R3b readers (Skills 0.4.56, Gear 0.3.32, Cooking 0.1.14, Exploration 0.3.1, Fishing 0.1.11, Pets 0.4.5, Accessories 0.5.28) need SkyyTrees 0.4.1 (0.4.0 answers rank 0). Skills 0.4.56 adds Alchemy,Smithing to bridge.bonus.xpSkills once (Undo in Server Setup).
     # FLOOR (2026-10-20, SkyyBazaar 0.2.0): rollback to 0.1.x is safe ONLY with an empty order book - 0.1.x ignores Skyy_SkyyBazaar/book.properties and its bazaar:fn:closeall answers ok:0 over stranded escrow. Before rolling back: /bazaaradmin book cancelall confirm, every player claims (/bazaar orders or /bazaar claim), then /bazaaradmin book check must say "rollback to 0.1.x SAFE".
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
-    # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
+    # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
     # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
     # SkyyWorldGen 0.7 (2026-10-15): a jar without the SkyWynnZones2 type cannot decode skywynn_zones2's config.json (one SEVERE
     # "Failed to load world" at boot, every other world fine). Before rolling back to 0.6: players /zone leave, stop the server, delete
