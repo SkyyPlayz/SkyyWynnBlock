@@ -1,0 +1,3810 @@
+"""SkyyZones 0.2.0 - build script (derived from the hand-written 0.1.0 by tools/zones_0_2_0_patch.py - edit the patch, not this file).
+0.2.0 (2026-10-20) = phase Z2 of research/cloud/Zone-Regen-Spec.md (sections 4.1-4.3, 5.2-5.3, 7 X1-X4, 9): REGROWING BLOCKS in SKYBLOCK
+  regions. Skyy 2026-10-15 (docs/answered/world.md 75): "when you mine stone, you get stone, and it swaps to an unbreakable block for a few
+  seconds, then swaps back"; spec defaults taken 2026-10-20 (world.md 120: regrow 3-15 s ores, bedrock placeholders, ...).
+  1. THE BREAK (ZGuard, sync, first among the event's systems): a listed block of a SKYBLOCK region (decide() = allow, not builder mode) whose
+     type regrows (regrow.<type> > 0 s) -> ZRegen.broke: the exact block id (state kept) + rotation are read, a D line is APPENDED TO THE
+     JOURNAL FIRST (regen/<world>.journal, written + flushed in the handler; a failed write CANCELS the break: no drop, nothing changes),
+     then the engine breaks it as vanilla (drop, XP, collections untouched). A position already waiting ("depleted") refuses every break /
+     dig crack / place there ("Growing back - wait a moment.") - one break = one drop roll, a regrowing block can never be mined twice for
+     one regrow (spec 7 X3; two breaks in one tick: the 2nd is refused). Mobs: the same (a mob break of a listed block regrows too).
+     Multi-block parts (filler != 0) and odd ids break like vanilla (no regrow, warned once). Builder mode breaks start no regrow (spec 3.1).
+  2. THE PLACEHOLDER (ZPass on the world thread, queued by World.execute - probe Z1: execute() always QUEUES (taskQueue.offer), so it runs
+     after performBlockBreak removed the block): the spot still holds the original id = another mod cancelled the break -> the entry is
+     dropped (R line); else the type's placeholder (default Rock_Bedrock, rotation 0) is written with BlockOperations.setBlock (no
+     PlaceBlockEvent - probe Z5: SkyySkills' PlacedStore only adds on PlaceBlockEvent and removes on break, so a regrown block pays XP
+     again; NO SkyySkills change needed - confirmed against SkyySkills 0.4.56).
+  3. THE TIMER: regrowAt = now + regrow.<type> s x regen.speedMult x (1 +- regen.jitter), at least 0.5 s. A 1 s scheduler tick (ZTicker)
+     queues one ZPass per world that has waiting blocks; the pass writes at most regen.passBatch blocks; due -> the spot holds the
+     placeholder or air -> the original id + rotation back (R line); a player standing in the block's space -> retry every 1 s (after 12
+     tries: warned once, every 5 s; spec 4.3); the spot changed by hand (another block) -> left as it is, entry dropped, logged; already the
+     original -> entry dropped. regen.maxDepleted per world: above it the oldest waiting block comes back early.
+  4. CATCH-UP ON CHUNK LOAD: a due entry in an unloaded chunk is skipped (nothing is ticked there; the chunk saves with the placeholder) and
+     restored by the first pass after the chunk is loaded again (polled every second; ChunkPreLoadProcessEvent carries a Holder, not a
+     writable section). /zones restore and regen.enabled off ASK for the chunk (ChunkStore.getChunkSectionReferenceAtBlockAsync) and run a
+     pass when it is there (thenRunAsync on the world).
+  5. RESTART SAFETY: regen/<world>.journal (append-only: "D x y z <original id> <type> <regrowAt ms> <rotation> <placeholder>", "R x y z")
+     + regen/<world>.snap every 60 s (temp file + atomic rename, then the journal is emptied; an entry is put in memory BEFORE its D line so
+     a snapshot never misses one). Start: snapshot + journal replayed (bad lines skipped + counted), then compacted (never when a file
+     could not be read); timers are wall-clock (regen.offlineCounts true; false = the downtime is added to every timer). Restart
+     mid-timer keeps the block waiting; a crash at worst lets a block grow back early, never a placeholder forever (the journal line is
+     written before the block changes). Shutdown: a final snapshot.
+  6. COMMANDS: /zones status (builders: waiting blocks per world / type, next due, counters, journal errors), /zones restore <region|all>
+     (admins: every waiting block back NOW - loaded chunks at once, the rest are loaded first; REQUIRED BEFORE ANY ROLLBACK of SkyyZones,
+     also Server Setup -> Zones -> Regrowing blocks -> Restore all), /zones audit <region> [fix] (admins: placeholder blocks in the region's
+     loaded chunks with no waiting entry - a lost write; 'fix' turns them into their type's first plain block id; at most 500,000 blocks a
+     run). The spec's automatic audit at start is NOT done (the journal is written synchronously now, and builders may use bedrock as decor).
+     /zones info shows "Mined: grows back as X in N s". Bridge zones:fn:check answers deny for break / place at a waiting spot.
+  7. SERVER SETUP -> Zones -> Regrowing blocks (new file Skyy_SkyyZones/regen.properties, written once; types.properties is unchanged - no
+     migration): regen.enabled (danger; off = every waiting block back at once, breaks like 0.1.0), regen.speedMult, regen.jitter,
+     regen.offlineCounts, regen.defaultSec (a type with no row, 5 s), regen.passBatch 200, regen.maxDepleted 20,000, the table
+     regrow.<type> = <seconds>,<placeholder> (spec Q2 defaults: stone 3, copper 4, iron 5, thorium 6, cobalt 8, adamantite 10, mithril 12,
+     onyxium 15, gem 30; silver 6 + gold 6 are the BUILDER'S CHOICE - Q2 has no silver / gold row; logs 0, crops 0 - 0 = no regrow: logs + crops
+     wait for Z3 whole-tree / crop-stage regrow and are held at 0 until then) and the action "Restore all".
+  FIXER (critics of 0.2.0): (a) an unreadable regen/ file at a start HOLDS that world's files (no snapshot rewrites or deletes them until a
+     start reads them) and files are read leniently (a bad byte no longer fails the read); (b) a torn last journal line (no newline) is
+     skipped, warned with its text and the file kept as <world>.journal.torn-<ms>; (c) a placeholder that is itself a listed block of a type
+     is refused in Server Setup and replaced by Rock_Bedrock at run time (else a spot could be mined again at once); (d) logs / crops rows
+     above 0 are refused (Server Setup) / read as 0 (hand edit) until Z3; (e) regen.maxDepleted and region / type changes FORCE the entry,
+     so an unloaded one is loaded too; a region deleted / retyped / overlaid (any index change) puts its waiting blocks back at once (spec 9);
+     (f) chunk loads are asked once per chunk, at most 8 per pass, re-asked after 30 s if the chunk never came, and the load callback only
+     queues a merged pass; (g) regen.offlineCounts off measures the downtime from regen/alive (a 60 s heartbeat), not the last mined block;
+     (h) the stone type lists the cobbles + mossy stone (Rock_*_Cobble, Rock_Stone_Mossy; spec 4.2 "Cobble"; no migration: no
+     Skyy_SkyyZones folder exists in any world yet - 0.1.0 never started on Skyy's PC); (i) /zones audit fix puts an ore back as its type's
+     vanilla id (Ore_Copper* -> Ore_Copper_Stone, build-time table) and prefers stone when several types share the placeholder; (j) /zones
+     info and region create / types say when a listed type does not grow back; (k) regen.passBatch = writes per PASS (the rest follow on
+     the next world tick; this is the spec's loadBatch cap too).
+  FIXER 2 (second critics): (l) a block that grew back is journaled as a V line and kept 30 min in the snapshot; the next start CHECKS those
+     spots when their chunk is loaded - one still holding its placeholder (a crash before the chunk was saved again) gets its original back
+     (/zones status counts them); (m) a regen/ file with skipped bad lines is kept as <file>.bad-<ms> before the start compacts it; (n) a
+     waiting spot is refused while zones.on is off too (only builder mode passes; bridge zones:fn:check the same); (o) a backlog pass is
+     never re-queued into the same world tick (World.consumeTaskQueue drains its queue until empty - read from the jar): the next pass runs
+     50 ms later from the scheduler, so regen.passBatch really caps writes per tick; (p) a queued pass that never ran (its world stopped)
+     blocks that world's passes for at most 5 s; (q) /zones audit reads at most 500,000 blocks a run (a world-thread stall cap).
+  8. 0.1.0 CRITIC FINDING (fail-open on a typo in a hand-edited region line) - CLOSED: 0.1.0 already kept a bad region protecting by its copy
+     in memory (reload) / its newest history/ copy / as FULL with its boxes; it still dropped a region whose world or boxes line was bad when
+     nothing was in memory and history/ held no copy (a fresh start after a hand edit). Now: (a) regions.good.properties = the text of every
+     successful write and every clean load with regions - checked FIRST for a region's last good copy and for a missing / blank / unreadable file at a
+     start (exact, history/ is one change behind); (b) a bad region with no good copy anywhere, a readable world but no readable box locks
+     its WHOLE WORLD as FULL (ZCfg.LOCKW, warned loudly) until the line is fixed + /zones reload; only a region with no readable world is
+     left out (warned).
+  Z3 (whole-tree fell + respawn, crop stage reset) is NOT in this round: the engine probes do not answer cleanly from the server jar -
+  Wood_*_Trunk / Plant_Leaves_* carry Support + Physics (BlockPhysicsUtil support chains decide at RUN time whether the rest of a tree
+  falls - Z2 / Z16) and trunks carry Farming Stages (tree growth), Z17 (a tree rewritten around a player) needs a live test; crops
+  F-harvest through ChangeFarmingStage-like writes with no block event (Z0b). Left for a later round (logs / crops regrow 0 meanwhile).
+  ROLLBACK to 0.1.0: /zones restore all (or Server Setup -> Zones -> Restore all), wait until /zones status says nothing is waiting, then
+  stop the server; regen.properties, regen/ and regions.good.properties may stay (0.1.0 ignores them).
+  CHECKED: SkyyZones/test_skyyzones_0.2.0.py.
+
+0.1.0 (the base, unchanged below unless named above) - a NEW mod: protected worlds + regions, phases Z0 + Z1 of
+research/cloud/Zone-Regen-Spec.md (decisions: docs/answered/world.md lines 63, 75, 115; Skyy 2026-10-18 popup "Build SkyyZones
+(Recommended)" = our own mod that borrows Protect Area's IDEAS only - enter / leave area titles, overlap priority, op bypass; Protect
+Area is All Rights Reserved and its code was never read). Skyy was away (2026-10-20 "figure it out"): every [bracketed] default of the
+spec's 'Questions for Skyy' is taken (one mod; break gate; placeholders; solo pack vanilla; ...).
+
+Run:   python SkyyZones/build_skyyzones_0.2.0.py      -> SkyyZones/SkyyZones-0.2.0.jar   (no --deploy: tools/deploy_set.py installs the set)
+Check: python SkyyZones/test_skyyzones_0.2.0.py       (bare JVMs, -Xverify:all, every new code path executed, engine-access audit)
+
+WHAT 0.1.0 IS (Z1 - protection only; regrowing blocks = Z2, trees / crops = Z3, scaffolding = Z3b, gates + anti-abuse = Z4):
+  - Two region MODES (spec 3.0): FULL = nothing breaks or is placed, a hit gives nothing (the break is cancelled in the handler, so the
+    engine never rolls drops - Z19); SKYBLOCK = still nothing is placed and nothing breaks EXCEPT the block ids of the region's resource
+    types (types.properties); those break exactly like vanilla for now (drop, XP, collections - Z2 adds the placeholder + regrow).
+  - Deny by default (spec 3.1 / 3.2), first match wins: (1) a world that is neither in zones.worlds nor holds a region -> SkyyZones does
+    nothing (player islands, shards, the solo pack: unprotected unless a region is drawn there); (2) builder mode (/zones build on,
+    skyyzones.build, off at every login) or the op-bypass row (admins always pass, default OFF so admins test as players) -> allowed;
+    (3) SKYBLOCK region + listed block -> break allowed; (4) region flags containers / furnaces -> chests / processing benches usable;
+    (5) everything else in a protected world or inside a region -> refused (break, dig crack, place, F-harvest of crops, chests,
+    furnaces, and a block USE (UseBlockEvent) while holding one of the use.tools items). Doors, seats, beds, crafting benches, NPCs, our
+    Skyy_* blocks, picking up and dropping items stay allowed. A mob (any non-player entity) breaking / placing in a protected spot is
+    refused (zones.blockMobs).
+    GAP (fixer probe Z0b, re-checked at build): hoe tilling, shovel paths, buckets (scoop / pour), block-state cycling and other
+    ChangeBlock / ChangeState / CycleBlockGroup / PlaceFluid / RefillContainer interactions (and the farming FertilizeSoil /
+    UseWateringCan / ChangeFarmingStage ones) write the block straight from the item's
+    interaction chain - no Break / Damage / Place / UseBlock event, no other cancellable hook (PlayerMouseButtonEvent's cancel is never
+    read; vanilla TriggerVolume NoUse has the same gap). They can NOT be stopped in 0.1.0; Z2's regrow scan is the planned fix.
+  - Guard order: every ZGuard system declares RootDependency.firstSet() (like the engine's own first systems), so it runs before other
+    mods' handlers of the same event and they skip a cancelled one. Any Throwable inside a guard in a protected spot (not in builder
+    mode) cancels the event (fail closed) and is counted (/zones info shows the count).
+  - Overlap priority: where regions overlap the highest priority wins (ties: a SKYBLOCK region before a FULL one, then the smaller id -
+    fixer 2); its mode and flags decide; in a SKYBLOCK top
+    region the resource types of every SKYBLOCK region at that spot count (spec 5.3 "types are the union").
+  - Regions: /zones region create <id> <full or skyblock> from the Zone Wand corners (our own item Skyy_Zones_Wand, a vanilla stick look;
+    hit two blocks; the wand never breaks anything) or, without wand corners, the vanilla builder-tool selection (probe Z6: BuilderToolsPlugin
+    .getState(Player, PlayerRef).getSelection() min / max); addbox / delete / mode / priority / title / types / flags. Data file
+    Skyy_SkyyZones/regions.properties (spec 5.3 lines; written atomically on the scheduler thread, the old file copied to history/ first -
+    newest 10 kept - and one line per change in region-changes.log). A file that cannot be read or holds a bad line blocks every region
+    edit until it is fixed + /zones reload (never overwritten), while the good regions keep protecting; a region whose lines turn bad
+    keeps protecting too (fail closed): its last good copy in memory, else the newest good copy in history/, else (world + boxes still
+    readable) as a FULL region with those boxes. /zones reload first waits (max 1 s) for a pending regions.properties write.
+    Fixer 2: a MISSING regions.properties or one with no region line never drops regions in memory (edits blocked; /zones reload clear
+    accepts it, keeping the old text in history/); at a start a missing / blank file - or an unreadable one with nothing in memory - is
+    covered by the newest good history/ copy. A file is read 3 times (100 ms apart) before it counts as unreadable. Unknown
+    region.<id>.<field> lines (spec 5.3 placeAllow / gate = later phases) are kept verbatim and written back, never a problem.
+    At most 64 boxes per region (spec 5.3).
+  - /zones show [id|off] [seconds] (particle outline to YOU only, probe Z13), /zones info (what protects the block you look at), /zones list,
+    /zones type <type> <ids|none|look> (look = add the block you look at to that type), /zones type add <type> <ids|look> (spec 5.1),
+    /zones region create <id> <mode> [types] (spec 5.1), /zones show <seconds>, /zones reload clear.
+  - Enter / leave area titles: entering a region that has a title shows a vanilla event title (subtitle "Protected area" / "Gathering
+    area"), leaving shows a small notice; the same region's title waits titles.gapSec before it shows again.
+  - Builder mode: /zones build on|off (or /zones build = toggle), skyyzones.build (ops have it), OFF at every login (memory only), and off
+    when the node is gone (re-checked at most every 30 s at a protected action - fixer 2); while ON a
+    BUILD MODE event title on switching + a reminder notice every build.remindSec (default 300, 0 = none) - a real HUD tag needs SkyyHud (listed for the
+    main session); bridge zones:build:<uuid> = TRUE while ON for that later SkyyHud tag.
+  - Server Setup -> Zones (tools/skyycfg.py, KEEP=10): zone protection (part switch, default ON), protected worlds, admins always bypass,
+    mobs can't break, refusal note gap, use.tools, titles on / leave / gap, outline seconds / particle, build reminder, the resource-type
+    table (types.properties), the regions table (one line per region; mode / priority / types / flags / title EDITABLE there - fixer 2,
+    PROJECT-RULES 4; world, boxes, new regions and deletes stay commands: they need wand corners) and a "Re-read files" action. Region
+    edits (command or table) are logged + versioned by this mod (history/, region-changes.log), not the kit.
+  - Bridge (java.lang types only, never throwing): zones:version "0.1.0"; zones:fn:check apply(Object[] { String world, Integer x,
+    Integer y, Integer z, String action (break / place / container / furnace), String blockId }) -> "allow" or "deny"; zones:fn:region
+    apply(Object[] { world, x, y, z }) -> the top region id or null; zones:build:<uuid> Boolean.TRUE while that player is in builder mode.
+  - Commands: /zones (skyyzones.build, setPermissionGroups(new String[0]) - never a player group) with usage variants for 1-4 words;
+    every node overrides hasPermission so skyyzones.admin alone is enough too; admin actions check skyyzones.admin in code. Nothing replaced (new command name; /zone of SkyyWorldGen is unrelated).
+
+Z0 ENGINE PROBES (read-only, HytaleServer.jar 0.7.2 bytecode; the answers this build relies on are re-checked below at build time):
+  Z5  PlaceBlockEvent is only constructed by BlockPlaceUtils (a player placing) - a block written from code never fires it.
+  Z5b A cancelled PlaceBlockEvent: placeBlock calls invalidateBlock and returns BEFORE removeItemStackFromSlot -> the held block stays in
+      the hand (no item loss in a FULL region; fixer 2, re-checked at build).
+  Z6  BuilderToolsPlugin.getState(Player, PlayerRef).getSelection() -> BlockSelection.hasSelectionBounds / getSelectionMin / Max: readable.
+  Z9  EnvironmentBreakBlockEvent is a plain EcsEvent (NOT cancellable): fire spread (FireFluidTicker) and source-less explosions cannot be
+      stopped by an event (WorldConfig.setDisabledFluidTickers can switch the fire ticker off per world - left to the world config);
+      explosions WITH a source entity go through BlockHarvestUtils.damageSingleBlock -> DamageBlockEvent on that entity (our guard refuses
+      it in a protected spot); fluids flowing fire no block event at all (builders avoid open source blocks near builds, spec 3.2).
+  Z13 ParticleUtil.spawnParticleEffect(String, Vector3dc, List<Ref>, ComponentAccessor) = only the listed players (in-game PASS:
+      SkyyTownProbe Q0 #4, 2026-10-10).
+  Z14 No vanilla scaffold block / item in Assets.zip; PlaceBlockEvent carries getTargetBlock + getItemInHand + getRotation (an allow-list
+      by the held block id is possible - Z3b).
+  Z18 A cancelled DamageBlockEvent: damageSingleBlock calls BlockSection.invalidateBlock(x, y, z) and returns false BEFORE the health
+      change -> no crack, the block is re-sent; a notification on a refused hit is a normal packet.
+  Z19 A cancelled BreakBlockEvent: performBlockBreak calls invalidateBlock and returns BEFORE naturallyRemoveBlock (which rolls the
+      drops) -> NO drop, no XP / collection (they wait for the uncancelled event).
+  EXTRA  Vanilla 0.7 ships TriggerVolumes (builtin/triggervolumes: box / sphere / cylinder volumes, rules NoDestroy with ExceptBlocks /
+      ExceptBlockTags / ExceptTools, NoBuild, NoUse, NoHarvest, NoDoorOpen, NoDamage, ShowEventTitleEffect, PermissionCondition) - a
+      vanilla building block for FULL / SKYBLOCK-like areas (builder-tool UI only, no Server Setup, no regrow); noted for the main session.
+"""
+import sys, os, re, json, zipfile
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+import skyybuild as B
+import skyycfg as CFG
+import skyyui as SUI
+
+VERSION = "0.2.0"
+MOD = "SkyyZones"
+HERE = os.path.dirname(os.path.abspath(__file__))
+SUI.verify()
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+ASSETS_ZIP = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+
+PKG = "com.skyy.zones"
+ADMIN, BUILDN = "skyyzones.admin", "skyyzones.build"
+WAND = "Skyy_Zones_Wand"
+GOOD, BAD, INFO, WARN, MUTED, GOLD = (SUI.COLOR["success"], SUI.COLOR["error"], SUI.COLOR["info"], SUI.COLOR["warning"], SUI.COLOR["text"],
+                                      SUI.COLOR["gold"])
+T = {
+    "PKG": PKG, "VERSION": VERSION, "ADMIN": ADMIN, "BUILDN": BUILDN, "WAND": WAND,
+    "GOOD": GOOD, "BAD": BAD, "INFO": INFO, "WARN": WARN, "MUTED": MUTED, "GOLD": GOLD,
+    "JP": "com.hypixel.hytale.server.core.plugin.JavaPlugin",
+    "JPI": "com.hypixel.hytale.server.core.plugin.JavaPluginInit",
+    "PR": "com.hypixel.hytale.server.core.universe.PlayerRef",
+    "REF": "com.hypixel.hytale.component.Ref",
+    "ST": "com.hypixel.hytale.component.Store",
+    "CAC": "com.hypixel.hytale.component.ComponentAccessor",
+    "UNI": "com.hypixel.hytale.server.core.universe.Universe",
+    "WLD": "com.hypixel.hytale.server.core.universe.world.World",
+    "EST": "com.hypixel.hytale.server.core.universe.world.storage.EntityStore",
+    "CHS": "com.hypixel.hytale.server.core.universe.world.storage.ChunkStore",
+    "BSEC": "com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection",
+    "CHU": "com.hypixel.hytale.math.util.ChunkUtil",
+    "APC": "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand",
+    "CTX": "com.hypixel.hytale.server.core.command.system.CommandContext",
+    "ATY": "com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes",
+    "RA": "com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg",
+    "MSG": "com.hypixel.hytale.server.core.Message",
+    "HSV": "com.hypixel.hytale.server.core.HytaleServer",
+    "LOG": "com.hypixel.hytale.logger.HytaleLogger",
+    "PLA": "com.hypixel.hytale.server.core.entity.entities.Player",
+    "PM": "com.hypixel.hytale.server.core.permissions.PermissionsModule",
+    "EES": "com.hypixel.hytale.component.system.EntityEventSystem",
+    "ETS": "com.hypixel.hytale.component.system.tick.EntityTickingSystem",
+    "ACH": "com.hypixel.hytale.component.ArchetypeChunk",
+    "CB": "com.hypixel.hytale.component.CommandBuffer",
+    "EV": "com.hypixel.hytale.component.system.EcsEvent",
+    "ICE": "com.hypixel.hytale.component.system.ICancellableEcsEvent",
+    "QRY": "com.hypixel.hytale.component.query.Query",
+    "ARCH": "com.hypixel.hytale.component.Archetype",
+    "TC": "com.hypixel.hytale.server.core.modules.entity.component.TransformComponent",
+    "V3I": "org.joml.Vector3i",
+    "V3D": "org.joml.Vector3d",
+    "V3DC": "org.joml.Vector3dc",
+    "BBE": "com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent",
+    "DBE": "com.hypixel.hytale.server.core.event.events.ecs.DamageBlockEvent",
+    "PLBE": "com.hypixel.hytale.server.core.event.events.ecs.PlaceBlockEvent",
+    "UBE": "com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent",
+    "UBPRE": "com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent$Pre",
+    "PDE": "com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent",
+    "ICTX": "com.hypixel.hytale.server.core.entity.InteractionContext",
+    "IS": "com.hypixel.hytale.server.core.inventory.ItemStack",
+    "IC": "com.hypixel.hytale.server.core.inventory.container.ItemContainer",
+    "INV": "com.hypixel.hytale.server.core.inventory.Inventory",
+    "BTY": "com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType",
+    "BENCH": "com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.Bench",
+    "BENT": "com.hypixel.hytale.protocol.BenchType",
+    "FARM": "com.hypixel.hytale.server.core.asset.type.blocktype.config.farming.FarmingData",
+    "GATH": "com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockGathering",
+    "ITY": "com.hypixel.hytale.protocol.InteractionType",
+    "PTU": "com.hypixel.hytale.server.core.universe.world.ParticleUtil",
+    "PSYS": "com.hypixel.hytale.server.core.asset.type.particle.config.ParticleSystem",
+    "ETU": "com.hypixel.hytale.server.core.util.EventTitleUtil",
+    "NTU": "com.hypixel.hytale.server.core.util.NotificationUtil",
+    "NST": "com.hypixel.hytale.protocol.packets.interface_.NotificationStyle",
+    "TGU": "com.hypixel.hytale.server.core.util.TargetUtil",
+    "BTP": "com.hypixel.hytale.builtin.buildertools.BuilderToolsPlugin",
+    "BTS": "com.hypixel.hytale.builtin.buildertools.BuilderToolsPlugin$BuilderState",
+    "BSEL": "com.hypixel.hytale.server.core.prefab.selection.standard.BlockSelection",
+    "BOPS": "com.hypixel.hytale.server.core.universe.world.chunk.BlockOperations",   # 0.2.0 block writes (placeholder / regrow)
+}
+PB = "com.hypixel.hytale.server.core.plugin.PluginBase"
+AC = "com.hypixel.hytale.server.core.command.system.AbstractCommand"
+# every engine member this mod calls (API drift stops the build here, not in game)
+for c, m in ((T["PM"], "get"), (T["PM"], "hasPermission"), (T["PR"], "getUuid"), (T["PR"], "getUsername"), (T["PR"], "sendMessage"),
+             (T["PR"], "getPacketHandler"), (T["PR"], "getComponentType"), (T["WLD"], "getName"), (T["WLD"], "getChunkStore"),
+             (T["EST"], "getWorld"), (T["ST"], "getExternalData"), (T["ST"], "getComponent"), (T["CHS"], "getChunkReference"),
+             (T["CHS"], "getChunkSectionReferenceAtBlock"), (T["CHS"], "getStore"), (T["BSEC"], "get"), (T["BSEC"], "getComponentType"),
+             (T["CHU"], "indexChunkFromBlock"), (T["MSG"], "raw"), (T["MSG"], "color"), (T["HSV"], "SCHEDULED_EXECUTOR"),
+             (T["PLA"], "getComponentType"), (T["PLA"], "getInventory"), (T["INV"], "getCombinedStorageFirst"), (T["IC"], "getCapacity"),
+             (T["IC"], "getItemStack"), (T["IC"], "addItemStack"), (T["IS"], "getItemId"), (T["IS"], "isEmpty"), (T["IS"], "getQuantity"),
+             (T["TC"], "getComponentType"), (T["TC"], "getPosition"), (T["BBE"], "getTargetBlock"), (T["BBE"], "getItemInHand"),
+             (T["BBE"], "getBlockType"), (T["DBE"], "getTargetBlock"), (T["DBE"], "getItemInHand"), (T["DBE"], "getBlockType"),
+             (T["PLBE"], "getTargetBlock"), (T["PLBE"], "getItemInHand"), (T["UBE"], "getTargetBlock"), (T["UBE"], "getBlockType"),
+             (T["UBE"], "getInteractionType"), (T["UBE"], "getContext"), (T["UBPRE"], "setCancelled"), (T["ICTX"], "getHeldItem"),
+             (T["PDE"], "getPlayerRef"), (T["BTY"], "getId"), (T["BTY"], "getAssetMap"), (T["BTY"], "getBench"), (T["BTY"], "getInteractions"),
+             (T["BTY"], "isDoor"), (T["BTY"], "getBeds"), (T["BTY"], "getSeats"), (T["BTY"], "getFarming"), (T["BTY"], "getGathering"),
+             (T["BENCH"], "getType"), (T["FARM"], "getStages"), (T["GATH"], "getHarvest"), (T["ITY"], "Primary"), (T["ITY"], "Use"),
+             (T["ITY"], "Secondary"), (T["PTU"], "spawnParticleEffect"), (T["PSYS"], "getAssetMap"), (T["ETU"], "showEventTitleToPlayer"),
+             (T["NTU"], "sendNotification"), (T["NST"], "Warning"), (T["NST"], "Success"), (T["TGU"], "getTargetBlock"),
+             (T["BTP"], "getState"), (T["BTS"], "getSelection"), (T["BSEL"], "hasSelectionBounds"), (T["BSEL"], "getSelectionMin"),
+             (T["BSEL"], "getSelectionMax"),
+             (T["ATY"], "STRING"), (AC, "requirePermission"), (AC, "setPermissionGroups"), (AC, "addUsageVariant"), (AC, "withRequiredArg"),
+             (T["CTX"], "get"), ("com.hypixel.hytale.event.EventRegistry", "registerGlobal"), (PB, "getEventRegistry"),
+             (PB, "getEntityStoreRegistry"), (PB, "getCommandRegistry"), (PB, "getDataDirectory"), (PB, "getLogger"), (PB, "shutdown"),
+             ("com.hypixel.hytale.component.system.EventSystem", "shouldProcessEvent")):
+    B.probe(pool, c, m)
+_sig = lambda cls, name: [str(x.getSignature()) for x in pool.get(cls).getDeclaredMethods() if str(x.getName()) == name]
+for cls, name, sig in ((T["PTU"], "spawnParticleEffect", "(Ljava/lang/String;Lorg/joml/Vector3dc;Ljava/util/List;Lcom/hypixel/hytale/component/ComponentAccessor;)V"),
+                       (T["ETU"], "showEventTitleToPlayer", "(Lcom/hypixel/hytale/server/core/universe/PlayerRef;Lcom/hypixel/hytale/server/core/Message;Lcom/hypixel/hytale/server/core/Message;Z)V"),
+                       (T["NTU"], "sendNotification", "(Lcom/hypixel/hytale/server/core/io/PacketHandler;Lcom/hypixel/hytale/server/core/Message;Lcom/hypixel/hytale/protocol/packets/interface_/NotificationStyle;)V"),
+                       (T["TGU"], "getTargetBlock", "(Lcom/hypixel/hytale/component/Ref;DLcom/hypixel/hytale/component/ComponentAccessor;)Lorg/joml/Vector3i;"),
+                       (T["BTP"], "getState", "(Lcom/hypixel/hytale/server/core/entity/entities/Player;Lcom/hypixel/hytale/server/core/universe/PlayerRef;)Lcom/hypixel/hytale/builtin/buildertools/BuilderToolsPlugin$BuilderState;")):
+    if sig not in _sig(cls, name):
+        raise SystemExit("engine call shape changed: %s.%s%s" % (cls, name, sig))
+
+
+# ---- Z0 desk probes, re-checked at every build (the guard design rests on them)
+def _code(cls, name, sig=None):
+    out = []
+    for mm in pool.get(cls).getDeclaredMethods():
+        if str(mm.getName()) != name or (sig and sig not in str(mm.getSignature())):
+            continue
+        mi = mm.getMethodInfo()
+        cp = mi.getConstPool()
+        refs = set()
+        for i in range(1, cp.getSize()):
+            tag = cp.getTag(i)
+            if tag == 10:
+                refs.add(str(cp.getMethodrefClassName(i)) + "." + str(cp.getMethodrefName(i)))
+            elif tag == 11:
+                refs.add(str(cp.getInterfaceMethodrefClassName(i)) + "." + str(cp.getInterfaceMethodrefName(i)))
+        out.append(refs)
+    return out
+
+
+_brk = _code("com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils", "performBlockBreak",
+             "(Lorg/joml/Vector3i;Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;Lcom/hypixel/hytale/server/core/inventory/ItemStack;ILjava/lang/String;Ljava/lang/String;ILcom/hypixel/hytale/component/Ref;Lcom/hypixel/hytale/component/Ref;Lcom/hypixel/hytale/component/Ref;")
+if not _brk or not any(T["BBE"] + ".isCancelled" in r and T["BSEC"] + ".invalidateBlock" in r
+                       and "com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils.naturallyRemoveBlock" in r for r in _brk):
+    raise SystemExit("Z19 changed: performBlockBreak no longer checks BreakBlockEvent.isCancelled before naturallyRemoveBlock")
+_dmg = _code("com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils", "damageSingleBlock")
+if not _dmg or not any(T["DBE"] + ".isCancelled" in r and T["BSEC"] + ".invalidateBlock" in r for r in _dmg):
+    raise SystemExit("Z18 changed: damageSingleBlock no longer invalidates the block on a cancelled DamageBlockEvent")
+if pool.get("com.hypixel.hytale.server.core.event.events.ecs.EnvironmentBreakBlockEvent").getSuperclass().getName() != "com.hypixel.hytale.component.system.EcsEvent":
+    raise SystemExit("Z9 changed: EnvironmentBreakBlockEvent has a new super class (maybe cancellable now - guard it)")
+with zipfile.ZipFile(B.SERVER_JAR) as _sj:
+    _pbe_users = sorted(n for n in _sj.namelist() if n.endswith(".class") and n.startswith("com/hypixel/hytale/server/core/modules/")
+                        and b"events/ecs/PlaceBlockEvent" in _sj.read(n))
+if _pbe_users != ["com/hypixel/hytale/server/core/modules/blockhealth/BlockHealthSystems$PlaceBlockEventSystem.class",
+                  "com/hypixel/hytale/server/core/modules/interaction/BlockPlaceUtils.class"]:
+    raise SystemExit("Z5 changed: PlaceBlockEvent users in server.core.modules: %s" % _pbe_users)
+# Z5b (fixer 2, critic 2's open point): a cancelled PlaceBlockEvent returns BEFORE the held block is taken from the hand (no item loss in
+# a FULL region): in BlockPlaceUtils.placeBlock the isCancelled check comes before removeItemStackFromSlot
+def _first_call(cls, name, callee):
+    for mm in pool.get(cls).getDeclaredMethods():
+        if str(mm.getName()) != name:
+            continue
+        mi = mm.getMethodInfo()
+        cp = mi.getConstPool()
+        it = mi.getCodeAttribute().iterator()
+        while it.hasNext():
+            i = it.next()
+            if it.byteAt(i) in (182, 183, 184, 185):
+                ref = it.u16bitAt(i + 1)
+                nm = str(cp.getInterfaceMethodrefName(ref)) if it.byteAt(i) == 185 else str(cp.getMethodrefName(ref))
+                if nm == callee:
+                    return int(i)
+    return -1
+_pc, _pr = (_first_call("com.hypixel.hytale.server.core.modules.interaction.BlockPlaceUtils", "placeBlock", _n) for _n in ("isCancelled", "removeItemStackFromSlot"))
+if _pc < 0 or _pr < 0 or _pc > _pr:
+    raise SystemExit("Z5b changed: BlockPlaceUtils.placeBlock may take the held block before checking a cancelled PlaceBlockEvent (%d / %d)" % (_pc, _pr))
+_ev = pool.get("com.hypixel.hytale.component.system.EntityEventSystem").getDeclaredMethod("handleInternal").getMethodInfo()
+_evc = _ev.getConstPool()
+if "shouldProcessEvent" not in [str(_evc.getMethodrefName(i)) for i in range(1, _evc.getSize()) if _evc.getTag(i) == 10]:
+    raise SystemExit("EntityEventSystem.handleInternal no longer skips cancelled events (shouldProcessEvent)")
+# Z0b (fixer): the interactions that write blocks / fluids with NO block event (hoe till, shovel path, bucket, state cycling) - a gap we
+# document, never claim to guard; if the engine adds an event to one of them (or a new one appears) the build stops so the guard is re-checked
+_EVK = (b"events/ecs/BreakBlockEvent", b"events/ecs/PlaceBlockEvent", b"events/ecs/UseBlockEvent", b"events/ecs/DamageBlockEvent",
+        b"interaction/BlockHarvestUtils", b"interaction/BlockPlaceUtils")
+with zipfile.ZipFile(B.SERVER_JAR) as _sj:
+    _noev = sorted(n.rsplit("/", 1)[1][:-6] for n in _sj.namelist()
+                   if n.startswith("com/hypixel/hytale/") and n.endswith("Interaction.class")
+                   and any(k in _sj.read(n) for k in (b"\x00\x08setBlock", b"\x00\x08setFluid", b"\x00\x0asetTicking"))
+                   and not any(k in _sj.read(n) for k in _EVK))
+if _noev != ["ChangeBlockInteraction", "ChangeFarmingStageInteraction", "ChangeStateInteraction", "CycleBlockGroupInteraction",
+             "FertilizeSoilInteraction", "PlaceFluidInteraction", "RefillContainerInteraction", "UseWateringCanInteraction"]:
+    raise SystemExit("Z0b changed: block-writing interactions without a block event: %s (re-check what the guards can stop)" % _noev)
+_ac = pool.get("com.hypixel.hytale.server.core.command.system.AbstractCommand").getDeclaredMethod("hasPermission")
+if _ac.getModifiers() & 0x0010:
+    raise SystemExit("AbstractCommand.hasPermission is final now - the admin-or-builder override cannot work")
+B.probe(pool, "com.hypixel.hytale.component.dependency.RootDependency", "firstSet")
+if pool.get("com.hypixel.hytale.component.system.EntityEventSystem").getMethod("getDependencies", "()Ljava/util/Set;").getModifiers() & 0x0010:
+    raise SystemExit("EntityEventSystem.getDependencies is final now - the guards cannot ask to run first")
+print("Z0 desk probes: Z5 Z5b Z9 Z18 Z19 + cancelled-event skip + Z0b (%d event-less block writers) re-checked" % len(_noev))
+# ---- 0.2.0 Z2 desk probes (the regrow flow rests on them)
+for c, m in ((T["BOPS"], "setBlock"), (T["BSEC"], "getRotationIndex"), (T["BSEC"], "getFiller"), (T["WLD"], "execute"), (T["WLD"], "getPlayerRefs"),
+             (T["PR"], "getTransform"), (T["CHS"], "getChunkSectionReferenceAtBlockAsync"), (T["UNI"], "get"), (T["UNI"], "getWorld"),
+             (T["BTY"], "getAssetMap"), ("com.hypixel.hytale.assetstore.map.BlockTypeAssetMap", "getIndex"),
+             ("com.hypixel.hytale.assetstore.map.BlockTypeAssetMap", "getAsset")):
+    B.probe(pool, c, m)
+if "(L%s;Lcom/hypixel/hytale/component/Ref;IIIIL%s;III)Z" % (T["CHS"].replace(".", "/"), T["BTY"].replace(".", "/")) not in _sig(T["BOPS"], "setBlock"):
+    raise SystemExit("Z2 changed: BlockOperations.setBlock(ChunkStore, Ref, x, y, z, id, BlockType, rotation, filler, settings) is gone")
+# Z1: World.execute only QUEUES the task (taskQueue.offer) - never runs it inline, so a pass queued from a BreakBlockEvent handler runs
+# after performBlockBreak has removed the block
+# (the bytecode of execute itself: Deque.offer is called, Runnable.run never)
+if _first_call(T["WLD"], "execute", "offer") < 0 or _first_call(T["WLD"], "execute", "run") >= 0:
+    raise SystemExit("Z1 changed: World.execute may run the task inline now - the placeholder step could run before the block is removed")
+print("Z2 desk probes: Z1 (World.execute queues), BlockOperations.setBlock shape, rotation / filler readers, async section load re-checked")
+
+# ---- vanilla assets the wand JSON names (never copied: referenced by path)
+with zipfile.ZipFile(ASSETS_ZIP) as _az:
+    _an = set(_az.namelist())
+    for _p in ("Common/Icons/ItemsGenerated/Ingredient_Stick.png", "Common/Items/Ingredients/Stick.blockymodel",
+               "Common/Items/Ingredients/Stick_Texture.png", "Server/Item/Qualities/Tool.json", "Server/Particles/NPC/Emotions/Alerted.particlesystem"):
+        if _p not in _an:
+            raise SystemExit("vanilla asset %s is gone" % _p)
+    if any(n.endswith("/" + WAND + ".json") for n in _an):
+        raise SystemExit("%s is already a vanilla id" % WAND)
+    _items = set(n.rsplit("/", 1)[1][:-5] for n in _an if n.startswith("Server/Item/Items/") and n.endswith(".json"))
+
+TOKEN = re.compile(r"@([A-Z0-9]{2,7})@")
+
+
+def jv(src):
+    def rep(mm):
+        k = mm.group(1)
+        if k not in T:
+            raise SystemExit("unknown token @%s@ in:\n%s" % (k, src[:300]))
+        return T[k]
+    return TOKEN.sub(rep, src)
+
+
+def F(cls, src):
+    try:
+        cls.addField(CtField.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("field failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:600]))
+
+
+def M(cls, src):
+    try:
+        cls.addMethod(CtNewMethod.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("compile failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:3000]))
+
+
+def C(cls, src):
+    try:
+        cls.addConstructor(CtNewConstructor.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("constructor failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:1500]))
+
+
+def mk(name, sup=None, ifaces=()):
+    c = pool.makeClass(PKG + "." + name, pool.get(sup)) if sup else pool.makeClass(PKG + "." + name)
+    for i in ifaces:
+        c.addInterface(pool.get(i))
+    return c
+
+
+jl = json.dumps
+
+# =====================================================================================================================================
+# default files (the kit's DEFAULTS and the first-run files are the same text)
+# =====================================================================================================================================
+USE_TOOLS = ("Tool_Bark_Scraper*,Tool_Hoe*,Tool_Shovel*,Tool_Fertilizer*,Tool_Growth_Potion*,Tool_Sap_Shunt*,Tool_Shears*,Tool_Sickle*,"
+             "Tool_Watering_Can*,Tool_Hammer*,Tool_Drill*,Container_Bucket*")
+for _t in USE_TOOLS.split(","):
+    _b = _t.rstrip("*")
+    if not any(i.startswith(_b) for i in _items):
+        raise SystemExit("use.tools default %s matches no vanilla item" % _t)
+CONFIG_TEXT = "\n".join([
+    "# SkyyZones settings (research/cloud/Zone-Regen-Spec.md). Change them in game: SkyWynn Menu -> Server Setup -> Zones, or edit here.",
+    "# zones.on = the whole protection. zones.worlds = worlds protected EVERYWHERE (comma list; deny by default outside regions too).",
+    "# A region (/zones region create) protects its own boxes in any world, listed or not.",
+    "zones.on=true",
+    "zones.worlds=",
+    "# zones.opBypass = admins (skyyzones.admin) are never stopped. Off by default so admins test as players; /zones build on is the bypass.",
+    "zones.opBypass=false",
+    "# zones.blockMobs = mobs cannot break or place blocks in a protected spot.",
+    "zones.blockMobs=true",
+    "# msg.gapSec = seconds between two 'This area is protected.' notes for one player.",
+    "msg.gapSec=2",
+    "# use.tools = held items: USING a block (the block's own use action) while holding one is refused in a protected spot (* = any text).",
+    "# NOT stoppable in Hytale 0.7 (no event): hoe tilling, shovel paths, buckets, watering cans, fertilizer used on their own.",
+    "use.tools=" + USE_TOOLS,
+    "# Area titles: a region with a title shows it when you walk in (titles.leave = a small note when you walk out).",
+    "titles.on=true",
+    "titles.leave=true",
+    "titles.gapSec=10",
+    "# /zones show: outline seconds + the particle (a short-lived vanilla particle system; looping ones would stay on screen).",
+    "show.seconds=30",
+    "show.particle=Alerted",
+    "# build.remindSec = while builder mode is on, a reminder note every this many seconds (0 = none).",
+    "build.remindSec=300",
+    "",
+])
+TYPES = [("stone", "Rock_Stone,Rock_Shale,Rock_Slate,Rock_Basalt,Rock_Sandstone,Rock_Calcite,Rock_Chalk,Rock_Lime,Rock_Marble,Rock_Quartzite,Rock_Volcanic,"
+                   "Rock_*_Cobble,Rock_Stone_Mossy"),   # 0.2.0 fixer: spec 4.2 "Cobble" (mines built of cobble / mossy stone)
+         ("copper", "Ore_Copper*"), ("iron", "Ore_Iron*"), ("gold", "Ore_Gold*"), ("silver", "Ore_Silver*"), ("thorium", "Ore_Thorium*"),
+         ("cobalt", "Ore_Cobalt*"), ("adamantite", "Ore_Adamantite*"), ("mithril", "Ore_Mithril*"), ("onyxium", "Ore_Onyxium*"),
+         ("gem", "Rock_Gem_*,Ore_Prisma*"),
+         # fixer 2 (C3 #7): a natural tree is trunk + branches + roots (the _Deco / _Full / _Half / plank pieces are built, not grown);
+         # crops = the crop BLOCKS only (not the seed / _Item / _Eternal ids). Z1 lets an unripe crop break too - ripe-only is Z3 (spec 4.4).
+         ("logs", "Wood_*_Trunk,Wood_*_Branch_Corner,Wood_*_Branch_Long,Wood_*_Branch_Short,Wood_*_Roots"), ("crops", "Plant_Crop_*_Block")]
+for _tid, _pats in TYPES:
+    for _p in _pats.split(","):
+        _rx = re.compile("^" + re.escape(_p).replace(r"\*", ".*") + "$")
+        if not any(_rx.match(i) for i in _items):
+            raise SystemExit("type %s pattern %s matches no vanilla item id" % (_tid, _p))
+    assert len(_pats) <= 200, "a type line longer than SkyyMenu's 200-character cell"
+TYPES_TEXT = "\n".join([
+    "# SkyyZones resource types: type.<id>=block ids, comma separated; * = any text (Ore_Copper* = every copper ore). A SKYBLOCK region",
+    "# lists the types players may break there (/zones region types <region> stone,copper). Server Setup -> Zones -> Resource types.",
+] + ["type.%s=%s" % (k, v) for k, v in TYPES] + [""])
+# 0.2.0 regrowing blocks (spec 4.2 / Question 2 defaults, docs/answered/world.md 120): seconds + placeholder per resource type; 0 = no
+# regrow (logs + crops: whole-tree / crop-stage regrow is Z3, a later round)
+REGROW = [("stone", 3), ("copper", 4), ("iron", 5), ("gold", 6), ("silver", 6), ("thorium", 6), ("cobalt", 8), ("adamantite", 10),
+          ("mithril", 12), ("onyxium", 15), ("gem", 30), ("logs", 0), ("crops", 0)]
+assert sorted(k for k, _ in REGROW) == sorted(k for k, _ in TYPES), "a resource type without a regrow row (or the other way round)"
+PLACEHOLDER = "Rock_Bedrock"
+if PLACEHOLDER not in _items:
+    raise SystemExit("the default placeholder %s is not a vanilla block id" % PLACEHOLDER)
+# fixer: logs + crops stay 0 until Z3 (a ripe crop / a lone trunk every few seconds otherwise)
+NO_Z3 = ("logs", "crops")
+assert all(s == 0 for k, s in REGROW if k in NO_Z3)
+# fixer: /zones audit fix needs a concrete id for a wildcard type (every ore): the vanilla id a pattern stands for - the plain-stone
+# variant first (Ore_Copper* -> Ore_Copper_Stone), else the pattern's own stem (Ore_Prisma), else the first match by name
+FALLBACK = {}
+with zipfile.ZipFile(ASSETS_ZIP) as _az:
+    _blockids = set()
+    for _n in _az.namelist():
+        if _n.startswith("Server/Item/Items/") and _n.endswith(".json") and (_n.rsplit("/", 1)[1][:-5].startswith(("Ore_", "Rock_"))):
+            try:
+                if "BlockType" in json.loads(_az.read(_n).decode("utf-8-sig")):
+                    _blockids.add(_n.rsplit("/", 1)[1][:-5])
+            except Exception:
+                pass
+for _tid, _pats in TYPES:
+    if dict(REGROW).get(_tid, 0) <= 0:
+        continue
+    for _p in _pats.split(","):
+        if "*" not in _p:
+            continue
+        _rx = re.compile("^" + re.escape(_p).replace(r"\*", ".*") + "$")
+        # only real BLOCKS (Ore_Copper is the ore item, not a block); uncracked first
+        _m = sorted((i for i in _blockids if _rx.match(i)), key=lambda i: ("Cracked" in i, i))
+        if not _m:
+            continue
+        _pick = ([i for i in _m if i.endswith("_Stone")] + [i for i in _m if i == _p.replace("*", "")] + _m)[0]
+        FALLBACK[_p] = _pick
+assert FALLBACK.get("Ore_Copper*") == "Ore_Copper_Stone" and FALLBACK.get("Ore_Iron*") == "Ore_Iron_Stone" and "Ore_Prisma*" not in FALLBACK, FALLBACK
+print("audit fallback ids: %s" % ", ".join("%s -> %s" % kv for kv in sorted(FALLBACK.items())))
+REGEN_TEXT = "\n".join([
+    "# SkyyZones regrowing blocks (research/cloud/Zone-Regen-Spec.md 4). Change them in game: SkyWynn Menu -> Server Setup -> Zones ->",
+    "# Regrowing blocks, or edit here. A listed block mined in a SKYBLOCK region turns into its placeholder, then grows back.",
+    "# regen.enabled off = every waiting block comes back at once and listed blocks break like vanilla (no regrow).",
+    "regen.enabled=true",
+    "# regen.speedMult = every regrow time x this (0.5 = twice as fast). regen.jitter = each time x (1 - jitter .. 1 + jitter).",
+    "regen.speedMult=1",
+    "regen.jitter=0.2",
+    "# regen.offlineCounts = time while the server is off counts toward the timers.",
+    "regen.offlineCounts=true",
+    "# regen.defaultSec = the regrow time of a resource type that has no regrow line below.",
+    "regen.defaultSec=5",
+    "# regen.passBatch = most blocks put back in one pass (one world tick) of one world; the rest follow on the next tick.",
+    "# regen.maxDepleted = most waiting blocks in one world (the oldest then comes back early).",
+    "regen.passBatch=200",
+    "regen.maxDepleted=20000",
+    "# regrow.<type>=<seconds>,<placeholder block id>: how long a mined block of that resource type takes to come back and what stands",
+    "# there meanwhile. 0 = no regrow (the block breaks like vanilla and stays gone).",
+] + ["regrow.%s=%d,%s" % (k, s, PLACEHOLDER if s > 0 else "none") for k, s in REGROW] + [""])
+
+REGIONS_HEAD = "\n".join([
+    "# SkyyZones regions (research/cloud/Zone-Regen-Spec.md 5.3). Edit in game: /zones region ... (wand corners), or here, then /zones reload.",
+    "# One region = these lines: region.<id>.world / mode (full or skyblock) / priority (higher wins where regions overlap) /",
+    "# boxes (x,y,z..x,y,z;x,y,z..x,y,z) / types (resource types a SKYBLOCK region lets players break) / flags (containers,furnaces) / title.",
+    "# Ids: a-z 0-9 _ (max 40). A bad line stops every region edit (never overwritten) until it is fixed and /zones reload runs.",
+])
+
+# =====================================================================================================================================
+# ZApi: the harness's stand-in for the engine calls (null in game)
+# =====================================================================================================================================
+api = pool.makeInterface(PKG + ".ZApi")
+for sig in ("public void notify(@PR@ pr, String text);", "public void title(@PR@ pr, String t, String sub);",
+            "public void particle(String id, double x, double y, double z, java.util.List to, @ST@ st);",
+            "public int[] target(@REF@ r, @ST@ st);", "public int[] selection(@REF@ r, @ST@ st, @PR@ pr);",
+            "public int give(@REF@ r, @ST@ st, String id);", "public String blockAt(@WLD@ w, int x, int y, int z);",
+            # 0.2.0 regrow: rotation + filler, a block write, a player in the spot, a chunk load request, the world by name, a queued task, a scan
+            "public int[] stateAt(@WLD@ w, int x, int y, int z);", "public boolean put(@WLD@ w, int x, int y, int z, String id, int rot);",
+            "public boolean occupied(@WLD@ w, int x, int y, int z);", "public void load(@WLD@ w, int x, int y, int z, Runnable after);",
+            "public @WLD@ world(String name);", "public boolean exec(@WLD@ w, Runnable r);",
+            "public java.util.List scan(@WLD@ w, int[] box, String[] ids, int[] stats);",
+            # fixer 2: a delayed task (the next regrow pass of a backlog - never re-queued into the same world tick)
+            "public void later(Runnable r, long ms);"):
+    api.addMethod(CtNewMethod.make(jv(sig), api))
+
+# =====================================================================================================================================
+# ZCfg: settings (the kit binds the fields), logging, bridge, permissions, the type table
+# =====================================================================================================================================
+cfg = mk("ZCfg")
+for f in ("public static volatile boolean ON = true;", "public static volatile String WORLDS = \"\";",
+          "public static volatile boolean OP_BYPASS = false;", "public static volatile boolean MOBS = true;",
+          "public static volatile int MSG_GAP = 2;", "public static volatile String TOOLS = %s;" % jl(USE_TOOLS),
+          "public static volatile boolean TITLES = true;", "public static volatile boolean LEAVE = true;",
+          "public static volatile int TITLE_GAP = 10;", "public static volatile int SHOW_SECS = 30;",
+          "public static volatile String PARTICLE = \"Alerted\";", "public static volatile int REMIND = 300;",
+          "public static java.nio.file.Path DIR;", "public static java.nio.file.Path FILE;", "public static java.nio.file.Path TFILE;",
+          "public static @LOG@ LOG;", "public static volatile java.util.Map BRIDGE;",
+          "public static volatile java.util.function.Function PERM_TEST;",
+          "public static volatile java.util.HashMap TYPES = new java.util.HashMap();",
+          "public static volatile String WSRC = null;", "public static volatile java.util.HashSet WSET = new java.util.HashSet();",
+          "public static volatile String TSRC = null;", "public static volatile String[] TARR = new String[0];",
+          "public static volatile java.util.ArrayList LINES;",
+          "public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();",
+          "public static final String DEFAULT_TEXT = %s;" % jl(CONFIG_TEXT), "public static final String TYPES_TEXT = %s;" % jl(TYPES_TEXT),
+          # 0.2.0 regrowing blocks (regen.properties) + the worlds a broken region line locks as FULL (fail closed)
+          "public static volatile boolean REGEN_ON = true;", "public static volatile double JITTER = 0.2;", "public static volatile double SPEED = 1.0;",
+          "public static volatile boolean OFFLINE = true;", "public static volatile int PASS = 200;", "public static volatile int MAXDEP = 20000;",
+          "public static volatile int DEFSEC = 5;", "public static java.nio.file.Path RFILE;",
+          "public static volatile java.util.HashMap REGROW = new java.util.HashMap();",
+          "public static volatile java.util.HashSet LOCKW = new java.util.HashSet();",
+          "public static final String REGEN_TEXT = %s;" % jl(REGEN_TEXT)):
+    F(cfg, f)
+# LINES = harness sink (every log line); null in game
+M(cfg, r"""
+public static void info(String m) {
+  try { java.util.ArrayList l = LINES; if (l != null) l.add("INFO " + m); } catch (Throwable t) { }
+  try { if (LOG != null) LOG.at(java.util.logging.Level.INFO).log("[SkyyZones] " + m); } catch (Throwable t) { }
+}""")
+M(cfg, r"""
+public static void warn(String m) {
+  try { java.util.ArrayList l = LINES; if (l != null) l.add("WARN " + m); } catch (Throwable t) { }
+  try { if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyyZones] " + m); } catch (Throwable t) { }
+}""")
+M(cfg, r"""
+public static void warnOnce(String key, String m) {
+  if (key != null && WARNED.putIfAbsent(key, Boolean.TRUE) == null) warn(m);
+}""")
+M(cfg, r"""
+public static java.util.Map bridge0() {
+  Object o = System.getProperties().get("skyy.bridge");
+  if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
+  return (java.util.Map) o;
+}""")
+M(cfg, r"""
+public static java.util.Map bridge() {
+  java.util.Map m = BRIDGE;
+  if (m != null) return m;
+  synchronized (java.lang.System.class) { m = bridge0(); }
+  BRIDGE = m;
+  return m;
+}""")
+# the kit's PERM_FN too (CfgFn re-checks skyyzones.admin through it)
+M(cfg, r"""
+public static boolean permTest(java.util.UUID u, String node) {
+  if (u == null || node == null) return false;
+  try {
+    java.util.function.Function f = PERM_TEST;
+    if (f != null) return Boolean.TRUE.equals(f.apply(new Object[] { u, node }));
+    return @PM@.get().hasPermission(u, node);
+  } catch (Throwable t) { return false; }
+}""")
+M(cfg, r"""
+public static boolean bool(String v, boolean d) {
+  if (v == null) return d;
+  String s = v.trim().toLowerCase();
+  if (s.equals("true") || s.equals("on") || s.equals("yes") || s.equals("1")) return true;
+  if (s.equals("false") || s.equals("off") || s.equals("no") || s.equals("0")) return false;
+  return d;
+}""")
+M(cfg, r"""
+public static int intOf(String v, int d, int lo, int hi) {
+  int x = d;
+  if (v != null) { try { x = Integer.parseInt(v.trim()); } catch (Throwable t) { x = d; } }
+  if (x < lo) x = lo;
+  if (x > hi) x = hi;
+  return x;
+}""")
+M(cfg, r"""
+public static String str(String v, String d, int max) {
+  if (v == null) return d;
+  String s = v.trim();
+  if (s.length() > max) s = s.substring(0, max);
+  return s;
+}""")
+M(cfg, r"""
+public static String[] splitList(String s) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (s != null) {
+    String[] a = s.split("[,;\\s]+");
+    for (int i = 0; i < a.length; i++) { String t = a[i].trim(); if (t.length() > 0) out.add(t); }
+  }
+  return (String[]) out.toArray(new String[out.size()]);
+}""")
+M(cfg, r"""
+public static boolean writeIfMissing(java.nio.file.Path f, String text) {
+  try {
+    if (f == null || java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return false;
+    java.nio.file.Files.createDirectories(f.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Files.write(f, text.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE });
+    return true;
+  } catch (Throwable t) { warn("could not write the default " + f + ": " + t); return false; }
+}""")
+# a properties file: empty when missing, null when it cannot be read
+M(cfg, r"""
+public static java.util.Properties read0(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p = new java.util.Properties();
+  if (f != null && java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+    java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+  }
+  return p;
+}""")
+# fixer 2 (engine #1): a file briefly locked (the antivirus) is tried 3 times, 100 ms apart, before it counts as unreadable
+M(cfg, r"""
+public static java.util.Properties read(java.nio.file.Path f) {
+  Throwable last = null;
+  for (int i = 0; i < 3; i++) {
+    try { return read0(f); } catch (Throwable t) { last = t; }
+    if (i < 2) { try { Thread.sleep(100L); } catch (Throwable t2) { break; } }
+  }
+  warn(f + " could not be read (3 tries): " + last);
+  return null;
+}""")
+M(cfg, r"""
+public static String loadCfg(boolean first) {
+  boolean wrote = first && writeIfMissing(FILE, DEFAULT_TEXT);
+  java.util.Properties p = read(FILE);
+  if (p == null) { p = new java.util.Properties(); warn("config.properties could not be read - the built-in defaults are used (NO whole-world protection: zones.worlds is empty) until the next restart"); }
+  ON = bool(p.getProperty("zones.on"), true);
+  WORLDS = str(p.getProperty("zones.worlds"), "", 400);
+  OP_BYPASS = bool(p.getProperty("zones.opBypass"), false);
+  MOBS = bool(p.getProperty("zones.blockMobs"), true);
+  MSG_GAP = intOf(p.getProperty("msg.gapSec"), 2, 0, 30);
+  TOOLS = str(p.getProperty("use.tools"), %s, 600);
+  TITLES = bool(p.getProperty("titles.on"), true);
+  LEAVE = bool(p.getProperty("titles.leave"), true);
+  TITLE_GAP = intOf(p.getProperty("titles.gapSec"), 10, 0, 600);
+  SHOW_SECS = intOf(p.getProperty("show.seconds"), 30, 5, 300);
+  PARTICLE = str(p.getProperty("show.particle"), "Alerted", 80);
+  REMIND = intOf(p.getProperty("build.remindSec"), 300, 0, 3600);
+  return (wrote ? "default config.properties written; " : "") + "protection " + (ON ? "ON" : "OFF") + ", protected worlds [" + WORLDS + "], admins bypass " + (OP_BYPASS ? "ON" : "off");
+}""" % jl(USE_TOOLS))
+# type id -> String[] patterns (a fresh map every load: readers never see a half-built one)
+M(cfg, r"""
+public static java.util.HashMap parseTypes(java.util.Properties p) {
+  java.util.HashMap m = new java.util.HashMap();
+  if (p == null) return m;
+  java.util.Iterator it = p.stringPropertyNames().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    if (!k.startsWith("type.")) continue;
+    String id = k.substring(5).toLowerCase();
+    if (!id.matches("[a-z0-9_]{1,32}")) { warnOnce("type:" + k, "types.properties: '" + k + "' is not a type id (a-z 0-9 _) - skipped"); continue; }
+    String[] pats = splitList(p.getProperty(k));
+    if (pats.length == 0) continue;
+    m.put(id, pats);
+  }
+  return m;
+}""")
+M(cfg, r"""
+public static String loadTypes(boolean first) {
+  boolean wrote = first && writeIfMissing(TFILE, TYPES_TEXT);
+  java.util.Properties p = read(TFILE);
+  if (p == null) return "types.properties could not be read - the old types are kept (" + TYPES.size() + ")";
+  java.util.HashMap m = parseTypes(p);
+  TYPES = m;
+  return (wrote ? "default types.properties written; " : "") + m.size() + " resource types";
+}""")
+# the kit's reload routine of the type table (runs after the kit wrote types.properties)
+M(cfg, r"""
+public static void reloadTypes() {
+  info("resource types re-read: " + loadTypes(false));
+}""")
+M(cfg, r"""
+public static boolean protectedWorld(String w) {
+  if (w == null) return false;
+  String src = WORLDS;
+  if (src == null) src = "";
+  if (!src.equals(WSRC)) {
+    java.util.HashSet s = new java.util.HashSet();
+    String[] a = splitList(src);
+    for (int i = 0; i < a.length; i++) s.add(a[i].toLowerCase());
+    WSET = s;
+    WSRC = src;
+  }
+  String lw = w.toLowerCase();
+  return WSET.contains(lw) || LOCKW.contains(lw);
+}""")
+M(cfg, r"""
+public static String[] tools() {
+  String src = TOOLS;
+  if (src == null) src = "";
+  if (!src.equals(TSRC)) {
+    TARR = splitList(src);
+    TSRC = src;
+  }
+  return TARR;
+}""")
+# ---- kit check= hooks (null = fine, text = refused)
+M(cfg, r"""
+public static String checkWorlds(String key, String value) {
+  if (value == null) return null;
+  String[] a = splitList(value);
+  if (a.length > 32) return "At most 32 worlds.";
+  for (int i = 0; i < a.length; i++) if (!a[i].matches("[A-Za-z0-9_.-]{1,64}")) return "'" + a[i] + "' is not a world folder name.";
+  return null;
+}""")
+M(cfg, r"""
+public static String checkPatterns(String value, int max) {
+  if (value == null) return null;
+  String[] a = splitList(value);
+  if (a.length == 0) return "List at least one block id (* = any text).";
+  if (a.length > max) return "At most " + max + " ids.";
+  for (int i = 0; i < a.length; i++) if (!a[i].matches("[A-Za-z0-9_*+]{1,80}")) return "'" + a[i] + "' is not a block id pattern (letters, digits, _ and *).";
+  return null;
+}""")
+M(cfg, r"""
+public static String checkTools(String key, String value) {
+  if (value == null || value.trim().length() == 0) return null;
+  return checkPatterns(value, 64);
+}""")
+M(cfg, r"""
+public static String checkType(String key, String value) {
+  if (key == null || !key.startsWith("type[") || !key.endsWith("]")) return "Unknown table line.";
+  String e = key.substring(5, key.length() - 1);
+  if (!e.matches("[a-z0-9_]{1,32}")) return "A type id is 1-32 of a-z, 0-9 and _.";
+  return checkPatterns(value, 64);
+}""")
+M(cfg, r"""
+public static String checkParticle(String key, String value) {
+  if (value == null) return null;
+  String v = value.trim();
+  if (!v.matches("[A-Za-z0-9_]{1,80}")) return "A particle system id: letters, digits and _.";
+  try {
+    Object m = @PSYS@.getAssetMap();
+    if (m != null && @PSYS@.getAssetMap().getAsset(v) == null) return "No particle system '" + v + "' in the game files.";
+  } catch (Throwable t) { }
+  return null;
+}""")
+# the particle actually drawn: a hand-edited show.particle the game does not know falls back to Alerted (warned once). Checked at USE time
+# (the asset map is complete then; at setup() it may not be) and only again when the setting changes.
+F(cfg, "public static volatile String PSRC = null;")
+F(cfg, "public static volatile String PVAL = \"Alerted\";")
+M(cfg, r"""
+public static String particle() {
+  String v = PARTICLE;
+  if (v == null) v = "Alerted";
+  if (v.equals(PSRC)) return PVAL;
+  String why = checkParticle("show.particle", v);
+  String use = v;
+  if (why != null) { use = "Alerted"; warnOnce("particle:" + v, "show.particle '" + v + "' cannot be drawn (" + why + ") - the outline uses Alerted"); }
+  PVAL = use;
+  PSRC = v;
+  return use;
+}""")
+
+# =====================================================================================================================================
+# ZCfg 0.2.0: the regrow settings (regen.properties; the kit binds the scalar rows to the fields, the regrow. table runs reloadRegen)
+# =====================================================================================================================================
+M(cfg, r"""
+public static double dec(String v, double d, double lo, double hi) {
+  double x = d;
+  if (v != null) { try { x = Double.parseDouble(v.trim()); } catch (Throwable t) { x = d; } }
+  if (Double.isNaN(x)) x = d;
+  if (x < lo) x = lo;
+  if (x > hi) x = hi;
+  return x;
+}""")
+# null = fine, else why not: "<seconds 0-3600>[,<placeholder id or none>]" ("|" from the kit's columns counts as ",")
+M(cfg, r"""
+public static String regrowWhy(String v) {
+  if (v == null) return "an empty line";
+  String[] c = v.replace('|', ',').split(",", -1);
+  if (c.length < 1 || c.length > 2) return "write <seconds>,<placeholder block id> (e.g. 4,Rock_Bedrock)";
+  int s = -1;
+  try { s = Integer.parseInt(c[0].trim()); } catch (Throwable t) { s = -1; }
+  if (s < 0 || s > 3600) return "the seconds are a whole number from 0 to 3600 (0 = no regrow)";
+  String ph = c.length > 1 ? c[1].trim() : "";
+  if (ph.length() > 0 && !ph.equalsIgnoreCase("none") && !ph.matches("\\*?[A-Za-z0-9_]{1,80}")) return "'" + ph + "' is not a block id";
+  return null;
+}""")
+M(cfg, r"""
+public static String phOf(String v) {
+  String[] c = v.replace('|', ',').split(",", -1);
+  String ph = c.length > 1 ? c[1].trim() : "";
+  if (ph.length() == 0 || ph.equalsIgnoreCase("none")) return "@PH@";
+  return ph;
+}""".replace("@PH@", PLACEHOLDER))
+# fixer: the types whose regrow needs Z3 (whole trees / crop stages) - held at 0 until then
+M(cfg, r"""
+public static boolean noZ3(String type) {
+  return @NOZ3@;
+}""".replace("@NOZ3@", " || ".join('"%s".equals(type)' % t for t in NO_Z3)))
+# type id -> Object[] { Integer seconds, String placeholder }; a bad line is skipped (warned once): its type then uses regen.defaultSec
+M(cfg, r"""
+public static java.util.HashMap parseRegrow(java.util.Properties p) {
+  java.util.HashMap m = new java.util.HashMap();
+  if (p == null) return m;
+  java.util.Iterator it = p.stringPropertyNames().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    if (!k.startsWith("regrow.")) continue;
+    String id = k.substring(7).toLowerCase();
+    String v = p.getProperty(k);
+    String why = id.matches("[a-z0-9_]{1,32}") ? regrowWhy(v) : "not a type id (a-z 0-9 _)";
+    if (why != null) { warnOnce("regrow:" + k + "=" + v, "regen.properties: '" + k + "=" + v + "' - " + why + " - skipped (that type uses regen.defaultSec + @PH@)"); continue; }
+    int s = Integer.parseInt(v.replace('|', ',').split(",", -1)[0].trim());
+    if (s > 0 && noZ3(id)) { warnOnce("z3:" + k + "=" + v, "regen.properties: '" + k + "=" + v + "' - " + id + " cannot regrow yet (whole trees / crop stages come later) - read as 0"); s = 0; }
+    m.put(id, new Object[] { Integer.valueOf(s), phOf(v) });
+  }
+  return m;
+}""".replace("@PH@", PLACEHOLDER))
+M(cfg, r"""
+public static String loadRegen(boolean first) {
+  boolean wrote = first && writeIfMissing(RFILE, REGEN_TEXT);
+  java.util.Properties p = read(RFILE);
+  if (p == null) return "regen.properties could not be read - regrowing keeps its old settings";
+  REGEN_ON = bool(p.getProperty("regen.enabled"), true);
+  SPEED = dec(p.getProperty("regen.speedMult"), 1.0, 0.1, 10.0);
+  JITTER = dec(p.getProperty("regen.jitter"), 0.2, 0.0, 0.5);
+  OFFLINE = bool(p.getProperty("regen.offlineCounts"), true);
+  DEFSEC = intOf(p.getProperty("regen.defaultSec"), 5, 1, 3600);
+  PASS = intOf(p.getProperty("regen.passBatch"), 200, 10, 5000);
+  MAXDEP = intOf(p.getProperty("regen.maxDepleted"), 20000, 100, 200000);
+  java.util.HashMap m = parseRegrow(p);
+  REGROW = m;
+  return (wrote ? "default regen.properties written; " : "") + "regrowing " + (REGEN_ON ? "ON" : "OFF") + " (" + m.size() + " regrow rows)";
+}""")
+# the kit's reload routine of the regrow table (runs after the kit wrote regen.properties)
+M(cfg, r"""
+public static void reloadRegen() {
+  info("regrow table re-read: " + loadRegen(false));
+}""")
+M(cfg, r"""
+public static int regrowSec(String type) {
+  Object o = type == null ? null : REGROW.get(type);
+  if (o instanceof Object[]) return ((Integer) ((Object[]) o)[0]).intValue();
+  return DEFSEC;
+}""")
+M(cfg, r"""
+public static String placeholder(String type) {
+  Object o = type == null ? null : REGROW.get(type);
+  if (o instanceof Object[]) return (String) ((Object[]) o)[1];
+  return "@PH@";
+}""".replace("@PH@", PLACEHOLDER))
+# (the kit's check of a regrow table line, ZCfg.checkRegrow, is defined after ZRules - it asks whether the placeholder is a listed block)
+# =====================================================================================================================================
+# ZRegion: one region (immutable once published: edits make a copy)
+# =====================================================================================================================================
+reg = mk("ZRegion")
+for f in ("public String id;", "public String world;", "public int mode;", "public int priority;", "public int[] box;", "public String[] types;",
+          "public String flags;", "public String title;", "public boolean fCont;", "public boolean fFurn;", "public java.util.TreeMap extra;",
+          "public static final int FULL = 0;", "public static final int SKYBLOCK = 1;", "public static final int MAX_BOXES = 64;",
+          "public static final int MAX_X = 512;", "public static final int MAX_Y = 384;", "public static final int MAX_Z = 512;"):
+    F(reg, f)
+# extra = region.<id>.<field> lines this version does not use (spec 5.3 placeAllow / gate, a later version's fields): kept verbatim
+C(reg, "public ZRegion() { this.types = new String[0]; this.box = new int[0]; this.flags = \"\"; this.title = \"\"; this.extra = new java.util.TreeMap(); }")
+M(reg, r"""
+public void setFlags(String f) {
+  this.flags = f == null ? "" : f;
+  this.fCont = false;
+  this.fFurn = false;
+  String[] a = @PKG@.ZCfg.splitList(this.flags);
+  for (int i = 0; i < a.length; i++) {
+    if (a[i].equals("containers")) this.fCont = true;
+    if (a[i].equals("furnaces")) this.fFurn = true;
+  }
+}""")
+M(reg, r"""
+public @PKG@.ZRegion copy() {
+  @PKG@.ZRegion r = new @PKG@.ZRegion();
+  r.id = this.id; r.world = this.world; r.mode = this.mode; r.priority = this.priority;
+  r.box = (int[]) this.box.clone(); r.types = (String[]) this.types.clone(); r.title = this.title;
+  r.extra = new java.util.TreeMap(this.extra);
+  r.setFlags(this.flags);
+  return r;
+}""")
+M(reg, "public int boxes() { return this.box == null ? 0 : this.box.length / 6; }")
+M(reg, r"""
+public boolean contains(int x, int y, int z) {
+  int[] b = this.box;
+  for (int i = 0; i + 5 < b.length; i = i + 6) {
+    if (x >= b[i] && x <= b[i + 3] && y >= b[i + 1] && y <= b[i + 4] && z >= b[i + 2] && z <= b[i + 5]) return true;
+  }
+  return false;
+}""")
+# a box (6 ints min / max) within r blocks of x y z (show / list)
+M(reg, r"""
+public boolean near(int x, int y, int z, int r) {
+  int[] b = this.box;
+  for (int i = 0; i + 5 < b.length; i = i + 6) {
+    if (x >= b[i] - r && x <= b[i + 3] + r && y >= b[i + 1] - r && y <= b[i + 4] + r && z >= b[i + 2] - r && z <= b[i + 5] + r) return true;
+  }
+  return false;
+}""")
+M(reg, "public String modeName() { return this.mode == 1 ? \"skyblock\" : \"full\"; }")
+M(reg, r"""
+public static int modeOf(String s) {
+  if (s == null) return -1;
+  String t = s.trim().toLowerCase();
+  if (t.equals("full")) return 0;
+  if (t.equals("skyblock")) return 1;
+  return -1;
+}""")
+M(reg, r"""
+public static int[] norm(int ax, int ay, int az, int bx, int by, int bz) {
+  return new int[] { Math.min(ax, bx), Math.min(ay, by), Math.min(az, bz), Math.max(ax, bx), Math.max(ay, by), Math.max(az, bz) };
+}""")
+# "" = fine, else why not
+M(reg, r"""
+public static String boxProblem(int[] b) {
+  if (b == null || b.length != 6) return "no box";
+  if (b[3] - b[0] + 1 > MAX_X || b[4] - b[1] + 1 > MAX_Y || b[5] - b[2] + 1 > MAX_Z) return "a box may be at most " + MAX_X + " x " + MAX_Y + " x " + MAX_Z + " blocks (this one is " + (b[3] - b[0] + 1) + " x " + (b[4] - b[1] + 1) + " x " + (b[5] - b[2] + 1) + ")";
+  if (b[1] < -64 || b[4] > 511) return "y must stay between -64 and 511";
+  return "";
+}""")
+M(reg, r"""
+public static String boxText(int[] b) {
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i + 5 < b.length; i = i + 6) {
+    if (sb.length() > 0) sb.append(';');
+    sb.append(b[i]).append(',').append(b[i + 1]).append(',').append(b[i + 2]).append("..").append(b[i + 3]).append(',').append(b[i + 4]).append(',').append(b[i + 5]);
+  }
+  return sb.toString();
+}""")
+M(reg, r"""
+public static String size(int[] b, int i) {
+  return (b[i + 3] - b[i] + 1) + " x " + (b[i + 4] - b[i + 1] + 1) + " x " + (b[i + 5] - b[i + 2] + 1);
+}""")
+# null = a bad text; every box normalised + checked
+M(reg, r"""
+public static int[] parseBoxes(String s) {
+  if (s == null) return null;
+  String[] parts = s.trim().split(";");
+  if (parts.length == 0 || parts.length > MAX_BOXES) return null;
+  int[] out = new int[parts.length * 6];
+  for (int i = 0; i < parts.length; i++) {
+    String p = parts[i].trim();
+    int dd = p.indexOf("..");
+    if (dd <= 0) return null;
+    String[] a = p.substring(0, dd).split(",");
+    String[] c = p.substring(dd + 2).split(",");
+    if (a.length != 3 || c.length != 3) return null;
+    int[] n = null;
+    try {
+      n = norm(Integer.parseInt(a[0].trim()), Integer.parseInt(a[1].trim()), Integer.parseInt(a[2].trim()), Integer.parseInt(c[0].trim()), Integer.parseInt(c[1].trim()), Integer.parseInt(c[2].trim()));
+    } catch (Throwable t) { return null; }
+    if (boxProblem(n).length() > 0) return null;
+    System.arraycopy(n, 0, out, i * 6, 6);
+  }
+  return out;
+}""")
+M(reg, r"""
+public static String join(String[] a) {
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < a.length; i++) { if (i > 0) sb.append(','); sb.append(a[i]); }
+  return sb.toString();
+}""")
+M(reg, r"""
+public String lines() {
+  String p = "region." + this.id + ".";
+  StringBuilder sb = new StringBuilder();
+  sb.append(p + "world=" + this.world + "\n" + p + "mode=" + modeName() + "\n" + p + "priority=" + this.priority + "\n" + p + "boxes=" + boxText(this.box) + "\n"
+    + p + "types=" + join(this.types) + "\n" + p + "flags=" + this.flags + "\n" + p + "title=" + this.title + "\n");
+  java.util.Iterator it = this.extra.keySet().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    String v = String.valueOf(this.extra.get(k)).replace("\\", "\\\\").replace('\n', ' ').replace('\r', ' ');
+    sb.append(p).append(k).append('=').append(v).append('\n');
+  }
+  return sb.toString();
+}""")
+M(reg, r"""
+public String summary() {
+  return this.id + " (" + modeName() + ", priority " + this.priority + ", " + boxes() + (boxes() == 1 ? " box" : " boxes")
+    + (this.mode == 1 ? ", types " + (this.types.length == 0 ? "none" : join(this.types)) : "")
+    + (this.flags.length() > 0 ? ", flags " + this.flags : "") + (this.title.length() > 0 ? ", title '" + this.title + "'" : "") + ")";
+}""")
+
+# =====================================================================================================================================
+# ZIndex: the published, never-changed lookup (per world: regions by priority; a tie: SKYBLOCK before FULL (fixer 2, C3 #3 - spec 3.0
+# "draw the resource area higher", so a mine drawn inside a town at the same priority still gathers), then the id a-z)
+# =====================================================================================================================================
+idx = mk("ZIndex")
+F(idx, "public java.util.HashMap byWorld;")
+F(idx, "public int count;")
+C(idx, "public ZIndex() { this.byWorld = new java.util.HashMap(); this.count = 0; }")
+M(idx, r"""
+public static boolean before(@PKG@.ZRegion a, @PKG@.ZRegion b) {
+  if (a.priority != b.priority) return a.priority > b.priority;
+  if (a.mode != b.mode) return a.mode == 1;
+  return a.id.compareTo(b.id) < 0;
+}""")
+M(idx, r"""
+public static @PKG@.ZIndex build(java.util.Collection regs) {
+  @PKG@.ZIndex ix = new @PKG@.ZIndex();
+  java.util.HashMap lists = new java.util.HashMap();
+  java.util.Iterator it = regs.iterator();
+  while (it.hasNext()) {
+    @PKG@.ZRegion r = (@PKG@.ZRegion) it.next();
+    java.util.ArrayList l = (java.util.ArrayList) lists.get(r.world);
+    if (l == null) { l = new java.util.ArrayList(); lists.put(r.world, l); }
+    l.add(r);
+    ix.count = ix.count + 1;
+  }
+  java.util.Iterator wi = lists.keySet().iterator();
+  while (wi.hasNext()) {
+    String w = (String) wi.next();
+    java.util.ArrayList l = (java.util.ArrayList) lists.get(w);
+    @PKG@.ZRegion[] a = (@PKG@.ZRegion[]) l.toArray(new @PKG@.ZRegion[l.size()]);
+    for (int i = 1; i < a.length; i++) {
+      @PKG@.ZRegion k = a[i];
+      int j = i - 1;
+      while (j >= 0 && before(k, a[j])) { a[j + 1] = a[j]; j = j - 1; }
+      a[j + 1] = k;
+    }
+    ix.byWorld.put(w, a);
+  }
+  return ix;
+}""")
+M(idx, "public boolean has(String w) { return w != null && this.byWorld.containsKey(w); }")
+M(idx, r"""
+public @PKG@.ZRegion[] in(String w) {
+  Object o = w == null ? null : this.byWorld.get(w);
+  if (o == null) return new @PKG@.ZRegion[0];
+  return (@PKG@.ZRegion[]) o;
+}""")
+M(idx, r"""
+public java.util.ArrayList at(String w, int x, int y, int z) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  @PKG@.ZRegion[] a = in(w);
+  for (int i = 0; i < a.length; i++) if (a[i].contains(x, y, z)) out.add(a[i]);
+  return out;
+}""")
+M(idx, r"""
+public @PKG@.ZRegion top(String w, int x, int y, int z) {
+  @PKG@.ZRegion[] a = in(w);
+  for (int i = 0; i < a.length; i++) if (a[i].contains(x, y, z)) return a[i];
+  return null;
+}""")
+M(idx, r"""
+public @PKG@.ZRegion topTitled(String w, int x, int y, int z) {
+  @PKG@.ZRegion[] a = in(w);
+  for (int i = 0; i < a.length; i++) if (a[i].title.length() > 0 && a[i].contains(x, y, z)) return a[i];
+  return null;
+}""")
+
+# =====================================================================================================================================
+# ZRules: the pure decisions (no engine)
+# =====================================================================================================================================
+rules = mk("ZRules")
+for f in ("public static final int BREAK = 0;", "public static final int PLACE = 1;", "public static final int CONTAINER = 2;",
+          "public static final int FURNACE = 3;", "public static final int OTHER = 4;", "public static final int ALLOW = 0;",
+          "public static final int DENY = 1;", "public static final int NOT_RES = 2;", "public static final int LOCKED = 3;",
+          "public static final int NO_PLACE = 4;"):
+    F(rules, f)
+M(rules, r"""
+public static String bare(String id) {
+  if (id == null) return "";
+  String s = id;
+  while (s.startsWith("*")) s = s.substring(1);
+  return s;
+}""")
+# * = any text (anywhere), a trailing + = * (the spec's prefix mark); case-insensitive
+M(rules, r"""
+public static boolean glob(String pat, String id) {
+  if (pat == null || id == null) return false;
+  String p = pat.toLowerCase();
+  String s = id.toLowerCase();
+  if (p.endsWith("+")) p = p.substring(0, p.length() - 1) + "*";
+  int pi = 0;
+  int si = 0;
+  int star = -1;
+  int mark = 0;
+  int pl = p.length();
+  int sl = s.length();
+  while (si < sl) {
+    if (pi < pl && p.charAt(pi) != '*' && p.charAt(pi) == s.charAt(si)) { pi++; si++; }
+    else if (pi < pl && p.charAt(pi) == '*') { star = pi; mark = si; pi++; }
+    else if (star >= 0) { pi = star + 1; mark++; si = mark; }
+    else return false;
+  }
+  while (pi < pl && p.charAt(pi) == '*') pi++;
+  return pi == pl;
+}""")
+M(rules, r"""
+public static boolean anyGlob(String[] pats, String id) {
+  if (pats == null || id == null || id.length() == 0) return false;
+  for (int i = 0; i < pats.length; i++) if (glob(pats[i], id)) return true;
+  return false;
+}""")
+M(rules, r"""
+public static boolean typeHas(String type, String id) {
+  Object o = @PKG@.ZCfg.TYPES.get(type);
+  return o instanceof String[] && anyGlob((String[]) o, id);
+}""")
+M(rules, r"""
+public static String listedType(@PKG@.ZRegion r, String id) {
+  for (int i = 0; i < r.types.length; i++) if (typeHas(r.types[i], id)) return r.types[i];
+  return null;
+}""")
+# the decision (spec 3.1 / 3.2): regions at the spot (top = highest priority); none -> the protected world's FULL default or nothing
+M(rules, r"""
+public static int decide(@PKG@.ZIndex ix, String w, boolean pw, int x, int y, int z, int act, String id) {
+  if (act == OTHER) return ALLOW;
+  java.util.ArrayList at = ix == null ? new java.util.ArrayList() : ix.at(w, x, y, z);
+  if (at.isEmpty() && !pw) return ALLOW;
+  @PKG@.ZRegion top = at.isEmpty() ? null : (@PKG@.ZRegion) at.get(0);
+  if (act == PLACE) return NO_PLACE;
+  if (act == CONTAINER) return top != null && top.fCont ? ALLOW : LOCKED;
+  if (act == FURNACE) return top != null && top.fFurn ? ALLOW : LOCKED;
+  if (top == null || top.mode != 1) return DENY;
+  String b = bare(id);
+  for (int i = 0; i < at.size(); i++) {
+    @PKG@.ZRegion r = (@PKG@.ZRegion) at.get(i);
+    if (r.mode == 1 && listedType(r, b) != null) return ALLOW;
+  }
+  return NOT_RES;
+}""")
+# 0.2.0: the resource type a SKYBLOCK break at x y z counts as (the same walk as decide(): the top region must be SKYBLOCK; the first listed
+# type of the SKYBLOCK regions there, top first) - null = none (no regrow)
+M(rules, r"""
+public static String resType(@PKG@.ZIndex ix, String w, int x, int y, int z, String id) {
+  if (ix == null) return null;
+  java.util.ArrayList at = ix.at(w, x, y, z);
+  if (at.isEmpty() || ((@PKG@.ZRegion) at.get(0)).mode != 1) return null;
+  String b = bare(id);
+  for (int i = 0; i < at.size(); i++) {
+    @PKG@.ZRegion r = (@PKG@.ZRegion) at.get(i);
+    if (r.mode != 1) continue;
+    String t = listedType(r, b);
+    if (t != null) return t;
+  }
+  return null;
+}""")
+# fixer: the resource type that lists this block id anywhere (null = none) - a placeholder must never be a mineable block
+M(rules, r"""
+public static String listedAny(String id) {
+  if (id == null) return null;
+  String b = bare(id);
+  java.util.Iterator it = @PKG@.ZCfg.TYPES.keySet().iterator();
+  while (it.hasNext()) {
+    String t = (String) it.next();
+    if (typeHas(t, b)) return t;
+  }
+  return null;
+}""")
+M(rules, r"""
+public static String why(int code) {
+  if (code == NOT_RES) return "You can only gather the marked resource blocks here.";
+  if (code == LOCKED) return "That is locked in this area.";
+  if (code == NO_PLACE) return "You can't place blocks in this area.";
+  return "This area is protected.";
+}""")
+M(rules, r"""
+public static String verdict(int code) {
+  if (code == ALLOW) return "allowed";
+  return "refused - " + why(code);
+}""")
+# UseBlockEvent (Use / Secondary) -> the action it counts as (facts read from the block type; pure so the harness can table it)
+M(rules, r"""
+public static int useKind(boolean skyy, boolean door, boolean craft, boolean proc, boolean bed, boolean seat, boolean crop, boolean cont, String held) {
+  if (skyy || door || craft || bed || seat) return OTHER;
+  if (proc) return FURNACE;
+  if (cont) return CONTAINER;
+  if (crop) return BREAK;
+  if (held != null && anyGlob(@PKG@.ZCfg.tools(), held)) return BREAK;
+  return OTHER;
+}""")
+M(rules, r"""
+public static int useAction(@BTY@ bt, @ITY@ t, String held) {
+  if (t == null) return OTHER;
+  if (t == @ITY@.Primary) return BREAK;
+  if (t != @ITY@.Use && t != @ITY@.Secondary) return OTHER;
+  boolean skyy = false; boolean door = false; boolean craft = false; boolean proc = false; boolean bed = false; boolean seat = false;
+  boolean crop = false; boolean cont = false;
+  if (bt != null) {
+    try {
+      String id = bare(String.valueOf(bt.getId()));
+      skyy = id.startsWith("Skyy_");
+      door = bt.isDoor();
+      java.util.Map im = bt.getInteractions();
+      Object rid = im == null ? null : im.get(t);
+      if (rid != null && String.valueOf(rid).indexOf("Door") >= 0) door = true;
+      @BENCH@ b = bt.getBench();
+      if (b != null) { if (b.getType() == @BENT@.Processing) proc = true; else craft = true; }
+      bed = bt.getBeds() != null;
+      seat = bt.getSeats() != null;
+      @FARM@ f = bt.getFarming();
+      if (f != null && f.getStages() != null) crop = true;
+      @GATH@ g = bt.getGathering();
+      if (g != null && g.getHarvest() != null && id.startsWith("Plant_")) crop = true;
+      Object uid = im == null ? null : im.get(@ITY@.Use);
+      if (uid != null && String.valueOf(uid).indexOf("Container") >= 0) cont = true;
+    } catch (Throwable x) { }
+  }
+  return useKind(skyy, door, craft, proc, bed, seat, crop, cont, held);
+}""")
+
+# =====================================================================================================================================
+# ZSave: the regions file writer (scheduler thread; newest text wins; history copy first; change log)
+# =====================================================================================================================================
+sav = mk("ZSave", None, ("java.lang.Runnable",))
+for f in ("public long seq;", "public String text;", "public String line;", "public static long WRITTEN = 0L;",
+          "public static volatile java.nio.file.Path FILE;", "public static volatile java.nio.file.Path HIST;",
+          "public static volatile java.nio.file.Path LOGF;", "public static final int KEEP = 10;", "public static volatile java.nio.file.Path GOOD;",
+          "public static final java.util.concurrent.atomic.AtomicLong WRITES = new java.util.concurrent.atomic.AtomicLong();"):
+    F(sav, f)
+C(sav, "public ZSave(long seq, String text, String line) { this.seq = seq; this.text = text; this.line = line; }")
+M(sav, r"""
+public static String stamp() {
+  return new java.text.SimpleDateFormat("yyyyMMdd-HHmmss-SSS").format(new java.util.Date());
+}""")
+M(sav, r"""
+public static void prune() {
+  try {
+    if (HIST == null || !java.nio.file.Files.isDirectory(HIST, new java.nio.file.LinkOption[0])) return;
+    java.util.ArrayList names = new java.util.ArrayList();
+    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(HIST, "regions.*.properties");
+    try {
+      java.util.Iterator it = ds.iterator();
+      while (it.hasNext()) names.add(((java.nio.file.Path) it.next()).getFileName().toString());
+    } finally { ds.close(); }
+    java.util.Collections.sort(names);
+    for (int i = 0; i + KEEP < names.size(); i++) java.nio.file.Files.deleteIfExists(HIST.resolve((String) names.get(i)));
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("prune", "could not prune the regions history: " + t); }
+}""")
+M(sav, r"""
+public static void logLine(String line) {
+  if (line == null || LOGF == null) return;
+  try {
+    java.nio.file.Files.createDirectories(LOGF.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    String l = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new java.util.Date()) + "\t" + line.replace('\n', ' ').replace('\r', ' ') + "\n";
+    java.nio.file.Files.write(LOGF, l.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND, java.nio.file.StandardOpenOption.WRITE });
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("changelog", "could not write region-changes.log: " + t); }
+}""")
+# 0.2.0 (the 0.1.0 critic's fail-open finding): regions.good.properties = the text of every successful write and every clean load - the
+# exact last good copy of every region (history/ is one change behind); temp file + rename, skipped when equal
+M(sav, r"""
+public static synchronized boolean good(String text) {
+  if (GOOD == null || text == null) return false;
+  try {
+    if (java.nio.file.Files.exists(GOOD, new java.nio.file.LinkOption[0]) && new String(java.nio.file.Files.readAllBytes(GOOD), "UTF-8").equals(text)) return true;
+    java.nio.file.Files.createDirectories(GOOD.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = GOOD.resolveSibling(GOOD.getFileName().toString() + ".tmp");
+    java.nio.file.Files.write(tmp, text.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    try {
+      java.nio.file.Files.move(tmp, GOOD, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    } catch (Throwable am) {
+      java.nio.file.Files.move(tmp, GOOD, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    }
+    return true;
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("good", "could not write regions.good.properties (the last good copy of the regions): " + t); return false; }
+}""")
+# the write itself: never a text older than the newest written one; the file on disk is copied to history/ first (skipped if equal)
+M(sav, r"""
+public static synchronized boolean write(long seq, String text, String line) {
+  logLine(line);
+  if (seq <= WRITTEN || FILE == null) return false;
+  try {
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    if (java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0]) && HIST != null) {
+      byte[] old = java.nio.file.Files.readAllBytes(FILE);
+      if (!new String(old, "UTF-8").equals(text)) {
+        java.nio.file.Files.createDirectories(HIST, new java.nio.file.attribute.FileAttribute[0]);
+        java.nio.file.Files.write(HIST.resolve("regions." + stamp() + ".properties"), old, new java.nio.file.OpenOption[0]);
+        prune();
+      }
+    }
+    java.nio.file.Path tmp = FILE.resolveSibling(FILE.getFileName().toString() + ".tmp");
+    java.nio.file.Files.write(tmp, text.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    try {
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    } catch (Throwable am) {
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    }
+    WRITTEN = seq;
+    WRITES.incrementAndGet();
+    good(text);
+    return true;
+  } catch (Throwable t) { @PKG@.ZCfg.warn("could not write regions.properties (the change stays in memory; the next change or a restart writes again): " + t); return false; }
+}""")
+# a text kept in history/ by itself (/zones reload clear keeps the regions it removes)
+M(sav, r"""
+public static synchronized void keep(String text) {
+  if (HIST == null || text == null) return;
+  try {
+    java.nio.file.Files.createDirectories(HIST, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Files.write(HIST.resolve("regions." + stamp() + ".properties"), text.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    prune();
+  } catch (Throwable t) { @PKG@.ZCfg.warn("could not keep the regions text in history/: " + t); }
+}""")
+M(sav, "public void run() { write(this.seq, this.text, this.line); }")
+M(sav, "public static synchronized long written() { return WRITTEN; }")
+
+# =====================================================================================================================================
+# ZStore: the regions (memory + file)
+# =====================================================================================================================================
+sto = mk("ZStore")
+for f in ("public static java.nio.file.Path FILE;", "public static final java.util.TreeMap REGIONS = new java.util.TreeMap();",
+          "public static volatile @PKG@.ZIndex INDEX = new @PKG@.ZIndex();", "public static volatile String BAD = null;",
+          "public static volatile boolean SYNC = false;", "public static long SEQ = 0L;", "public static volatile String LAST_TEXT = null;",
+          "public static volatile long LAST_SEQ = 0L;", "public static final int MAX_REGIONS = 500;",
+          "public static java.util.HashSet LOCKNEW = new java.util.HashSet();",
+          "public static final String HEAD = %s;" % jl(REGIONS_HEAD)):
+    F(sto, f)
+M(sto, r"""
+public static String text() {
+  StringBuilder sb = new StringBuilder(HEAD);
+  sb.append('\n');
+  java.util.Iterator it = REGIONS.values().iterator();
+  while (it.hasNext()) { sb.append('\n'); sb.append(((@PKG@.ZRegion) it.next()).lines()); }
+  return sb.toString();
+}""")
+M(sto, r"""
+public static void publish() {
+  INDEX = @PKG@.ZIndex.build(new java.util.ArrayList(REGIONS.values()));
+}""")
+# called with the class lock held (every mutator is static synchronized)
+M(sto, r"""
+public static void save(String who, String what) {
+  SEQ = SEQ + 1L;
+  String t = text();
+  LAST_TEXT = t;
+  LAST_SEQ = SEQ;
+  String line = (who == null ? "?" : who) + "\t" + what;
+  @PKG@.ZCfg.info("regions: " + what + " by " + who);
+  @PKG@.ZSave task = new @PKG@.ZSave(SEQ, t, line);
+  if (SYNC) { task.run(); return; }
+  try { @HSV@.SCHEDULED_EXECUTOR.execute(task); } catch (Throwable x) { task.run(); }
+}""")
+M(sto, r"""
+public static void flush() {
+  String t = LAST_TEXT;
+  if (t != null) @PKG@.ZSave.write(LAST_SEQ, t, null);
+}""")
+# titleOk + typeList first (load / set call them: javassist has no forward references)
+M(sto, r"""
+public static boolean titleOk(String t) {
+  return t != null && t.length() <= 40 && t.matches("[A-Za-z0-9 '!&.,()?:-]*");
+}""")
+M(sto, r"""
+public static String typeList() {
+  java.util.TreeSet s = new java.util.TreeSet(@PKG@.ZCfg.TYPES.keySet());
+  StringBuilder sb = new StringBuilder();
+  java.util.Iterator it = s.iterator();
+  while (it.hasNext()) { if (sb.length() > 0) sb.append(", "); sb.append((String) it.next()); }
+  return sb.length() == 0 ? "(none)" : sb.toString();
+}""")
+# one region from a properties file; why[0] = the first bad field (null = fine). A bad box text leaves r.box empty.
+M(sto, r"""
+public static @PKG@.ZRegion parseOne(java.util.Properties p, String id, String[] why) {
+  String pre = "region." + id + ".";
+  @PKG@.ZRegion r = new @PKG@.ZRegion();
+  r.id = id;
+  r.world = p.getProperty(pre + "world", "").trim();
+  if (!r.world.matches("[A-Za-z0-9_.-]{1,64}")) why[0] = "world '" + r.world + "'";
+  r.mode = @PKG@.ZRegion.modeOf(p.getProperty(pre + "mode", "full"));
+  if (r.mode < 0) { why[0] = "mode '" + p.getProperty(pre + "mode") + "' (full or skyblock)"; r.mode = 0; }
+  try { r.priority = Integer.parseInt(p.getProperty(pre + "priority", "0").trim()); } catch (Throwable t) { why[0] = "priority '" + p.getProperty(pre + "priority") + "'"; r.priority = 0; }
+  if (r.priority < -1000 || r.priority > 1000) { why[0] = "priority " + r.priority + " (-1000 to 1000)"; r.priority = 0; }
+  int[] b = @PKG@.ZRegion.parseBoxes(p.getProperty(pre + "boxes"));
+  if (b == null) why[0] = "boxes '" + p.getProperty(pre + "boxes") + "'"; else r.box = b;
+  String[] ty = @PKG@.ZCfg.splitList(p.getProperty(pre + "types", "").toLowerCase());
+  for (int i = 0; i < ty.length; i++) if (!ty[i].matches("[a-z0-9_]{1,32}")) why[0] = "type '" + ty[i] + "'";
+  r.types = ty;
+  String[] fa = @PKG@.ZCfg.splitList(p.getProperty(pre + "flags", "").trim().toLowerCase());
+  for (int i = 0; i < fa.length; i++) if (!fa[i].equals("containers") && !fa[i].equals("furnaces")) why[0] = "flag '" + fa[i] + "' (containers, furnaces)";
+  r.setFlags(@PKG@.ZRegion.join(fa));
+  r.title = p.getProperty(pre + "title", "").trim();
+  if (!titleOk(r.title)) { why[0] = "title '" + r.title + "'"; r.title = ""; }
+  return r;
+}""")
+# the newest good copy of one region in history/ (null = none)
+M(sto, r"""
+public static @PKG@.ZRegion fromHistory(String id) {
+  try {
+    java.nio.file.Path g = @PKG@.ZSave.GOOD;
+    if (g != null && java.nio.file.Files.exists(g, new java.nio.file.LinkOption[0])) {
+      java.util.Properties gp = @PKG@.ZCfg.read(g);
+      if (gp != null && gp.getProperty("region." + id + ".world") != null) {
+        String[] gw = new String[1];
+        @PKG@.ZRegion gr = parseOne(gp, id, gw);
+        if (gw[0] == null) return gr;
+      }
+    }
+    java.nio.file.Path h = @PKG@.ZSave.HIST;
+    if (h == null || !java.nio.file.Files.isDirectory(h, new java.nio.file.LinkOption[0])) return null;
+    java.util.ArrayList names = new java.util.ArrayList();
+    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(h, "regions.*.properties");
+    try {
+      java.util.Iterator it = ds.iterator();
+      while (it.hasNext()) names.add(((java.nio.file.Path) it.next()).getFileName().toString());
+    } finally { ds.close(); }
+    java.util.Collections.sort(names);
+    for (int i = names.size() - 1; i >= 0; i--) {
+      java.util.Properties p = @PKG@.ZCfg.read(h.resolve((String) names.get(i)));
+      if (p == null || p.getProperty("region." + id + ".world") == null) continue;
+      String[] why = new String[1];
+      @PKG@.ZRegion r = parseOne(p, id, why);
+      if (why[0] == null) return r;
+    }
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("histread", "could not read the regions history: " + t); }
+  return null;
+}""")
+# a region whose new lines are bad keeps protecting (fail closed): its copy in memory, else the newest good history copy, else - world + boxes
+# still readable - FULL with those boxes; only a region with no readable world or box is left out (warned). BAD blocks every edit meanwhile.
+M(sto, r"""
+public static @PKG@.ZRegion fallback(String id, @PKG@.ZRegion parsed, String why) {
+  @PKG@.ZRegion old = (@PKG@.ZRegion) REGIONS.get(id);
+  if (old != null) { @PKG@.ZCfg.warn("regions.properties: region " + id + " has a bad " + why + " - it keeps protecting as before (its last good version) until fixed"); return old; }
+  @PKG@.ZRegion h = fromHistory(id);
+  if (h != null) { @PKG@.ZCfg.warn("regions.properties: region " + id + " has a bad " + why + " - it protects as its last good copy (regions.good.properties / history/) until fixed"); return h; }
+  if (parsed.world.matches("[A-Za-z0-9_.-]{1,64}") && parsed.box.length >= 6) {
+    parsed.mode = 0; parsed.types = new String[0]; parsed.setFlags("");
+    @PKG@.ZCfg.warn("regions.properties: region " + id + " has a bad " + why + " - it protects as a FULL region (nothing breaks) until fixed");
+    return parsed;
+  }
+  if (parsed.world.matches("[A-Za-z0-9_.-]{1,64}")) {
+    LOCKNEW.add(parsed.world.toLowerCase());
+    @PKG@.ZCfg.warn("regions.properties: region " + id + " has a bad " + why + ", no readable box and no good copy - the WHOLE WORLD " + parsed.world + " is protected (FULL, nothing breaks or is placed) until the line is fixed + /zones reload");
+    return null;
+  }
+  @PKG@.ZCfg.warn("regions.properties: region " + id + " has a bad " + why + " and no readable world - it does NOT protect until fixed");
+  return null;
+}""")
+# every region of one properties set. bad[0] = the first problem (null = fine), kept[0] = bad regions that still protect; fb = true: a bad
+# region falls back (fallback()), warnings logged; fb = false (a history copy): bad regions are just skipped, nothing logged.
+# Keys: region.<id>.<field>; world / mode / priority / boxes / types / flags / title are read; any OTHER field (spec 5.3 placeAllow / gate,
+# a later version's lines) is kept verbatim in ZRegion.extra and written back (fixer 2, C3 #1) - only a non-region line is a problem.
+M(sto, r"""
+public static java.util.TreeMap parseAll(java.util.Properties p, String[] bad, int[] kept, boolean fb) {
+  java.util.TreeMap ids = new java.util.TreeMap();
+  java.util.regex.Pattern kp = java.util.regex.Pattern.compile("^region\\.([a-z0-9_]{1,40})\\.([A-Za-z][A-Za-z0-9_]{0,31})$");
+  java.util.Iterator it = p.stringPropertyNames().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    java.util.regex.Matcher m = kp.matcher(k);
+    if (!m.matches()) {
+      if (bad[0] == null) bad[0] = "unknown line '" + k + "'";
+      if (fb) @PKG@.ZCfg.warn("regions.properties: unknown line '" + k + "'");
+      continue;
+    }
+    String id = m.group(1);
+    String f = m.group(2);
+    java.util.TreeMap ex = (java.util.TreeMap) ids.get(id);
+    if (ex == null) { ex = new java.util.TreeMap(); ids.put(id, ex); }
+    if (f.matches("world|mode|priority|boxes|types|flags|title")) continue;
+    ex.put(f, p.getProperty(k));
+    if (fb && !f.matches("placeAllow|gate|gateEntry")) @PKG@.ZCfg.warnOnce("extra:" + k, "regions.properties: '" + k + "' is not used by SkyyZones @VERSION@ - kept as it is");
+  }
+  java.util.TreeMap out = new java.util.TreeMap();
+  java.util.Iterator ii = ids.keySet().iterator();
+  while (ii.hasNext()) {
+    String id = (String) ii.next();
+    String[] why = new String[1];
+    @PKG@.ZRegion r = parseOne(p, id, why);
+    r.extra = new java.util.TreeMap((java.util.TreeMap) ids.get(id));
+    if (why[0] != null) {
+      if (bad[0] == null) bad[0] = "region " + id + ": bad " + why[0];
+      if (!fb) continue;
+      r = fallback(id, r, why[0]);
+      if (r == null) continue;
+      kept[0] = kept[0] + 1;
+    }
+    if (out.size() >= MAX_REGIONS) { if (bad[0] == null) bad[0] = "more than " + MAX_REGIONS + " regions"; continue; }
+    out.put(id, r);
+  }
+  return out;
+}""")
+# the newest history copy that holds at least one good region (name[0] = its file name); null = none
+M(sto, r"""
+public static java.util.TreeMap fromHistoryAll(String[] name) {
+  try {
+    java.nio.file.Path g = @PKG@.ZSave.GOOD;
+    if (g != null && java.nio.file.Files.exists(g, new java.nio.file.LinkOption[0])) {
+      java.util.Properties gp = @PKG@.ZCfg.read(g);
+      if (gp != null) {
+        java.util.TreeMap gm = parseAll(gp, new String[1], new int[1], false);
+        if (!gm.isEmpty()) { name[0] = g.getFileName().toString(); return gm; }
+      }
+    }
+    java.nio.file.Path h = @PKG@.ZSave.HIST;
+    if (h == null || !java.nio.file.Files.isDirectory(h, new java.nio.file.LinkOption[0])) return null;
+    java.util.ArrayList names = new java.util.ArrayList();
+    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(h, "regions.*.properties");
+    try {
+      java.util.Iterator it = ds.iterator();
+      while (it.hasNext()) names.add(((java.nio.file.Path) it.next()).getFileName().toString());
+    } finally { ds.close(); }
+    java.util.Collections.sort(names);
+    for (int i = names.size() - 1; i >= 0; i--) {
+      java.util.Properties p = @PKG@.ZCfg.read(h.resolve((String) names.get(i)));
+      if (p == null) continue;
+      java.util.TreeMap m = parseAll(p, new String[1], new int[1], false);
+      if (!m.isEmpty()) { name[0] = "history/" + (String) names.get(i); return m; }
+    }
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("histread", "could not read the regions history: " + t); }
+  return null;
+}""")
+M(sto, r"""
+public static boolean blank(java.nio.file.Path f) {
+  try { return new String(java.nio.file.Files.readAllBytes(f), "UTF-8").trim().length() == 0; } catch (Throwable t) { return false; }
+}""")
+# load (fail closed - protection never silently drops):
+#  - a pending write lands first (max 1 s);
+#  - a file that cannot be read (3 tries) keeps the regions in memory; with none in memory (a start) the newest good history copy protects;
+#    edits are blocked meanwhile;
+#  - fixer 2 (critic 2 #1): a MISSING file or one with NO region line while regions are in memory keeps them (edits blocked) - only
+#    clear = true (/zones reload clear) accepts it; at a start (nothing in memory) a missing or blank file is restored from the newest
+#    good history copy and written back (a file holding only comments = no regions on purpose);
+#  - bad lines block edits; a bad region keeps protecting (fallback()).
+M(sto, r"""
+public static synchronized String load(boolean clear) {
+  long until = System.currentTimeMillis() + 1000L;
+  while (LAST_SEQ > @PKG@.ZSave.written() && System.currentTimeMillis() < until) { try { Thread.sleep(20L); } catch (Throwable t) { break; } }
+  if (LAST_SEQ > @PKG@.ZSave.written()) @PKG@.ZCfg.warn("a regions.properties write is still pending - /zones reload reads the file as it is on disk");
+  boolean exists = FILE != null && java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0]);
+  java.util.Properties p = @PKG@.ZCfg.read(FILE);
+  String[] hn = new String[1];
+  if (p == null) {
+    BAD = "regions.properties cannot be read";
+    if (REGIONS.isEmpty()) {
+      java.util.TreeMap h = fromHistoryAll(hn);
+      if (h != null) {
+        REGIONS.putAll(h);
+        publish();
+        @PKG@.ZCfg.warn("regions.properties cannot be read - the " + h.size() + " regions of " + hn[0] + " protect meanwhile; region edits are blocked until /zones reload reads the file");
+        return "regions.properties UNREADABLE (" + h.size() + " regions from " + hn[0] + " protect)";
+      }
+      @PKG@.ZCfg.warn("regions.properties cannot be read and history/ has no copy - NO region protects until /zones reload reads it");
+      return "regions.properties UNREADABLE - NO region protects";
+    }
+    @PKG@.ZCfg.warn("regions.properties cannot be read - the " + REGIONS.size() + " regions in memory keep protecting; region edits are blocked until /zones reload reads it");
+    return "regions.properties UNREADABLE (" + REGIONS.size() + " regions kept)";
+  }
+  int n = 0;
+  java.util.Iterator it = p.stringPropertyNames().iterator();
+  while (it.hasNext()) { if (((String) it.next()).startsWith("region.")) n++; }
+  if (n == 0 && !clear) {
+    String what = exists ? "holds no region" : "is missing";
+    if (!REGIONS.isEmpty()) {
+      BAD = "regions.properties " + what;
+      @PKG@.ZCfg.warn("regions.properties " + what + " - the " + REGIONS.size() + " regions in memory keep protecting; region edits are blocked. Put the file back + /zones reload, or /zones reload clear to really remove every region");
+      return "regions.properties " + (exists ? "EMPTY" : "MISSING") + " (" + REGIONS.size() + " regions kept; /zones reload clear removes them)";
+    }
+    if (!exists || blank(FILE)) {
+      java.util.TreeMap h = fromHistoryAll(hn);
+      if (h != null) {
+        REGIONS.putAll(h);
+        BAD = null;
+        publish();
+        save("SkyyZones", "restored " + h.size() + " regions from " + hn[0] + " (regions.properties " + (exists ? "was blank" : "was missing") + ")");
+        @PKG@.ZCfg.warn("regions.properties " + (exists ? "was blank" : "was missing") + " - the " + h.size() + " regions of " + hn[0] + " are restored and written back (/zones reload clear removes every region)");
+        return REGIONS.size() + " regions in " + INDEX.byWorld.size() + " worlds (RESTORED from " + hn[0] + ")";
+      }
+    }
+  }
+  String[] bad = new String[1];
+  int[] kept = new int[1];
+  LOCKNEW = new java.util.HashSet();
+  java.util.TreeMap out = parseAll(p, bad, kept, true);
+  int dropped = REGIONS.size();
+  if (clear && n == 0 && dropped > 0) {
+    @PKG@.ZSave.keep(text());
+    @PKG@.ZSave.logLine("/zones reload clear\tevery region removed (" + dropped + "; the old text is in history/)");
+    @PKG@.ZCfg.warn("/zones reload clear: every region removed (" + dropped + ") - the old text is kept in history/");
+  }
+  REGIONS.clear();
+  REGIONS.putAll(out);
+  BAD = bad[0];
+  publish();
+  @PKG@.ZCfg.LOCKW = LOCKNEW;
+  if (bad[0] == null && !REGIONS.isEmpty()) @PKG@.ZSave.good(text());
+  if (clear && !exists) @PKG@.ZCfg.writeIfMissing(FILE, HEAD + "\n");
+  return REGIONS.size() + " regions in " + INDEX.byWorld.size() + " worlds" + (bad[0] == null ? "" : " - PROBLEM: " + bad[0] + " (region edits blocked until fixed + /zones reload" + (kept[0] > 0 ? "; " + kept[0] + " bad " + (kept[0] == 1 ? "region keeps" : "regions keep") + " protecting" : "") + ")");
+}""")
+M(sto, "public static String load() { return load(false); }")
+M(sto, r"""
+public static String start() {
+  String r = load(false);
+  if (REGIONS.isEmpty() && BAD == null) @PKG@.ZCfg.writeIfMissing(FILE, HEAD + "\n");
+  return r;
+}""")
+# ---- mutators: "!" + why = refused (nothing changed); else the answer
+M(sto, r"""
+public static String blocked() {
+  String b = BAD;
+  return b == null ? null : "!The regions file has a problem (" + b + ") - fix Skyy_SkyyZones/regions.properties, then /zones reload. Nothing was changed.";
+}""")
+M(sto, r"""
+public static synchronized @PKG@.ZRegion get(String id) {
+  return id == null ? null : (@PKG@.ZRegion) REGIONS.get(id);
+}""")
+M(sto, r"""
+public static synchronized String create(String id, String world, String mode, int[] box, String who) {
+  String bl = blocked(); if (bl != null) return bl;
+  if (id == null || !id.matches("[a-z0-9_]{1,40}")) return "!A region id is 1-40 of a-z, 0-9 and _.";
+  if (REGIONS.containsKey(id)) return "!Region " + id + " already exists (/zones region addbox " + id + " adds a box to it).";
+  int m = @PKG@.ZRegion.modeOf(mode);
+  if (m < 0) return "!The mode is full or skyblock.";
+  if (REGIONS.size() >= MAX_REGIONS) return "!There are already " + MAX_REGIONS + " regions.";
+  String bp = @PKG@.ZRegion.boxProblem(box);
+  if (bp.length() > 0) return "!" + bp + ".";
+  @PKG@.ZRegion r = new @PKG@.ZRegion();
+  r.id = id; r.world = world; r.mode = m; r.priority = 0; r.box = (int[]) box.clone();
+  REGIONS.put(id, r);
+  publish();
+  save(who, "create " + id + " " + r.modeName() + " in " + world + " " + @PKG@.ZRegion.boxText(r.box));
+  return "Region " + id + " created (" + r.modeName() + ") in " + world + ": " + @PKG@.ZRegion.size(r.box, 0) + " blocks."
+    + (m == 1 ? " Nothing breaks there until you list its resource types: /zones region types " + id + " stone,copper" : " Nothing breaks or is placed there now.");
+}""")
+M(sto, r"""
+public static synchronized String delete(String id, String who) {
+  String bl = blocked(); if (bl != null) return bl;
+  @PKG@.ZRegion r = get(id);
+  if (r == null) return "!No region " + id + ".";
+  REGIONS.remove(id);
+  publish();
+  save(who, "delete " + id + " (was " + r.modeName() + " in " + r.world + " " + @PKG@.ZRegion.boxText(r.box) + ")");
+  return "Region " + id + " deleted.";
+}""")
+M(sto, r"""
+public static synchronized String addBox(String id, String world, int[] box, String who) {
+  String bl = blocked(); if (bl != null) return bl;
+  @PKG@.ZRegion r = get(id);
+  if (r == null) return "!No region " + id + ".";
+  if (!r.world.equals(world)) return "!Region " + id + " is in world " + r.world + " - stand in that world to add a box.";
+  if (r.boxes() >= @PKG@.ZRegion.MAX_BOXES) return "!Region " + id + " already has " + @PKG@.ZRegion.MAX_BOXES + " boxes.";
+  String bp = @PKG@.ZRegion.boxProblem(box);
+  if (bp.length() > 0) return "!" + bp + ".";
+  @PKG@.ZRegion n = r.copy();
+  int[] nb = new int[r.box.length + 6];
+  System.arraycopy(r.box, 0, nb, 0, r.box.length);
+  System.arraycopy(box, 0, nb, r.box.length, 6);
+  n.box = nb;
+  REGIONS.put(id, n);
+  publish();
+  save(who, "addbox " + id + " " + @PKG@.ZRegion.boxText(box));
+  return "Box " + n.boxes() + " added to " + id + " (" + @PKG@.ZRegion.size(box, 0) + " blocks).";
+}""")
+# one field of a region COPY n: mode / priority / title / types / flags; null = done (shown[0] = the value as shown), else "!" + why
+M(sto, r"""
+public static String applyField(@PKG@.ZRegion n, String field, String value, String[] shown) {
+  String v = value == null ? "" : value.trim();
+  shown[0] = v;
+  if (field.equals("mode")) {
+    int m = @PKG@.ZRegion.modeOf(v);
+    if (m < 0) return "!The mode is full or skyblock.";
+    n.mode = m; shown[0] = n.modeName();
+  } else if (field.equals("priority")) {
+    int pr = 0;
+    try { pr = Integer.parseInt(v); } catch (Throwable t) { return "!The priority is a whole number from -1000 to 1000."; }
+    if (pr < -1000 || pr > 1000) return "!The priority is a whole number from -1000 to 1000.";
+    n.priority = pr; shown[0] = String.valueOf(pr);
+  } else if (field.equals("title")) {
+    String t = v.equalsIgnoreCase("none") ? "" : v.replace('_', ' ');
+    if (!titleOk(t)) return "!A title is at most 40 letters, digits, spaces and ' ! & . , ( ) ? : - (type _ for a space).";
+    n.title = t; shown[0] = t.length() == 0 ? "(none)" : t;
+  } else if (field.equals("types")) {
+    String[] a = v.equalsIgnoreCase("none") ? new String[0] : @PKG@.ZCfg.splitList(v.toLowerCase());
+    for (int i = 0; i < a.length; i++) {
+      if (!@PKG@.ZCfg.TYPES.containsKey(a[i])) return "!No resource type '" + a[i] + "'. Types: " + typeList() + " (Server Setup -> Zones -> Resource types, or /zones type <id> <block ids>).";
+    }
+    n.types = a; shown[0] = a.length == 0 ? "(none)" : @PKG@.ZRegion.join(a);
+  } else if (field.equals("flags")) {
+    String[] a = v.equalsIgnoreCase("none") ? new String[0] : @PKG@.ZCfg.splitList(v.toLowerCase());
+    for (int i = 0; i < a.length; i++) if (!a[i].equals("containers") && !a[i].equals("furnaces")) return "!Flags: containers, furnaces (or none).";
+    n.setFlags(@PKG@.ZRegion.join(a)); shown[0] = a.length == 0 ? "(none)" : n.flags;
+  } else return "!Unknown region setting " + field + ".";
+  return null;
+}""")
+M(sto, r"""
+public static synchronized String set(String id, String field, String value, String who) {
+  String bl = blocked(); if (bl != null) return bl;
+  @PKG@.ZRegion r = get(id);
+  if (r == null) return "!No region " + id + ".";
+  @PKG@.ZRegion n = r.copy();
+  String[] shown = new String[1];
+  String e = applyField(n, field, value, shown);
+  if (e != null) return e;
+  REGIONS.put(id, n);
+  publish();
+  save(who, field + " " + id + " = " + shown[0]);
+  return "Region " + id + ": " + field + " = " + shown[0] + "." + (field.equals("types") && n.mode != 1 ? " (It is a FULL region - types only count in skyblock mode: /zones region mode " + id + " skyblock)" : "");
+}""")
+# several fields at once, all or nothing (the Server Setup regions table): one change, one history copy, one change-log line
+M(sto, r"""
+public static synchronized String setMany(String id, String[] fields, String[] values, String who) {
+  String bl = blocked(); if (bl != null) return bl;
+  @PKG@.ZRegion r = get(id);
+  if (r == null) return "!No region " + id + ".";
+  @PKG@.ZRegion n = r.copy();
+  StringBuilder sb = new StringBuilder();
+  String[] shown = new String[1];
+  for (int i = 0; i < fields.length; i++) {
+    String e = applyField(n, fields[i], values[i], shown);
+    if (e != null) return e;
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(fields[i]).append(' ').append(shown[0]);
+  }
+  if (n.lines().equals(r.lines())) return "Region " + id + ": nothing changed.";
+  REGIONS.put(id, n);
+  publish();
+  save(who, "edit " + id + ": " + sb.toString());
+  return "Region " + id + " changed: " + sb.toString() + ".";
+}""")
+# the kit's "Re-read files" action + /zones reload
+M(cfg, r"""
+public static String reloadFiles(boolean clear) {
+  String t = loadTypes(false);
+  String r = @PKG@.ZStore.load(clear);
+  String g = loadRegen(false);
+  return "Re-read: " + t + "; " + r + "; " + g + ".";
+}""")
+M(cfg, "public static String reloadFiles() { return reloadFiles(false); }")
+M(cfg, r"""
+public static Object[] reloadAction(java.util.UUID who, String name) {
+  String m = reloadFiles();
+  info(m + " (Server Setup, " + name + ")");
+  return new Object[] { "ok", "", m };
+}""")
+
+# =====================================================================================================================================
+# ZEng: the engine calls (API = the harness stand-in)
+# =====================================================================================================================================
+eng = mk("ZEng")
+F(eng, "public static volatile @PKG@.ZApi API = null;")
+F(eng, "public static boolean FAILED_ONCE = false;")
+M(eng, r"""
+public static void fail(String what, Throwable t) {
+  @PKG@.ZCfg.warnOnce("eng:" + what, what + " failed (logged once): " + t);
+}""")
+M(eng, r"""
+public static void notify(@PR@ pr, String text) {
+  if (pr == null || text == null) return;
+  @PKG@.ZApi a = API;
+  if (a != null) { a.notify(pr, text); return; }
+  try { @NTU@.sendNotification(pr.getPacketHandler(), @MSG@.raw(text), @NST@.Warning); } catch (Throwable t) { fail("notification", t); }
+}""")
+M(eng, r"""
+public static void title(@PR@ pr, String t, String sub) {
+  if (pr == null || t == null) return;
+  @PKG@.ZApi a = API;
+  if (a != null) { a.title(pr, t, sub); return; }
+  try { @ETU@.showEventTitleToPlayer(pr, @MSG@.raw(t), @MSG@.raw(sub == null ? "" : sub), false); } catch (Throwable x) { fail("event title", x); }
+}""")
+M(eng, r"""
+public static void particle(String id, double x, double y, double z, java.util.List to, @ST@ st) {
+  @PKG@.ZApi a = API;
+  if (a != null) { a.particle(id, x, y, z, to, st); return; }
+  try { @PTU@.spawnParticleEffect(id, (@V3DC@) new @V3D@(x, y, z), to, (@CAC@) st); } catch (Throwable t) { fail("particle", t); }
+}""")
+M(eng, r"""
+public static int[] target(@REF@ r, @ST@ st) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.target(r, st);
+  try {
+    @V3I@ v = @TGU@.getTargetBlock(r, 16.0, (@CAC@) st);
+    if (v == null) return null;
+    return new int[] { v.x, v.y, v.z };
+  } catch (Throwable t) { fail("target block", t); return null; }
+}""")
+# probe Z6: the vanilla builder-tool selection (null = none / no BuilderTools)
+M(eng, r"""
+public static int[] selection(@REF@ r, @ST@ st, @PR@ pr) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.selection(r, st, pr);
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return null;
+    @BTS@ bs = @BTP@.getState(p, pr);
+    @BSEL@ s = bs == null ? null : bs.getSelection();
+    if (s == null || !s.hasSelectionBounds()) return null;
+    @V3I@ lo = s.getSelectionMin();
+    @V3I@ hi = s.getSelectionMax();
+    if (lo == null || hi == null) return null;
+    return @PKG@.ZRegion.norm(lo.x, lo.y, lo.z, hi.x, hi.y, hi.z);
+  } catch (Throwable t) { fail("builder selection", t); return null; }
+}""")
+M(eng, r"""
+public static int count(@IC@ c, String id) {
+  int n = 0;
+  if (c == null) return 0;
+  int cap = c.getCapacity();
+  for (int i = 0; i < cap; i++) {
+    @IS@ s = c.getItemStack((short) i);
+    if (s != null && !s.isEmpty() && id.equals(s.getItemId())) n = n + s.getQuantity();
+  }
+  return n;
+}""")
+# 0 given, 1 already has one, 2 no room, 3 error (storage first; counted before and after)
+M(eng, r"""
+public static int give(@REF@ r, @ST@ st, String id) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.give(r, st, id);
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return 3;
+    @IC@ c = p.getInventory().getCombinedStorageFirst();
+    int before = count(c, id);
+    if (before > 0) return 1;
+    c.addItemStack(new @IS@(id, 1));
+    return count(c, id) > before ? 0 : 2;
+  } catch (Throwable t) { fail("give the wand", t); return 3; }
+}""")
+# the 0.7 recipe (SkyyMerchants MerchEng.block): loaded chunk + section only, never loads one; null = not loaded
+M(eng, r"""
+public static String blockAt(@WLD@ w, int x, int y, int z) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.blockAt(w, x, y, z);
+  try {
+    if (w == null || y < 0 || y >= 320) return null;
+    @CHS@ cs = w.getChunkStore();
+    @REF@ c = cs.getChunkReference(@CHU@.indexChunkFromBlock(x, z));
+    if (c == null || !c.isValid()) return null;
+    @REF@ r = cs.getChunkSectionReferenceAtBlock(x, y, z);
+    if (r == null || !r.isValid()) return null;
+    Object s = cs.getStore().getComponent(r, @BSEC@.getComponentType());
+    if (!(s instanceof @BSEC@)) return null;
+    Object t = @BTY@.getAssetMap().getAsset(((@BSEC@) s).get(x, y, z));
+    if (!(t instanceof @BTY@)) return "Empty";
+    return String.valueOf(((@BTY@) t).getId());
+  } catch (Throwable t) { fail("block lookup", t); return null; }
+}""")
+
+# =====================================================================================================================================
+# ZEng 0.2.0: the regrow engine calls (each with the harness stand-in first)
+# =====================================================================================================================================
+# the LOADED section holding x y z, or null (never loads one; the blockAt recipe)
+M(eng, r"""
+public static @BSEC@ section(@WLD@ w, int x, int y, int z) {
+  if (w == null || y < 0 || y >= 320) return null;
+  @CHS@ cs = w.getChunkStore();
+  @REF@ c = cs.getChunkReference(@CHU@.indexChunkFromBlock(x, z));
+  if (c == null || !c.isValid()) return null;
+  @REF@ r = cs.getChunkSectionReferenceAtBlock(x, y, z);
+  if (r == null || !r.isValid()) return null;
+  Object s = cs.getStore().getComponent(r, @BSEC@.getComponentType());
+  return s instanceof @BSEC@ ? (@BSEC@) s : null;
+}""")
+# { rotation index, filler } of the block at x y z; null = not loaded
+M(eng, r"""
+public static int[] stateAt(@WLD@ w, int x, int y, int z) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.stateAt(w, x, y, z);
+  try {
+    @BSEC@ s = section(w, x, y, z);
+    if (s == null) return null;
+    return new int[] { s.getRotationIndex(x, y, z), s.getFiller(x, y, z) };
+  } catch (Throwable t) { fail("block state", t); return null; }
+}""")
+# write block id (with its rotation) at x y z in a LOADED chunk (BlockSetCommand's call: index, BlockType, rotation, filler 0, settings 0
+# = the full update, as SkyyExploration's luggage); false = not loaded / unknown id / refused. Fires no PlaceBlockEvent (probe Z5).
+M(eng, r"""
+public static boolean put(@WLD@ w, int x, int y, int z, String id, int rot) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.put(w, x, y, z, id, rot);
+  try {
+    if (w == null || id == null || y < 0 || y >= 320) return false;
+    @CHS@ cs = w.getChunkStore();
+    @REF@ c = cs.getChunkReference(@CHU@.indexChunkFromBlock(x, z));
+    if (c == null || !c.isValid()) return false;
+    @REF@ r = cs.getChunkSectionReferenceAtBlock(x, y, z);
+    if (r == null || !r.isValid()) return false;
+    int idx = @BTY@.getAssetMap().getIndex(id);
+    if (idx == Integer.MIN_VALUE) { @PKG@.ZCfg.warnOnce("noblock:" + id, "the block id " + id + " is unknown to the game - it cannot be written (regrow / placeholder)"); return false; }
+    Object t = @BTY@.getAssetMap().getAsset(idx);
+    if (!(t instanceof @BTY@)) return false;
+    return @BOPS@.setBlock(cs, r, x, y, z, idx, (@BTY@) t, rot, 0, 0);
+  } catch (Throwable t) { fail("block write", t); return false; }
+}""")
+# a player whose body overlaps the block's space (feet y-1.8 .. y+1, 0.85 across): never write a solid block into a player (spec 4.3)
+M(eng, r"""
+public static boolean occupied(@WLD@ w, int x, int y, int z) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.occupied(w, x, y, z);
+  try {
+    if (w == null) return false;
+    java.util.Collection c = w.getPlayerRefs();
+    if (c == null) return false;
+    java.util.Iterator it = c.iterator();
+    while (it.hasNext()) {
+      Object o = it.next();
+      if (!(o instanceof @PR@)) continue;
+      com.hypixel.hytale.math.vector.Transform t = ((@PR@) o).getTransform();
+      if (t == null || t.getPosition() == null) continue;
+      @V3D@ p = t.getPosition();
+      double dx = p.x - ((double) x + 0.5);
+      double dz = p.z - ((double) z + 0.5);
+      double dy = p.y - (double) y;
+      if (dx > -0.85 && dx < 0.85 && dz > -0.85 && dz < 0.85 && dy > -1.9 && dy < 1.0) return true;
+    }
+    return false;
+  } catch (Throwable t) { fail("player-in-block check", t); return true; }
+}""")
+# ask for the section (loads the chunk), then run `after` on the world thread
+M(eng, r"""
+public static void load(@WLD@ w, int x, int y, int z, Runnable after) {
+  @PKG@.ZApi a = API;
+  if (a != null) { a.load(w, x, y, z, after); return; }
+  try {
+    if (w == null || y < 0 || y >= 320) return;
+    java.util.concurrent.CompletableFuture f = w.getChunkStore().getChunkSectionReferenceAtBlockAsync(x, y, z);
+    if (f != null && after != null) f.thenRunAsync(after, (java.util.concurrent.Executor) w);
+  } catch (Throwable t) { fail("chunk load", t); }
+}""")
+# fixer 2: run r after ms on the server scheduler (World.consumeTaskQueue drains its queue until EMPTY - a task the pass queues again would
+# run in the same tick, so a backlog pass is delayed here instead); a failure only leaves the rest to the 1 s regrow tick
+M(eng, r"""
+public static void later(Runnable r, long ms) {
+  @PKG@.ZApi a = API;
+  if (a != null) { a.later(r, ms); return; }
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(r, ms, java.util.concurrent.TimeUnit.MILLISECONDS); } catch (Throwable t) { fail("delayed regrow pass", t); }
+}""")
+M(eng, r"""
+public static @WLD@ world(String name) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.world(name);
+  try { return name == null ? null : @UNI@.get().getWorld(name); } catch (Throwable t) { fail("world lookup", t); return null; }
+}""")
+# World.execute QUEUES the task (probe Z1); false = the world takes no tasks (shutting down)
+M(eng, r"""
+public static boolean exec(@WLD@ w, Runnable r) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.exec(w, r);
+  try { if (w == null) return false; w.execute(r); return true; } catch (Throwable t) { return false; }
+}""")
+# the blocks of box (x0 y0 z0 x1 y1 z1) whose id is one of ids, in LOADED sections only: int[] { x, y, z, index in ids }; stats[0] = blocks
+# read, stats[1] = sections not loaded; stops after cap blocks (audit)
+M(eng, r"""
+public static java.util.List scan(@WLD@ w, int[] box, String[] ids, int[] stats, long cap) {
+  @PKG@.ZApi a = API;
+  if (a != null) return a.scan(w, box, ids, stats);
+  java.util.ArrayList out = new java.util.ArrayList();
+  try {
+    int[] ix = new int[ids.length];
+    for (int i = 0; i < ids.length; i++) ix[i] = @BTY@.getAssetMap().getIndex(ids[i]);
+    int y0 = Math.max(box[1], 0);
+    int y1 = Math.min(box[4], 319);
+    for (int sx = box[0] >> 5; sx <= (box[3] >> 5); sx++)
+      for (int sz = box[2] >> 5; sz <= (box[5] >> 5); sz++)
+        for (int sy = y0 >> 5; sy <= (y1 >> 5); sy++) {
+          if ((long) stats[0] >= cap) return out;
+          @BSEC@ s = section(w, sx << 5, sy << 5, sz << 5);
+          if (s == null) { stats[1] = stats[1] + 1; continue; }
+          int ax = Math.max(box[0], sx << 5);
+          int bx = Math.min(box[3], (sx << 5) + 31);
+          int ay = Math.max(y0, sy << 5);
+          int by = Math.min(y1, (sy << 5) + 31);
+          int az = Math.max(box[2], sz << 5);
+          int bz = Math.min(box[5], (sz << 5) + 31);
+          for (int i = ax; i <= bx; i++)
+            for (int k = az; k <= bz; k++)
+              for (int j = ay; j <= by; j++) {
+                int v = s.get(i, j, k);
+                stats[0] = stats[0] + 1;
+                for (int q = 0; q < ix.length; q++) if (v == ix[q]) { out.add(new int[] { i, j, k, q }); break; }
+              }
+        }
+  } catch (Throwable t) { fail("audit scan", t); }
+  return out;
+}""")
+
+# =====================================================================================================================================
+# ZMsg: chat lines + the throttled refusal note
+# =====================================================================================================================================
+msg = mk("ZMsg")
+F(msg, "public static final java.util.concurrent.ConcurrentHashMap LAST = new java.util.concurrent.ConcurrentHashMap();")
+M(msg, r"""
+public static void tell(@PR@ pr, String text, String color) {
+  if (pr == null || text == null) return;
+  try { pr.sendMessage(@MSG@.raw(text).color(color)); } catch (Throwable t) { }
+}""")
+M(msg, r"""
+public static boolean due(java.util.UUID u, long now) {
+  Long l = (Long) LAST.get(u);
+  long gap = 1000L * (long) @PKG@.ZCfg.MSG_GAP;
+  if (l != null && now - l.longValue() < gap) return false;
+  LAST.put(u, Long.valueOf(now));
+  return true;
+}""")
+M(msg, r"""
+public static void refuse(@PR@ pr, String text) {
+  if (pr == null) return;
+  if (due(pr.getUuid(), System.currentTimeMillis())) @PKG@.ZEng.notify(pr, text);
+}""")
+
+# =====================================================================================================================================
+# ZBuild: builder mode (memory only = off at every login / restart)
+# =====================================================================================================================================
+bld = mk("ZBuild")
+F(bld, "public static final java.util.concurrent.ConcurrentHashMap ON = new java.util.concurrent.ConcurrentHashMap();")   # uuid -> long[] { since, lastRemind, lastPermCheck }
+F(bld, "public static final long RECHECK_MS = 30000L;")
+M(bld, "public static boolean on(java.util.UUID u) { return u != null && ON.containsKey(u); }")
+M(bld, r"""
+public static void set(java.util.UUID u, String name, boolean on) {
+  if (u == null) return;
+  long now = System.currentTimeMillis();
+  if (on) { ON.put(u, new long[] { now, now, now }); @PKG@.ZCfg.bridge().put("zones:build:" + u, Boolean.TRUE); }
+  else { ON.remove(u); @PKG@.ZCfg.bridge().remove("zones:build:" + u, Boolean.TRUE); }
+  @PKG@.ZCfg.info("builder mode " + (on ? "ON" : "off") + " for " + name);
+}""")
+# fixer 2 (engine #2): the node is re-checked at most every RECHECK_MS while builder mode is on - a builder who lost skyyzones.build (and
+# skyyzones.admin) mid-session drops out of builder mode at their next protected action
+M(bld, r"""
+public static boolean bypass(@PR@ pr) {
+  if (pr == null) return false;
+  java.util.UUID u = pr.getUuid();
+  if (u == null) return false;
+  long[] s = (long[]) ON.get(u);
+  if (s != null) {
+    long now = System.currentTimeMillis();
+    if (now - s[2] < RECHECK_MS) return true;
+    s[2] = now;
+    if (@PKG@.ZCfg.permTest(u, "@BUILDN@") || @PKG@.ZCfg.permTest(u, "@ADMIN@")) return true;
+    set(u, pr.getUsername(), false);
+    @PKG@.ZEng.notify(pr, "Builder mode off - you no longer have skyyzones.build.");
+  }
+  return @PKG@.ZCfg.OP_BYPASS && @PKG@.ZCfg.permTest(u, "@ADMIN@");
+}""")
+M(bld, r"""
+public static void remind(@PR@ pr, java.util.UUID u, long now) {
+  long[] s = (long[]) ON.get(u);
+  if (s == null || @PKG@.ZCfg.REMIND <= 0) return;
+  if (now - s[1] < 1000L * (long) @PKG@.ZCfg.REMIND) return;
+  s[1] = now;
+  @PKG@.ZEng.notify(pr, "Build mode is ON - protection does not stop you. /zones build off");
+}""")
+M(bld, r"""
+public static void clearAll() {
+  java.util.Iterator it = ON.keySet().iterator();
+  while (it.hasNext()) { try { @PKG@.ZCfg.bridge().remove("zones:build:" + it.next(), Boolean.TRUE); } catch (Throwable t) { } }
+  ON.clear();
+}""")
+
+# =====================================================================================================================================
+# ZSel + ZWand: the Zone Wand corners (memory only, per player)
+# =====================================================================================================================================
+sel = mk("ZSel")
+for f in ("public String world;", "public int ax;", "public int ay;", "public int az;", "public int bx;", "public int by;", "public int bz;",
+          "public boolean a;", "public boolean b;", "public boolean nextB;", "public boolean last;", "public int lx;", "public int ly;", "public int lz;",
+          "public long lt;"):
+    F(sel, f)
+C(sel, "public ZSel(String w) { this.world = w; }")
+wnd = mk("ZWand")
+F(wnd, "public static final String ID = \"@WAND@\";")
+F(wnd, "public static final java.util.concurrent.ConcurrentHashMap SEL = new java.util.concurrent.ConcurrentHashMap();")
+# null = the same block again while the hits keep coming (a held click fires many events; 400 ms after the last one it counts again,
+# so the B corner can start the next box and a 1-block box is possible) - nothing to say
+F(wnd, "public static final long REPEAT_MS = 400L;")
+M(wnd, r"""
+public static String hitAt(java.util.UUID u, String w, int x, int y, int z, long now) {
+  @PKG@.ZSel s = (@PKG@.ZSel) SEL.get(u);
+  if (s == null || !w.equals(s.world)) { s = new @PKG@.ZSel(w); SEL.put(u, s); }
+  if (s.last && s.lx == x && s.ly == y && s.lz == z && now - s.lt < REPEAT_MS) { s.lt = now; return null; }
+  s.last = true; s.lx = x; s.ly = y; s.lz = z; s.lt = now;
+  if (!s.nextB) {
+    s.ax = x; s.ay = y; s.az = z; s.a = true; s.nextB = true;
+    return "Zone Wand: corner A = " + x + " " + y + " " + z + ". Now hit the opposite corner (B).";
+  }
+  s.bx = x; s.by = y; s.bz = z; s.b = true; s.nextB = false;
+  int[] b = @PKG@.ZRegion.norm(s.ax, s.ay, s.az, s.bx, s.by, s.bz);
+  String p = @PKG@.ZRegion.boxProblem(b);
+  return "Zone Wand: corner B = " + x + " " + y + " " + z + " - box " + @PKG@.ZRegion.size(b, 0) + (p.length() > 0 ? " (too big: " + p + ")" : "")
+    + ". Next: /zones region create <name> <full or skyblock> (or /zones region addbox <name>).";
+}""")
+M(wnd, "public static String hit(java.util.UUID u, String w, int x, int y, int z) { return hitAt(u, w, x, y, z, System.currentTimeMillis()); }")
+M(wnd, r"""
+public static int[] box(java.util.UUID u, String w) {
+  @PKG@.ZSel s = (@PKG@.ZSel) SEL.get(u);
+  if (s == null || !s.a || !s.b || w == null || !w.equals(s.world)) return null;
+  return @PKG@.ZRegion.norm(s.ax, s.ay, s.az, s.bx, s.by, s.bz);
+}""")
+M(wnd, r"""
+public static void use(@PR@ pr, String w, int x, int y, int z) {
+  java.util.UUID u = pr.getUuid();
+  if (!@PKG@.ZCfg.permTest(u, "@ADMIN@")) { @PKG@.ZMsg.refuse(pr, "Only zone admins can use the Zone Wand."); return; }
+  String m = hit(u, w, x, y, z);
+  if (m != null) @PKG@.ZMsg.tell(pr, m, "@INFO@");
+}""")
+
+# =====================================================================================================================================
+# 0.2.0 REGROWING BLOCKS (spec 4.1-4.3, 9): ZDep = one waiting block, ZRw = one world's waiting blocks + its journal / snapshot,
+# ZPass = the world-thread pass (placeholder, regrow, catch-up), ZRegen = the break hook + start / restore / status / audit, ZTicker = the
+# 1 s scheduler tick (+ the 60 s snapshot)
+# =====================================================================================================================================
+dep = mk("ZDep")
+for f in ("public int x;", "public int y;", "public int z;", "public long key;", "public String orig;", "public String type;", "public String ph;",
+          "public int rot;", "public volatile long due;", "public volatile int state;", "public int tries;", "public volatile long next;",
+          "public volatile boolean force;", "public volatile long asked;", "public static volatile long CLOCK = 0L;"):
+    F(dep, f)
+# CLOCK = the harness clock (0 in game = the wall clock)
+M(dep, r"""
+public static long now() {
+  long c = CLOCK;
+  return c != 0L ? c : System.currentTimeMillis();
+}""")
+M(dep, r"""
+public static long key(int x, int y, int z) {
+  return (((long) (x & 0x3FFFFFF)) << 38) | (((long) (y & 0xFFF)) << 26) | ((long) (z & 0x3FFFFFF));
+}""")
+C(dep, r"""
+public ZDep(int x, int y, int z, String orig, String type, String ph, int rot, long due) {
+  this.x = x; this.y = y; this.z = z; this.orig = orig; this.type = type; this.ph = ph; this.rot = rot; this.due = due;
+  this.key = key(x, y, z); this.state = 0; this.tries = 0; this.next = 0L;
+}""")
+M(dep, r"""
+public String line() {
+  return "D " + this.x + " " + this.y + " " + this.z + " " + this.orig + " " + this.type + " " + this.due + " " + this.rot + " " + this.ph;
+}""")
+# fixer 2: V = a block that GREW BACK (time = when): kept 30 min in the snapshot, checked after the next start (a crash before its chunk
+# was saved leaves the placeholder in the saved chunk with no D entry)
+M(dep, r"""
+public String vline() {
+  return "V" + line().substring(1);
+}""")
+M(dep, r"""
+public static boolean idOk(String id) {
+  return id != null && id.matches("\\*?[A-Za-z0-9_.-]{1,120}");
+}""")
+# a journal / snapshot D line (9 words) -> an entry (state 1: its placeholder is assumed in place; the pass checks the world); null = bad
+M(dep, r"""
+public static @PKG@.ZDep parse(String[] a) {
+  if (a == null || a.length != 9 || (!a[0].equals("D") && !a[0].equals("V"))) return null;
+  try {
+    int x = Integer.parseInt(a[1]);
+    int y = Integer.parseInt(a[2]);
+    int z = Integer.parseInt(a[3]);
+    long due = Long.parseLong(a[6]);
+    int rot = Integer.parseInt(a[7]);
+    if (!idOk(a[4]) || !a[5].matches("[a-z0-9_]{1,32}") || !idOk(a[8]) || rot < 0 || rot > 255 || y < -64 || y > 511) return null;
+    @PKG@.ZDep d = new @PKG@.ZDep(x, y, z, a[4], a[5], a[8], rot, due);
+    d.state = 1;
+    return d;
+  } catch (Throwable t) { return null; }
+}""")
+
+rw = mk("ZRw")
+for f in ("public String world;", "public java.util.concurrent.ConcurrentHashMap dep;",
+          "public java.nio.file.Path jf;", "public java.nio.file.Path sf;", "public java.io.OutputStream out;", "public volatile long lines;",
+          "public java.util.concurrent.atomic.AtomicLong queued;", "public volatile boolean hold;", "public volatile @PKG@.ZIndex ix;",
+          "public java.util.concurrent.ConcurrentHashMap recent;", "public java.util.concurrent.ConcurrentHashMap check;",
+          "public static final long KEEPV = 1800000L;",
+          "public static final java.util.concurrent.atomic.AtomicLong JFAIL = new java.util.concurrent.atomic.AtomicLong();"):
+    F(rw, f)
+C(rw, r"""
+public ZRw(String world, java.nio.file.Path dir) {
+  this.world = world;
+  this.dep = new java.util.concurrent.ConcurrentHashMap();
+  this.queued = new java.util.concurrent.atomic.AtomicLong(0L);
+  this.recent = new java.util.concurrent.ConcurrentHashMap();
+  this.check = new java.util.concurrent.ConcurrentHashMap();
+  this.jf = dir.resolve(world + ".journal");
+  this.sf = dir.resolve(world + ".snap");
+  this.lines = 0L;
+}""")
+# one journal line, written + flushed now (spec 4.1 step 2: the record before the block changes); false = not written (the caller refuses)
+M(rw, r"""
+public synchronized boolean append(String line) {
+  try {
+    if (this.out == null) {
+      java.nio.file.Files.createDirectories(this.jf.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+      this.out = java.nio.file.Files.newOutputStream(this.jf, new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND, java.nio.file.StandardOpenOption.WRITE });
+    }
+    this.out.write((line + "\n").getBytes("UTF-8"));
+    this.out.flush();
+    this.lines = this.lines + 1L;
+    return true;
+  } catch (Throwable t) {
+    JFAIL.incrementAndGet();
+    @PKG@.ZCfg.warnOnce("journal:" + this.world, "could not write the regrow journal " + this.jf + " (" + t + ") - gathering in regrowing areas of " + this.world + " is refused while it fails");
+    try { if (this.out != null) this.out.close(); } catch (Throwable t2) { }
+    this.out = null;
+    return false;
+  }
+}""")
+# an entry is finished: out of memory, then an R line (a missing R only means the block is checked again after a restart)
+M(rw, r"""
+public boolean drop(@PKG@.ZDep d) {
+  if (d == null || !this.dep.remove(Long.valueOf(d.key), d)) return false;
+  append("R " + d.x + " " + d.y + " " + d.z);
+  return true;
+}""")
+# fixer 2: an entry GREW BACK (the original is in the world): out of memory, kept as recent (when = now) and journaled as a V line (critic:
+# a crash before the chunk is saved again reloads the placeholder - the next start checks every recent spot, see ZPass)
+M(rw, r"""
+public boolean done(@PKG@.ZDep d, long now) {
+  if (d == null || !this.dep.remove(Long.valueOf(d.key), d)) return false;
+  d.due = now;
+  this.recent.put(Long.valueOf(d.key), d);
+  append(d.vline());
+  return true;
+}""")
+# the snapshot (spec 5.3 / 9): every waiting entry -> <world>.snap.tmp -> atomic rename, then the journal is emptied (both under this lock,
+# so no journal line is lost); nothing waiting = both files removed. force = even with no new journal line.
+M(rw, r"""
+public synchronized boolean snapshot(boolean force) {
+  if (!force && this.lines == 0L) return true;
+  if (this.hold) {
+    @PKG@.ZCfg.warnOnce("hold:" + this.world, "regrow files of " + this.world + " could not be read at the start - they are NOT rewritten or compacted (no waiting block is lost); the journal keeps growing until a start reads them");
+    return false;
+  }
+  try {
+    if (this.out != null) { this.out.close(); this.out = null; }
+    long now = @PKG@.ZDep.now();
+    java.util.Iterator ri = this.recent.values().iterator();
+    while (ri.hasNext()) { if (now - ((@PKG@.ZDep) ri.next()).due > KEEPV) ri.remove(); }
+    if (this.dep.isEmpty() && this.recent.isEmpty() && this.check.isEmpty()) {
+      java.nio.file.Files.deleteIfExists(this.sf);
+      java.nio.file.Files.deleteIfExists(this.jf);
+      this.lines = 0L;
+      return true;
+    }
+    StringBuilder sb = new StringBuilder("# SkyyZones regrow snapshot of world " + this.world + ": D x y z original type regrowAtMs rotation placeholder (V = grown back at that time, checked after a start)\n");
+    java.util.Iterator it = this.dep.values().iterator();
+    while (it.hasNext()) sb.append(((@PKG@.ZDep) it.next()).line()).append('\n');
+    it = this.check.values().iterator();
+    while (it.hasNext()) sb.append(((@PKG@.ZDep) it.next()).vline()).append('\n');
+    it = this.recent.values().iterator();
+    while (it.hasNext()) sb.append(((@PKG@.ZDep) it.next()).vline()).append('\n');
+    java.nio.file.Files.createDirectories(this.sf.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = this.sf.resolveSibling(this.sf.getFileName().toString() + ".tmp");
+    java.nio.file.Files.write(tmp, sb.toString().getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    try {
+      java.nio.file.Files.move(tmp, this.sf, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    } catch (Throwable am) {
+      java.nio.file.Files.move(tmp, this.sf, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    }
+    java.nio.file.Files.deleteIfExists(this.jf);
+    this.lines = 0L;
+    return true;
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("snap:" + this.world, "could not write the regrow snapshot " + this.sf + " (the journal is kept): " + t); return false; }
+}""")
+M(rw, r"""
+public synchronized void close() {
+  try { if (this.out != null) this.out.close(); } catch (Throwable t) { }
+  this.out = null;
+}""")
+
+pas = mk("ZPass", None, ("java.lang.Runnable",))
+for f in ("public @PKG@.ZRw rw;", "public @WLD@ w;", "public boolean k;", "public static final int LOADS = 8;", "public static final long REASK = 30000L;",
+          "public static final java.util.concurrent.atomic.AtomicLong ASKED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong RESTORED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong PLACED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong BLOCKED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong CHANGED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong CANCELLED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong UNLOADED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong WFAIL = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong VERIFIED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final long STALE = 5000L;", "public static final long NEXT = 50L;"):
+    F(pas, f)
+C(pas, "public ZPass(@PKG@.ZRw rw, @WLD@ w) { this.rw = rw; this.w = w; this.k = false; }")
+# k = a chunk-load callback: it only queues a (merged) pass - never a full pass per loaded chunk (critic: N loads -> N passes)
+C(pas, "public ZPass(@PKG@.ZRw rw, @WLD@ w, boolean k) { this.rw = rw; this.w = w; this.k = k; }")
+# queue one pass for that world (at most one waits in its queue). fixer 2: queued = WHEN it was queued; a pass still not run after 5 s (a
+# world stopped with it in its queue - ZRw outlives the World) no longer blocks every later kick of that world
+M(pas, r"""
+public static boolean kick(@WLD@ w, @PKG@.ZRw rw) {
+  if (w == null || rw == null) return false;
+  long now = @PKG@.ZDep.now();
+  long q = rw.queued.get();
+  if (q != 0L && now - q < STALE && now >= q) return false;
+  if (!rw.queued.compareAndSet(q, now)) return false;
+  if (@PKG@.ZEng.exec(w, new @PKG@.ZPass(rw, w))) return true;
+  rw.queued.compareAndSet(now, 0L);
+  return false;
+}""")
+# THE PASS (world thread). state 0 (just broken): still the original = the break was cancelled by another system -> dropped; else the
+# placeholder. Due (or forced, or regen off): unloaded -> waits for the chunk (forced: asks for it); the original already -> dropped; changed
+# by hand -> left, dropped; a player inside -> retry; else the original back. At most regen.passBatch writes; more -> another pass 50 ms
+# later (fixer 2: never re-queued from here - the world drains its queue until empty, so that ran the whole backlog in ONE tick).
+# Then (fixer 2) the CHECK list: spots that grew back shortly before the last stop - a loaded one still holding its placeholder (a crash
+# before the chunk was saved) gets its original back; anything else is dropped from the list.
+M(pas, r"""
+public static int pass(@PKG@.ZRw rw, @WLD@ w) {
+  long now = @PKG@.ZDep.now();
+  boolean off = !@PKG@.ZCfg.REGEN_ON;
+  int max = @PKG@.ZCfg.PASS;
+  int writes = 0;
+  boolean more = false;
+  java.util.HashSet asked = null;
+  int loads = 0;
+  @PKG@.ZIndex ix = @PKG@.ZStore.INDEX;
+  if (ix != rw.ix) {
+    rw.ix = ix;
+    java.util.Iterator ci = rw.dep.values().iterator();
+    while (ci.hasNext()) {
+      @PKG@.ZDep c = (@PKG@.ZDep) ci.next();
+      String t = @PKG@.ZRules.resType(ix, rw.world, c.x, c.y, c.z, c.orig);
+      if (!c.force && (t == null || !t.equals(c.type))) { c.force = true; c.next = 0L; }
+    }
+  }
+  java.util.Iterator it = rw.dep.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.ZDep d = (@PKG@.ZDep) it.next();
+    if (writes >= max) { more = true; break; }
+    boolean due = off || d.force || d.due <= now;
+    if (d.state == 0) {
+      String c0 = @PKG@.ZEng.blockAt(w, d.x, d.y, d.z);
+      if (c0 == null) { if (!due) continue; }
+      else if (c0.equals(d.orig)) { rw.drop(d); CANCELLED.incrementAndGet(); continue; }
+      else {
+        d.state = 1;
+        if (!due) {
+          if (c0.equals(d.ph)) continue;
+          if (@PKG@.ZEng.put(w, d.x, d.y, d.z, d.ph, 0)) { PLACED.incrementAndGet(); writes++; }
+          else @PKG@.ZCfg.warnOnce("ph:" + d.ph, "could not place the placeholder " + d.ph + " (type " + d.type + ") - the mined spot stays empty until it grows back");
+          continue;
+        }
+      }
+    }
+    if (!due || d.next > now) continue;
+    String cur = @PKG@.ZEng.blockAt(w, d.x, d.y, d.z);
+    if (cur == null) {
+      UNLOADED.incrementAndGet();
+      if ((off || d.force) && (d.asked == 0L || now - d.asked >= REASK)) {
+        Long ck = Long.valueOf((((long) (d.x >> 5)) << 32) | (((long) (d.z >> 5)) & 0xFFFFFFFFL));
+        if (asked == null) asked = new java.util.HashSet();
+        if (asked.contains(ck)) d.asked = now;
+        else if (loads < LOADS) {
+          asked.add(ck);
+          loads++;
+          d.asked = now;
+          ASKED.incrementAndGet();
+          @PKG@.ZEng.load(w, d.x, d.y, d.z, new @PKG@.ZPass(rw, w, true));
+        }
+      }
+      continue;
+    }
+    if (cur.equals(d.orig)) { rw.drop(d); continue; }
+    if (!cur.equals(d.ph) && !cur.equals("Empty")) {
+      rw.drop(d);
+      CHANGED.incrementAndGet();
+      @PKG@.ZCfg.info("regrow: " + rw.world + " " + d.x + " " + d.y + " " + d.z + " is now " + cur + " (not the placeholder) - left as it is, " + d.orig + " not put back");
+      continue;
+    }
+    if (@PKG@.ZEng.occupied(w, d.x, d.y, d.z)) {
+      d.tries = d.tries + 1;
+      d.next = now + (d.tries >= 12 ? 5000L : 1000L);
+      BLOCKED.incrementAndGet();
+      if (d.tries == 12) @PKG@.ZCfg.warnOnce("stuck:" + rw.world + ":" + d.key, "regrow: a player has stood in the block at " + rw.world + " " + d.x + " " + d.y + " " + d.z + " for 12 s - still waiting (tries every 5 s)");
+      continue;
+    }
+    if (@PKG@.ZEng.put(w, d.x, d.y, d.z, d.orig, d.rot)) { rw.done(d, now); RESTORED.incrementAndGet(); writes++; }
+    else { d.next = now + 5000L; WFAIL.incrementAndGet(); @PKG@.ZCfg.warnOnce("wfail:" + d.orig, "regrow: could not put " + d.orig + " back at " + rw.world + " " + d.x + " " + d.y + " " + d.z + " - trying again every 5 s"); }
+  }
+  if (!more && !rw.check.isEmpty()) {
+    java.util.Iterator vi = rw.check.values().iterator();
+    while (vi.hasNext()) {
+      @PKG@.ZDep v = (@PKG@.ZDep) vi.next();
+      if (writes >= max) { more = true; break; }
+      Long vk = Long.valueOf(v.key);
+      if (rw.dep.containsKey(vk)) { rw.check.remove(vk, v); continue; }
+      String cv = @PKG@.ZEng.blockAt(w, v.x, v.y, v.z);
+      if (cv == null) continue;
+      if (!cv.equals(v.ph)) { rw.check.remove(vk, v); continue; }
+      if (@PKG@.ZEng.occupied(w, v.x, v.y, v.z)) continue;
+      if (@PKG@.ZEng.put(w, v.x, v.y, v.z, v.orig, v.rot)) {
+        rw.check.remove(vk, v);
+        v.due = now;
+        rw.recent.put(vk, v);
+        rw.append(v.vline());
+        VERIFIED.incrementAndGet();
+        writes++;
+        @PKG@.ZCfg.info("regrow: " + rw.world + " " + v.x + " " + v.y + " " + v.z + " still held the placeholder " + v.ph + " after the restart (grew back just before an unclean stop) - " + v.orig + " put back");
+      }
+    }
+  }
+  if (more) @PKG@.ZEng.later(new @PKG@.ZPass(rw, w, true), NEXT);
+  return writes;
+}""")
+M(pas, r"""
+public void run() {
+  if (this.k) { kick(this.w, this.rw); return; }
+  this.rw.queued.set(0L);
+  try { pass(this.rw, this.w); } catch (Throwable t) { @PKG@.ZCfg.warnOnce("pass", "regrow pass failed (logged once): " + t); }
+}""")
+
+rgn = mk("ZRegen")
+for f in ("public static final java.util.concurrent.ConcurrentHashMap WORLDS = new java.util.concurrent.ConcurrentHashMap();",
+          "public static volatile java.nio.file.Path DIR = null;", "public static final java.util.Random RND = new java.util.Random();",
+          "public static final java.util.concurrent.atomic.AtomicLong BROKE = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final long AUDIT_CAP = 500000L;"):
+    F(rgn, f)
+M(rgn, r"""
+public static @PKG@.ZRw rw(String w, boolean make) {
+  if (w == null) return null;
+  @PKG@.ZRw r = (@PKG@.ZRw) WORLDS.get(w);
+  if (r != null || !make || DIR == null) return r;
+  @PKG@.ZRw n = new @PKG@.ZRw(w, DIR);
+  r = (@PKG@.ZRw) WORLDS.putIfAbsent(w, n);
+  return r == null ? n : r;
+}""")
+M(rgn, r"""
+public static @PKG@.ZDep at(String w, int x, int y, int z) {
+  @PKG@.ZRw r = w == null ? null : (@PKG@.ZRw) WORLDS.get(w);
+  return r == null ? null : (@PKG@.ZDep) r.dep.get(Long.valueOf(@PKG@.ZDep.key(x, y, z)));
+}""")
+M(rgn, r"""
+public static boolean depleted(String w, int x, int y, int z) {
+  @PKG@.ZRw r = w == null ? null : (@PKG@.ZRw) WORLDS.get(w);
+  return r != null && !r.dep.isEmpty() && r.dep.containsKey(Long.valueOf(@PKG@.ZDep.key(x, y, z)));
+}""")
+# the wait of one break: regrow.<type> s x regen.speedMult x (1 +- regen.jitter), at least 0.5 s; -1 = this type does not regrow
+M(rgn, r"""
+public static long delay(String type) {
+  int s = @PKG@.ZCfg.regrowSec(type);
+  if (s <= 0) return -1L;
+  double j = @PKG@.ZCfg.JITTER;
+  double f = @PKG@.ZCfg.SPEED * (1.0 + j * (RND.nextDouble() * 2.0 - 1.0));
+  long ms = Math.round(1000.0 * (double) s * f);
+  return ms < 500L ? 500L : ms;
+}""")
+# regen.maxDepleted: the waiting block due first comes back at the next pass - FORCED, so an unloaded one is loaded + put back too (critic:
+# else the map grows past the cap while its oldest entries sit in unloaded chunks)
+M(rgn, r"""
+public static void early(@PKG@.ZRw r) {
+  @PKG@.ZDep best = null;
+  java.util.Iterator it = r.dep.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.ZDep d = (@PKG@.ZDep) it.next();
+    if (d.due > 0L && !d.force && (best == null || d.due < best.due)) best = d;
+  }
+  if (best != null) { best.due = 0L; best.force = true; best.next = 0L; }
+}""")
+# THE BREAK HOOK (ZGuard, world thread, before the engine removes the block): 0 = registered (journal first, then the engine breaks it),
+# 1 = no regrow here (vanilla break), 2 = already waiting (refuse: never mined twice for one regrow), 3 = the journal line could not be
+# written (refuse - nothing may break without its record)
+M(rgn, r"""
+public static int broke(@WLD@ w, String wn, int x, int y, int z, String type) {
+  if (!@PKG@.ZCfg.REGEN_ON || type == null || DIR == null) return 1;
+  long ms = delay(type);
+  if (ms < 0L) return 1;
+  if (wn == null || !wn.matches("[A-Za-z0-9_.-]{1,64}")) { @PKG@.ZCfg.warnOnce("wname:" + wn, "regrow: world name '" + wn + "' cannot name a journal file - its blocks break like vanilla"); return 1; }
+  String id = @PKG@.ZEng.blockAt(w, x, y, z);
+  if (id == null || id.equals("Empty")) return 1;
+  if (!@PKG@.ZDep.idOk(id)) { @PKG@.ZCfg.warnOnce("odd:" + id, "regrow: block id '" + id + "' cannot be journaled - it breaks like vanilla"); return 1; }
+  int[] st = @PKG@.ZEng.stateAt(w, x, y, z);
+  if (st != null && st[1] != 0) { @PKG@.ZCfg.warnOnce("filler:" + id, "regrow: " + id + " is part of a bigger block - it breaks like vanilla (no regrow)"); return 1; }
+  String ph = @PKG@.ZCfg.placeholder(type);
+  String pt = @PKG@.ZRules.listedAny(ph);
+  if (pt != null) {
+    @PKG@.ZCfg.warnOnce("phlisted:" + type + ":" + ph, "regrow." + type + ": the placeholder " + ph + " is itself a block of type " + pt + " (it could be mined at once) - @PH@ is used instead");
+    ph = "@PH@";
+    if (@PKG@.ZRules.listedAny(ph) != null) { @PKG@.ZCfg.warnOnce("phlisted:@PH@", "regrow: @PH@ is a listed block of a resource type - no placeholder is safe, listed blocks break like vanilla (no regrow)"); return 1; }
+  }
+  if (!@PKG@.ZDep.idOk(ph)) return 1;
+  @PKG@.ZRw r = rw(wn, true);
+  if (r == null) return 1;
+  Long k = Long.valueOf(@PKG@.ZDep.key(x, y, z));
+  if (r.dep.containsKey(k)) return 2;
+  if (r.dep.size() >= @PKG@.ZCfg.MAXDEP) early(r);
+  @PKG@.ZDep d = new @PKG@.ZDep(x, y, z, id, type, ph, st == null ? 0 : st[0], @PKG@.ZDep.now() + ms);
+  if (r.dep.putIfAbsent(k, d) != null) return 2;
+  if (!r.append(d.line())) { r.dep.remove(k, d); return 3; }
+  BROKE.incrementAndGet();
+  @PKG@.ZPass.kick(w, r);
+  return 0;
+}""".replace("@PH@", PLACEHOLDER))
+# one snapshot / journal file into r (D adds or replaces, R removes); false = the file exists but could not be read (3 tries). Fixer: read
+# leniently (a bad byte becomes U+FFFD and only that line is skipped as bad); a torn last line (no newline: a crash in the middle of a
+# write) is skipped, never half-parsed ("Rock_Bedr"), warned with its text, and the file is kept as <file>.torn-<ms>. Fixer 2: V lines
+# (grown back) go to the check list; a file with any other skipped line is kept as <file>.bad-<ms> before the start compacts it.
+M(rgn, r"""
+public static boolean readInto(@PKG@.ZRw r, java.nio.file.Path f, int[] bad) {
+  if (f == null || !java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return true;
+  byte[] raw = null;
+  Throwable last = null;
+  for (int i = 0; i < 3 && raw == null; i++) {
+    try { raw = java.nio.file.Files.readAllBytes(f); } catch (Throwable t) { last = t; try { Thread.sleep(100L); } catch (Throwable t2) { } }
+  }
+  if (raw == null) { @PKG@.ZCfg.warn("could not read " + f + " (3 tries): " + last + " - it is kept untouched (no snapshot rewrites it) until a start reads it; its waiting blocks stay placeholders meanwhile"); return false; }
+  String text = new String(raw, java.nio.charset.StandardCharsets.UTF_8);
+  java.util.List lines = new java.util.ArrayList(java.util.Arrays.asList(text.split("\n", -1)));
+  String tail = (String) lines.remove(lines.size() - 1);
+  if (tail.trim().length() > 0) {
+    bad[0] = bad[0] + 1;
+    java.nio.file.Path keep = f.resolveSibling(f.getFileName().toString() + ".torn-" + @PKG@.ZDep.now());
+    try { java.nio.file.Files.copy(f, keep, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); } catch (Throwable t) { keep = null; }
+    @PKG@.ZCfg.warn("regen/: the last line of " + f.getFileName() + " was cut off (a crash while writing) and is skipped: '" + tail.trim() + "'" + (keep != null ? " - the file is kept as " + keep.getFileName() : "") + "; /zones audit finds a placeholder it may have left");
+  }
+  int b0 = bad[0];
+  for (int i = 0; i < lines.size(); i++) {
+    String l = ((String) lines.get(i)).trim();
+    if (l.length() == 0 || l.startsWith("#")) continue;
+    String[] a = l.split("\\s+");
+    if (a[0].equals("R") && a.length == 4) {
+      try { r.dep.remove(Long.valueOf(@PKG@.ZDep.key(Integer.parseInt(a[1]), Integer.parseInt(a[2]), Integer.parseInt(a[3])))); } catch (Throwable t) { bad[0] = bad[0] + 1; }
+      continue;
+    }
+    @PKG@.ZDep d = @PKG@.ZDep.parse(a);
+    if (d == null) { bad[0] = bad[0] + 1; continue; }
+    Long dk = Long.valueOf(d.key);
+    if (a[0].equals("V")) { r.dep.remove(dk); r.check.put(dk, d); continue; }
+    r.check.remove(dk);
+    r.dep.put(dk, d);
+  }
+  if (bad[0] > b0) {
+    java.nio.file.Path keep = f.resolveSibling(f.getFileName().toString() + ".bad-" + @PKG@.ZDep.now());
+    try { java.nio.file.Files.copy(f, keep, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); } catch (Throwable t) { keep = null; }
+    @PKG@.ZCfg.warn("regen/: " + (bad[0] - b0) + " unreadable lines in " + f.getFileName() + " skipped" + (keep != null ? " - the file is kept as " + keep.getFileName() + " (the start compacts the original)" : "") + "; /zones audit finds a placeholder they may have left");
+  }
+  return true;
+}""")
+M(rgn, r"""
+public static synchronized void closeAll() {
+  java.util.Iterator it = WORLDS.values().iterator();
+  while (it.hasNext()) ((@PKG@.ZRw) it.next()).close();
+}""")
+# fixer: regen/alive = the time the server was last seen alive (written every 60 s while blocks wait + at shutdown) - regen.offlineCounts
+# false measures the downtime from it (a crash after an idle hour no longer adds the hour to every timer)
+M(rgn, r"""
+public static void beat() {
+  java.nio.file.Path d = DIR;
+  if (d == null) return;
+  boolean any = false;
+  java.util.Iterator it = WORLDS.values().iterator();
+  while (it.hasNext() && !any) any = !((@PKG@.ZRw) it.next()).dep.isEmpty();
+  if (!any) return;
+  try {
+    java.nio.file.Files.createDirectories(d, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path f = d.resolve("alive");
+    java.nio.file.Path tmp = d.resolve("alive.tmp");
+    java.nio.file.Files.write(tmp, String.valueOf(@PKG@.ZDep.now()).getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("alive", "could not write regen/alive (the heartbeat): " + t); }
+}""")
+M(rgn, r"""
+public static long lastBeat() {
+  java.nio.file.Path d = DIR;
+  if (d == null) return 0L;
+  try {
+    java.nio.file.Path f = d.resolve("alive");
+    if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return 0L;
+    long v = Long.parseLong(new String(java.nio.file.Files.readAllBytes(f), "UTF-8").trim());
+    return v > 0L ? v : 0L;
+  } catch (Throwable t) { return 0L; }
+}""")
+# START (spec 9): every regen/<world>.snap + .journal replayed, then compacted into a fresh snapshot (not when a file could not be read);
+# regen.offlineCounts false: the downtime (now - the newest file time) is added to every timer
+M(rgn, r"""
+public static synchronized String start(java.nio.file.Path dir) {
+  closeAll();
+  WORLDS.clear();
+  DIR = dir;
+  int n = 0;
+  int[] bad = new int[1];
+  try {
+    if (dir == null || !java.nio.file.Files.isDirectory(dir, new java.nio.file.LinkOption[0])) return "no block waiting to grow back";
+    long alive = lastBeat();
+    java.util.TreeSet names = new java.util.TreeSet();
+    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(dir);
+    try {
+      java.util.Iterator it = ds.iterator();
+      while (it.hasNext()) {
+        String f = ((java.nio.file.Path) it.next()).getFileName().toString();
+        if (f.endsWith(".snap")) names.add(f.substring(0, f.length() - 5));
+        else if (f.endsWith(".journal")) names.add(f.substring(0, f.length() - 8));
+      }
+    } finally { ds.close(); }
+    java.util.Iterator wi = names.iterator();
+    while (wi.hasNext()) {
+      String w = (String) wi.next();
+      if (!w.matches("[A-Za-z0-9_.-]{1,64}")) { @PKG@.ZCfg.warn("regen/: '" + w + "' is not a world name - its files are left alone"); continue; }
+      @PKG@.ZRw r = new @PKG@.ZRw(w, dir);
+      boolean ok = readInto(r, r.sf, bad);
+      ok = readInto(r, r.jf, bad) && ok;
+      if (!@PKG@.ZCfg.OFFLINE && !r.dep.isEmpty()) {
+        long last = 0L;
+        try { if (java.nio.file.Files.exists(r.sf, new java.nio.file.LinkOption[0])) last = java.nio.file.Files.getLastModifiedTime(r.sf, new java.nio.file.LinkOption[0]).toMillis(); } catch (Throwable t) { }
+        try { if (java.nio.file.Files.exists(r.jf, new java.nio.file.LinkOption[0])) last = Math.max(last, java.nio.file.Files.getLastModifiedTime(r.jf, new java.nio.file.LinkOption[0]).toMillis()); } catch (Throwable t) { }
+        last = Math.max(last, alive);
+        long down = last > 0L ? @PKG@.ZDep.now() - last : 0L;
+        if (down > 0L) {
+          java.util.Iterator di = r.dep.values().iterator();
+          while (di.hasNext()) { @PKG@.ZDep d = (@PKG@.ZDep) di.next(); d.due = d.due + down; }
+        }
+      }
+      r.hold = !ok;
+      if (ok) r.snapshot(true);
+      if (r.dep.isEmpty() && r.check.isEmpty() && ok) continue;
+      WORLDS.put(w, r);
+      n = n + r.dep.size();
+    }
+  } catch (Throwable t) { @PKG@.ZCfg.warn("could not read the regrow files in " + dir + ": " + t); }
+  if (bad[0] > 0) @PKG@.ZCfg.warn("regen/: " + bad[0] + " unreadable journal / snapshot lines skipped");
+  return (n == 0 ? "no block" : n + (n == 1 ? " block" : " blocks")) + " waiting to grow back" + (n == 0 ? "" : " in " + WORLDS.size() + (WORLDS.size() == 1 ? " world" : " worlds"))
+    + (bad[0] > 0 ? " (" + bad[0] + " unreadable lines skipped)" : "");
+}""")
+M(rgn, r"""
+public static void snapshotAll(boolean force) {
+  java.util.Iterator it = WORLDS.values().iterator();
+  while (it.hasNext()) ((@PKG@.ZRw) it.next()).snapshot(force);
+}""")
+M(rgn, r"""
+public static void shutdown() {
+  try { beat(); } catch (Throwable t) { }
+  try { snapshotAll(true); } catch (Throwable t) { }
+  closeAll();
+}""")
+# /zones restore <region|all> + the Server Setup action: every waiting block (in the region) due NOW, forced (unloaded chunks are asked for);
+# { blocks, worlds not loaded, blocks in them }
+M(rgn, r"""
+public static int[] restore(@PKG@.ZRegion reg) {
+  int n = 0;
+  int wn = 0;
+  int nb = 0;
+  java.util.Iterator it = WORLDS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.ZRw r = (@PKG@.ZRw) it.next();
+    if (reg != null && !reg.world.equals(r.world)) continue;
+    int m = 0;
+    java.util.Iterator di = r.dep.values().iterator();
+    while (di.hasNext()) {
+      @PKG@.ZDep d = (@PKG@.ZDep) di.next();
+      if (reg != null && !reg.contains(d.x, d.y, d.z)) continue;
+      d.force = true;
+      d.asked = 0L;
+      d.next = 0L;
+      m++;
+    }
+    if (m == 0) continue;
+    n = n + m;
+    @WLD@ w = @PKG@.ZEng.world(r.world);
+    if (w == null) { wn++; nb = nb + m; continue; }
+    @PKG@.ZPass.kick(w, r);
+  }
+  return new int[] { n, wn, nb };
+}""")
+M(rgn, r"""
+public static java.util.ArrayList status() {
+  java.util.ArrayList out = new java.util.ArrayList();
+  long now = @PKG@.ZDep.now();
+  int total = 0;
+  java.util.ArrayList per = new java.util.ArrayList();
+  java.util.TreeSet names = new java.util.TreeSet(WORLDS.keySet());
+  java.util.Iterator wi = names.iterator();
+  while (wi.hasNext()) {
+    @PKG@.ZRw r = (@PKG@.ZRw) WORLDS.get(wi.next());
+    if (r != null && r.hold) per.add(" " + r.world + ": ITS REGROW FILES COULD NOT BE READ at the start - kept untouched (restart to read them again; /zones audit finds their placeholders)");
+    if (r != null && !r.check.isEmpty()) per.add(" " + r.world + ": " + r.check.size() + " spots that grew back just before the last stop are checked when their chunk loads (a crash may have saved the placeholder)");
+    if (r == null || r.dep.isEmpty()) continue;
+    java.util.TreeMap types = new java.util.TreeMap();
+    long next = Long.MAX_VALUE;
+    int forced = 0;
+    int stuck = 0;
+    java.util.Iterator di = r.dep.values().iterator();
+    while (di.hasNext()) {
+      @PKG@.ZDep d = (@PKG@.ZDep) di.next();
+      Integer c = (Integer) types.get(d.type);
+      types.put(d.type, Integer.valueOf(c == null ? 1 : c.intValue() + 1));
+      if (d.due < next) next = d.due;
+      if (d.force) forced++;
+      if (d.tries > 0) stuck++;
+    }
+    int n = r.dep.size();
+    total = total + n;
+    StringBuilder ts = new StringBuilder();
+    java.util.Iterator ti = types.keySet().iterator();
+    while (ti.hasNext()) { String t = (String) ti.next(); if (ts.length() > 0) ts.append(", "); ts.append(t).append(' ').append(types.get(t)); }
+    per.add(" " + r.world + ": " + n + " waiting (" + ts + "); next back in " + Math.max(0L, (next - now + 999L) / 1000L) + " s"
+      + (forced > 0 ? "; " + forced + " being put back now" : "") + (stuck > 0 ? "; " + stuck + " wait for a player to step out" : ""));
+  }
+  out.add("Regrowing blocks: " + (@PKG@.ZCfg.REGEN_ON ? "ON" : "OFF (every waiting block is being put back)") + " - " + total + " waiting"
+    + "; since the start " + BROKE.get() + " mined, " + @PKG@.ZPass.RESTORED.get() + " grown back"
+    + (@PKG@.ZPass.CHANGED.get() > 0L ? ", " + @PKG@.ZPass.CHANGED.get() + " changed by hand (left)" : "")
+    + (@PKG@.ZPass.CANCELLED.get() > 0L ? ", " + @PKG@.ZPass.CANCELLED.get() + " breaks stopped by another mod" : "")
+    + (@PKG@.ZPass.VERIFIED.get() > 0L ? ", " + @PKG@.ZPass.VERIFIED.get() + " placeholders left by an unclean stop put back" : ""));
+  out.addAll(per);
+  if (@PKG@.ZRw.JFAIL.get() > 0L) out.add(" JOURNAL WRITE ERRORS: " + @PKG@.ZRw.JFAIL.get() + " (those breaks were refused) - see the server log");
+  if (@PKG@.ZPass.WFAIL.get() > 0L) out.add(" Block write errors: " + @PKG@.ZPass.WFAIL.get() + " (retried every 5 s) - see the server log");
+  return out;
+}""")
+# fixer: the vanilla id a default wildcard pattern stands for (build-time table FALLBACK: Ore_Copper* -> Ore_Copper_Stone); null = none
+M(rgn, r"""
+public static String fallback(String pat) {
+  if (pat == null) return null;
+@FB@
+  return null;
+}""".replace("@FB@", "\n".join('  if (pat.equalsIgnoreCase("%s")) return "%s";' % kv for kv in sorted(FALLBACK.items()))))
+# the first plain block id of a type (no * / +), else the first wildcard's vanilla id: what /zones audit fix puts back; null = none
+M(rgn, r"""
+public static String plain(String type) {
+  Object o = @PKG@.ZCfg.TYPES.get(type);
+  if (!(o instanceof String[])) return null;
+  String[] a = (String[]) o;
+  for (int i = 0; i < a.length; i++) if (a[i].indexOf('*') < 0 && !a[i].endsWith("+") && @PKG@.ZDep.idOk(a[i])) return a[i];
+  for (int i = 0; i < a.length; i++) { String f = fallback(a[i]); if (f != null) return f; }
+  return null;
+}""")
+# /zones audit <region> [fix] (spec 5.1 / 9 "lost write"): placeholder blocks of the region's regrowing types in its LOADED chunks that
+# no waiting entry explains; fix = each back to the first plain block id of the first regrowing type with that placeholder
+M(rgn, r"""
+public static java.util.ArrayList audit(@WLD@ w, @PKG@.ZRegion reg, boolean fix) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.ArrayList phs = new java.util.ArrayList();
+  for (int i = 0; reg.mode == 1 && i < reg.types.length; i++) {
+    if (@PKG@.ZCfg.regrowSec(reg.types[i]) <= 0) continue;
+    String ph = @PKG@.ZCfg.placeholder(reg.types[i]);
+    if (!phs.contains(ph)) phs.add(ph);
+  }
+  if (phs.isEmpty()) { out.add("Region " + reg.id + " has no regrowing resource types - nothing to audit."); return out; }
+  String[] ids = (String[]) phs.toArray(new String[phs.size()]);
+  @PKG@.ZRw r = (@PKG@.ZRw) WORLDS.get(reg.world);
+  int found = 0;
+  int orphans = 0;
+  int fixed = 0;
+  int nofix = 0;
+  long read = 0L;
+  int unloaded = 0;
+  java.util.ArrayList sample = new java.util.ArrayList();
+  int[] b = reg.box;
+  for (int i = 0; i + 5 < b.length; i = i + 6) {
+    int[] stats = new int[2];
+    java.util.List pos = @PKG@.ZEng.scan(w, new int[] { b[i], b[i + 1], b[i + 2], b[i + 3], b[i + 4], b[i + 5] }, ids, stats, AUDIT_CAP - read);
+    read = read + (long) stats[0];
+    unloaded = unloaded + stats[1];
+    for (int j = 0; pos != null && j < pos.size(); j++) {
+      int[] p = (int[]) pos.get(j);
+      found++;
+      if (r != null && r.dep.containsKey(Long.valueOf(@PKG@.ZDep.key(p[0], p[1], p[2])))) continue;
+      orphans++;
+      if (sample.size() < 5) sample.add(p[0] + " " + p[1] + " " + p[2]);
+      if (!fix) continue;
+      String back = null;
+      for (int t = 0; t < reg.types.length; t++) {
+        if (@PKG@.ZCfg.regrowSec(reg.types[t]) <= 0 || !ids[p[3]].equals(@PKG@.ZCfg.placeholder(reg.types[t]))) continue;
+        String pb = plain(reg.types[t]);
+        if (pb == null) continue;
+        if (back == null || reg.types[t].equals("stone")) back = pb;
+      }
+      if (back != null && @PKG@.ZEng.put(w, p[0], p[1], p[2], back, 0)) fixed++; else nofix++;
+    }
+    if (read >= AUDIT_CAP) break;
+  }
+  out.add("Audit of " + reg.id + ": " + read + " blocks read" + (unloaded > 0 ? " (" + unloaded + " chunk sections not loaded - go closer and run it again)" : "")
+    + (read >= AUDIT_CAP ? " - STOPPED at " + AUDIT_CAP + " blocks" : "") + "; " + found + " placeholder blocks, " + orphans + " with no timer.");
+  if (!sample.isEmpty()) out.add(" e.g. at " + sample);
+  if (fix) out.add(" Put back: " + fixed + (nofix > 0 ? "; " + nofix + " left (their type has no plain block id, or the write failed)" : "") + ".");
+  else if (orphans > 0) out.add(" /zones audit " + reg.id + " fix turns them into their type's first block (bedrock you placed there on purpose would change too).");
+  if (fix && orphans > 0) @PKG@.ZCfg.info("/zones audit " + reg.id + " fix: " + fixed + " placeholders put back, " + nofix + " left");
+  return out;
+}""")
+
+tkr = mk("ZTicker", None, ("java.lang.Runnable",))
+for f in ("public static volatile java.util.concurrent.ScheduledFuture FUT = null;", "public static long N = 0L;", "public static boolean FAILED_ONCE = false;"):
+    F(tkr, f)
+C(tkr, "public ZTicker() { }")
+M(tkr, r"""
+public void run() {
+  try {
+    N = N + 1L;
+    java.util.Iterator it = @PKG@.ZRegen.WORLDS.values().iterator();
+    while (it.hasNext()) {
+      @PKG@.ZRw r = (@PKG@.ZRw) it.next();
+      if (r.dep.isEmpty() && r.check.isEmpty()) continue;
+      @WLD@ w = @PKG@.ZEng.world(r.world);
+      if (w != null) @PKG@.ZPass.kick(w, r);
+    }
+    if (N % 60L == 0L) { @PKG@.ZRegen.snapshotAll(false); @PKG@.ZRegen.beat(); }
+  } catch (Throwable t) {
+    if (!FAILED_ONCE) { FAILED_ONCE = true; @PKG@.ZCfg.warn("regrow tick failed (logged once): " + t); }
+  }
+}""")
+M(tkr, r"""
+public static void stop() {
+  java.util.concurrent.ScheduledFuture f = FUT;
+  FUT = null;
+  if (f != null) { try { f.cancel(false); } catch (Throwable t) { } }
+}""")
+M(tkr, r"""
+public static void start() {
+  stop();
+  FUT = @HSV@.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new @PKG@.ZTicker(), 1000L, 1000L, java.util.concurrent.TimeUnit.MILLISECONDS);
+}""")
+# the Server Setup action "Restore all" (the kit calls it with the admin's id + name)
+M(cfg, r"""
+public static Object[] restoreAction(java.util.UUID who, String name) {
+  int[] r = @PKG@.ZRegen.restore(null);
+  String m = r[0] == 0 ? "Nothing is waiting to grow back." : "Putting back " + r[0] + " waiting blocks now" + (r[1] > 0 ? " (" + r[2] + " in worlds that are not loaded come back when they load)" : "") + ". /zones status shows what is left.";
+  info("restore all (Server Setup, " + name + "): " + r[0] + " blocks");
+  return new Object[] { "ok", "", m };
+}""")
+# the kit's check of a regrow table line (regrow[<type>]); the placeholder must be a block the game knows (when the block map is loaded)
+# and (fixer) never a listed block of any type (it could be mined at once); logs / crops stay 0 until Z3
+M(cfg, r"""
+public static String checkRegrow(String key, String value) {
+  if (key == null || !key.startsWith("regrow[") || !key.endsWith("]")) return "Unknown table line.";
+  String e = key.substring(7, key.length() - 1);
+  if (!e.matches("[a-z0-9_]{1,32}")) return "A type id is 1-32 of a-z, 0-9 and _.";
+  if (value == null) return null;
+  String why = regrowWhy(value);
+  if (why != null) return "Write <seconds>,<placeholder block>: " + why + ".";
+  if (noZ3(e) && Integer.parseInt(value.replace('|', ',').split(",", -1)[0].trim()) > 0) return e + " cannot grow back yet (whole trees and crop stages come in a later version) - keep 0.";
+  String ph = phOf(value);
+  String lt = @PKG@.ZRules.listedAny(ph);
+  if (lt != null) return "The placeholder " + ph + " is itself a block of type " + lt + " - players could mine it at once. Pick a block no type lists (e.g. @PH@).";
+  try {
+    Object m = @BTY@.getAssetMap();
+    if (m != null && @BTY@.getAssetMap().getIndex(ph) == Integer.MIN_VALUE) return "No block '" + ph + "' in the game files.";
+  } catch (Throwable t) { }
+  return null;
+}""".replace("@PH@", PLACEHOLDER))
+
+# =====================================================================================================================================
+# ZGuard: ONE registerSystem per class; the acting entity's event (Archetype.empty() like SkyyIslands' guards)
+# =====================================================================================================================================
+guard = mk("ZGuard", T["EES"])
+for f in ("public static boolean FAILED_ONCE = false;",
+          "public static final java.util.concurrent.atomic.AtomicLong REFUSED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong ALLOWED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong BYPASSED = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong MOBS = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong FAILS = new java.util.concurrent.atomic.AtomicLong();",
+          "public static final java.util.concurrent.atomic.AtomicLong GROWING = new java.util.concurrent.atomic.AtomicLong();"):
+    F(guard, f)
+C(guard, "public ZGuard(Class cls) { super(cls); }")
+M(guard, r"""
+public @QRY@ getQuery() {
+  return @ARCH@.empty();
+}""")
+# first among the systems of the event (the engine's own RootDependency, like its first systems): other mods' handlers then skip a cancelled event
+M(guard, r"""
+public java.util.Set getDependencies() {
+  return com.hypixel.hytale.component.dependency.RootDependency.firstSet();
+}""")
+# hooks the subclasses override (declared before handle(): javassist has no forward references)
+M(guard, "public @V3I@ target(@EV@ ev) { return null; }")
+M(guard, "public String held(@EV@ ev) { return null; }")
+M(guard, "public String block(@EV@ ev) { return \"\"; }")
+M(guard, "public int action(@EV@ ev, String held) { return @PKG@.ZRules.OTHER; }")
+M(guard, "public boolean wandable(@EV@ ev) { return false; }")
+# 0.2.0: only the BreakBlockEvent guard starts a regrow (a dig / Primary use only cracks; the break event follows)
+M(guard, "public boolean regen(@EV@ ev) { return false; }")
+M(guard, r"""
+public static int regrow(@WLD@ w, String wn, @PKG@.ZIndex ix, @V3I@ b, String id) {
+  String t = @PKG@.ZRules.resType(ix, wn, b.x, b.y, b.z, id);
+  if (t == null) return 1;
+  return @PKG@.ZRegen.broke(w, wn, b.x, b.y, b.z, t);
+}""")
+M(guard, r"""
+public static String idOf(@IS@ s) {
+  if (s == null || s.isEmpty()) return null;
+  return s.getItemId();
+}""")
+M(guard, r"""
+public static String typeId(@BTY@ bt) {
+  if (bt == null) return "";
+  try { return @PKG@.ZRules.bare(String.valueOf(bt.getId())); } catch (Throwable t) { return ""; }
+}""")
+M(guard, r"""
+public void handle(int idx, @ACH@ chunk, @ST@ st, @CB@ buf, @EV@ ev) {
+  boolean scoped = false;
+  boolean free = false;
+  try {
+    Object ext = st.getExternalData();
+    if (!(ext instanceof @EST@)) return;
+    @WLD@ w = ((@EST@) ext).getWorld();
+    if (w == null) return;
+    @V3I@ b = target(ev);
+    if (b == null) return;
+    String wn = w.getName();
+    String held = held(ev);
+    if (@PKG@.ZWand.ID.equals(held) && wandable(ev)) {
+      if (ev instanceof @ICE@) ((@ICE@) ev).setCancelled(true);
+      @REF@ r0 = chunk.getReferenceTo(idx);
+      @PR@ p0 = r0 == null ? null : (@PR@) st.getComponent(r0, @PR@.getComponentType());
+      if (p0 != null) @PKG@.ZWand.use(p0, wn, b.x, b.y, b.z);
+      return;
+    }
+    boolean dep = @PKG@.ZRegen.depleted(wn, b.x, b.y, b.z);
+    if (!@PKG@.ZCfg.ON && !dep) return;
+    @PKG@.ZIndex ix = @PKG@.ZStore.INDEX;
+    boolean pw = @PKG@.ZCfg.protectedWorld(wn);
+    if (!dep && !pw && !ix.has(wn)) return;
+    scoped = dep || pw || ix.top(wn, b.x, b.y, b.z) != null;
+    int act = action(ev, held);
+    if (act == @PKG@.ZRules.OTHER) return;
+    boolean hit = dep && (act == @PKG@.ZRules.BREAK || act == @PKG@.ZRules.PLACE);
+    @REF@ r = chunk.getReferenceTo(idx);
+    @PR@ pr = r == null ? null : (@PR@) st.getComponent(r, @PR@.getComponentType());
+    if (pr == null) {
+      if (hit) { if (ev instanceof @ICE@) ((@ICE@) ev).setCancelled(true); MOBS.incrementAndGet(); return; }
+      if (!@PKG@.ZCfg.ON) return;
+      if (!@PKG@.ZCfg.MOBS || (act != @PKG@.ZRules.BREAK && act != @PKG@.ZRules.PLACE)) return;
+      if (@PKG@.ZRules.decide(ix, wn, pw, b.x, b.y, b.z, act, block(ev)) != @PKG@.ZRules.ALLOW || (regen(ev) && regrow(w, wn, ix, b, block(ev)) >= 2)) {
+        if (ev instanceof @ICE@) ((@ICE@) ev).setCancelled(true);
+        MOBS.incrementAndGet();
+      }
+      return;
+    }
+    if (@PKG@.ZBuild.bypass(pr)) { free = true; BYPASSED.incrementAndGet(); return; }
+    if (hit) {
+      if (ev instanceof @ICE@) ((@ICE@) ev).setCancelled(true);
+      REFUSED.incrementAndGet();
+      GROWING.incrementAndGet();
+      @PKG@.ZMsg.refuse(pr, "Growing back - wait a moment.");
+      return;
+    }
+    if (!@PKG@.ZCfg.ON) return;
+    int d = @PKG@.ZRules.decide(ix, wn, pw, b.x, b.y, b.z, act, block(ev));
+    if (d == @PKG@.ZRules.ALLOW) {
+      int g = regen(ev) ? regrow(w, wn, ix, b, block(ev)) : 1;
+      if (g >= 2) {
+        if (ev instanceof @ICE@) ((@ICE@) ev).setCancelled(true);
+        REFUSED.incrementAndGet();
+        @PKG@.ZMsg.refuse(pr, g == 2 ? "Growing back - wait a moment." : "You can't gather here right now - the server could not save it (see the server log).");
+        return;
+      }
+      ALLOWED.incrementAndGet();
+      return;
+    }
+    if (ev instanceof @ICE@) ((@ICE@) ev).setCancelled(true);
+    REFUSED.incrementAndGet();
+    @PKG@.ZMsg.refuse(pr, @PKG@.ZRules.why(d));
+  } catch (Throwable t) {
+    FAILS.incrementAndGet();
+    boolean closed = false;
+    if (scoped && !free && @PKG@.ZCfg.ON && ev instanceof @ICE@) { try { ((@ICE@) ev).setCancelled(true); closed = true; } catch (Throwable t2) { } }
+    if (!FAILED_ONCE) { FAILED_ONCE = true; @PKG@.ZCfg.warn("guard failed (logged once; " + (closed ? "the action was REFUSED - fail closed" : "outside protection, nothing refused") + "; /zones info counts them): " + t); }
+  }
+}""")
+gcls = []
+for gname, gev in (("ZGuardBreak", "BBE"), ("ZGuardDamage", "DBE"), ("ZGuardPlace", "PLBE"), ("ZGuardUse", "UBPRE")):
+    gc = mk(gname, PKG + ".ZGuard")
+    C(gc, "public %s() { super(@%s@.class); }" % (gname, gev))
+    gcls.append(gc)
+gB, gD, gP, gU = gcls
+for gc, ev in ((gB, "BBE"), (gD, "DBE")):
+    M(gc, "public @V3I@ target(@EV@ ev) { return ev instanceof @X@ ? ((@X@) ev).getTargetBlock() : null; }".replace("@X@", "@%s@" % ev))
+    M(gc, "public String held(@EV@ ev) { return ev instanceof @X@ ? @PKG@.ZGuard.idOf(((@X@) ev).getItemInHand()) : null; }".replace("@X@", "@%s@" % ev))
+    M(gc, "public String block(@EV@ ev) { return ev instanceof @X@ ? @PKG@.ZGuard.typeId(((@X@) ev).getBlockType()) : \"\"; }".replace("@X@", "@%s@" % ev))
+    M(gc, "public int action(@EV@ ev, String held) { return @PKG@.ZRules.BREAK; }")
+    M(gc, "public boolean wandable(@EV@ ev) { return true; }")
+M(gB, "public boolean regen(@EV@ ev) { return ev instanceof @BBE@; }")   # 0.2.0
+M(gP, "public @V3I@ target(@EV@ ev) { return ev instanceof @PLBE@ ? ((@PLBE@) ev).getTargetBlock() : null; }")
+M(gP, "public String held(@EV@ ev) { return ev instanceof @PLBE@ ? @PKG@.ZGuard.idOf(((@PLBE@) ev).getItemInHand()) : null; }")
+M(gP, "public String block(@EV@ ev) { return ev instanceof @PLBE@ ? @PKG@.ZRules.bare(@PKG@.ZGuard.idOf(((@PLBE@) ev).getItemInHand())) : \"\"; }")
+M(gP, "public int action(@EV@ ev, String held) { return @PKG@.ZRules.PLACE; }")
+M(gU, "public @V3I@ target(@EV@ ev) { return ev instanceof @UBE@ ? ((@UBE@) ev).getTargetBlock() : null; }")
+M(gU, r"""
+public String held(@EV@ ev) {
+  if (!(ev instanceof @UBE@)) return null;
+  @ICTX@ c = ((@UBE@) ev).getContext();
+  return c == null ? null : @PKG@.ZGuard.idOf(c.getHeldItem());
+}""")
+M(gU, "public String block(@EV@ ev) { return ev instanceof @UBE@ ? @PKG@.ZGuard.typeId(((@UBE@) ev).getBlockType()) : \"\"; }")
+M(gU, r"""
+public int action(@EV@ ev, String held) {
+  if (!(ev instanceof @UBE@)) return @PKG@.ZRules.OTHER;
+  @UBE@ e = (@UBE@) ev;
+  return @PKG@.ZRules.useAction(e.getBlockType(), e.getInteractionType(), held);
+}""")
+M(gU, r"""
+public boolean wandable(@EV@ ev) {
+  if (!(ev instanceof @UBE@)) return false;
+  @ITY@ t = ((@UBE@) ev).getInteractionType();
+  return t == @ITY@.Primary || t == @ITY@.Use || t == @ITY@.Secondary;
+}""")
+
+# =====================================================================================================================================
+# ZShow + ZTick: titles, the outline, the builder reminder (every 0.5 s per player, world thread)
+# =====================================================================================================================================
+shw = mk("ZShow")
+for f in ("public String world;", "public String id;", "public long until;", "public long last;"):
+    F(shw, f)
+C(shw, "public ZShow(String w, String id, long until) { this.world = w; this.id = id; this.until = until; this.last = 0L; }")
+tick = mk("ZTick", T["ETS"])
+for f in ("public static final java.util.concurrent.ConcurrentHashMap ACC = new java.util.concurrent.ConcurrentHashMap();",   # uuid -> double[1]
+          "public static final java.util.concurrent.ConcurrentHashMap CUR = new java.util.concurrent.ConcurrentHashMap();",   # uuid -> String[] { key, title }
+          "public static final java.util.concurrent.ConcurrentHashMap SHOWN = new java.util.concurrent.ConcurrentHashMap();", # uuid|world|id -> Long
+          "public static final java.util.concurrent.ConcurrentHashMap SHOW = new java.util.concurrent.ConcurrentHashMap();",  # uuid -> ZShow
+          "public static boolean FAILED_ONCE = false;", "public static final int MAX_POINTS = 160;", "public static final int MAX_BOXES = 8;"):
+    F(tick, f)
+C(tick, "public ZTick() { super(); }")
+M(tick, r"""
+public @QRY@ getQuery() {
+  return (@QRY@) @PLA@.getComponentType();
+}""")
+M(tick, "public boolean isParallel(int a, int b) { return false; }")
+M(tick, r"""
+public static void enter(@PR@ pr, java.util.UUID u, String w, @PKG@.ZRegion r, long now) {
+  String k = u + "|" + w + "|" + r.id;
+  Long l = (Long) SHOWN.get(k);
+  if (l != null && now - l.longValue() < 1000L * (long) @PKG@.ZCfg.TITLE_GAP) return;
+  SHOWN.put(k, Long.valueOf(now));
+  @PKG@.ZEng.title(pr, r.title, r.mode == 1 ? "Gathering area" : "Protected area");
+}""")
+M(tick, r"""
+public static void titles(@PR@ pr, java.util.UUID u, String w, int x, int y, int z, long now) {
+  @PKG@.ZRegion t = @PKG@.ZStore.INDEX.topTitled(w, x, y, z);
+  String key = t == null ? "" : w + "|" + t.id;
+  String[] was = (String[]) CUR.get(u);
+  if (was != null && was[0].equals(key)) return;
+  CUR.put(u, new String[] { key, t == null ? "" : t.title, w });
+  if (t != null) { enter(pr, u, w, t, now); return; }
+  if (was != null && was[1].length() > 0 && was[2].equals(w) && @PKG@.ZCfg.LEAVE) @PKG@.ZEng.notify(pr, "You left " + was[1] + ".");
+}""")
+# the 12 edges of up to MAX_BOXES boxes near the player, at most MAX_POINTS markers per pass (step grows with the size), to YOU only
+M(tick, r"""
+public static int draw(@REF@ ref, @ST@ st, @PKG@.ZShow s, int px, int py, int pz) {
+  java.util.ArrayList boxes = new java.util.ArrayList();
+  @PKG@.ZRegion[] a = @PKG@.ZStore.INDEX.in(s.world);
+  for (int i = 0; i < a.length && boxes.size() < MAX_BOXES; i++) {
+    if (s.id.length() > 0 && !a[i].id.equals(s.id)) continue;
+    int[] b = a[i].box;
+    for (int j = 0; j + 5 < b.length && boxes.size() < MAX_BOXES; j = j + 6) {
+      if (px < b[j] - 64 || px > b[j + 3] + 64 || pz < b[j + 2] - 64 || pz > b[j + 5] + 64) continue;
+      boxes.add(new int[] { b[j], b[j + 1], b[j + 2], b[j + 3] + 1, b[j + 4] + 1, b[j + 5] + 1 });
+    }
+  }
+  if (boxes.isEmpty()) return 0;
+  long len = 0L;
+  for (int i = 0; i < boxes.size(); i++) { int[] b = (int[]) boxes.get(i); len = len + 4L * (long) ((b[3] - b[0]) + (b[4] - b[1]) + (b[5] - b[2])); }
+  int step = (int) Math.max(2L, (len + MAX_POINTS - 1) / MAX_POINTS);
+  java.util.ArrayList to = new java.util.ArrayList();
+  to.add(ref);
+  String id = @PKG@.ZCfg.particle();
+  int n = 0;
+  for (int i = 0; i < boxes.size() && n < MAX_POINTS; i++) {
+    int[] b = (int[]) boxes.get(i);
+    int[] xs = new int[] { b[0], b[3] };
+    int[] ys = new int[] { b[1], b[4] };
+    int[] zs = new int[] { b[2], b[5] };
+    for (int p = 0; p < 2; p++) for (int q = 0; q < 2; q++) {
+      for (int v = b[0]; v <= b[3] && n < MAX_POINTS; v = v + step) { @PKG@.ZEng.particle(id, (double) v, (double) ys[p], (double) zs[q], to, st); n++; }
+      for (int v = b[1]; v <= b[4] && n < MAX_POINTS; v = v + step) { @PKG@.ZEng.particle(id, (double) xs[p], (double) v, (double) zs[q], to, st); n++; }
+      for (int v = b[2]; v <= b[5] && n < MAX_POINTS; v = v + step) { @PKG@.ZEng.particle(id, (double) xs[p], (double) ys[q], (double) v, to, st); n++; }
+    }
+  }
+  return n;
+}""")
+M(tick, r"""
+public static void show(@PR@ pr, java.util.UUID u, @REF@ ref, @ST@ st, String w, int x, int y, int z, long now) {
+  @PKG@.ZShow s = (@PKG@.ZShow) SHOW.get(u);
+  if (s == null) return;
+  if (now > s.until || !s.world.equals(w)) { SHOW.remove(u); return; }
+  if (now - s.last < 1000L) return;
+  s.last = now;
+  draw(ref, st, s, x, y, z);
+}""")
+M(tick, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ st, @CB@ cb) {
+  try {
+    boolean doTitles = @PKG@.ZCfg.ON && @PKG@.ZCfg.TITLES && @PKG@.ZStore.INDEX.count > 0;
+    if (!doTitles && SHOW.isEmpty() && @PKG@.ZBuild.ON.isEmpty()) return;
+    @REF@ ref = chunk.getReferenceTo(idx);
+    if (ref == null || !ref.isValid()) return;
+    @PR@ pr = (@PR@) st.getComponent(ref, @PR@.getComponentType());
+    if (pr == null) return;
+    java.util.UUID u = pr.getUuid();
+    double[] acc = (double[]) ACC.get(u);
+    if (acc == null) { acc = new double[1]; ACC.put(u, acc); }
+    acc[0] = acc[0] + (double) dt;
+    if (acc[0] < 0.5) return;
+    acc[0] = 0.0;
+    Object ext = st.getExternalData();
+    if (!(ext instanceof @EST@)) return;
+    @WLD@ w = ((@EST@) ext).getWorld();
+    if (w == null) return;
+    @TC@ tc = (@TC@) st.getComponent(ref, @TC@.getComponentType());
+    if (tc == null) return;
+    @V3D@ p = tc.getPosition();
+    int x = (int) Math.floor(p.x);
+    int y = (int) Math.floor(p.y);
+    int z = (int) Math.floor(p.z);
+    long now = System.currentTimeMillis();
+    String wn = w.getName();
+    if (doTitles) titles(pr, u, wn, x, y, z, now);
+    if (!SHOW.isEmpty()) show(pr, u, ref, st, wn, x, y, z, now);
+    if (!@PKG@.ZBuild.ON.isEmpty()) @PKG@.ZBuild.remind(pr, u, now);
+  } catch (Throwable t) {
+    if (!FAILED_ONCE) { FAILED_ONCE = true; @PKG@.ZCfg.warn("tick failed (logged once): " + t); }
+  }
+}""")
+M(tick, r"""
+public static void forget(java.util.UUID u) {
+  ACC.remove(u);
+  CUR.remove(u);
+  SHOW.remove(u);
+  String p = u + "|";
+  java.util.Iterator it = SHOWN.keySet().iterator();
+  while (it.hasNext()) { if (((String) it.next()).startsWith(p)) it.remove(); }
+}""")
+
+# =====================================================================================================================================
+# ZFn: the bridge functions
+# =====================================================================================================================================
+fn = mk("ZFn", None, ("java.util.function.Function",))
+F(fn, "public int mode;")
+F(fn, "public static volatile @PKG@.ZFn CHECK = null;")
+F(fn, "public static volatile @PKG@.ZFn REGION = null;")
+C(fn, "public ZFn(int mode) { this.mode = mode; }")
+M(fn, r"""
+public static int num(Object o) {
+  if (o instanceof Number) return ((Number) o).intValue();
+  return Integer.parseInt(String.valueOf(o).trim());
+}""")
+M(fn, r"""
+public Object apply(Object o) {
+  try {
+    if (!(o instanceof Object[])) return null;
+    Object[] a = (Object[]) o;
+    if (a.length < 4) return null;
+    String w = String.valueOf(a[0]);
+    int x = num(a[1]);
+    int y = num(a[2]);
+    int z = num(a[3]);
+    @PKG@.ZIndex ix = @PKG@.ZStore.INDEX;
+    if (this.mode == 1) { @PKG@.ZRegion r = ix.top(w, x, y, z); return r == null ? null : r.id; }
+    String act = a.length > 4 && a[4] != null ? String.valueOf(a[4]).toLowerCase() : "break";
+    int ac = @PKG@.ZRules.BREAK;
+    if (act.equals("place")) ac = @PKG@.ZRules.PLACE;
+    else if (act.equals("container")) ac = @PKG@.ZRules.CONTAINER;
+    else if (act.equals("furnace")) ac = @PKG@.ZRules.FURNACE;
+    String id = a.length > 5 && a[5] != null ? String.valueOf(a[5]) : "";
+    if ((ac == @PKG@.ZRules.BREAK || ac == @PKG@.ZRules.PLACE) && @PKG@.ZRegen.depleted(w, x, y, z)) return "deny";
+    if (!@PKG@.ZCfg.ON) return "allow";
+    int d = @PKG@.ZRules.decide(ix, w, @PKG@.ZCfg.protectedWorld(w), x, y, z, ac, id);
+    return d == @PKG@.ZRules.ALLOW ? "allow" : "deny";
+  } catch (Throwable t) { return null; }
+}""")
+M(fn, r"""
+public static void publish() {
+  java.util.Map b = @PKG@.ZCfg.bridge();
+  CHECK = new @PKG@.ZFn(0);
+  REGION = new @PKG@.ZFn(1);
+  b.put("zones:fn:check", CHECK);
+  b.put("zones:fn:region", REGION);
+  b.put("zones:version", "@VERSION@");
+}""")
+M(fn, r"""
+public static void unpublish() {
+  try {
+    java.util.Map b = @PKG@.ZCfg.bridge();
+    if (CHECK != null) b.remove("zones:fn:check", CHECK);
+    if (REGION != null) b.remove("zones:fn:region", REGION);
+    b.remove("zones:version", "@VERSION@");
+  } catch (Throwable t) { }
+  CHECK = null;
+  REGION = null;
+}""")
+
+# =====================================================================================================================================
+# ZRegKit: the regions table of Server Setup (a kit custom table; reads the published, never-changed INDEX - any thread; edits go
+# through the synchronized ZStore like the commands)
+# =====================================================================================================================================
+rkit = mk("ZRegKit")
+M(rkit, r"""
+public static @PKG@.ZRegion find(String id) {
+  if (id == null) return null;
+  java.util.Iterator it = @PKG@.ZStore.INDEX.byWorld.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.ZRegion[] a = (@PKG@.ZRegion[]) it.next();
+    for (int i = 0; i < a.length; i++) if (a[i].id.equals(id)) return a[i];
+  }
+  return null;
+}""")
+M(rkit, r"""
+public static String[] customKeys(String tableKey) {
+  java.util.TreeSet ids = new java.util.TreeSet();
+  java.util.Iterator it = @PKG@.ZStore.INDEX.byWorld.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.ZRegion[] a = (@PKG@.ZRegion[]) it.next();
+    for (int i = 0; i < a.length; i++) ids.add(a[i].id);
+  }
+  return (String[]) ids.toArray(new String[ids.size()]);
+}""")
+# region[<id>] -> one editable line (max 200: SkyyMenu's table cell), parts split by ';':
+#   "<full|skyblock>; priority N; types a,b|none; flags x|none; title Text|none; world W; N box(es) X x Y x Z [+]"
+# world + boxes are shown, not editable (boxes need wand corners). "" for the row itself, null = no such region.
+M(rkit, r"""
+public static String boxCell(@PKG@.ZRegion r) {
+  return r.boxes() + (r.boxes() == 1 ? " box " : " boxes ") + @PKG@.ZRegion.size(r.box, 0) + (r.boxes() > 1 ? " +" : "");
+}""")
+M(rkit, r"""
+public static String customGet(String key) {
+  if (key == null || !key.startsWith("region[") || !key.endsWith("]")) return "";
+  @PKG@.ZRegion r = find(key.substring(7, key.length() - 1));
+  if (r == null) return null;
+  String t = r.modeName() + "; priority " + r.priority + "; types " + (r.types.length == 0 ? "none" : @PKG@.ZRegion.join(r.types))
+    + "; flags " + (r.flags.length() == 0 ? "none" : r.flags) + "; title " + (r.title.length() == 0 ? "none" : r.title) + "; world " + r.world + "; " + boxCell(r);
+  return t.length() > 200 ? t.substring(0, 197) + "..." : t;
+}""")
+# fixer 2 (critic 3 #2, PROJECT-RULES 4 "editable in game"): mode / priority / types / flags / title change here (all or nothing, one
+# history copy + change-log line, through ZStore like the commands); world + boxes, adding and removing a region stay commands (corners).
+M(rkit, r"""
+public static Object[] no(String m) {
+  return new Object[] { "bad", "", m };
+}""")
+M(rkit, r"""
+public static Object[] customSet(String key, String value) {
+  if (key == null || !key.startsWith("region[") || !key.endsWith("]")) return no("Unknown regions line.");
+  String id = key.substring(7, key.length() - 1);
+  if (value == null) return no("Delete a region by command: /zones region delete " + id + ".");
+  @PKG@.ZRegion r = @PKG@.ZStore.get(id);
+  if (r == null) return no("A new region needs wand corners: /zones wand, then /zones region create " + id + " <full or skyblock>.");
+  if (value.indexOf("...") >= 0) return no("This region's line is too long to edit here - use /zones region <mode, priority, types, flags or title> " + id + " <value>.");
+  String[] parts = value.split(";");
+  java.util.ArrayList fs = new java.util.ArrayList();
+  java.util.ArrayList vs = new java.util.ArrayList();
+  for (int i = 0; i < parts.length; i++) {
+    String p = parts[i].trim();
+    if (p.length() == 0) continue;
+    int sp = p.indexOf(' ');
+    String w = (sp < 0 ? p : p.substring(0, sp)).toLowerCase();
+    String rest = sp < 0 ? "" : p.substring(sp + 1).trim();
+    if (sp < 0 && @PKG@.ZRegion.modeOf(w) >= 0) { fs.add("mode"); vs.add(w); continue; }
+    if (w.equals("mode") || w.equals("priority") || w.equals("types") || w.equals("flags") || w.equals("title")) { fs.add(w); vs.add(rest); continue; }
+    if (w.equals("world")) { if (!rest.equals(r.world)) return no("A region's world can't change here (" + r.world + ")."); continue; }
+    if (Character.isDigit(w.charAt(0))) { if (!p.equals(boxCell(r))) return no("Boxes change by command: /zones wand, then /zones region addbox " + id + "."); continue; }
+    return no("Unknown part '" + p + "'. Parts: full or skyblock; priority N; types a,b; flags containers,furnaces; title Text (none clears).");
+  }
+  if (fs.isEmpty()) return no("Nothing to change.");
+  String m = @PKG@.ZStore.setMany(id, (String[]) fs.toArray(new String[fs.size()]), (String[]) vs.toArray(new String[vs.size()]), "Server Setup");
+  if (m.startsWith("!")) return no(m.substring(1));
+  return new Object[] { "ok", customGet(key), m };
+}""")
+
+# =====================================================================================================================================
+# the admin config kit (tools/CONFIG-CONTRACT.md): Server Setup -> Zones
+# =====================================================================================================================================
+CATS = [("zones", "Protection"), ("regions", "Regions"), ("titles", "Area titles"), ("tools", "Builder tools"), ("types", "Resource types"),
+        ("regen", "Regrowing blocks")]
+ROWS = [
+    ("zones.on", "Zone protection (whole mod)", "zones", "bool", "true", "", "", "", "", "live,danger,part",
+     "Off: no world or region is protected (nothing else changes). Regions stay saved.",
+     "field:ZCfg.ON@config.properties:zones.on"),
+    ("zones.worlds", "Protected worlds (whole world)", "zones", "text", "", "", "400", "", "", "live",
+     "World folder names, comma list: protected everywhere. A region protects its boxes in any world.",
+     "field:ZCfg.WORLDS@config.properties:zones.worlds;check=ZCfg.checkWorlds"),
+    ("zones.opBypass", "Admins always bypass", "zones", "bool", "false", "", "", "", "", "live",
+     "On: skyyzones.admin is never stopped. Off (default): admins use /zones build on like builders.",
+     "field:ZCfg.OP_BYPASS@config.properties:zones.opBypass"),
+    ("zones.blockMobs", "Mobs can't break blocks here", "zones", "bool", "true", "", "", "", "", "live",
+     "Mobs (any non-player) can't break or place blocks in a protected spot.",
+     "field:ZCfg.MOBS@config.properties:zones.blockMobs"),
+    ("msg.gapSec", "Seconds between refusal notes", "zones", "int", "2", "0", "30", "", "s", "live",
+     "One player gets 'This area is protected.' at most this often.", "field:ZCfg.MSG_GAP@config.properties:msg.gapSec"),
+    ("use.tools", "Tools that change blocks", "zones", "text", USE_TOOLS, "", "600", "", "", "live,adv",
+     "Holding one, using a block here is refused. Hoe tilling + buckets have no event in Hytale 0.7.",
+     "field:ZCfg.TOOLS@config.properties:use.tools;check=ZCfg.checkTools"),
+    ("titles.on", "Area titles", "titles", "bool", "true", "", "", "", "", "live",
+     "Walking into a region with a title shows it (vanilla event title).", "field:ZCfg.TITLES@config.properties:titles.on"),
+    ("titles.leave", "Note when you leave", "titles", "bool", "true", "", "", "", "", "live",
+     "Walking out of a titled region shows a small 'You left ...' note.", "field:ZCfg.LEAVE@config.properties:titles.leave"),
+    ("titles.gapSec", "Same title again after", "titles", "int", "10", "0", "600", "", "s", "live",
+     "A region's title waits this long before it shows again for the same player.",
+     "field:ZCfg.TITLE_GAP@config.properties:titles.gapSec"),
+    ("show.seconds", "Outline time (/zones show)", "tools", "int", "30", "5", "300", "", "s", "live",
+     "How long /zones show draws region outlines (to you only).", "field:ZCfg.SHOW_SECS@config.properties:show.seconds"),
+    ("show.particle", "Outline particle", "tools", "text", "Alerted", "", "80", "", "", "live,adv",
+     "A SHORT-LIVED vanilla particle system id (a looping one stays on screen).",
+     "field:ZCfg.PARTICLE@config.properties:show.particle;check=ZCfg.checkParticle"),
+    ("build.remindSec", "Build mode reminder", "tools", "int", "300", "0", "3600", "", "s", "live",
+     "While builder mode is on, a reminder note this often (0 = none).", "field:ZCfg.REMIND@config.properties:build.remindSec"),
+    ("reload.files", "Re-read regions + types files", "tools", "action", "", "", "", "Re-read files", "", "live",
+     "Applies hand edits of regions.properties and types.properties (same as /zones reload).",
+     "action:ZCfg.reloadAction"),
+    ("region", "Regions", "regions", "table", "", "", "200", "text;none;Mode / priority / types / flags / title / world / boxes", "", "live",
+     "Edit mode, priority, types, flags, title here. Tie: skyblock wins. New / boxes: /zones wand.",
+     "custom:ZRegKit@config.properties"),
+    ("type", "Resource types (types.properties)", "types", "table", "", "", "200", "text;none;Block ids", "", "live",
+     "type id = block ids a SKYBLOCK region can let players break (comma list, * = any text).",
+     "reload:ZCfg.reloadTypes@types.properties:type.;check=ZCfg.checkType"),
+    # 0.2.0 regrowing blocks (regen.properties)
+    ("regen.enabled", "Regrowing blocks", "regen", "bool", "true", "", "", "", "", "live,danger",
+     "Mined listed blocks in SKYBLOCK areas become a placeholder, then grow back. Off: all come back now.",
+     "field:ZCfg.REGEN_ON@regen.properties:regen.enabled"),
+    ("regen.speedMult", "Regrow time multiplier", "regen", "dec", "1", "0.1", "10", "", "", "live",
+     "Every regrow time x this (0.5 = twice as fast).", "field:ZCfg.SPEED@regen.properties:regen.speedMult"),
+    ("regen.jitter", "Regrow time spread", "regen", "dec", "0.2", "0", "0.5", "", "", "live,adv",
+     "Each time x (1 - this .. 1 + this), so a vein refills block by block.", "field:ZCfg.JITTER@regen.properties:regen.jitter"),
+    ("regen.offlineCounts", "Server downtime counts", "regen", "bool", "true", "", "", "", "", "live,adv",
+     "On: time while the server is off counts toward the timers (read at start).", "field:ZCfg.OFFLINE@regen.properties:regen.offlineCounts"),
+    ("regen.defaultSec", "Regrow time without a row", "regen", "int", "5", "1", "3600", "", "s", "live",
+     "A resource type with no row in the table below grows back after this.", "field:ZCfg.DEFSEC@regen.properties:regen.defaultSec"),
+    ("regen.passBatch", "Blocks put back per pass", "regen", "int", "200", "10", "5000", "", "", "live,adv",
+     "Per world, at most this many block writes in one world tick; the rest follow next tick (lag guard).", "field:ZCfg.PASS@regen.properties:regen.passBatch"),
+    ("regen.maxDepleted", "Most waiting blocks per world", "regen", "int", "20000", "100", "200000", "", "", "live,adv",
+     "Above this the oldest waiting block comes back early.", "field:ZCfg.MAXDEP@regen.properties:regen.maxDepleted"),
+    ("regrow", "Regrow time + placeholder per type", "regen", "table", "", "0", "3600", "int|text;none;Seconds|Placeholder block", "", "live",
+     "0 s = no regrow (logs + crops: 0 for now). Placeholder = what stands there; never a listed block.",
+     "reload:ZCfg.reloadRegen@regen.properties:regrow.;check=ZCfg.checkRegrow"),
+    ("regen.restoreAll", "Put every mined block back now", "regen", "action", "", "", "", "Restore all", "", "live,danger",
+     "Run before rolling SkyyZones back. Loaded chunks at once, the rest load first.", "action:ZCfg.restoreAction"),
+]
+kit = CFG.emit(pool, PKG, MOD=MOD, TITLE="Zones", VERSION=VERSION, NODE=ADMIN, CATS=CATS, ROWS=ROWS,
+               FILES=["Skyy_SkyyZones/config.properties", "Skyy_SkyyZones/types.properties", "Skyy_SkyyZones/regen.properties"],
+               NOTE="Not stoppable in Hytale 0.7: fire, sourceless blasts, fluids, hoes, buckets. Keep lava + TNT out.",
+               RELOAD=None, KEEP=10, DEFAULTS={"config.properties": CONFIG_TEXT, "types.properties": TYPES_TEXT, "regen.properties": REGEN_TEXT},
+               PERM_FN="ZCfg.permTest")
+
+# =====================================================================================================================================
+# ZCmds: the command logic (world thread)
+# =====================================================================================================================================
+cmds = mk("ZCmds")
+F(cmds, "public static final String ADMIN = \"@ADMIN@\";")
+M(cmds, "public static boolean admin(@PR@ pr) { return pr != null && @PKG@.ZCfg.permTest(pr.getUuid(), ADMIN); }")
+M(cmds, "public static void ok(@PR@ pr, String t) { @PKG@.ZMsg.tell(pr, t, \"@GOOD@\"); }")
+M(cmds, "public static void bad(@PR@ pr, String t) { @PKG@.ZMsg.tell(pr, t, \"@BAD@\"); }")
+M(cmds, "public static void say(@PR@ pr, String t) { @PKG@.ZMsg.tell(pr, t, \"@INFO@\"); }")
+M(cmds, r"""
+public static void result(@PR@ pr, String m) {
+  if (m == null) return;
+  if (m.startsWith("!")) bad(pr, m.substring(1)); else ok(pr, m);
+}""")
+M(cmds, r"""
+public static void help(@PR@ pr) {
+  say(pr, "SkyyZones - protected worlds and areas:");
+  say(pr, "/zones info - what protects the block you look at   /zones list - the regions of this world   /zones status - regrowing blocks");
+  say(pr, "/zones show [region or off] [seconds] (or /zones show <seconds>) - outline the regions near you   /zones build on|off - builder mode (break + place anywhere)");
+  if (!admin(pr)) return;
+  say(pr, "/zones wand - the Zone Wand: hit two blocks = the corners of a box (or use the vanilla selection tool)");
+  say(pr, "/zones region create <name> <full or skyblock> [types]   /zones region addbox <name>   /zones region delete <name>");
+  say(pr, "/zones region mode|priority|title|types|flags <name> <value>   (title: _ = space; types: stone,copper; flags: containers,furnaces; none clears)");
+  say(pr, "Overlap: the higher priority wins; on a tie a skyblock region wins, then the name first in a-z.");
+  say(pr, "/zones type <type> <block ids, none, or look>   /zones type add <type> <block ids or look> (adds)   /zones protect on|off (this whole world)");
+  say(pr, "/zones reload (re-read the files)   /zones reload clear (accept a regions file with no region: removes every region)");
+  say(pr, "/zones restore <region or all> - every mined block back now (run 'all' before rolling SkyyZones back)   /zones audit <region> [fix] - placeholders with no timer");
+}""")
+M(cmds, r"""
+public static void build(@PR@ pr, String v) {
+  java.util.UUID u = pr.getUuid();
+  boolean now = @PKG@.ZBuild.on(u);
+  boolean want;
+  if (v.equals("on")) want = true;
+  else if (v.equals("off")) want = false;
+  else if (v.equals("toggle")) want = !now;
+  else { bad(pr, "Use /zones build on or /zones build off."); return; }
+  if (want == now) { say(pr, "Builder mode is already " + (now ? "ON." : "off.")); return; }
+  @PKG@.ZBuild.set(u, pr.getUsername(), want);
+  if (want) {
+    ok(pr, "Builder mode ON - protected areas do not stop you (break, place, chests). It switches off when you log out: /zones build off");
+    @PKG@.ZEng.title(pr, "BUILD MODE", "Protection is off for you - /zones build off");
+  } else ok(pr, "Builder mode off - protection applies to you again.");
+}""")
+M(cmds, r"""
+public static void list(@PR@ pr, String wn) {
+  @PKG@.ZRegion[] a = @PKG@.ZStore.INDEX.in(wn);
+  say(pr, "World " + wn + ": " + (@PKG@.ZCfg.protectedWorld(wn) ? "protected everywhere (zones.worlds)" : "protected only inside regions") + (@PKG@.ZCfg.ON ? "" : " - ZONE PROTECTION IS OFF (Server Setup)") + "; " + a.length + (a.length == 1 ? " region" : " regions") + ":");
+  for (int i = 0; i < a.length && i < 20; i++) say(pr, " " + a[i].summary());
+  if (a.length > 20) say(pr, " ... and " + (a.length - 20) + " more (Skyy_SkyyZones/regions.properties).");
+  String b = @PKG@.ZStore.BAD;
+  if (b != null) bad(pr, "Regions file problem: " + b + " - edits are blocked until it is fixed + /zones reload.");
+}""")
+M(cmds, r"""
+public static void show(@PR@ pr, String wn, String id, int secs) {
+  java.util.UUID u = pr.getUuid();
+  if (id.equals("off")) { @PKG@.ZTick.SHOW.remove(u); ok(pr, "Outline off."); return; }
+  if (id.length() > 0) {
+    @PKG@.ZRegion r = @PKG@.ZStore.get(id);
+    if (r == null || !r.world.equals(wn)) { bad(pr, "No region " + id + " in this world (/zones list)."); return; }
+  } else if (@PKG@.ZStore.INDEX.in(wn).length == 0) { bad(pr, "This world has no regions."); return; }
+  @PKG@.ZTick.SHOW.put(u, new @PKG@.ZShow(wn, id, System.currentTimeMillis() + 1000L * (long) secs));
+  ok(pr, "Outlining " + (id.length() > 0 ? "region " + id : "the regions within 64 blocks") + " for " + secs + " s (only you see it). /zones show off");
+}""")
+M(cmds, r"""
+public static String grows(String type) {
+  if (!@PKG@.ZCfg.REGEN_ON) return " (regrowing is off: once mined it stays gone)";
+  int s = @PKG@.ZCfg.regrowSec(type);
+  if (s <= 0) return " (does NOT grow back" + (@PKG@.ZCfg.noZ3(type) ? " yet - whole trees / crops come later" : "") + ": once mined it stays gone)";
+  return " (grows back after about " + s + " s)";
+}""")
+M(cmds, r"""
+public static void noRegrow(@PR@ pr, String id) {
+  @PKG@.ZRegion r = @PKG@.ZStore.get(id);
+  if (r == null || r.mode != 1) return;
+  for (int i = 0; i < r.types.length; i++) {
+    if (@PKG@.ZCfg.regrowSec(r.types[i]) <= 0) bad(pr, "Note: " + r.types[i] + grows(r.types[i]) + ".");
+  }
+}""")
+M(cmds, r"""
+public static void info(@REF@ ref, @ST@ st, @PR@ pr, @WLD@ w) {
+  String wn = w.getName();
+  int[] p = @PKG@.ZEng.target(ref, st);
+  boolean look = p != null;
+  if (p == null) {
+    @TC@ tc = (@TC@) st.getComponent(ref, @TC@.getComponentType());
+    if (tc == null) { bad(pr, "Could not tell where you are."); return; }
+    @V3D@ v = tc.getPosition();
+    p = new int[] { (int) Math.floor(v.x), (int) Math.floor(v.y) - 1, (int) Math.floor(v.z) };
+  }
+  String blk = @PKG@.ZEng.blockAt(w, p[0], p[1], p[2]);
+  String id = blk == null ? "" : @PKG@.ZRules.bare(blk);
+  boolean pw = @PKG@.ZCfg.protectedWorld(wn);
+  @PKG@.ZIndex ix = @PKG@.ZStore.INDEX;
+  say(pr, "Zones info - " + (look ? "the block you look at" : "the block under you") + ": " + (blk == null ? "(not loaded)" : blk) + " at " + p[0] + " " + p[1] + " " + p[2] + " in " + wn);
+  say(pr, "World: " + (pw ? "protected everywhere (zones.worlds)" : "protected only inside regions") + (@PKG@.ZCfg.ON ? "" : " - ZONE PROTECTION IS OFF"));
+  java.util.ArrayList at = ix.at(wn, p[0], p[1], p[2]);
+  if (at.isEmpty()) say(pr, "Regions here: none");
+  for (int i = 0; i < at.size(); i++) {
+    @PKG@.ZRegion r = (@PKG@.ZRegion) at.get(i);
+    String lt = r.mode == 1 ? @PKG@.ZRules.listedType(r, id) : null;
+    say(pr, (i == 0 ? "Region here (wins): " : "Also here: ") + r.summary() + (lt != null ? " - this block is type " + lt + grows(lt) : ""));
+  }
+  if (@PKG@.ZCfg.ON) {
+    say(pr, "Break: " + @PKG@.ZRules.verdict(@PKG@.ZRules.decide(ix, wn, pw, p[0], p[1], p[2], @PKG@.ZRules.BREAK, id))
+      + " | Place: " + @PKG@.ZRules.verdict(@PKG@.ZRules.decide(ix, wn, pw, p[0], p[1], p[2], @PKG@.ZRules.PLACE, id))
+      + " | Chests: " + @PKG@.ZRules.verdict(@PKG@.ZRules.decide(ix, wn, pw, p[0], p[1], p[2], @PKG@.ZRules.CONTAINER, id)));
+  }
+  @PKG@.ZDep dd = @PKG@.ZRegen.at(wn, p[0], p[1], p[2]);
+  if (dd != null) say(pr, "Mined: grows back as " + dd.orig + " in " + Math.max(0L, (dd.due - @PKG@.ZDep.now() + 999L) / 1000L) + " s (type " + dd.type + (dd.force ? ", being put back now" : "") + ").");
+  long gf = @PKG@.ZGuard.FAILS.get();
+  if (gf > 0L) bad(pr, "Guard errors since start: " + gf + " (those actions were refused in protected spots - see the server log).");
+  boolean bm = @PKG@.ZBuild.on(pr.getUuid());
+  say(pr, "You: builder mode " + (bm ? "ON (nothing stops you)" : "off") + (@PKG@.ZCfg.OP_BYPASS && admin(pr) ? "; admins always bypass (Server Setup)" : ""));
+}""")
+M(cmds, r"""
+public static void wand(@REF@ ref, @ST@ st, @PR@ pr) {
+  int g = @PKG@.ZEng.give(ref, st, @PKG@.ZWand.ID);
+  if (g == 0) ok(pr, "A Zone Wand is in your inventory. Hit two blocks (the opposite corners of a box), then /zones region create <name> <full or skyblock>. The wand never breaks anything.");
+  else if (g == 1) say(pr, "You already have a Zone Wand.");
+  else if (g == 2) bad(pr, "No room for the Zone Wand - free a slot and try again.");
+  else bad(pr, "Could not give the Zone Wand - the server log has the details.");
+}""")
+M(cmds, r"""
+public static void protect(@PR@ pr, String wn, String v) {
+  String[] cur = @PKG@.ZCfg.splitList(@PKG@.ZCfg.WORLDS);
+  StringBuilder sb = new StringBuilder();
+  boolean had = false;
+  for (int i = 0; i < cur.length; i++) {
+    if (cur[i].equalsIgnoreCase(wn)) { had = true; continue; }
+    if (sb.length() > 0) sb.append(',');
+    sb.append(cur[i]);
+  }
+  boolean on;
+  if (v.equals("on")) on = true; else if (v.equals("off")) on = false; else { bad(pr, "Use /zones protect on or /zones protect off."); return; }
+  if (on == had) { say(pr, "World " + wn + " is already " + (had ? "protected everywhere." : "not protected outside regions.")); return; }
+  if (on) { if (sb.length() > 0) sb.append(','); sb.append(wn); }
+  String m = @PKG@.CfgFn.cmdSet("zones.worlds", sb.toString(), pr.getUuid(), pr.getUsername());
+  say(pr, m);
+  if (on) say(pr, "World " + wn + " is now protected everywhere: outside regions nothing breaks or is placed (builders: /zones build on).");
+}""")
+M(cmds, r"""
+public static String look(@REF@ ref, @ST@ st, @WLD@ w, String t) {
+  int[] p = @PKG@.ZEng.target(ref, st);
+  if (p == null) return null;
+  String blk = @PKG@.ZEng.blockAt(w, p[0], p[1], p[2]);
+  if (blk == null) return null;
+  String id = @PKG@.ZRules.bare(blk);
+  if (id.length() == 0 || id.equals("Empty")) return null;
+  Object o = @PKG@.ZCfg.TYPES.get(t);
+  String[] cur = o instanceof String[] ? (String[]) o : new String[0];
+  if (@PKG@.ZRules.anyGlob(cur, id)) return "=" + id;
+  return cur.length == 0 ? id : @PKG@.ZRegion.join(cur) + "," + id;
+}""")
+M(cmds, r"""
+public static void type(@REF@ ref, @ST@ st, @WLD@ w, @PR@ pr, String id, String v0) {
+  String t = id.toLowerCase();
+  String v = v0;
+  if (v.equalsIgnoreCase("look")) {
+    v = look(ref, st, w, t);
+    if (v == null) { bad(pr, "Look at a block (within 16 blocks) to add it to type " + t + "."); return; }
+    if (v.startsWith("=")) { say(pr, "Type " + t + " already covers " + v.substring(1) + "."); return; }
+  }
+  Object[] r;
+  if (v.equalsIgnoreCase("none")) r = (Object[]) new @PKG@.CfgFn().apply(new Object[] { "remove", "type", t, pr.getUuid(), pr.getUsername(), "yes", "command" });
+  else if (@PKG@.ZCfg.TYPES.containsKey(t)) r = (Object[]) new @PKG@.CfgFn().apply(new Object[] { "tset", "type", t, v, pr.getUuid(), pr.getUsername(), "yes", "command" });
+  else r = (Object[]) new @PKG@.CfgFn().apply(new Object[] { "add", "type", t, v, pr.getUuid(), pr.getUsername(), "yes", "command" });
+  if (r == null || r.length < 3) { bad(pr, "Could not change the type (see the server log)."); return; }
+  String st = String.valueOf(r[0]);
+  if (st.equals("ok") || st.equals("restart")) ok(pr, String.valueOf(r[2]) + " (types.properties is re-read in a moment)");
+  else bad(pr, String.valueOf(r[2]));
+}""")
+# spec 5.1 form /zones type add <type> <ids|look>: ADDS to the type (the 3-word /zones type <type> <ids> replaces it)
+M(cmds, r"""
+public static void typeAdd(@REF@ ref, @ST@ st, @WLD@ w, @PR@ pr, String id, String v) {
+  String t = id.toLowerCase();
+  if (v.equalsIgnoreCase("look")) { type(ref, st, w, pr, t, "look"); return; }
+  if (v.equalsIgnoreCase("none")) { bad(pr, "Use /zones type " + t + " none to remove a type."); return; }
+  Object o = @PKG@.ZCfg.TYPES.get(t);
+  String[] cur = o instanceof String[] ? (String[]) o : new String[0];
+  String[] add = @PKG@.ZCfg.splitList(v);
+  java.util.ArrayList all = new java.util.ArrayList(java.util.Arrays.asList(cur));
+  for (int i = 0; i < add.length; i++) { if (!all.contains(add[i])) all.add(add[i]); }
+  if (all.size() == cur.length) { say(pr, "Type " + t + " already lists " + v + "."); return; }
+  type(ref, st, w, pr, t, @PKG@.ZRegion.join((String[]) all.toArray(new String[all.size()])));
+}""")
+M(cmds, r"""
+public static void region(@REF@ ref, @ST@ st, @PR@ pr, String wn, String[] a) {
+  String sub = a[1].toLowerCase();
+  String id = a[2].toLowerCase();
+  String who = pr.getUsername();
+  if (a.length == 3 && sub.equals("delete")) { result(pr, @PKG@.ZStore.delete(id, who)); return; }
+  if (a.length == 5 && sub.equals("create")) {
+    String[] ty = @PKG@.ZCfg.splitList(a[4].toLowerCase());
+    for (int i = 0; i < ty.length; i++) if (!@PKG@.ZCfg.TYPES.containsKey(ty[i])) { bad(pr, "No resource type '" + ty[i] + "'. Types: " + @PKG@.ZStore.typeList() + ". Nothing was created."); return; }
+  }
+  if ((a.length == 4 || a.length == 5) && sub.equals("create") || a.length == 3 && sub.equals("addbox")) {
+    int[] b = @PKG@.ZWand.box(pr.getUuid(), wn);
+    boolean viaSel = false;
+    if (b == null) { b = @PKG@.ZEng.selection(ref, st, pr); viaSel = b != null; }
+    if (b == null) { bad(pr, "Mark a box first: /zones wand and hit two corner blocks (or select with the vanilla selection tool)."); return; }
+    String m = sub.equals("create") ? @PKG@.ZStore.create(id, wn, a[3], b, who) : @PKG@.ZStore.addBox(id, wn, b, who);
+    result(pr, m);
+    if (a.length == 5 && m != null && !m.startsWith("!")) { result(pr, @PKG@.ZStore.set(id, "types", a[4], who)); noRegrow(pr, id); }
+    if (viaSel && m != null && !m.startsWith("!")) say(pr, "(Corners from the vanilla selection tool: " + @PKG@.ZRegion.boxText(b) + " in " + wn + " - /zones show " + id + " to check it.)");
+    return;
+  }
+  if (a.length == 4 && (sub.equals("mode") || sub.equals("priority") || sub.equals("title") || sub.equals("types") || sub.equals("flags"))) {
+    result(pr, @PKG@.ZStore.set(id, sub, a[3], who));
+    if (sub.equals("types") || sub.equals("mode")) noRegrow(pr, id);
+    return;
+  }
+  bad(pr, "Use /zones region create <name> <full or skyblock> [types], addbox <name>, delete <name>, or mode|priority|title|types|flags <name> <value>.");
+}""")
+# 0.2.0 regrowing blocks: status (builders), restore + audit (admins)
+M(cmds, r"""
+public static void status(@PR@ pr) {
+  java.util.ArrayList l = @PKG@.ZRegen.status();
+  for (int i = 0; i < l.size(); i++) say(pr, (String) l.get(i));
+}""")
+M(cmds, r"""
+public static void restore(@PR@ pr, String id) {
+  @PKG@.ZRegion reg = null;
+  if (!id.equals("all")) {
+    reg = @PKG@.ZStore.get(id);
+    if (reg == null) { bad(pr, "No region " + id + " (/zones list) - or /zones restore all."); return; }
+  }
+  int[] r = @PKG@.ZRegen.restore(reg);
+  @PKG@.ZCfg.info("/zones restore " + id + " by " + pr.getUsername() + ": " + r[0] + " blocks");
+  if (r[0] == 0) { say(pr, "Nothing is waiting to grow back" + (reg == null ? "." : " in " + id + ".")); return; }
+  ok(pr, "Putting back " + r[0] + " waiting " + (r[0] == 1 ? "block" : "blocks") + " now (loaded chunks at once, the others are loaded first). /zones status shows what is left.");
+  if (r[1] > 0) bad(pr, r[2] + " of them are in " + r[1] + (r[1] == 1 ? " world" : " worlds") + " that are not loaded - they come back when the world loads.");
+}""")
+M(cmds, r"""
+public static void audit(@WLD@ w, @PR@ pr, String id, boolean fix) {
+  @PKG@.ZRegion reg = @PKG@.ZStore.get(id);
+  if (reg == null || !reg.world.equals(w.getName())) { bad(pr, "No region " + id + " in this world (/zones list)."); return; }
+  java.util.ArrayList l = @PKG@.ZRegen.audit(w, reg, fix);
+  for (int i = 0; i < l.size(); i++) say(pr, (String) l.get(i));
+}""")
+M(cmds, r"""
+public static void run(@REF@ ref, @ST@ st, @PR@ pr, @WLD@ w, String[] a) {
+  try {
+    if (pr == null || w == null) return;
+    if (a == null || a.length == 0) { help(pr); return; }
+    String c = a[0].toLowerCase();
+    String wn = w.getName();
+    if (c.equals("help")) { help(pr); return; }
+    if (c.equals("info") && a.length == 1) { info(ref, st, pr, w); return; }
+    if (c.equals("list") && a.length == 1) { list(pr, wn); return; }
+    if (c.equals("show") && a.length == 2 && a[1].matches("[0-9]{1,6}")) { show(pr, wn, "", @PKG@.ZCfg.intOf(a[1], @PKG@.ZCfg.SHOW_SECS, 5, 300)); return; }
+    if (c.equals("show") && a.length <= 3) { show(pr, wn, a.length > 1 ? a[1].toLowerCase() : "", a.length > 2 ? @PKG@.ZCfg.intOf(a[2], @PKG@.ZCfg.SHOW_SECS, 5, 300) : @PKG@.ZCfg.SHOW_SECS); return; }
+    if (c.equals("build") && a.length <= 2) { build(pr, a.length > 1 ? a[1].toLowerCase() : "toggle"); return; }
+    if (c.equals("status") && a.length == 1) { status(pr); return; }
+    if (!c.equals("wand") && !c.equals("reload") && !c.equals("protect") && !c.equals("type") && !c.equals("region") && !c.equals("restore") && !c.equals("audit")) { help(pr); return; }
+    if (!admin(pr)) { bad(pr, "Only zone admins (skyyzones.admin) can use /zones " + c + "."); return; }
+    if (c.equals("wand") && a.length == 1) { wand(ref, st, pr); return; }
+    if (c.equals("reload") && a.length == 1) { say(pr, @PKG@.ZCfg.reloadFiles(false)); return; }
+    if (c.equals("reload") && a.length == 2 && a[1].equalsIgnoreCase("clear")) { say(pr, @PKG@.ZCfg.reloadFiles(true)); return; }
+    if (c.equals("protect") && a.length == 2) { protect(pr, wn, a[1].toLowerCase()); return; }
+    if (c.equals("type") && a.length == 3) { type(ref, st, w, pr, a[1], a[2]); return; }
+    if (c.equals("type") && a.length == 4 && a[1].equalsIgnoreCase("add")) { typeAdd(ref, st, w, pr, a[2], a[3]); return; }
+    if (c.equals("region") && a.length >= 3) { region(ref, st, pr, wn, a); return; }
+    if (c.equals("restore") && a.length == 2) { restore(pr, a[1].toLowerCase()); return; }
+    if (c.equals("audit") && (a.length == 2 || a.length == 3 && a[2].equalsIgnoreCase("fix"))) { audit(w, pr, a[1].toLowerCase(), a.length == 3); return; }
+    help(pr);
+  } catch (Throwable t) {
+    @PKG@.ZCfg.warn("/zones failed: " + t);
+    bad(pr, "Something went wrong - the server log has the details.");
+  }
+}""")
+
+# =====================================================================================================================================
+# the command: /zones (+ usage variants for 1, 2, 3, 4 and 5 words - HANDOFF COMMAND RULES 2); skyyzones.build, never a player group
+# =====================================================================================================================================
+EXEC = "protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world)"
+# skyyzones.admin alone opens /zones too (the engine checks only the one requirePermission node; Server Setup admins are not refused)
+HASP = r"""
+public boolean hasPermission(com.hypixel.hytale.server.core.command.system.CommandSender s) {
+  if (s == null) return false;
+  try { if (s.hasPermission("@ADMIN@")) return true; } catch (Throwable t) { }
+  return super.hasPermission(s);
+}"""
+VARIANTS = [("ZCmd1", ["word"], "(builders) /zones info, list, show, build, status, help; (admins) wand, reload"),
+            ("ZCmd2", ["word", "value"], "(builders) /zones show <region, off or seconds>, /zones build <on or off>; (admins) /zones protect <on or off>, /zones reload clear, /zones restore <region or all>, /zones audit <region>"),
+            ("ZCmd3", ["word", "name", "value"], "(builders) /zones show <region> <seconds>; (admins) /zones region <delete or addbox> <name>, /zones type <type> <block ids, none or look>, /zones audit <region> fix"),
+            ("ZCmd4", ["word", "what", "name", "value"], "(admins) /zones region <create, mode, priority, title, types, flags> <name> <value>, /zones type add <type> <ids or look>"),
+            ("ZCmd5", ["word", "what", "name", "value", "types"], "(admins) /zones region create <name> <full or skyblock> <types, e.g. stone,copper>")]
+ARG_HELP = {"word": "info, list, show, build, status, help, wand, reload, protect, type, region, restore or audit", "value": "a value (on, off, a region name ...)",
+            "name": "a region or type name", "what": "create, delete, addbox, mode, priority, title, types or flags",
+            "types": "resource types, comma list (stone,copper)"}
+vcls = []
+for vname, args, desc in VARIANTS:
+    vc = mk(vname, T["APC"])
+    for i in range(len(args)):
+        F(vc, "public @RA@ a%d;" % i)
+    body = "\n".join('  this.a%d = withRequiredArg("%s", %s, @ATY@.STRING);' % (i, args[i] + str(i), jl(ARG_HELP[args[i]])) for i in range(len(args)))
+    C(vc, r"""
+public %s() {
+  super(%s);
+  requirePermission("@BUILDN@");
+  setPermissionGroups(new String[0]);
+%s
+}""" % (vname, jl(desc), body))
+    M(vc, HASP)
+    get = " ".join("String s%d = String.valueOf(ctx.get(this.a%d));" % (i, i) for i in range(len(args)))
+    arr = ", ".join("s%d" % i for i in range(len(args)))
+    M(vc, EXEC + r""" {
+  try {
+    %s
+    @PKG@.ZCmds.run(ref, store, pr, world, new String[] { %s });
+  } catch (Throwable t) { @PKG@.ZCmds.help(pr); }
+}""" % (get, arr))
+    vcls.append(vc)
+cmd = mk("ZCmd", T["APC"])
+C(cmd, r"""
+public ZCmd() {
+  super("zones", "(builders + admins) SkyyZones protected areas: /zones lists what you can use");
+  requirePermission("@BUILDN@");
+  setPermissionGroups(new String[0]);
+  addUsageVariant(new @PKG@.ZCmd1());
+  addUsageVariant(new @PKG@.ZCmd2());
+  addUsageVariant(new @PKG@.ZCmd3());
+  addUsageVariant(new @PKG@.ZCmd4());
+  addUsageVariant(new @PKG@.ZCmd5());
+}""")
+M(cmd, EXEC + r""" {
+  @PKG@.ZCmds.run(ref, store, pr, world, new String[0]);
+}""")
+M(cmd, HASP)
+
+# =====================================================================================================================================
+# ZQuit: logout = builder mode off, corners / titles / outline forgotten
+# =====================================================================================================================================
+quit_ = mk("ZQuit", None, ("java.util.function.Consumer",))
+C(quit_, "public ZQuit() { }")
+M(quit_, r"""
+public static void forget(java.util.UUID u, String name) {
+  if (u == null) return;
+  if (@PKG@.ZBuild.on(u)) @PKG@.ZBuild.set(u, name, false);
+  @PKG@.ZWand.SEL.remove(u);
+  @PKG@.ZMsg.LAST.remove(u);
+  @PKG@.ZTick.forget(u);
+}""")
+M(quit_, r"""
+public void accept(Object o) {
+  try {
+    if (!(o instanceof @PDE@)) return;
+    @PR@ pr = ((@PDE@) o).getPlayerRef();
+    if (pr != null) forget(pr.getUuid(), pr.getUsername());
+  } catch (Throwable t) { @PKG@.ZCfg.warnOnce("quit", "logout clean-up failed (logged once): " + t); }
+}""")
+
+# =====================================================================================================================================
+# the plugin
+# =====================================================================================================================================
+pl = mk("SkyyZonesPlugin", T["JP"])
+C(pl, "public SkyyZonesPlugin(@JPI@ init) { super(init); }")
+M(pl, r"""
+public static String paths(java.nio.file.Path dir) {
+  @PKG@.ZCfg.DIR = dir;
+  @PKG@.ZCfg.FILE = dir.resolve("config.properties");
+  @PKG@.ZCfg.TFILE = dir.resolve("types.properties");
+  @PKG@.ZStore.FILE = dir.resolve("regions.properties");
+  @PKG@.ZSave.FILE = dir.resolve("regions.properties");
+  @PKG@.ZSave.HIST = dir.resolve("history");
+  @PKG@.ZSave.LOGF = dir.resolve("region-changes.log");
+  @PKG@.ZSave.GOOD = dir.resolve("regions.good.properties");
+  @PKG@.ZCfg.RFILE = dir.resolve("regen.properties");
+  return @PKG@.ZCfg.loadCfg(true) + "; " + @PKG@.ZCfg.loadTypes(true) + "; " + @PKG@.ZCfg.loadRegen(true) + "; " + @PKG@.ZStore.start() + "; " + @PKG@.ZRegen.start(dir.resolve("regen"));
+}""")
+M(pl, r"""
+public void setup() {
+  try {
+    @PKG@.ZCfg.LOG = getLogger();
+    java.nio.file.Path dir = getDataDirectory().resolveSibling("Skyy_SkyyZones");
+    String s = paths(dir);
+    try { @PKG@.CfgPub.start(getDataDirectory().getParent(), getLogger()); } catch (Throwable t) { @PKG@.ZCfg.warn("Server Setup kit did not start: " + t); }
+    getCommandRegistry().registerCommand(new @PKG@.ZCmd());
+    getEntityStoreRegistry().registerSystem(new @PKG@.ZGuardBreak());
+    getEntityStoreRegistry().registerSystem(new @PKG@.ZGuardDamage());
+    getEntityStoreRegistry().registerSystem(new @PKG@.ZGuardPlace());
+    getEntityStoreRegistry().registerSystem(new @PKG@.ZGuardUse());
+    getEntityStoreRegistry().registerSystem(new @PKG@.ZTick());
+    getEventRegistry().registerGlobal(@PDE@.class, new @PKG@.ZQuit());
+    @PKG@.ZFn.publish();
+    try { @PKG@.ZTicker.start(); } catch (Throwable t) { @PKG@.ZCfg.warn("the regrow timer did not start - mined blocks wait until it does (restart): " + t); }
+    getLogger().at(java.util.logging.Level.INFO).log("[SkyyZones] @VERSION@ ready - protected worlds + regions (FULL / SKYBLOCK + regrowing blocks, Z2); " + s + (@PKG@.ZStore.BAD != null ? " - REGIONS FILE PROBLEM, region edits blocked (see the warnings above)" : "") + "; /zones (builders: skyyzones.build, admins: skyyzones.admin); Server Setup -> Zones; data in " + dir);
+  } catch (Throwable t) {
+    try { getLogger().at(java.util.logging.Level.SEVERE).log("[SkyyZones] setup failed - zone protection is NOT active: " + t); } catch (Throwable t2) { }
+  }
+}""")
+M(pl, r"""
+protected void shutdown() {
+  try { @PKG@.ZFn.unpublish(); } catch (Throwable t) { }
+  try { @PKG@.ZTicker.stop(); } catch (Throwable t) { }
+  try { @PKG@.ZRegen.shutdown(); } catch (Throwable t) { }
+  try { @PKG@.CfgPub.shutdown(); } catch (Throwable t) { }
+  try { @PKG@.ZStore.flush(); } catch (Throwable t) { }
+  try { @PKG@.ZBuild.clearAll(); } catch (Throwable t) { }
+  @PKG@.ZWand.SEL.clear();
+  @PKG@.ZMsg.LAST.clear();
+  @PKG@.ZTick.ACC.clear();
+  @PKG@.ZTick.CUR.clear();
+  @PKG@.ZTick.SHOW.clear();
+  @PKG@.ZTick.SHOWN.clear();
+  super.shutdown();
+}""")
+
+ALL = [api, cfg, reg, idx, rules, sav, sto, eng, msg, bld, sel, wnd, dep, rw, pas, rgn, tkr, guard] + gcls + [shw, tick, fn, rkit, cmds] + vcls + [cmd, quit_, pl]
+for c in ALL:
+    c.writeFile(OUT)
+kit.write(OUT)
+print("classes written: %d (+%d kit)" % (len(ALL), len(kit.classes)))
+
+# =====================================================================================================================================
+# assets: the Zone Wand item (a vanilla stick look by path - nothing vanilla is copied) + its name
+# =====================================================================================================================================
+WAND_ITEM = {
+    "TranslationProperties": {"Name": "server.items.%s.name" % WAND, "Description": "server.items.%s.description" % WAND},
+    "Icon": "Icons/ItemsGenerated/Ingredient_Stick.png", "Categories": ["Items.Utility"], "MaxStack": 1, "Quality": "Tool",
+    "PlayerAnimationsId": "Item", "Model": "Items/Ingredients/Stick.blockymodel", "Texture": "Items/Ingredients/Stick_Texture.png",
+    "IconProperties": {"Scale": 1.21, "Rotation": [67, 330, 0], "Translation": [1.3, -1]},
+    "ItemSoundSetId": "ISS_Items_Foliage", "DropOnDeath": False,
+}
+# Style Guide section 15 colours: actions yellow, what it does soft white, minor info dim grey (no < > inside the text: markup)
+_Y, _W, _D = "#ffcc00", "#d6e4ee", "#7f93a6"
+WAND_DESC = ('<color is="%s">Hit a block:</color> <color is="%s">corner A, then corner B of a zone box</color>\\n'
+             '<color is="%s">Then:</color> <color is="%s">/zones region create NAME full (or skyblock)</color>\\n'
+             '<color is="%s">Admin tool (SkyyZones). It never breaks anything.</color>') % (_Y, _W, _Y, _W, _D)
+LANG = []
+for _pre in ("", "server."):
+    LANG += ["%sitems.%s.name=Zone Wand" % (_pre, WAND),
+             "%sitems.%s.description=%s" % (_pre, WAND, WAND_DESC)]
+FILES = {"Server/Item/Items/SkyyZones/%s.json" % WAND: json.dumps(WAND_ITEM, indent=2),
+         "Server/Languages/en-US/server.lang": "\n".join(LANG) + "\n"}
+jar = os.path.join(HERE, "%s-%s.jar" % (MOD, VERSION))
+man = B.manifest(MOD, VERSION, "SkyWynn zone protection: protected worlds and regions for the server's hand-built zones. FULL areas (nothing breaks or is placed, no drops) and SKYBLOCK areas (only the listed resource blocks break; mined ones turn into a placeholder for a few seconds, then grow back); deny by default; builder mode (/zones build on, off at login); regions drawn with the Zone Wand or the vanilla selection; area titles; overlap priority; Server Setup -> Zones. Player islands and the solo pack stay unprotected unless a region is drawn. Zero dependencies.", PKG + ".SkyyZonesPlugin")
+man["IncludesAssetPack"] = True
+B.assemble(jar, man, OUT, extra_files=FILES)
+with zipfile.ZipFile(jar) as _jz:
+    _bad = [n for n in _jz.namelist() if n.lower().endswith(".ui")]
+    if _bad:
+        raise SystemExit("SkyyZones must not ship .ui files: %s" % _bad)
+if "--deploy" in sys.argv:
+    raise SystemExit("SkyyZones: --deploy is not supported here - deploys go through tools/deploy_set.py")

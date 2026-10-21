@@ -1,7 +1,13 @@
 """SkyWynn pacing model - Balance Pass P1 (research/Balance-Pass-Spec.md section 8). The yardstick P3-P9 tune against.
 
-    python tools/balance_model.py        print the target table next to today's numbers, gaps flagged (!!)
-    python tools/balance_model.py --md   also rewrite research/balance/targets.md
+    python tools/balance_model.py            print the target tables next to the P3 numbers (research/Balance-P3-XP-Spec.md), gaps (!!)
+    python tools/balance_model.py --before   the same tables with the P1 numbers (before P3: the live 0.4.56 tables)
+    python tools/balance_model.py --md       also rewrite research/balance/targets.md (always the P3 numbers)
+
+P3 (2026-10-20, Balance-P3-XP-Spec.md sections 2-5 + Skyy's popup answer A:197 "Middle: Lv 50 at ~33 h"): ONE curve for the class and every
+skill (need(L) = R(1100 x f(L) x s(L)) x levels.scale 130 %), XP per action x the tier factor F(T), the skill catch-up, the past-life XP
+boost. Level convention = the game's (SkyySkills SkillDefs.levelIn): a new player is Lv 0, list entry k = the XP from level k-1 to k (P1 started
+players at Lv 1 and so skipped entry 1 - fixed in P3).
 
 Plain Python 3.12, stdlib only. It simulates ONE focused player (Normal difficulty): run 1 (cap 50) and rebirths 1-5.
 Every number names its source as file:line. GUESS = no source; a later phase (or Skyy's play-test) replaces it.
@@ -15,12 +21,14 @@ import sys
 
 # ======================================================================================== GOALS (Skyy, Normal mode)
 ZONES = [  # zone, first level, top level, target hours first time through (base pace), source
-    (1, 1, 20, 10, "A:185 + LB:24"), (2, 20, 40, 10, "A:185"), (3, 40, 60, 10, "A:185"),
-    (4, 60, 80, 12, "A:187 Q1"), (5, 80, 100, 15, "A:187 Q1")]
+    # P3: A:197 (popup 2026-10-20 "Middle: Lv 50 at ~33 h") = levels ~30 % slower than A:185's 10 h a zone: Zone 1 12 h, Zones 2-3 14 h
+    # (Lv 50 = 12 + 14 + 7 = 33 h); Zones 4-5 = A:187 Q1's 12 h / 15 h x 1.3
+    (1, 1, 20, 12, "A:185 + A:197"), (2, 20, 40, 14, "A:185 + A:197"), (3, 40, 60, 14, "A:185 + A:197"),
+    (4, 60, 80, 16, "A:187 Q1 x1.3"), (5, 80, 100, 20, "A:187 Q1 x1.3")]
 RUN1_HOURS, REBIRTH_SHRINK = 45, 0.85       # A:185 "40-50 h" (middle), A:187 Q3 15% shorter each
 CAP1, CAP_STEP, CAP_MAX = 50, 10, 100       # A:174 start 50, +10 per rebirth; A:193 cap stays 100
 LAG = {"Mining": 4, "Foraging": 4, "Beastmastery": 4,   # A:188 Q5 skills trail 3-5 (essentials A:187 Q4)
-       "Farming": 8, "Cooking": 8, "Alchemy": 8,        # GUESS: 'useful' skills trail a bit more (A:187 Q4)
+       "Farming": 5, "Cooking": 5, "Alchemy": 5,        # P3 Q5 default (Skyy "3-5"; was a GUESS of 8)
        "Fishing": 15}                                   # GUESS: 'nice to have until its rework' (A:187 Q4)
 MAX_GAP_H = 1.0          # A:187 Q2 never > 1 h of active play without a level-up AND a gear upgrade
 COLL_II_MIN, COLL_V_H = 10, (1, 2)          # A:191 Q21
@@ -76,6 +84,58 @@ UT_CHANCE, MYTHIC_CHANCE = 0.02, 0.005      # G:356 utdrop.mob 2 (% per elite/du
 ENCH_SIZE = 160                             # E:594 Ench Carrot 2160 = 120 x carrot 18; Ench Oak 2160 = 160 x 13.5 (GUESS 160)
 COLL_S = (100, 1000)                        # H:11 curve.S: tier II = 100, V = 1000 items
 
+# ======================================================================================== P3 (research/Balance-P3-XP-Spec.md)
+def f_lv(L):
+    """the kill XP level factor (combat.levelCurve: 1 / 4.91 / 16.97 / 53.07 at Lv 1 / 20 / 50 / 100) - P3 section 2"""
+    return 1 + 0.13 * (L - 1) + 0.004 * (L - 1) ** 2
+
+
+def s_lv(L):
+    """quick start (Lv 1-4 = a quarter to a whole level), flat 5-60, +1.8 % a level above 60 (Zones 4-5) - P3 section 2"""
+    return L / 4 if L <= 4 else (1.0 if L <= 60 else 1 + 0.018 * (L - 60))
+
+
+def r_xp(x):
+    """round to 5 below 1,000, to 50 below 10,000, to 100 above (Python round: half to even - the spec's list) - P3 section 2"""
+    st = 5 if x < 1000 else (50 if x < 10000 else 100)
+    return int(round(x / st)) * st
+
+
+P3_BASE = [r_xp(1100 * f_lv(L) * s_lv(L)) for L in range(1, 101)]   # the spec's levels= list (100 % = levels.scale's reference)
+assert P3_BASE[:5] == [275, 625, 1050, 1550, 1750] and P3_BASE[49] == 18700 and P3_BASE[99] == 100400, P3_BASE[:5]
+assert sum(P3_BASE[:20]) == 58150 and sum(P3_BASE[:50]) == 406200 and sum(P3_BASE) == 2944700   # spec section 2 totals
+LEVELS_SCALE = 120          # A:197 "Middle: Lv 50 at ~33 h": levels.scale 120 % puts class Lv 50 at 33.1 h in this model (130 % = 35.9 h)
+P3_LEVELS = [int(math.floor(x * (LEVELS_SCALE / 100.0) + 0.5)) for x in P3_BASE]   # = SkyySkills scaledTo(base, 130): Math.round(x x 1.3)
+BAND = [1, 8, 15, 20, 28, 35, 40, 48, 55, 60, 68, 75, 80, 88, 95, 100]     # tier T starts at BAND[T-1] (LB section 1, tier_tags LEVEL_BANDS)
+F_T = [f_lv(b) for b in BAND]                                            # F(T) = f(band start) - P3 section 3
+
+
+def tier_at(level):
+    """the highest tier whose band has started at this level (what a player in that zone gathers / cooks)"""
+    t = 1
+    for i, b in enumerate(BAND):
+        if level >= b:
+            t = i + 1
+    return t
+
+
+def xp_t(base, t):
+    """base x F(T), rounded to 5 below 1,000, else 50 (the spec's tables)"""
+    x = base * F_T[t - 1]
+    return int(math.floor(x / 5 + 0.5)) * 5 if x < 1000 else int(math.floor(x / 50 + 0.5)) * 50
+
+
+ORE_BASE, LOG_BASE, CROP_BASE, DISH_BASE = 50, 33, 38, 800   # P3 3.1-3.3; 3.5: 800 x F(T) Cooking XP a dish after xpMultiplier 0.5
+ALCH_XP_P3 = {1: 1500, 2: 7400, 3: 18200, 4: 33900, 5: 54400}          # P3 3.6 alchemy.tierXp = 1,500 x f(zone start)
+FISH_P3, FISH_H = 60, 200          # P3 3.8: a common fish = 60 x f(own level), fish.xp.mult 6; GUESS 200 fish / h (focused Fishing ~ Foraging)
+CATCHUP = dict(on=True, free=5, per=0.10, max=1.0,                      # P3 section 4 (Q2 default: on, +10 % a level past 5 behind, <= +100 %)
+               skills=("Mining", "Foraging", "Farming", "Fishing", "Alchemy", "Smithing", "Cooking", "Acrobatics"))
+PAST_LIFE = [1.2, 1.45, 1.8, 2.25, 2.8]                                  # P3 section 5 rebirth.pastLifeXp (Q3 default)
+BEFORE = "--before" in sys.argv     # the P1 view: today's live tables (0.4.56) instead of the P3 numbers
+NOW = "today" if BEFORE else "P3"   # the label of the model column
+if not BEFORE:
+    CURVES = dict((s, P3_LEVELS) for s in CURVES)                        # one curve for the class and every skill (levels.class.sameAsOthers)
+
 # ---- the focused player (all GUESS until P3 measures them in game)
 SHARE = {"Class": 0.45, "Mining": 0.18, "Foraging": 0.15, "Farming": 0.10, "Cooking": 0.04, "Alchemy": 0.04,
          "Fishing": 0.02, "Beastmastery": 0.0}   # time split; Beastmastery levels from pet XP alongside everything (not built)
@@ -100,8 +160,9 @@ def interp(points, x):
 
 
 def cum(curve, level):
-    """XP from level 1 to `level` (each list entry = XP for the next level)."""
-    return sum(curve[:max(0, level - 1)])
+    """total XP for `level` = the first `level` entries (the game's convention: entry k = XP from level k-1 to k; a new player is Lv 0).
+    P1 summed level - 1 entries (players started at Lv 1 - one entry, ~8 min of class XP at the P3 pace, off); fixed in P3."""
+    return sum(curve[:max(0, level)])
 
 
 def zone_of(level):
@@ -132,7 +193,30 @@ def kill_xp(level):
 
 
 def xp_per_hour(skill, level, class_level):
-    """XP per hour WHILE doing that activity, today's numbers. Gathering zone = the class level's zone."""
+    """XP per hour WHILE doing that activity (P3 numbers; --before: today's). Gathering tier = the tier the class level's band reached."""
+    if BEFORE:
+        return xp_per_hour_p1(skill, level, class_level)
+    t = tier_at(max(1, class_level))
+    if skill == "Class":
+        return KILLS_H * kill_xp(max(1, class_level))
+    if skill == "Mining":
+        return BLOCKS_H * ((1 - ORE_FRAC) * STONE_XP + ORE_FRAC * xp_t(ORE_BASE, t))
+    if skill == "Foraging":
+        return LOGS_H * xp_t(LOG_BASE, t) + LEAVES_H * 1
+    if skill == "Farming":
+        return CROPS_H * xp_t(CROP_BASE, t)
+    if skill == "Cooking":
+        return DISHES_H * DISH_BASE * F_T[t - 1]      # 60 dishes x 800 x F = spec 3.5's 48,000 x F(T) an hour
+    if skill == "Alchemy":
+        return BREWS_H * ALCH_XP_P3[zone_of(max(1, class_level))]
+    if skill == "Fishing":
+        return FISH_H * FISH_P3 * f_lv(max(1, level))
+    return 0.0
+
+
+def xp_per_hour_p1(skill, level, class_level):
+    """XP per hour WHILE doing that activity, P1's numbers (the live 0.4.56 tables). Gathering zone = the class level's zone."""
+    level, class_level = max(1, level), max(1, class_level)
     z = ZONE_GATHER[zone_of(class_level)]
     boost = interp(GATHER_BOOST, level)
     if skill == "Class":
@@ -157,24 +241,38 @@ def coins_per_hour(class_level):
             + SHARE["Farming"] * CROPS_H * z["crop_px"] * SELL)
 
 
-# ======================================================================================== simulation (today)
-def simulate_today(cap=CAP1, hours=RUN1_HOURS, dt=0.02):
-    lv = {s: 1 for s in SHARE}
-    xp = {s: 0.0 for s in SHARE}
+# ======================================================================================== simulation
+def catchup_mult(skill, level, class_level):
+    """P3 section 4: skill XP x (1 + min(max, per x (gap - free))) when the skill is more than `free` levels behind the class"""
+    if BEFORE or not CATCHUP["on"] or skill not in CATCHUP["skills"]:
+        return 1.0
+    gap = class_level - level
+    if gap <= CATCHUP["free"]:
+        return 1.0
+    return 1 + min(CATCHUP["max"], CATCHUP["per"] * (gap - CATCHUP["free"]))
+
+
+def simulate_today(cap=CAP1, hours=RUN1_HOURS, dt=0.02, share=None, catchup=True, speed=1.0, past_cap=0, past_mult=1.0):
+    """one focused player; levels start at 0 (the game's convention); speed = an all-XP multiplier (VP + kept power), past_mult = the
+    past-life boost on levels below past_cap (P3 section 5)"""
+    share = SHARE if share is None else share
+    lv = {s: 0 for s in share}
+    xp = {s: 0.0 for s in share}
     coins, t, last_up, worst_gap = 0.0, 0.0, 0.0, 0.0
     trace = []   # (t, class level, {skill: level}, coins)
     while t < hours:
         up = False
-        for s, share in SHARE.items():
-            if share <= 0 or lv[s] >= cap:
+        for s, sh in share.items():
+            if sh <= 0 or lv[s] >= cap:
                 continue
-            xp[s] += xp_per_hour(s, lv[s], lv["Class"]) * share * dt
-            while lv[s] < cap and xp[s] >= CURVES[s][lv[s] - 1]:
-                xp[s] -= CURVES[s][lv[s] - 1]
+            m = speed * (past_mult if lv[s] < past_cap else 1.0) * (catchup_mult(s, lv[s], lv["Class"]) if catchup else 1.0)
+            xp[s] += xp_per_hour(s, lv[s], lv["Class"]) * sh * dt * m
+            while lv[s] < cap and xp[s] >= CURVES[s][lv[s]]:
+                xp[s] -= CURVES[s][lv[s]]
                 lv[s] += 1
                 coins += COINS_PER_LEVEL * lv[s]
                 up = True
-        coins += coins_per_hour(lv["Class"]) * dt
+        coins += coins_per_hour(max(1, lv["Class"])) * dt
         t += dt
         if up:
             worst_gap, last_up = max(worst_gap, t - last_up), t
@@ -291,7 +389,7 @@ def build():
         rows.append([z, f"{lo}-{hi}", hrs, cum_h, f"{20 / hrs:.2f}", f"{target_hours(min(hi, CAP1)):.1f} h" if lo < CAP1
                      else "-", t_today, src])
     table("1. Class level vs hours (Normal, first time through, base pace)",
-          ["Zone", "Mob levels", "Target h", "Cum h", "Target lv/h", f"Target to min(top, {CAP1})", "Today (model)",
+          ["Zone", "Mob levels", "Target h", "Cum h", "Target lv/h", f"Target to min(top, {CAP1})", f"{NOW} (model)",
            "Source"], rows)
     # 1b. every skill's level at fixed hours: target (class pace minus the lag) vs today's simulation
     rows, t_cap = [], target_hours(CAP1)
@@ -304,16 +402,32 @@ def build():
     for h in (2, 5, 10, 20, 30, RUN1_HOURS):
         lv_today = next((lv for t, c, lv, _ in trace if t >= h), trace[-1][2])
         rows.append([f"{h} h"] + [f"{skill_target(s, h)} / {lv_today[s]}" for s in SHARE if SHARE[s] > 0])
-    table(f"1b. Level at hour (run 1, cap {CAP1}): target / today. Target = class pace minus the skill lag; the cap "
+    table(f"1b. Level at hour (run 1, cap {CAP1}): target / {NOW}. Target = class pace minus the skill lag; the cap "
           "stretch after the class cap lets the trailing skills catch up", ["Hour"] + [s for s in SHARE if SHARE[s] > 0], rows)
-    t20 = at_level(trace, 20)[0]
-    if t20 is not None and not 0.75 <= t20 / 10 <= 1.33:
-        note("class-zone1", t20 / 10, f"Class Lv 20 (end of Zone 1) at {t20:.1f} h today vs 10 h target ({rx(t20 / 10)} "
-             "the time) - early class levels are far too fast")
+    t20, z1 = at_level(trace, 20)[0], ZONES[0][3]
+    if t20 is not None and not 0.75 <= t20 / z1 <= 1.33:
+        note("class-zone1", t20 / z1, f"Class Lv 20 (end of Zone 1) at {t20:.1f} h {NOW} vs {z1} h target ({rx(t20 / z1)} "
+             "the time)")
     t50, lv50, _ = at_level(trace, CAP1)
     if t50 is None or abs(t50 - target_hours(CAP1)) / target_hours(CAP1) > 0.25:
-        note("class-time", (t50 or 99) / target_hours(CAP1), f"Class Lv {CAP1} reached at {fmt(t50)} h today vs "
-             f"{target_hours(CAP1):.0f} h target (Lv 20 at {fmt(at_level(trace, 20)[0])} h vs 10 h)")
+        note("class-time", (t50 or 99) / target_hours(CAP1), f"Class Lv {CAP1} reached at {fmt(t50)} h {NOW} vs "
+             f"{target_hours(CAP1):.0f} h target (Lv 20 at {fmt(at_level(trace, 20)[0])} h vs {z1} h)")
+    if not BEFORE:   # 1c. P3 section 4: three kinds of player, catch-up on / off (levels at 10 h / 20 h)
+        rows = []
+        kinds = [("balanced (45 % class)", SHARE),
+                 ("fighter (70 % class)", dict(SHARE, Class=0.70, Mining=0.07, Foraging=0.07, Farming=0.06, Cooking=0.04, Alchemy=0.04,
+                                               Fishing=0.02)),
+                 ("gatherer (25 % class)", dict(SHARE, Class=0.25, Mining=0.25, Foraging=0.22, Farming=0.16, Cooking=0.05, Alchemy=0.05,
+                                                Fishing=0.02))]
+        cols = ["Class", "Mining", "Foraging", "Farming", "Cooking", "Alchemy", "Fishing"]
+        for name, sh in kinds:
+            for cu in (True, False):
+                tr, _g = simulate_today(hours=20.01, share=sh, catchup=cu)
+                l10 = next(lv for t, c, lv, _ in tr if t >= 10)
+                l20 = tr[-1][2]
+                rows.append([name, "on" if cu else "off"] + [f"{l10[c]} / {l20[c]}" for c in cols])
+        table("1c. Kinds of player (P3 section 4): levels at 10 h / 20 h, catch-up on / off (fighter / gatherer splits GUESS)",
+              ["Player", "Catch-up"] + cols, rows)
 
     # 2. XP/h needed per activity per zone (today's curves) vs today's XP/h
     rows = []
@@ -329,11 +443,11 @@ def build():
             flag = gap_flag(today, need * 0.85, need * 1.15)
             rows.append([z, s, f"{a}-{b}", fmt(need), fmt(today), flag])
             if flag.startswith("!!"):
-                note(s, today / need, f"{s} XP/h (worst: Zone {z}, Lv {a}-{b}): needs {fmt(need)} while doing it, today "
+                note(s, today / need, f"{s} XP/h (worst: Zone {z}, Lv {a}-{b}): needs {fmt(need)} while doing it, {NOW} "
                      f"~{fmt(today)} ({rx(today / need)})")
-    table("2. XP per hour needed WHILE doing the activity (today's curves; time split + skill lag: Assumptions). Zones 4-5 "
+    table(f"2. XP per hour needed WHILE doing the activity ({NOW} curves; time split + skill lag: Assumptions). Zones 4-5 "
           "are reached in rebirth runs; shown at base pace",
-          ["Zone", "Activity", "Target levels", "XP/h needed", "XP/h today (model)", "Gap"], rows)
+          ["Zone", "Activity", "Target levels", "XP/h needed", f"XP/h {NOW} (model)", "Gap"], rows)
 
     # 3. coins
     rows = []
@@ -349,7 +463,7 @@ def build():
         flag = gap_flag(today_h, tgt_h * 0.7, tgt_h * 1.4)
         rows.append([z, fmt(geo[z]), fmt(tgt_h), fmt(today_h), have, flag])
         if flag.startswith("!!"):
-            note("coins", today_h / tgt_h, f"Coins (worst: Zone {z}): target ~{fmt(tgt_h)}/h, today ~{fmt(today_h)}/h from "
+            note("coins", today_h / tgt_h, f"Coins (worst: Zone {z}): target ~{fmt(tgt_h)}/h, {NOW} ~{fmt(today_h)}/h from "
                  f"selling gathered items alone ({rx(today_h / tgt_h)})")
         prev = geo[z]
     table("3. Coins (never spending; economy.md:162 Q18; Zones 2 / 4 = geometric middle, GUESS)",
@@ -375,10 +489,10 @@ def build():
         flag = gap_flag(today, max(lo, 1e-9) * 0.8 if lo else 0.0, hi * 1.25) if lo else             ("ok" if today <= hi else f"!! {rx(today / hi)}")
         rows.append([what, f"{fmt(lo)}-{fmt(hi)} {unit}" if lo != hi else f"{fmt(lo)} {unit}", f"{fmt(today)} {unit}", flag, src])
         if flag.startswith("!!"):
-            note(what, today / (hi if today > hi else max(lo, 1e-9)), f"{what}: target {rows[-1][1]}, today {rows[-1][2]}")
+            note(what, today / (hi if today > hi else max(lo, 1e-9)), f"{what}: target {rows[-1][1]}, {NOW} {rows[-1][2]}")
     rows.append(["Gear loot bags per hour (normal play)", ">= 1 gear upgrade / h", f"{loot_h:.1f} bags (share that "
                  "upgrades: ?)", "?", "A:187 Q2 / G:240-241"])
-    table("4. Drops, collections, upgrades", ["What", "Target", "Today (model)", "Gap", "Source"], rows)
+    table("4. Drops, collections, upgrades", ["What", "Target", f"{NOW} (model)", "Gap", "Source"], rows)
 
     # 5. VP ladder + keep buff
     vp = vp_plan()
@@ -394,8 +508,30 @@ def build():
           ["Rebirth", "Cap", "Run target h", "VP earned (T3:507)", "Spent / kept", "XP bonus spend + keep",
            f"Kept power (GUESS +{KEPT_PER_REBIRTH * 100:.0f} %/rebirth)", "Have", "Need (same work, 15 % shorter)",
            "Need (incl. +10 levels)", "Replayed levels cost (past-life discount)"], rows)
+    if not BEFORE:   # 5c. P3 section 5: the past-life XP boost - hours to the class cap per rebirth (all XP x the VP + kept speed)
+        rows = []
+        t_cap1 = at_level(trace, CAP1)[0] or RUN1_HOURS
+        cls = {"Class": SHARE["Class"]}
+        for r in vp:
+            n, cap = r["n"], r["cap"]
+            boost = PAST_LIFE[min(n, len(PAST_LIFE)) - 1]
+            prev = min(CAP_MAX, cap - CAP_STEP)
+            tr, _g = simulate_today(cap=cap, hours=80, share=cls, catchup=False, speed=r["have"], past_cap=prev, past_mult=boost)
+            tr0, _g = simulate_today(cap=cap, hours=80, share=cls, catchup=False, speed=r["have"])
+            got, got0 = at_level(tr, cap)[0], at_level(tr0, cap)[0]
+            tgt = t_cap1 * REBIRTH_SHRINK ** n
+            first = (got - at_level(tr, prev)[0]) / CAP_STEP if got else None
+            rows.append([n, cap, f"x{r['have']:.2f}", f"x{boost}", f"{tgt:.1f} h", f"{fmt(got)} h", f"{fmt(got0)} h",
+                         f"{fmt(first)} h", gap_flag(got or 99, tgt * 0.85, tgt * 1.15)])
+            if got is None or not tgt * 0.8 <= got <= tgt * 1.25:
+                note("pastlife", (got or 99) / tgt, f"Rebirth {n}: class cap {cap} at {fmt(got)} h with the past-life boost x{boost} "
+                     f"vs {tgt:.1f} h target")
+        table(f"5c. Rebirths with the past-life XP boost {PAST_LIFE} (rebirth.pastLifeXp): hours to the class cap (target = run 1's "
+              f"{t_cap1:.1f} h x {REBIRTH_SHRINK}^n); only levels below the last run's cap are boosted",
+              ["Rebirth", "Cap", "VP + kept speed", "Past-life boost", "Target h to cap", "With boost", "Without",
+               "Each first-time level", "Gap"], rows)
     for r in vp:
-        if r["have"] < r["need_full"] * 0.95:
+        if r["have"] < r["need_full"] * 0.95 and BEFORE:
             note("rebirth", r["have"] / r["need_full"], f"Rebirth speed-up (worst: rebirth {r['n']}, cap {r['cap']}): "
                  f"VP + kept power give x{r['have']:.2f}, a 15 %-shorter run with +10 levels needs x{r['need_full']:.2f} "
                  f"-> replayed levels must cost ~{r['disc'] * 100:.0f} % XP (past-life discount) or curves scale with the cap")
@@ -413,7 +549,13 @@ def assumptions_md():
         f"the {RUN1_HOURS} h run (A:185 '40-50 h') = the cap stretch: skills catch up (A:188 Q5), useful skills to {CAP1}, Zone 3 "
         "gear / bosses at the cap, UT hunting, overflow XP for VP (T3:503-507). GUESS reading - Skyy to confirm (see Q below).",
         f"- Rebirth n: run {RUN1_HOURS} h x {REBIRTH_SHRINK}^n (A:187 Q3), cap {CAP1} + {CAP_STEP} n up to {CAP_MAX} (A:174, A:193).",
-        f"- Skill lag behind class: {LAG} (A:188 Q5 3-5 for essentials; others GUESS).",
+        f"- Skill lag behind class: {LAG} (A:188 Q5 3-5 for essentials; useful 5 = P3 Q5 default; Fishing GUESS).",
+        f"- P3 numbers (research/Balance-P3-XP-Spec.md): ONE curve R(1100 x f(L) x s(L)) x levels.scale {LEVELS_SCALE} % for the class "
+        f"and every skill (Lv 20 = {cum(P3_LEVELS, 20):,} XP, Lv 50 = {cum(P3_LEVELS, 50):,}, Lv 100 = {cum(P3_LEVELS, 100):,}); "
+        f"XP per action = base x F(T) (ore {ORE_BASE}, log {LOG_BASE}, crop {CROP_BASE}, dish {DISH_BASE}; alchemy.tierXp "
+        f"{list(ALCH_XP_P3.values())}); Fishing {FISH_P3} x f(own level) a fish at {FISH_H} fish / h (GUESS); catch-up "
+        f"{CATCHUP['per']:.0%} a level past {CATCHUP['free']} behind, <= +{CATCHUP['max']:.0%}; past-life boost {PAST_LIFE}. Levels "
+        "start at 0 (the game's convention, P3 fix). `--before` prints the same tables with today's (P1) numbers.",
         f"- Time split (GUESS): {SHARE}.",
         f"- Rates (GUESS): {KILLS_H} kills/h, {ELITE_KILLS_H} elite kills/h, {BLOCKS_H} blocks/h ({ORE_FRAC:.0%} ore), "
         f"{LOGS_H} logs + {LEAVES_H} leaves/h, {CROPS_H} crops/h, {DISHES_H} dishes/h, {BREWS_H} brews/h; Lv 1 mob health "
@@ -421,7 +563,7 @@ def assumptions_md():
         "- Kill XP = Lv 1 health x 0.2 (X:19) x 3 class mult (X:297) x level curve (X:327-342) x Normal share "
         "(research/Mob-Curve-Spec.md:465); gathering XP from X:24-123 + boost X:310-313; prices E:157-685.",
         f"- Kept power per rebirth +{KEPT_PER_REBIRTH * 100:.0f} % (GUESS: kept gear tiers, shards, pets, charms, +3 % stats X:482).",
-        "- Not modelled yet: Beastmastery (not built), Fishing XP (rework), quest / exploration class XP, mob coin drops, "
+        "- Not modelled yet: Beastmastery (not built), Exploration / Acrobatics / Smithing XP, quest class XP, mob coin drops, "
         "collection tier coins, pets / accessories power (P5), Head Start ranks.",
     ])
 
@@ -429,27 +571,27 @@ def assumptions_md():
 def main():
     body, gaps, vp = build()
     top = "\n".join(f"{i}. {g[1]}" for i, g in enumerate(gaps[:10], 1))
-    print("SkyWynn pacing model (Balance Pass P1) - target vs today, gaps marked !!")
+    print(f"SkyWynn pacing model (Balance Pass P1, {NOW} numbers) - target vs {NOW}, gaps marked !!")
     print(body)
-    print("\n### Top gaps (today vs target)\n" + top)
+    print(f"\n### Top gaps ({NOW} vs target)\n" + top)
     if "--md" in sys.argv:
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "research", "balance", "targets.md")
         with open(os.path.normpath(path), "w", encoding="utf-8", newline="\n") as f:
-            f.write("# Balance targets - the pacing yardstick (P1, generated)\n\n"
+            f.write("# Balance targets - the pacing yardstick (P1 model, P3 numbers, generated)\n\n"
                     "Generated by `python tools/balance_model.py --md` - do not hand-edit; change the model and re-run. "
                     "Goals: research/Balance-Goals-Questions.md + Skyy's popup answers (docs/answered/skills.md 185-193, "
-                    "economy.md:162). Today's numbers: the P0 inventory in this folder. Every later phase (P3-P9 of "
+                    "economy.md:162, A:197). The model column = the P3 numbers (research/Balance-P3-XP-Spec.md; P1's live numbers: "
+                    "`python tools/balance_model.py --before`, the P0 inventory in this folder). Every later phase (P3-P9 of "
                     "research/Balance-Pass-Spec.md section 8) tunes against these tables; Skyy then adjusts by feel. "
                     "Index: INDEX.md (research/balance/).\n\n" + assumptions_md() + "\n" + body
                     + "\n\n### Fixed targets the model only lists (tuned in P4-P5)\n"
                     f"- Power split weapon-tool / armor / accessories / pets = {POWER_SPLIT} (A:190 Q15); best-in-tier gear "
                     f"~{BEST_VS_PLAIN}x plain (A:190 Q14); Normal mob 4-6 hits, elites 3x / mini bosses 10x HP, boss 3-4 min "
                     "solo (A:188); over-level +5 hard / +10 wall, small coin loss on death, Mana dry every 20-30 s (A:189).\n"
-                    "\n### Top 10 gaps (today vs target)\n" + top + "\n\n### Open question for Skyy\n"
-                    f"- Run 1 reaches the Lv {CAP1} cap at ~{target_hours(CAP1):.0f} h on the 10 h-per-zone pace, but the first rebirth is "
-                    f"meant at 40-50 h. Default here [the last ~{RUN1_HOURS - target_hours(CAP1):.0f} h are the cap stretch: skills "
-                    "catch up, gear / UT / bosses, overflow XP for Void Particles]. The other reading (stretch the class curve so Lv "
-                    f"{CAP1} lands at ~40 h, ~0.8 h a level) makes Zones 1-2 ~16 h each.\n")
+                    "\n### Top 10 gaps (P3 vs target)\n" + top + "\n\n### Answered (A:197, 2026-10-20)\n"
+                    f"- The cap stretch: Skyy picked 'Middle: Lv 50 at ~33 h' -> levels.scale {LEVELS_SCALE} % (class Lv {CAP1} at "
+                    f"{fmt(at_level(simulate_today()[0], CAP1)[0])} h in this model); the rest of the 40-50 h run = skills catch up, "
+                    "gear / UT / bosses, overflow XP for Void Particles.\n")
         print("\nwrote research/balance/targets.md")
 
 
