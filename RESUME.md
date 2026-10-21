@@ -41,12 +41,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Nothing running, nothing pinned-but-undeployed (Sacks 0.8.25 off-hand refill built, unpinned: Skyy "skip for now").
 - 201 (deployed 10-19 12:43): Hud 0.3.34 minimap picture cap (beta 4 lag part). All 5 lag suspects now handled (beta-bugs file bug 4).
 
-## RUNNING NOW (2026-10-20; Skyy at work: "figure it out" - take defaults, research when in doubt)
-- DEPLOYED 12:27 (TEST-CHECKLIST 210): Skill Trees 3 R0-R2 (Trees 0.4.0, Classes 0.1.42, Skills 0.4.55, Menu 0.3.41), Exploration 0.3.0 per-profile chests, Gear 0.3.31 Infinite Water Bucket.
-- DEPLOYED 12:41 (TEST-CHECKLIST 211): SkyyEssentials 0.1.16 benches keep their tier (KeepBenchTiers + WorkbenchTierKeeper off for good).
-- RUNNING: workflows st3r3a (class trees: Trees 0.4.1 / Classes 0.1.43 / Armory 0.1.41), st3r3b (skill-tree hooks in reader mods; may list FOR SKYYTREES changes to fold in), bazaar02 (SkyyBazaar 0.2.0). Also zones01 (NEW SkyyZones 0.1.0 Z0+Z1) and rebirth04 (SkyyRebirth 0.4.0 Void Particles). Skyy: "keep going down the list. dont stop until the entire list is done".
-- Done, not built: research/Bazaar-Order-Book-Spec.md (8 questions sec 12 -> take defaults); tools/balance_model.py + research/balance/targets.md (P1; add to INDEX + research/balance/README).
-- NEXT: Skill Trees 3 R3 (wire the "coming soon" upgrades + raise gates to 0/5/10/15/20/25), then R4 Rebirth VP (strengths: targets.md 5a/5b), then Balance P3...
+## RUNNING NOW (2026-10-20 evening; Skyy: "keep going down the list. dont stop until the entire list is done" - defaults, research when in doubt)
+- DEPLOYED today: 210 Skill Trees 3 R0-R2 + chests + water bucket; 211 bench keeper; 212 Skill Trees R3 (class trees live, 26 skill upgrades), Bazaar 0.2.0 order book, Rebirth 0.4.0 VP, NEW SkyyZones 0.1.0.
+- RUNNING: balp3 (Balance P3 XP: Skills 0.4.57, Cooking 0.1.15, Exploration 0.3.2, Collections 0.2.30, Fishing 0.1.12; Lv 50 at ~33 h per Skyy), st3fix (Trees 0.4.2 dead nodes + skill gates + Head Start, Pets 0.4.6 rebirth pet XP, Rebirth 0.4.1 text), st3r3c (Gear/Accessories/Armory coming-soon rows).
+- NEXT: republish Class Balance Workbench; remaining Skills-side coming-soon (actives, streaks, capstones); P4 combat+classes -> P5 power sources (+ pet XP rescale from P3, Heavy Lv 16-19 gap) -> P6 -> P7 -> P8 -> P9; SkyyZones Z2 regen + Z3/Z4; tooltips pass; Cooking ING_TIER v3; then the Later list.
 
 ## FOR SKYY (while paused)
 - Test TEST-CHECKLIST 196 first (the big one), then 197 (class cards), 195, 194.
