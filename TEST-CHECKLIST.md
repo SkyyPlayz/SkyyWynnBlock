@@ -239,3 +239,4 @@ tests always come first.
 211. benches keep their upgrade tier when broken and placed again (our own; KeepBenchTiers + Workbench Tier Keeper stay off)
 212. class trees fully live (capstones, Shadow Clone, gates 0/5/10/15/20/25), 26 skill-tree upgrades live, Bazaar buy orders / sell offers, Rebirth Void Particles + keep buff, NEW SkyyZones protection (op)
 213. skill-tree gates to 0/5/10/15/20/25 where possible, Head Start + Beastmastery Echo work, Weapon Tempering, Masterwork Pick, Accessory Compass / Sprint
+214. Balance P3 XP: same levels kept, XP rises with tier, catch-up + past-life boost; pets level at the old pace; ores/stone regrow in SKYBLOCK zones

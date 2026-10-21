@@ -327,3 +327,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Benches keep their tier when broken (DEPLOYED 2026-10-20, backup deploy-20261020-1239) | [2026-10](2026-10.md) |
 | Skill Trees R3 (class + skill upgrades live), Bazaar order book, Rebirth Void Particles, NEW SkyyZones (DEPLOYED 2026-10-20, backup deploy-20261020-1804) | [2026-10](2026-10.md) |
 | Skill trees follow-up: gates, Head Start, rebirth pet XP, gear + accessory upgrades (DEPLOYED 2026-10-20, backup deploy-20261020-1916) | [2026-10](2026-10.md) |
+| Balance P3: one XP curve (Lv 50 ~33 h), pets keep pace, ores regrow in zones (DEPLOYED 2026-10-20, backup deploy-20261020-2158) | [2026-10](2026-10.md) |
