@@ -79,7 +79,7 @@ https://www.destructoid.com/?p=257979 . Mana research already in the repo: resea
 - One growth factor **G = 1.045 a level from Lv 20** for the weapon curve F and the armor Health curve H; **Lv 1-20 unchanged** (Skyy's
   "feels good" zone, and already on the TTK targets - section 1.3).
   `F(L) = H(L) = today's points for L <= 20; 2.333333 x 1.045^(L - 20) above` (F(100) = 78.9 < SkyyGear's parser limit 100).
-- **Mob Health(L) = today's Normal line to Lv 20, then x [F x bonus x class perk](L) / [same](20)** -> a same-level fight keeps the same
+- **Mob Health(L) = today's Normal line to Lv 20, then x (F x bonus x class perk at L) / (the same at 20)** -> a same-level fight keeps the same
   number of hits at every level (bonus = 1 + 0.003 x band start, perk = 1 + 0.002 x class level).
 - **Mob damage(L) = today's Normal line to Lv 20, then x EHP(L) / EHP(20)**, EHP = player max Health / (1 - resistance) of an M-class plain kit
   -> the same hits to die at every level.
