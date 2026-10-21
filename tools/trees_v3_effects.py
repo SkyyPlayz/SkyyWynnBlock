@@ -92,7 +92,35 @@ EFFECTS = [
     # Fishing into SkyySkills' bridge.bonus.addxpSkills would also boost SkyyCollections / SkyyQuests / SkyyShards Fishing rewards
     # ---------------- Smithing (light)
     ("Smithing", 2, "r3b", "SkyyPets", "xp.smithing", 0.02, "pet:Mining", 6),      # Pet Hammer: +2% Smithing XP x the Mining pet's rarity bonus
+    # ---------------- R3c (2026-10-20, SkyyGear 0.3.33 / SkyyAccessories 0.5.29): the gear / weapon / accessory rows R3b left coming soon
+    # (appended at the end: the R3b rows keep their indexes = their V3P<i> / V3X<i> fields). See R3C below for every number's reason.
+    ("Combat", 1, "r5b", "SkyyGear", "dmg", 1, "weapon", 5),                       # Weapon Tempering: +1% damage per weapon tier above Iron (at most 5), per rank (tree text 2: R3C)
+    ("Mining", 2, "r6", "SkyyGear", "bp.mining", 0.25, "pick", 2),                  # Masterwork Pick (capstone): +25% Breaking Power on a held pick, x2 on your own lifelong one
+    ("Mining", 2, "r6", "SkyyGear", "dd.mining", 0.075, "pick", 2),                 # ... and +7.5 Mining Fortune, x2 = 15 (the row ceiling; tree text 10: R3C)
+    ("Exploration", 2, "r3a", "SkyyAccessories", "spd", 0.5, "acc", 5),            # Accessory Compass: +0.5% move Speed per counting accessory per rank (tree text 2: R3C)
+    ("Acrobatics", 2, "r3a", "SkyyAccessories", "stam", 0.2, "acc", 5),             # Accessory Sprint: +0.2 max Stamina (2% of the base 10) per counting accessory per rank
 ]
+
+# R3c FIRST-PASS NUMBERS (builder 2026-10-20; Skyy "if you have any doubt, do research to get good data to base your default on" + the four power
+# sources rule; every number is a Server Setup row - Gear -> Stats / Void Charms -> Skill trees, Advanced):
+#   Weapon Tempering  tree text "+2% damage per weapon tier above Iron, per rank": 2 x 4 ranks x 5 steps (Thorium .. Onyxium / Titanium / Lumen)
+#                     = +40% Damage, more than every other Combat row together (Hone Edge 10, Combat Gear Resonance 24, the Combat pet 7.5) and
+#                     above a weapon's own Damage roll (30 at 100%); fixer 2's rule (per = ceiling / (max rank x top count)) with a 20 ceiling
+#                     (between Hone Edge and Gear Resonance) -> 1 a step a rank: +20% at rank 4 with an Onyxium-tier weapon, +4% with Thorium.
+#                     Steps = SkyyGear's internal tool / weapon tier of the id's metal word - 2 (Iron / Steel = 2): Bronze / Thorium 1, Cobalt /
+#                     Lead / Dusk 2, Adamantite / Chromium / Azurvane 3, Mithril / Slag / Cinder 4, Onyxium / Titanium / Lumen 5.
+#   Masterwork Pick   tree text "+25% speed and +10% ore yield, doubled while held tool is the highest tier in your inventory": speed = Breaking
+#                     Power (the R3b reading of "mining speed"), kept at +25 / +50; "ore yield" = Mining Fortune (Pet Digger's reading) at
+#                     +7.5 / +15 so the row stays inside ROW_FORT_MAX and Mining's tree Fortune budget (15 + 7.5 + 15 = 37.5 <= 40); "highest
+#                     tier in your inventory" = your own working lifelong pickaxe / multitool (Skyy 2026-10-16: normal tools are gone, the
+#                     lifelong one is the one that tiers up), any other pick x1.
+#   Accessory Compass tree text "+2% move speed per filled accessory slot/rank" = 2 x 3 x 5 = +30% Speed, three times the Legendary Speed Accessory
+#                     (+10%); held to 7.5 (3/4 of that accessory: the accessories' 20% share) -> 0.5 a rank an accessory; added to the
+#                     Accessory Power's Speed (AccPower.tick c[7] -> the accessories.talismans movement source).
+#   Accessory Sprint  "+2% stamina" read against the vanilla base 10 Stamina (Server/Entity/Stats/Stamina.json, research/Exploration-Build-Spec.md;
+#                     the Plates rule: % of the base -> flat points): 0.2 a rank an accessory, +3 at rank 3 x 5 (the Legendary Stamina Accessory
+#                     gives +12); added to the skyyacc_stamina modifier.
+#   "filled accessory slot" = an accessory that COUNTS in Void Charms (AccV3.count: best of each line, the Omni 1), at most 5 - the R3b rows' rule.
 
 # 0.3 node aliases an applier newly READS (live with SkyyTrees 0.4.0: those nodes already name the applier in its READ_BY)
 # (old node key, applier, the v3 upgrade(s) that feed it, what the applier does with tree:fn:bonus)
@@ -159,8 +187,8 @@ VMAX = {  # (tree, branch, id, effect) -> ceiling in effect units; rows not name
 
 
 def flat(eff):
-    """a flat-points effect (no %): max Health"""
-    return eff == "hp"
+    """a flat-points effect (no %): max Health, max Stamina (R3c)"""
+    return eff in ("hp", "stam")
 
 
 def unit(eff):
@@ -191,7 +219,8 @@ def ckey(e):
     return "tree.%s.b%d.%s.%s" % (e[0], e[1], e[2], e[4].split(".")[0])
 
 
-_EW = {"hp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance"}
+_EW = {"hp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance",
+       "spd": "Speed", "stam": "Stamina"}
 
 
 def _scale_words(e):
@@ -204,6 +233,11 @@ def _scale_words(e):
         return "a rank x each counting accessory (at most %d)" % e[7]
     if sc.startswith("armor:"):
         return "a rank x each worn %s piece (at most %d)" % (sc[6:], e[7])
+    if sc == "weapon":
+        # fixer 2 (critic: the tier tags count 13 steps above Iron, SkyyGear's metal tier 5): name the steps the row really uses
+        return "a rank x weapon metal steps over Iron (Bronze/Thorium 1, Cobalt 2 .. Onyxium %d)" % e[7]
+    if sc == "pick":
+        return "a rank on a held pick, x2 on your own lifelong one"
     return "a rank x the %s pet's rarity bonus" % sc[4:]
 
 
@@ -213,7 +247,8 @@ def describe(e):
     what = {"dd": "%s Fortune", "xp": "%s XP", "bp": "%s Breaking Power"}.get(eff.split(".")[0])
     what = (what % eff.split(".", 1)[1].capitalize()) if what else {"dmg": "Damage", "cc": "Crit Chance", "cd": "Crit Damage",
                                                                      "petsyn.mining": "Mining pet stats", "class.xp": "class XP",
-                                                                     "cook.ingr": "double ingredient chance", "hp": "max Health"}[eff]
+                                                                     "cook.ingr": "double ingredient chance", "hp": "max Health",
+                                                                     "spd": "move Speed", "stam": "max Stamina"}[eff]
     return "+%s%s %s %s" % (_n(e[5] * unit(eff)), "" if flat(eff) else " %", what, _scale_words(e))
 
 
@@ -226,8 +261,7 @@ def cfg_text(applier, where=None):
     L = ["# %s - Skill Trees 3 rows (tools/trees_v3_effects.py). Change them in game: SkyWynn Menu -> Server Setup ->" % applier,
          "# %s (Advanced), or edit here and press Reload there. The ranks come from SkyyTrees (/tree). Numbers are in %%:" % where,
          "# <row>.per = what one rank gives (x the tool tier / armor pieces / accessories / pet rarity bonus the row names),",
-         "# <row>.max = the most that row ever adds. 0 = the row gives nothing." + (" Health rows are in Health points, not %."
-                                                                                if [e for e in rows(applier) if flat(e[4])] else "")]
+         "# <row>.max = the most that row ever adds. 0 = the row gives nothing." + (_flat_note(applier) if [e for e in rows(applier) if flat(e[4])] else "")]
     for e in rows(applier):
         L.append("# %s %s: %s" % (e[0], up(e[0], e[1], e[2])["name"], describe(e)))
         L.append("%s.per=%s" % (ckey(e), _n(e[5] * unit(e[4]))))
@@ -235,6 +269,18 @@ def cfg_text(applier, where=None):
     t = "\n".join(L) + "\n"
     assert all(32 <= ord(c) < 127 for c in t.replace("\n", "")) and "\\" not in t, "trees.properties text must be plain ASCII"
     return t
+
+
+def _flat_note(applier):
+    """the trees.properties note on flat rows (R3c: unchanged words while Health is the only flat effect of an applier)"""
+    fl = sorted(set(e[4] for e in rows(applier) if flat(e[4])))
+    if fl == ["hp"]:
+        return " Health rows are in Health points, not %."
+    return " %s rows are in points, not %%." % " / ".join({"hp": "Health", "stam": "Stamina"}[f] for f in fl)
+
+
+def _flat_word(eff):
+    return {"hp": "Health", "stam": "Stamina"}[eff]
 
 
 PER_HI, MAX_HI = 100, 1000     # the Server Setup bounds (display units)
@@ -309,7 +355,7 @@ def cfg_rows(applier, cls, file, cat):
         h1 = describe(e) + "."
         if len(h1) > 100:
             h1 = h1[:97] + "..."
-        h2 = "Most %s %s ever adds (in %s), whatever the rank, gear or pet." % (e[0], nm, "Health" if flat(e[4]) else "%")
+        h2 = "Most %s %s ever adds (in %s), whatever the rank, gear or pet." % (e[0], nm, _flat_word(e[4]) if flat(e[4]) else "%")
         assert len(h2) <= 100, h2
         out.append(("%s.per" % ckey(e), lab + " a rank", cat, "dec", _n(e[5] * unit(e[4])), "0", str(PER_HI), "", "" if flat(e[4]) else "%", "live,adv", h1,
                     "field:%s.V3P%d@%s:%s.per" % (cls, i, file, ckey(e))))
@@ -331,7 +377,8 @@ def check():
         assert (tree, b, uid, eff) not in seen, ("one row per effect", e)
         seen.add((tree, b, uid, eff))
         assert per > 0 and (scale is None) == (cap == 0), e
-        assert scale is None or scale in ("tool", "acc") or scale.startswith("armor:") or scale.startswith("pet:"), e
+        assert scale is None or scale in ("tool", "acc", "weapon", "pick") or scale.startswith("armor:") or scale.startswith("pet:"), e
+        assert scale not in ("weapon", "pick") or mod == "SkyyGear", ("R3c: only SkyyGear knows the held weapon / pick scales", e)
         assert len(set(m for (t2, b2, i2, m, _e, _p, _s, _c) in EFFECTS if (t2, b2, i2) == (tree, b, uid))) == 1, ("one applier per upgrade", e)
         assert "," not in key(tree, b, uid)
     assert not [e for e in EFFECTS if e[0] == "Beastmastery"], "Beastmastery stays coming soon (no skill yet)"
