@@ -397,11 +397,11 @@ Targets x10 (Skyy 2026-10-21 "x10 targets (Recommended)"); idle totems stay 20/4
 
 | Zone | Hours | Coins at zone end | Target / h | Focused gathering hour G | x target active | x target + idle bonus |
 |---|---|---|---|---|---|---|
-| 1 | 12 | 100k | 8333 | 8162 | x1.03 | x1.05 |
-| 2 | 14 | 707k | 43k | 42k | x1.04 | x1.08 |
-| 3 | 14 | 5.0M | 307k | 300k | x1.01 | x1.07 |
-| 4 | 16 | 22.4M | 1.1M | 1.1M | x1.01 | x1.09 |
-| 5 | 20 | 100.0M | 3.9M | 3.8M | x0.99 | x1.09 |
+| 1 | 12 | 100k | 8333 | 8162 | x1.03 | x1.23 |
+| 2 | 14 | 707k | 43k | 42k | x1.04 | x1.43 |
+| 3 | 14 | 5.0M | 307k | 300k | x1.01 | x1.60 |
+| 4 | 16 | 22.4M | 1.1M | 1.1M | x1.01 | x1.79 |
+| 5 | 20 | 100.0M | 3.9M | 3.8M | x0.99 | x1.97 |
 
 Zone coins by source (active, share of the zone's coins; other = the 6 % budget, not modelled): Z1 sales 0.80 / level-up 0.079 / collections 0.095 / other 0.06; Z2 sales 0.80 / level-up 0.099 / collections 0.084 / other 0.06; Z3 sales 0.80 / level-up 0.074 / collections 0.074 / other 0.06; Z4 sales 0.80 / level-up 0.078 / collections 0.070 / other 0.06; Z5 sales 0.80 / level-up 0.077 / collections 0.056 / other 0.06.
 
@@ -493,5 +493,12 @@ Part 4 loop routes:
 | Gear cost bases = the hours rule (6.2) within one rounding step | off: none | yes |
 | Collection tier V coins Copper 190 / Chromium ~12k / Titanium ~164k / untiered 400 (2.2) | 190 / 12120 / 164000 / 400 | yes |
 | Merchant weapon 1.875 gathering hours: Lv 10 ~15.5k, Lv 100 ~13.5M (5.3) | 16k / 13.5M | yes |
+| P7b level-up coins (SkyySkills 0.4.61 levelCoins x the curve) = 7 % +-2.5 of every zone's coins (spec 2.1; Zone 2 = known exception <= 10 %, open question) | Z1 7.9 % (658 / h of 8333) / Z2 9.9 % (4278 / h of 43k) / Z3 7.4 % (23k / h of 307k) / Z4 7.8 % (85k / h of 1.1M) / Z5 7.7 % (300k / h of 3.9M) | yes |
+| P7b level-up coins per hour inside the zone's coin target per hour (never over 10 %) | 0.079 / 0.099 / 0.074 / 0.078 / 0.077 | yes |
+| P7b level-up coins Lv 10 60 / Lv 50 2,800 / Lv 90 50,500 (spec 0 item 5) | Lv 10 60 / Lv 50 2800 / Lv 90 50k | yes |
+| P7b tree respec (SkyyTrees 0.4.9 respec.base 2,100 x the curve) = 0.25 h of income at the tree's level (6.2) | Lv 10 2100 (0.252 h) / Lv 50 78k (0.253 h) / Lv 90 980k (0.252 h) | yes |
+| P7b shard upgrades (SkyyShards 0.4.5, 14 rows) = 1 h of the matching zone (6.2) | Z1..Z5 8300 / 44k / 305k / 1.1M / 3.9M; rows 14 | yes |
+| P7b luggage + airdrop coins follow the zone curve (2.3): an explorer at the claim cap earns the same share of each zone's hour | x 1/5.2/36.8/130/466; 10.4 % / 10.4 % / 11.4 % / 11.4 % / 11.4 % of the hour (x1.38 = 14.4 % / 14.4 % / 15.7 % / 15.7 % / 15.7 % with Wanderer 5 + Cartographer 3; coins only, never Exploration XP) | yes |
+| P7b idle shards (Skyy 2026-10-21 '20-100%, 3 days') = a bonus ON TOP of the active targets, never inside them | active x1.03/1.04/1.01/1.01/0.99, with the Totem I..V bonus x1.23/1.43/1.60/1.79/1.97 | yes |
 
 Model notes: GUESS rates Mining 225 / Stone 675 / Foraging 400 / Farming 500 / h (P6) and D(T) from the P5 Fortune budget; combat per-kill value and fish per hour are measured in game (spec 9.7 steps 6 + 8); Zones 3-5 level-up counts assume Zone 1's 108 a zone.

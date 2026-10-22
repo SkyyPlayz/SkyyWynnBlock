@@ -2382,13 +2382,14 @@ def p7_parts(z, old_levels=False):
 
 def p7_totals(idle=True, old_levels=False):
     """coins at each zone end / the target (no spending): the SUM of p7_parts (sales + level-up + collection + other coins); idle = the P6 totem
-    share kept (Skyy 2026-10-21) as a bonus on top: farming share x Totem I..V (one totem tier a zone) of an active farming hour.
+    share kept (Skyy 2026-10-21) as a bonus on top: Totem I..V (one totem tier a zone) = 20..100 % of an active farming hour (G) for every played
+    hour (spec Part 8 table: x1.23 / 1.42 / 1.60 / 1.79 / 1.97 - the totem runs the whole hour, not only the farming share of it; P7b fix).
     Returns {zone: (with idle / target, active / target)}; old_levels=True = SkyySkills still paying 100 x level (P7a deployed alone)"""
     out = {}
     for z in range(1, 6):
         span = P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0)
         act = sum(p7_parts(z, old_levels).values())
-        bonus = (SHARE["Farming"] * p7_G_mid(z) * P7_TOTEM[z - 1] / 100.0 * P7_ZONE_H[z - 1]) if idle else 0.0
+        bonus = (p7_G_mid(z) * P7_TOTEM[z - 1] / 100.0 * P7_ZONE_H[z - 1]) if idle else 0.0   # P7b fix: no SHARE["Farming"] factor (spec Part 8)
         out[z] = ((act + bonus) / span, act / span)
     return out
 
@@ -2437,6 +2438,77 @@ def p7_rows():
                 cc[0] == 190 and 11500 <= cc[1] <= 12500 and 160000 <= cc[2] <= 168000 and cc[3] == 400))
     mp = (p7_merchant_price(10), p7_merchant_price(100))
     out.append(("Merchant weapon 1.875 gathering hours: Lv 10 ~15.5k, Lv 100 ~13.5M (5.3)", "%s / %s" % (fmt(mp[0]), fmt(mp[1])), 15000 <= mp[0] <= 16000 and 13.0e6 <= mp[1] <= 14.0e6))
+    out += p7b_rows()
+    return out
+
+
+# ---------------------------------------------------------------------------------------------------- P7b (2026-10-22, the second group:
+# SkyySkills 0.4.61 levelCoins, SkyyTrees 0.4.9 respec, SkyyExploration 0.3.3 luggage / airdrops + Wanderer / Cartographer, SkyyShards 0.4.5)
+P7B_RESPEC_BASE = 2100                                                 # SkyyTrees 0.4.9 respec.base (p7_round(0.25 h x the Lv 10 hour))
+P7B_ZONE_MULT = [1.0, 5.2, 36.8, 130.0, 466.0]                         # SkyyExploration 0.3.3 luggage.coinZoneMult (the curve at Lv 10/30/50/70/90)
+P7B_LG_W = [60, 28, 10, 2]                                             # luggage.tierWeights (zone 3+ doubles III and IV)
+P7B_LG_MIN, P7B_LG_MAX = [10, 25, 60, 150], [30, 60, 150, 400]         # luggage.coinsMin / coinsMax (unchanged)
+P7B_LG_CAP, P7B_AIR, P7B_AIR_S = 8, (150, 400), 1800                   # luggage.capPerHour, airdrop.coinsMin/Max, airdrop.intervalSeconds
+P7B_TREE_X = (1.0 + 5 * 0.04) * (1.0 + 3 * 0.05)                       # Wanderer 5 x +4 % coins, Cartographer 3 x +5 % a second coin find
+P7B_SHARD = {"storage.coins.2": 2, "storage.coins.3": 3, "storage.coins.4": 4, "storage.coins.5": 5, "compactor.coins1": 2, "compactor.coins2": 4,
+             "compressor.coins1": 2, "compressor.coins2": 3, "compressor.coins3": 4, "grow.medium.coins": 1, "grow.large.coins": 2,
+             "bench.up2.coins": 2, "bench.up3.coins": 3, "bench.up4.coins": 4}   # SkyyShards 0.4.5: cost = 1 h of this zone (spec 6.2 mapping)
+
+
+def p7b_level_share(z):
+    """level-up coins of zone z (SkyySkills 0.4.61 levelCoins) as a share of the zone's coins, and per played hour"""
+    span = P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0)
+    lc = p7_level_coins_zone(z)
+    return lc / span, lc / P7_ZONE_H[z - 1]
+
+
+def p7b_respec(L, n=1):
+    """SkyyTrees 0.4.9: the n-th paid respec of a tree at level L = n x p7_round(respec.base x the curve)"""
+    return n * p7_round(P7B_RESPEC_BASE * p7_curve(L))
+
+
+def p7b_luggage_h(z, trees=False):
+    """SkyyExploration 0.3.3: coins / h of an explorer at the Loot Bag claim cap + every supply drop of the world (one per 30 min), zone z"""
+    w = list(P7B_LG_W) if z < 3 else [P7B_LG_W[0], P7B_LG_W[1], 2 * P7B_LG_W[2], 2 * P7B_LG_W[3]]
+    bag = sum(w[t] * (P7B_LG_MIN[t] + P7B_LG_MAX[t]) / 2.0 for t in range(4)) / float(sum(w))
+    air = (P7B_AIR[0] + P7B_AIR[1]) / 2.0 * 3600.0 / P7B_AIR_S
+    return (P7B_LG_CAP * bag + air) * P7B_ZONE_MULT[z - 1] * (P7B_TREE_X if trees else 1.0)
+
+
+def p7b_rows():
+    """(target, model text, ok) of the P7b group"""
+    out = []
+    sh = [p7b_level_share(z) for z in range(1, 6)]
+    # spec 2.1: 7 % +-2.5 (4.5-9.5 %). The spec's own table gives Zone 2 its 125 level-ups (Zones 1 / 3-5: 108) -> 9.9 % there: a KNOWN
+    # EXCEPTION waiting on Skyy (P7b fix: the window stays the spec's; only Zone 2 may reach 10 % until answered); every zone total stays 0.85-1.15
+    out.append(("P7b level-up coins (SkyySkills 0.4.61 levelCoins x the curve) = 7 % +-2.5 of every zone's coins (spec 2.1; Zone 2 = known exception <= 10 %, open question)",
+                " / ".join("Z%d %.1f %% (%s / h of %s)" % (z, 100 * sh[z - 1][0], fmt(sh[z - 1][1]), fmt(p7_target_h(z))) for z in range(1, 6)),
+                all((0.045 <= sh[z - 1][0] <= (0.10 if z == 2 else 0.095)) for z in range(1, 6))))
+    out.append(("P7b level-up coins per hour inside the zone's coin target per hour (never over 10 %)",
+                " / ".join("%.3f" % (sh[z - 1][1] / p7_target_h(z)) for z in range(1, 6)), all(sh[z - 1][1] < 0.10 * p7_target_h(z) for z in range(1, 6))))
+    lv = [(L, p7_round(p7_level_coins(L))) for L in (10, 50, 90)]
+    out.append(("P7b level-up coins Lv 10 60 / Lv 50 2,800 / Lv 90 50,500 (spec 0 item 5)", " / ".join("Lv %d %s" % (L, fmt(c)) for L, c in lv),
+                [c for _L, c in lv] == [60, 2800, 50500]))
+    rs = [(L, p7b_respec(L)) for L in (10, 50, 90)]
+    rh = [c / p7_H_at(L) for L, c in rs]
+    out.append(("P7b tree respec (SkyyTrees 0.4.9 respec.base 2,100 x the curve) = 0.25 h of income at the tree's level (6.2)",
+                " / ".join("Lv %d %s (%.3f h)" % (L, fmt(c), h) for (L, c), h in zip(rs, rh)),
+                P7B_RESPEC_BASE == p7_round(P7_RESPEC_H * p7_H_at(10)) and all(0.23 <= h <= 0.27 for h in rh)))
+    zh = [p7_round(p7_target_h(z)) for z in range(1, 6)]
+    out.append(("P7b shard upgrades (SkyyShards 0.4.5, 14 rows) = 1 h of the matching zone (6.2)",
+                "Z1..Z5 %s; rows %d" % (" / ".join(fmt(x) for x in zh), len(P7B_SHARD)),
+                len(P7B_SHARD) == 14 and all(0.98 <= zh[z - 1] / p7_target_h(z) <= 1.02 for z in range(1, 6))))
+    zm = [round(p7_curve_from_text(P7_CURVE_TEXT, L), 6) for L in P7_MID_LV]   # the coins.curve default text at the zone middles
+    lg = [p7b_luggage_h(z) / p7_target_h(z) for z in range(1, 6)]
+    lt = [p7b_luggage_h(z, True) / p7_target_h(z) for z in range(1, 6)]
+    out.append(("P7b luggage + airdrop coins follow the zone curve (2.3): an explorer at the claim cap earns the same share of each zone's hour",
+                "x %s; %s of the hour (x%.2f = %s with Wanderer 5 + Cartographer 3; coins only, never Exploration XP)" % (
+                    "/".join("%g" % x for x in P7B_ZONE_MULT), " / ".join("%.1f %%" % (100 * x) for x in lg), P7B_TREE_X, " / ".join("%.1f %%" % (100 * x) for x in lt)),
+                zm == P7B_ZONE_MULT and max(lg) - min(lg) < 0.02 and max(lt) <= 0.16))
+    tot = p7_totals()
+    out.append(("P7b idle shards (Skyy 2026-10-21 '20-100%, 3 days') = a bonus ON TOP of the active targets, never inside them",
+                "active x%s, with the Totem I..V bonus x%s" % ("/".join("%.2f" % tot[z][1] for z in range(1, 6)), "/".join("%.2f" % tot[z][0] for z in range(1, 6))),
+                list(P7_TOTEM) == [20, 40, 60, 80, 100] and P7_OFFLINE_H == 72 and all(tot[z][0] > tot[z][1] for z in range(1, 6))))
     return out
 
 

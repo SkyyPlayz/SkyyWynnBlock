@@ -4721,3 +4721,32 @@ def _p8d_apply():
 
 _p8d_apply()
 check()
+
+
+# ---------------------------------------------------------------------------------------------------- BALANCE P7b (2026-10-22, SkyyTrees 0.4.9 +
+# SkyyExploration 0.3.3). Skyy 2026-10-22 popup "Two Exploration tree upgrades (Wanderer, Cartographer) were designed to boost Exploration XP, but
+# your earlier rule says Exploration XP never gets boosts or tree bonuses. Which wins?" -> "Keep the no-boost rule (Recommended)" -> both get a
+# non-XP effect (docs/answered/skills.md 2026-10-22 EXPLORATION TREE): SkyyExploration applies them (trees_v3_effects.py EFFECTS, applier
+# SkyyExploration) on Loot Bag + supply drop COINS only - never Exploration XP, never more bags (more bags would mean more Exploration XP).
+P7B_TEXT = {"Exploration.b1.r1a": "+4% coins/rank from Loot Bags and supply drops",
+            "Exploration.b1.r3a": "+5% chance/rank a Loot Bag or supply drop holds a second coin find"}
+P7B_TEXT_OLD = {"Exploration.b1.r1a": "+2% exploration XP/rank", "Exploration.b1.r3a": "+3% map-discovery XP/rank"}
+
+
+def _p7b_apply():
+    seen = set()
+    t = tree("Exploration")
+    for bn, b in enumerate(t["branches"]):
+        for r in b["rows"]:
+            for u in r["ups"]:
+                k = "%s.b%d.%s" % (t["name"], bn + 1, u["id"])
+                if k in P7B_TEXT:
+                    assert u["hook"] is None and u["text"] == P7B_TEXT_OLD[k], ("P7b: Wanderer / Cartographer moved", k, u)
+                    u["text"] = P7B_TEXT[k]
+                    seen.add(k)
+    assert seen == set(P7B_TEXT), sorted(set(P7B_TEXT) - seen)
+    assert [u["name"] for b in t["branches"] for r in b["rows"] for u in r["ups"] if "Exploration.b%d.%s" % (t["branches"].index(b) + 1, u["id"]) in P7B_TEXT] == ["Wanderer", "Cartographer"]
+
+
+_p7b_apply()
+check()

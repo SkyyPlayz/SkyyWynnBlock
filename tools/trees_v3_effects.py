@@ -179,6 +179,13 @@ EFFECTS = [
     ("Acrobatics", 2, "r3c", "SkyyTrees", "fall", 0.03, None, 0),                   # Fearless: -3 % fall damage a rank (at any Health)
     ("Exploration", 1, "r1b", "SkyyTrees", "stam", 0.3, None, 0),                   # Trail Mix: +0.3 max Stamina a rank (3 % of the base 10)
     ("Exploration", 2, "r2b", "SkyyTrees", "fall", 0.05, None, 0),                  # Safe Landing: -5 % fall damage a rank
+    # ---------------- Balance P7b (2026-10-22, SkyyExploration 0.3.3 + SkyyTrees 0.4.9): Skyy's popup "Keep the no-boost rule (Recommended)"
+    # (docs/answered/skills.md 2026-10-22): Wanderer + Cartographer get NON-XP effects - Loot Bag / supply drop COINS only (SkyyExploration's
+    # LgCore.loot). lg.coins = + x % of every Loot Bag / supply drop coin roll; lg.coin2 = x chance a claim holds one more coin roll. Never XP,
+    # never more bags (a bag pays Exploration XP). Size (tools/balance_model.py --econ): luggage ~10 % of an exploring hour's coins (spec 2.3),
+    # x1.2 x 1.15 at max = +3.8 % of that hour - inside the "other 6 %" budget's slack.
+    ("Exploration", 1, "r1a", "SkyyExploration", "lg.coins", 0.04, None, 0),        # Wanderer: +4 % Loot Bag + supply drop coins a rank (20 % at 5)
+    ("Exploration", 1, "r3a", "SkyyExploration", "lg.coin2", 0.05, None, 0),        # Cartographer: +5 % a rank a claim holds a second coin find (15 % at 3)
 ]
 
 # R3c FIRST-PASS NUMBERS (builder 2026-10-20; Skyy "if you have any doubt, do research to get good data to base your default on" + the four power
@@ -317,7 +324,7 @@ def flat(eff):
 
 def unit(eff):
     """display unit: fractions (Fortune / XP / Breaking Power / synergy / chances) show x100 as %, SkyyGear stats are whole % already"""
-    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.", "dodge.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0
+    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.", "dodge.", "lg.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0   # P7b: + lg.
 
 
 def natural(e):
@@ -351,7 +358,9 @@ _EW = {"hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Powe
        # P8c
        "petxp": "Pet XP", "hatch": "Slots",
        # P8d
-       "dodge": "Dodge"}
+       "dodge": "Dodge",
+       # P7b (SkyyExploration)
+       "lg": "Coins"}
 
 
 def _scale_words(e):
@@ -397,12 +406,16 @@ def describe(e):
                                                                      "petsyn.rare": "stats of Rare or better pets", "petsyn.all": "stats of every pet",
                                                                      "hatch": "Hatchery slot",
                                                                      # P8d (SkyyTrees' own Acrobatics rows)
-                                                                     "dodge.acrobatics": "dodge push"}[eff]
+                                                                     "dodge.acrobatics": "dodge push",
+                                                                     # P7b (SkyyExploration's Loot Bag / supply drop coins)
+                                                                     "lg.coins": "Loot Bag + supply drop coins",
+                                                                     "lg.coin2": "chance of a second coin find"}[eff]
     return "+%s%s %s %s" % (_n(e[5] * unit(eff)), "" if flat(eff) else " %", what, _scale_words(e))
 
 
 WHERE = {"SkyyPets": "Pets -> Skill trees", "SkyyGear": "Gear -> Stats", "SkyyAccessories": "Void Charms -> Skill trees",
-         "SkyyTrees": "Trees -> Skill trees", "SkyyClasses": "Classes -> Abilities", "SkyyMobs": "Mobs -> Skill trees"}   # Server Setup place (P8b: + 3)
+         "SkyyTrees": "Trees -> Skill trees", "SkyyClasses": "Classes -> Abilities", "SkyyMobs": "Mobs -> Skill trees",
+         "SkyyExploration": "Exploration -> Skill trees"}   # Server Setup place (P8b: + 3; P7b: + SkyyExploration)
 FILE_OF = {"SkyyTrees": "tree-effects.properties"}   # P8b: SkyyTrees' own trees.properties is its main file - its rows live beside it
 
 
@@ -616,7 +629,7 @@ def check():
         tree, b, uid, mod, eff, per, scale, cap = e
         u = up(tree, b, uid)
         assert u["hook"] is None, ("R3b wires only coming-soon upgrades", e)
-        assert mod in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs"), e
+        assert mod in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs", "SkyyExploration"), e   # P7b: + SkyyExploration
         assert not is_free(uid) or (scale is None and maxrank(tree, b, uid) == 1), ("P8b: a free perk row is flat, rank 1", e)
         assert (tree, b, uid, eff) not in seen, ("one row per effect", e)
         seen.add((tree, b, uid, eff))
@@ -660,6 +673,9 @@ def check():
     assert not [e for e in EFFECTS if e[3] == "SkyyTrees" and not (e[4] in _own or e[4].startswith(("xp.", "dd.")))], "P8d: an own effect TreeSk does not apply"
     assert not [e for e in EFFECTS if e[4] in ("dmgLow", "dmgBoss", "drAll", "kbRes") and e[3] != "SkyyClasses"], "P8b: SkyyClasses' fight rows"
     assert not [e for e in EFFECTS if e[4] in ("drop", "coins", "rare", "bossRoll", "dbl") and e[3] != "SkyyMobs"], "P8b: SkyyMobs' loot rows"
+    # P7b: SkyyExploration applies only its two coin rows (the Exploration tree, never XP: Skyy's no-boost rule)
+    assert [(e[0], e[4]) for e in EFFECTS if e[3] == "SkyyExploration"] == [("Exploration", "lg.coins"), ("Exploration", "lg.coin2")], "P7b: SkyyExploration's rows"
+    assert not [e for e in EFFECTS if e[4].startswith("lg.") and (e[3] != "SkyyExploration" or e[6] is not None)], "P7b: lg. rows"
     for e in EFFECTS:
         assert 0 < vmax(e) <= natural(e) + 1e-12, e
         # fixer 2: no default ceiling cuts a row below its max rank at the top count (every rank bought adds something)
@@ -674,7 +690,7 @@ def check():
 check()
 
 if __name__ == "__main__":
-    for m in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs"):
+    for m in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs", "SkyyExploration"):
         print(m, reads_csv(m))
     for _t in ("Mining", "Foraging", "Combat") + P8D_TREES:
         print("%s: Fortune %.1f, XP %.1f %%, move %.1f %%, Health %.1f %%" % (_t, 100 * tree_fort(_t.lower()), 100 * tree_xp(_t), tree_move(_t), 100 * tree_hp(_t)))
