@@ -4520,3 +4520,80 @@ def check():
 
 
 check()
+
+# ===================================================================================================================================
+# Balance P8b (research/Balance-P8-Rebirth-Spec.md 4.2; SkyyTrees 0.4.6 + SkyyClasses 0.1.45 + SkyyMobs 0.1.15, 2026-10-22): the essential
+# skill trees Mining, Foraging, Combat row by row. Skyy (2026-10-20/21): "keep going down the list. dont stop until the entire list is done" +
+# "just go with the recommended on all of them" (spec Q5 [yes]: an upgrade that cannot work as drafted gets the nearest working effect with
+# honest text). Three upgrades become aliases of a 0.3 node (P8B_OLD; their sum stays inside the node's max - asserted by SkyyTrees); every
+# other wired upgrade keeps hook None and is applied through tools/trees_v3_effects.py EFFECTS (SkyyTrees' own rows, SkyyClasses, SkyyMobs).
+# P8B_TEXT = the honest page texts ("<Tree>.b<n>.<id>"; a row's free perk "<Tree>.b<n>.r<row>.free"). Two live texts said more than the
+# node gives (Gem Eye 3 MGems levels x 0.02 % = +0.06 % a rank, not +2 %; Wide Burst 1 Vein Burst level = +1 ore a rank, not +2) - fixed.
+P8B_OLD = {"Mining.b1.r2c": (("old", "Mining.MWisdom", 2), "+2% Mining XP/rank"),
+           "Mining.b1.r3c": (("old", "Mining.MSpeed", 1), "+1.6% pickaxe swing speed/rank (1 Mining Speed level)"),
+           "Foraging.b1.r3b": (("old", "Foraging.FSpeed", 1), "+1% chopping speed/rank")}
+P8B_TEXT = {
+    # Mining (Vein Burst is passive with no cooldown since SkyyTrees 0.3.24: the cooldown row gives vein size instead)
+    "Mining.b1.r2b": "Burst Reach: Vein Burst breaks 1 more ore/rank (it has no cooldown)",
+    "Mining.b2.r2.free": "-10% fall damage",
+    "Mining.b2.r2a": "+2% max Health/rank",
+    "Mining.b2.r2b": "+2% move speed/rank",
+    "Mining.b2.r4b": "+1.5% damage/rank",
+    "Mining.b2.r5c": "Vein Burst breaks 2 more ore/rank",
+    "Mining.b3.r3b": "2% chance/rank an ore also pays coins (your Mining level)",
+    "Mining.b3.r4a": "+0.06% chance/rank per block for a random gem (adds to Gem Eye)",
+    "Mining.b3.r5b": "+2% move speed/rank",
+    "Mining.b1.r3a": "+0.06% chance per block for a random gem/rank",
+    "Mining.b1.r2a": "+1 vein size/rank",
+    # Foraging
+    "Foraging.b1.r2b": "Timber reach: Tree Feller breaks 1 more log/rank",
+    "Foraging.b1.r4a": "+0.8% chance/rank a log drops once more",
+    "Foraging.b1.r5b": "+1.5% Foraging XP/rank",
+    "Foraging.b3.r1a": "+2% move speed/rank",
+    "Foraging.b3.r3b": "+2% max Health/rank",
+    "Foraging.b3.r3c": "-5% fall damage/rank",
+    # Combat (points = the class level; the fight rows go through SkyyClasses inside its tree caps, the loot rows through SkyyMobs)
+    "Combat.b1.r1.free": "+3% damage",
+    "Combat.b1.r3a": "+4% damage/rank to enemies below 30% Health",
+    "Combat.b1.r3b": "+1% move speed/rank",
+    "Combat.b1.r5a": "+3% damage/rank to bosses and mini bosses",
+    "Combat.b2.r1a": "+0.5% max Health/rank",
+    "Combat.b2.r1b": "+3% knockback resistance/rank",
+    "Combat.b2.r3a": "+2% damage reduction/rank",
+    "Combat.b3.r1a": "+2% chance/rank a kill drops 1 more item of its loot (never gear)",
+    "Combat.b3.r1b": "3% chance/rank a kill also pays coins (the mob's level)",
+    "Combat.b3.r3b": "+1% chance/rank a kill drops 1 more of its rarest loot (never gear)",
+    "Combat.b3.r4a": "+3% chance/rank a boss or mini boss drops its loot once more (never gear)",
+    "Combat.b3.r5a": "2% chance/rank a kill drops its whole loot twice (never gear)",
+}
+P8B_TEXT_OLD = {"Mining.b1.r3a": "+2% gem drop chance/rank", "Mining.b1.r2a": "+2 vein size/rank"}   # the two live texts fixed (asserted)
+
+
+def _p8b_apply():
+    seen = set()
+    for t in TREES:
+        if t["name"] not in ("Mining", "Foraging", "Combat"):
+            continue
+        for bn, b in enumerate(t["branches"]):
+            for r in b["rows"]:
+                fk = "%s.b%d.r%d.free" % (t["name"], bn + 1, r["r"])
+                if fk in P8B_TEXT:
+                    assert r["free"] is not None and r["free"]["hook"] is None, fk
+                    r["free"]["text"] = P8B_TEXT[fk]
+                    seen.add(fk)
+                for u in r["ups"]:
+                    k = "%s.b%d.%s" % (t["name"], bn + 1, u["id"])
+                    if k in P8B_OLD:
+                        assert u["hook"] is None, ("P8b wires only coming-soon upgrades", k)
+                        u["hook"], u["text"] = P8B_OLD[k]
+                        seen.add(k)
+                    if k in P8B_TEXT:
+                        assert (u["hook"] is None) != (k in P8B_TEXT_OLD), ("P8b texts: a wired coming-soon upgrade or a fixed live one", k)
+                        assert k not in P8B_TEXT_OLD or u["text"] == P8B_TEXT_OLD[k], ("P8b: the live text moved", k, u["text"])
+                        u["text"] = P8B_TEXT[k]
+                        seen.add(k)
+    assert seen == set(P8B_OLD) | set(P8B_TEXT), sorted(set(P8B_OLD) | set(P8B_TEXT) - seen)
+
+
+_p8b_apply()
+check()

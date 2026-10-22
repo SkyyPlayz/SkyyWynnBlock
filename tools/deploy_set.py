@@ -21,14 +21,15 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # clamp, harmless) - rebirth.xpMultMax is ignored by 0.4.58. Rebirth 0.4.2 alone back = the dust.first row returns, no data change.
 # P6a (2026-10-21): WorldGen 0.7.8 / Shards 0.4.4 / Sacks 0.8.26 each roll back alone (Shards back to 0.4.3 resets its xp / worker cap / storage rows to defaults, no data lost; Sacks 0.8.25 = parked off-hand refill, never pin it).
 # FLOOR (2026-10-21, Balance P5 power): SkyyGear 0.3.35 + SkyyAccessories 0.5.30 + SkyyPets 0.4.8 + SkyyArmory 0.1.43 + SkyyTrees 0.4.5 + SkyyGuilds 0.1.13 pin + roll back TOGETHER (slot power, armor Defense / Health %, charm ladder and pet power are fit to each other). Before a rollback Undo the one-time P5 rows in Server Setup -> Changes (Gear migrateP5 rarity / ramp / reforge / loot / gathering armor rows + Armor_Iron, Accessories migrateP5 config + power rows, Pets PetsMigP5 kinds + scalars, Armory migrateP5 sigil chances, Trees TreeMigP5 Mining.MFortune.per, Guilds GP5Mig levelBase / levelStep) - older jars read the moved values as admin values. Gear 0.3.35 saves the max Health modifier skyygear_hp with the player (0.3.34 knows only skyygear_ut_hp): switch part.stats off for one session before rolling Gear back. Fabled / Mythic Void Charms (20 new ids) are unknown items to Accessories 0.5.29 - never roll Accessories back once one exists. Pets 0.4.7 reads health / mana pet stats as flat values again. Gear's luck/ folder (UT meter, Mythic pity) is ignored by 0.3.34 (kept).
+# FLOOR (2026-10-22, Balance P8b skill-tree hooks): SkyyTrees 0.4.6 + SkyyClasses 0.1.45 + SkyyMobs 0.1.15 pin + roll back TOGETHER (Trees gates count rows only Classes / Mobs make buyable; an older Classes or Mobs shows them as coming soon). No saved-data change; a rollback leaves bought ranks saved but unused (a respec refunds them); trees.properties (Classes, Mobs) + tree-effects.properties (Trees) stay, ignored by older jars.
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.26"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.30"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.35"), ("SkyySkills", "0.4.59"),
-    ("SkyyAccessories", "0.5.30"), ("SkyyClasses", "0.1.44"), ("SkyyMenu", "0.3.42"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.5"),
+    ("SkyyAccessories", "0.5.30"), ("SkyyClasses", "0.1.45"), ("SkyyMenu", "0.3.42"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.6"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -75,7 +76,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.14"), ("SkyyWorldGen", "0.7.8"),
+    ("SkyyMobs", "0.1.15"), ("SkyyWorldGen", "0.7.8"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited

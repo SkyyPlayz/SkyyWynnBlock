@@ -104,6 +104,36 @@ EFFECTS = [
     ("Mining", 2, "r6", "SkyyGear", "dd.mining", 0.05, "pick", 2),                  # ... and +5 Mining Fortune, x2 = 10 (Balance P5 7.1: was 7.5 / 15 - the Mining tree budget with Rich Seams counted)
     ("Exploration", 2, "r3a", "SkyyAccessories", "spd", 0.5, "acc", 5),            # Accessory Compass: +0.5% move Speed per counting accessory per rank (tree text 2: R3C)
     ("Acrobatics", 2, "r3a", "SkyyAccessories", "stam", 0.2, "acc", 5),             # Accessory Sprint: +0.2 max Stamina (2% of the base 10) per counting accessory per rank
+    # ---------------- Balance P8b (2026-10-22, research/Balance-P8-Rebirth-Spec.md 4.2; SkyyTrees 0.4.6, SkyyClasses 0.1.45, SkyyMobs 0.1.15):
+    # the essential trees row by row. A row's FREE perk is the id "r<row>.free" (key Skill.<Tree>.b<n>.r<row>.free, rank 1 while the row is
+    # open). SkyyTrees' OWN rows: vein / feller = whole ore / logs, spd = whole % move speed, the rest fractions - see the P8b notes below.
+    ("Mining", 1, "r2b", "SkyyTrees", "vein", 1.0, None, 0),                        # Burst Recovery -> Burst Reach: +1 Vein Burst ore a rank
+    ("Mining", 2, "r5c", "SkyyTrees", "vein", 2.0, None, 0),                        # Blast Hammer: +2 Vein Burst ore a rank
+    ("Mining", 2, "r2a", "SkyyTrees", "hpp", 0.02, None, 0),                        # Rockhide: +2 % max Health a rank
+    ("Mining", 2, "r2b", "SkyyTrees", "spd", 2.0, None, 0),                         # Echo Step: +2 % move speed a rank
+    ("Mining", 2, "r2.free", "SkyyTrees", "fall", 0.10, None, 0),                   # Stoneskin (row 2 free perk): -10 % fall damage
+    ("Mining", 3, "r3b", "SkyyTrees", "coins.mining", 0.02, None, 0),               # Deep Bounty: 2 % a rank an ore also pays coins (Mining level)
+    ("Mining", 3, "r4a", "SkyyTrees", "gem.mining", 0.0006, None, 0),               # Miner's Fortune: +0.06 % a rank gem chance per block (Gem Eye's step)
+    ("Mining", 3, "r5b", "SkyyTrees", "spd", 2.0, None, 0),                         # Abyss Walker: +2 % move speed a rank (Mining move 4 + 6 = 10)
+    ("Mining", 2, "r4b", "SkyyClasses", "dmg", 1.5, None, 0),                       # Hardened Edge: +1.5 % damage a rank (SkyyClasses UpFx, inside dmgCap)
+    ("Foraging", 1, "r2b", "SkyyTrees", "feller", 1.0, None, 0),                    # Quick Fell -> Timber reach: +1 Tree Feller log a rank
+    ("Foraging", 1, "r4a", "SkyyTrees", "extra.foraging", 0.008, None, 0),          # Rare Grain: +0.8 % a rank a log drops once more (= 0.8 Fortune)
+    ("Foraging", 1, "r5b", "SkyyTrees", "xp.foraging", 0.015, None, 0),             # Forest Fortune: +1.5 % Foraging XP a rank
+    ("Foraging", 3, "r1a", "SkyyTrees", "spd", 2.0, None, 0),                       # Light Foot: +2 % move speed a rank
+    ("Foraging", 3, "r3b", "SkyyTrees", "hpp", 0.02, None, 0),                      # Sturdy Hide: +2 % max Health a rank
+    ("Foraging", 3, "r3c", "SkyyTrees", "fall", 0.05, None, 0),                     # Wind Walker: -5 % fall damage a rank
+    ("Combat", 1, "r1.free", "SkyyClasses", "dmg", 3.0, None, 0),                   # Combat Focus (row 1 free perk): +3 % damage (no streak system: flat)
+    ("Combat", 1, "r3a", "SkyyClasses", "dmgLow", 4.0, None, 0),                    # Finisher: +4 % a rank vs enemies below 30 % Health
+    ("Combat", 1, "r3b", "SkyyTrees", "spd", 1.0, None, 0),                         # Momentum: +1 % move speed a rank
+    ("Combat", 1, "r5a", "SkyyClasses", "dmgBoss", 3.0, None, 0),                   # Trophy Hunter: +3 % a rank vs bosses + mini bosses
+    ("Combat", 2, "r1a", "SkyyTrees", "hpp", 0.005, None, 0),                       # Toughness: +0.5 % max Health a rank (Combat Health budget 10 with Plates 7.5)
+    ("Combat", 2, "r1b", "SkyyClasses", "kbRes", 3.0, None, 0),                     # Iron Will: +3 % knockback resistance a rank
+    ("Combat", 2, "r3a", "SkyyClasses", "drAll", 2.0, None, 0),                     # Thick Skin: +2 % damage reduction a rank (inside drCap)
+    ("Combat", 3, "r1a", "SkyyMobs", "drop", 2.0, None, 0),                         # Scavenger: +2 % a rank a kill drops 1 more item of its loot
+    ("Combat", 3, "r1b", "SkyyMobs", "coins", 3.0, None, 0),                        # Coin Purse: 3 % a rank a kill pays coins = the mob's level
+    ("Combat", 3, "r3b", "SkyyMobs", "rare", 1.0, None, 0),                         # Rare Drop: +1 % a rank 1 more of the kill's rarest loot
+    ("Combat", 3, "r4a", "SkyyMobs", "bossRoll", 3.0, None, 0),                     # Boss Hunter: +3 % a rank a boss / mini boss drops its loot again
+    ("Combat", 3, "r5a", "SkyyMobs", "dbl", 2.0, None, 0),                          # Lucky Kill: 2 % a rank a kill drops its whole loot twice
 ]
 
 # R3c FIRST-PASS NUMBERS (builder 2026-10-20; Skyy "if you have any doubt, do research to get good data to base your default on" + the four power
@@ -127,6 +157,22 @@ EFFECTS = [
 #                     gives +12); added to the skyyacc_stamina modifier.
 #   "filled accessory slot" = an accessory that COUNTS in Void Charms (AccV3.count: best of each line, the Omni 1), at most 5 - the R3b rows' rule.
 
+# BALANCE P8b NUMBERS (builder 2026-10-22, the spec's section 4.2 table; Skyy "just go with the recommended on all of them"):
+#   every number is the spec's except these, each held by a budget the spec itself sets (4.1, proved by check()) or by this round's mods:
+#   Toughness   spec "+2 % max Health/rank" x 5 = 10 % + Accessory Plates' 7.5 % = 17.5 % from the Combat tree > the 10 % Health budget ->
+#               +0.5 % a rank (2.5 % at rank 5; Combat tree Health = 10.0).
+#   Miner's Fortune spec "+1 % gem drop chance/rank" = 50 x Gem Eye's own step (3 MGems levels x 0.02 % = 0.06 % a rank; the live Gem Eye
+#               text said "+2 %", fixed in trees_v3_data.py) -> Gem Eye's step, +0.06 % a rank per block (Mining gems x2 with both maxed).
+#   Rare Drop   the gear-bag rarity roll is SkyyGear's (not in this round) -> SkyyMobs' own roll: 1 more of the kill's rarest drop-list item.
+#   Hardened Edge / Combat Focus  the spec's "SkyyGear dmg" -> SkyyClasses UpFx (SkyyGear is not in this round; UpFx keeps them inside
+#               the class-tree damage cap dmgCap 40 together with the Combat fight rows).
+#   SkyyMobs' loot rows never make gear: an extra roll skips every Weapon_ / Armor_ / Tool_ / Skyy_ item, so SkyyGear's UT meter (kills
+#   of elites / mini bosses / dungeons) and Mythic roll (boss kills) see exactly the kills they saw before (SkyyMobs harness: 10,000 kills).
+# BUDGETS (spec 4.1, check()): Fortune incl. extra-drop chance (1 % = 1 Fortune) <= TREE_FORT_MAX 40, XP <= TREE_XP_MAX 30 %, move speed
+#   <= TREE_MOVE_MAX 10 %, max Health <= TREE_HP_MAX 10 % - each per skill tree, every applier's rows + SkyyTrees' own rows + the 0.3 XP node
+#   aliases (P8B_OLD_PER: the 0.3 node's per a level; SkyyTrees 0.4.6 asserts its defaults). Heartwood (Foraging b1 r1b, the 0.3 FFortune
+#   alias, +6 double-log %) is NOT in the Fortune budget (P5 counted only Rich Seams; the spec's 37.5 -> 39.9 leaves it out) - P9 decides.
+
 # 0.3 node aliases an applier newly READS (live with SkyyTrees 0.4.0: those nodes already name the applier in its READ_BY)
 # (old node key, applier, the v3 upgrade(s) that feed it, what the applier does with tree:fn:bonus)
 READ_OLD = [
@@ -148,10 +194,20 @@ def key(tree, branch, uid):
     return "Skill.%s.b%d.%s" % (tree, branch, uid)
 
 
+def is_free(uid):
+    """P8b: "r<row>.free" = the row's free perk (rank 1 while the row is open)"""
+    return uid.endswith(".free")
+
+
 def up(tree, branch, uid):
-    """the trees_v3_data upgrade dict of a row (KeyError / AssertionError when the table changed)"""
+    """the trees_v3_data upgrade dict of a row (KeyError / AssertionError when the table changed); P8b: a free perk -> {name, max 1, hook}"""
     t = V3D.tree(tree)
     assert t["kind"] == "skill", tree
+    if is_free(uid):
+        for r in t["branches"][branch - 1]["rows"]:
+            if "r%d.free" % r["r"] == uid and r["free"] is not None:
+                return {"id": uid, "name": r["free"]["name"], "max": 1, "hook": r["free"]["hook"], "text": r["free"]["text"]}
+        raise KeyError(key(tree, branch, uid))
     for r in t["branches"][branch - 1]["rows"]:
         for u in r["ups"]:
             if u["id"] == uid:
@@ -196,13 +252,13 @@ VMAX = {  # (tree, branch, id, effect) -> ceiling in effect units; rows not name
 
 
 def flat(eff):
-    """a flat-points effect (no %): max Health, max Stamina (R3c)"""
-    return eff in ("hp", "stam")
+    """a flat-points effect (no %): max Health, max Stamina (R3c); P8b: Vein Burst ore, Tree Feller logs"""
+    return eff in ("hp", "stam", "vein", "feller")
 
 
 def unit(eff):
     """display unit: fractions (Fortune / XP / Breaking Power / synergy / chances) show x100 as %, SkyyGear stats are whole % already"""
-    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith("petsyn.") or eff in ("class.xp", "cook.ingr", "hpp")) else 1.0
+    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "gem.", "coins.", "extra.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0
 
 
 def natural(e):
@@ -229,13 +285,16 @@ def ckey(e):
 
 
 _EW = {"hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance",
-       "spd": "Speed", "stam": "Stamina"}
+       "spd": "Speed", "stam": "Stamina",
+       # P8b
+       "vein": "Ore", "feller": "Logs", "fall": "Fall", "gem": "Gems", "coins": "Coins", "extra": "Extra", "dmgLow": "Damage", "dmgBoss": "Damage",
+       "drAll": "Guard", "kbRes": "Steady", "drop": "Drop", "rare": "Rare", "bossRoll": "Boss", "dbl": "Double"}
 
 
 def _scale_words(e):
     sc = e[6]
     if sc is None:
-        return "a rank"
+        return "(row perk)" if is_free(e[2]) else "a rank"
     if sc == "tool":
         return "a rank x the held tool's tier (at most %d)" % e[7]
     if sc == "acc":
@@ -257,11 +316,27 @@ def describe(e):
     what = (what % eff.split(".", 1)[1].capitalize()) if what else {"dmg": "Damage", "cc": "Crit Chance", "cd": "Crit Damage",
                                                                      "petsyn.mining": "Mining pet stats", "class.xp": "class XP",
                                                                      "cook.ingr": "double ingredient chance", "hp": "max Health", "hpp": "max Health",
-                                                                     "spd": "move Speed", "stam": "max Stamina"}[eff]
+                                                                     "spd": "move Speed", "stam": "max Stamina",
+                                                                     # P8b
+                                                                     "vein": "Vein Burst ore", "feller": "Tree Feller logs",
+                                                                     "fall": "less fall damage", "gem.mining": "gem chance a block",
+                                                                     "coins.mining": "chance an ore pays coins",
+                                                                     "extra.foraging": "chance a log drops again", "dmgLow": "damage vs low Health",
+                                                                     "dmgBoss": "damage vs bosses", "drAll": "damage reduction",
+                                                                     "kbRes": "knockback resistance", "drop": "chance of 1 more loot item",
+                                                                     "coins": "chance a kill pays coins", "rare": "chance of 1 more rarest item",
+                                                                     "bossRoll": "chance a boss drops loot again", "dbl": "chance of double loot"}[eff]
     return "+%s%s %s %s" % (_n(e[5] * unit(eff)), "" if flat(eff) else " %", what, _scale_words(e))
 
 
-WHERE = {"SkyyPets": "Pets -> Skill trees", "SkyyGear": "Gear -> Stats", "SkyyAccessories": "Void Charms -> Skill trees"}   # Server Setup place
+WHERE = {"SkyyPets": "Pets -> Skill trees", "SkyyGear": "Gear -> Stats", "SkyyAccessories": "Void Charms -> Skill trees",
+         "SkyyTrees": "Trees -> Skill trees", "SkyyClasses": "Classes -> Abilities", "SkyyMobs": "Mobs -> Skill trees"}   # Server Setup place (P8b: + 3)
+FILE_OF = {"SkyyTrees": "tree-effects.properties"}   # P8b: SkyyTrees' own trees.properties is its main file - its rows live beside it
+
+
+def fname(applier):
+    """P8b: the file of an applier's rows (Skyy_<Mod>/<file>)"""
+    return FILE_OF.get(applier, "trees.properties")
 
 
 def cfg_text(applier, where=None):
@@ -272,7 +347,8 @@ def cfg_text(applier, where=None):
          "# <row>.per = what one rank gives (x the tool tier / armor pieces / accessories / pet rarity bonus the row names),",
          "# <row>.max = the most that row ever adds. 0 = the row gives nothing." + (_flat_note(applier) if [e for e in rows(applier) if flat(e[4])] else "")]
     for e in rows(applier):
-        L.append("# %s %s: %s" % (e[0], up(e[0], e[1], e[2])["name"], describe(e)))
+        _nm = up(e[0], e[1], e[2])["name"]
+        L.append(("# %s: %s" % (_nm, describe(e))) if _nm.startswith(e[0] + " ") else ("# %s %s: %s" % (e[0], _nm, describe(e))))   # fixer: never "Combat Combat Focus"
         L.append("%s.per=%s" % (ckey(e), _n(e[5] * unit(e[4]))))
         L.append("%s.max=%s" % (ckey(e), _n(vmax(e) * unit(e[4]))))
     t = "\n".join(L) + "\n"
@@ -285,11 +361,11 @@ def _flat_note(applier):
     fl = sorted(set(e[4] for e in rows(applier) if flat(e[4])))
     if fl == ["hp"]:
         return " Health rows are in Health points, not %."
-    return " %s rows are in points, not %%." % " / ".join({"hp": "Health", "stam": "Stamina"}[f] for f in fl)
+    return " %s rows are in points, not %%." % " / ".join({"hp": "Health", "stam": "Stamina", "vein": "Vein Burst ore", "feller": "Tree Feller log"}[f] for f in fl)
 
 
 def _flat_word(eff):
-    return {"hp": "Health", "stam": "Stamina"}[eff]
+    return {"hp": "Health", "stam": "Stamina", "vein": "ore", "feller": "logs"}[eff]
 
 
 PER_HI, MAX_HI = 100, 1000     # the Server Setup bounds (display units)
@@ -323,32 +399,35 @@ public static double v3num(java.util.Properties p, String k, double def, double 
     sets = "".join('    V3P%d = v3num(p, "%s.per", %s, %d.0);\n    V3X%d = v3num(p, "%s.max", %s, %d.0);\n'
                    % (i, ckey(e), repr(float(_n(e[5] * unit(e[4])))), PER_HI, i, ckey(e), repr(float(_n(vmax(e) * unit(e[4])))), MAX_HI)
                    for i, e in enumerate(R))
-    m.append(r"""
+    m.append((r"""
 public static String loadV3(java.nio.file.Path dir) {
-  if (dir == null) return "trees.properties: no folder (built-in numbers)";
+  if (dir == null) return "@FN@: no folder (built-in numbers)";
   try {
-    java.nio.file.Path f = dir.resolve("trees.properties");
+    java.nio.file.Path f = dir.resolve("@FN@");
     if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
       java.nio.file.Files.createDirectories(dir, new java.nio.file.attribute.FileAttribute[0]);
-      java.nio.file.Path tmp = dir.resolve("trees.properties.tmp");
+      java.nio.file.Path tmp = dir.resolve("@FN@.tmp");
       java.nio.file.Files.write(tmp, V3_TEXT.getBytes("ISO-8859-1"), new java.nio.file.OpenOption[0]);
       java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE });
     }
     java.util.Properties p = new java.util.Properties();
     java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
     try { p.load(in); } finally { in.close(); }
-""" + sets + r"""    return "trees.properties read";
+""" + sets + r"""    return "@FN@ read";
   } catch (Throwable t) {
-    @WARN@("could not read trees.properties (the Skill Trees 3 rows keep their numbers): " + t);
-    return "trees.properties could not be read";
+    @WARN@("could not read @FN@ (the Skill Trees 3 rows keep their numbers): " + t);
+    return "@FN@ could not be read";
   }
-}""".replace("@WARN@", warn))
+}""").replace("@WARN@", warn).replace("@FN@", fname(applier)))
     return m
 
 
 def cfg_text_field(applier, where=None):
     import json
     return "public static final String V3_TEXT = %s;" % json.dumps(cfg_text(applier, where))
+
+
+TREE_ROW_MODS = ("SkyyTrees", "SkyyClasses", "SkyyMobs")   # P8b fixer: the appliers whose Server Setup rows are pure skill-tree rows
 
 
 def cfg_rows(applier, cls, file, cat):
@@ -358,15 +437,18 @@ def cfg_rows(applier, cls, file, cat):
         nm = up(e[0], e[1], e[2])["name"]
         ew = _EW[e[4].split(".")[0]]
         lab = "%s %s %s" % (e[0], nm, ew)
-        if len(lab) > 33:
+        if len(lab) > 33 or (applier in TREE_ROW_MODS and nm.startswith(e[0] + " ")):   # P8b fixer: never "Combat Combat Focus"
             lab = "%s %s" % (nm, ew)
         assert len(lab) <= 33, lab
         h1 = describe(e) + "."
         if len(h1) > 100:
             h1 = h1[:97] + "..."
         h2 = "Most %s %s ever adds (in %s), whatever the rank, gear or pet." % (e[0], nm, _flat_word(e[4]) if flat(e[4]) else "%")
+        if applier in TREE_ROW_MODS:   # P8b fixer: the tree rows' own words (the Gear / Pets / Accessories rows keep theirs, byte for byte)
+            h2 = ("Most %s gives (a flat %s perk, in %s)." % (nm, e[0], _flat_word(e[4]) if flat(e[4]) else "%")) if is_free(e[2]) else                  ("Most %s %s gives at its top rank (in %s)." % (e[0], nm, _flat_word(e[4]) if flat(e[4]) else "%"))
         assert len(h2) <= 100, h2
-        out.append(("%s.per" % ckey(e), lab + " a rank", cat, "dec", _n(e[5] * unit(e[4])), "0", str(PER_HI), "", "" if flat(e[4]) else "%", "live,adv", h1,
+        per_word = " (perk)" if is_free(e[2]) else " a rank"   # P8b fixer: a free perk is flat (rank 1), not per rank
+        out.append(("%s.per" % ckey(e), lab + per_word, cat, "dec", _n(e[5] * unit(e[4])), "0", str(PER_HI), "", "" if flat(e[4]) else "%", "live,adv", h1,
                     "field:%s.V3P%d@%s:%s.per" % (cls, i, file, ckey(e))))
         out.append(("%s.max" % ckey(e), lab + " most", cat, "dec", _n(vmax(e) * unit(e[4])), "0", str(MAX_HI), "", "" if flat(e[4]) else "%", "live,adv", h2,
                     "field:%s.V3X%d@%s:%s.max" % (cls, i, file, ckey(e))))
@@ -381,8 +463,51 @@ def own_fort(sk):
 
 
 def tree_fort(sk):
-    """Balance P5: the whole tree Fortune of one skill at max (own nodes + every applier row's ceiling, effect units)"""
-    return own_fort(sk) + sum(vmax(e) for e in EFFECTS if e[4] == "dd." + sk)
+    """Balance P5: the whole tree Fortune of one skill at max (own nodes + every applier row's ceiling, effect units); P8b: + the extra-drop
+    chance rows (extra.<skill>: 1 % a log drops again = 1 Fortune, spec 4.1)"""
+    return own_fort(sk) + sum(vmax(e) for e in EFFECTS if e[4] in ("dd." + sk, "extra." + sk))
+
+
+# ---------------------------------------------------------------------------------------------------- P8b BUDGETS (spec 4.1)
+TREE_XP_MAX = 0.30      # the most XP % all rows of one skill tree add (fraction)
+TREE_MOVE_MAX = 10.0    # the most move speed % one tree adds (whole %)
+TREE_HP_MAX = 0.10      # the most max Health % one tree adds (fraction)
+P8B_OLD_PER = {"Mining.MWisdom": ("xp", 0.01), "Foraging.FWisdom": ("xp", 0.01), "Farming.AWisdom": ("xp", 0.01), "Cooking.CWisdom": ("xp", 0.01),
+               "Alchemy.PWisdom": ("xp", 0.01), "Smithing.SWisdom": ("xp", 0.01), "Fishing.NWisdom": ("xp", 0.01)}   # the 0.3 XP nodes' per a level
+SKILL_OF = {"Combat": "combat"}   # a tree's XP key (class.xp = the Combat tree's XP too)
+
+
+def _sk(tree):
+    return SKILL_OF.get(tree, tree.lower())
+
+
+def own_xp(tree):
+    """P8b: the XP fraction the 0.3 node aliases of one skill tree add at max rank"""
+    t = V3D.tree(tree)
+    s = 0.0
+    for b in t["branches"]:
+        for r in b["rows"]:
+            for u in r["ups"]:
+                h = u["hook"]
+                if h and h[0] == "old" and h[1] in P8B_OLD_PER and P8B_OLD_PER[h[1]][0] == "xp":
+                    s += u["max"] * h[2] * P8B_OLD_PER[h[1]][1]
+    return s
+
+
+def tree_xp(tree):
+    """P8b: the whole XP % of one skill tree at max (fraction): applier + own rows (xp.<skill>, class.xp for Combat) + the node aliases"""
+    sk = _sk(tree)
+    return own_xp(tree) + sum(vmax(e) for e in EFFECTS if e[0] == tree and (e[4] == "xp." + sk or (tree == "Combat" and e[4] == "class.xp")))
+
+
+def tree_move(tree):
+    """P8b: the whole move speed % of one tree at max (whole %)"""
+    return sum(vmax(e) for e in EFFECTS if e[0] == tree and e[4] == "spd")
+
+
+def tree_hp(tree):
+    """P8b: the whole max Health % of one tree at max (fraction; hpp rows)"""
+    return sum(vmax(e) for e in EFFECTS if e[0] == tree and e[4] == "hpp")
 
 
 def check():
@@ -394,7 +519,8 @@ def check():
         tree, b, uid, mod, eff, per, scale, cap = e
         u = up(tree, b, uid)
         assert u["hook"] is None, ("R3b wires only coming-soon upgrades", e)
-        assert mod in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing"), e
+        assert mod in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs"), e
+        assert not is_free(uid) or (scale is None and maxrank(tree, b, uid) == 1), ("P8b: a free perk row is flat, rank 1", e)
         assert (tree, b, uid, eff) not in seen, ("one row per effect", e)
         seen.add((tree, b, uid, eff))
         assert per > 0 and (scale is None) == (cap == 0), e
@@ -408,9 +534,19 @@ def check():
     # ROW_FORT_MAX; a pet row never above its x1.5 value
     names = set((e[0], e[1], e[2], e[4]) for e in EFFECTS)
     assert all(k in names for k in VMAX), [k for k in VMAX if k not in names]
-    for sk in set(e[4][3:] for e in EFFECTS if e[4].startswith("dd.")):
-        tot = sum(vmax(e) for e in EFFECTS if e[4] == "dd." + sk) + own_fort(sk)
+    for sk in set(e[4].split(".", 1)[1] for e in EFFECTS if e[4].startswith(("dd.", "extra."))):
+        tot = tree_fort(sk)
         assert tot <= TREE_FORT_MAX + 1e-9, ("tree Fortune budget", sk, tot)
+    # P8b: the XP / move / Health budgets of every skill tree (spec 4.1)
+    for t in V3D.TREES:
+        if t["kind"] != "skill":
+            continue
+        assert tree_xp(t["name"]) <= TREE_XP_MAX + 1e-9, ("tree XP budget", t["name"], tree_xp(t["name"]))
+        assert tree_move(t["name"]) <= TREE_MOVE_MAX + 1e-9, ("tree move budget", t["name"], tree_move(t["name"]))
+        assert tree_hp(t["name"]) <= TREE_HP_MAX + 1e-9, ("tree Health budget", t["name"], tree_hp(t["name"]))
+    assert not [e for e in EFFECTS if e[4] in ("vein", "feller", "fall", "gem.mining", "coins.mining", "extra.foraging") and e[3] != "SkyyTrees"], "P8b: SkyyTrees' own effects"
+    assert not [e for e in EFFECTS if e[4] in ("dmgLow", "dmgBoss", "drAll", "kbRes") and e[3] != "SkyyClasses"], "P8b: SkyyClasses' fight rows"
+    assert not [e for e in EFFECTS if e[4] in ("drop", "coins", "rare", "bossRoll", "dbl") and e[3] != "SkyyMobs"], "P8b: SkyyMobs' loot rows"
     for e in EFFECTS:
         assert 0 < vmax(e) <= natural(e) + 1e-12, e
         # fixer 2: no default ceiling cuts a row below its max rank at the top count (every rank bought adds something)
@@ -425,5 +561,7 @@ def check():
 check()
 
 if __name__ == "__main__":
-    for m in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing"):
+    for m in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs"):
         print(m, reads_csv(m))
+    for _t in ("Mining", "Foraging", "Combat"):
+        print("%s: Fortune %.1f, XP %.1f %%, move %.1f %%, Health %.1f %%" % (_t, 100 * tree_fort(_t.lower()), 100 * tree_xp(_t), tree_move(_t), 100 * tree_hp(_t)))
