@@ -1,0 +1,121 @@
+{
+  "wonderWeaponPromptAnswered": false,
+  "wonderWeaponBoostEnabled": false,
+  "wonderWeaponSettingsApplied": false,
+  "structures": {
+    "worldgenEnabled": true,
+    "lazyBossIslandMaterializeRadius": 256,
+    "ambientFaunaSoftCap": 12,
+    "defaults": {
+      "spawnChance": 1.0,
+      "minDistanceBetweenStructures": 0,
+      "minDistanceFromOtherStructures": 0,
+      "ignoreDistanceFromOtherStructures": false,
+      "maxInstancesPerBiome": 0,
+      "maxInstancesPerWorld": 0
+    },
+    "overrides": {
+      "boss_island": {
+        "spawnChance": 0.35,
+        "minDistanceBetweenStructures": 1200,
+        "maxInstancesPerBiome": 2,
+        "maxInstancesPerWorld": 20
+      },
+      "mineshaft": {
+        "spawnChance": 0.4
+      },
+      "goblin_base": {
+        "spawnChance": 0.85,
+        "minDistanceBetweenStructures": 450
+      },
+      "frozen_tower": {
+        "spawnChance": 0.3,
+        "minDistanceBetweenStructures": 1400,
+        "maxInstancesPerBiome": 1,
+        "maxInstancesPerWorld": 14
+      },
+      "island_angel_statue": {
+        "enabled": false,
+        "spawnChance": 0.0
+      },
+      "flying_islands": {
+        "enabled": false,
+        "spawnChance": 0.0
+      },
+      "big_miner": {
+        "enabled": false,
+        "spawnChance": 0.0
+      },
+      "ice_boss": {
+        "spawnChance": 0.28,
+        "minDistanceBetweenStructures": 900,
+        "minDistanceFromOtherStructures": 180,
+        "maxInstancesPerBiome": 2,
+        "maxInstancesPerWorld": 12
+      }
+    }
+  },
+  "boss": {
+    "battleMusicContainer": "Track_Sv2_Boss_Battle",
+    "bossAttackOnlyAggro": true,
+    "islandProtectionEnabled": true,
+    "arenaAggroUseBounds": true,
+    "islandMissingRespawnMs": 8000,
+    "islandMissingAutoRespawnEnabled": true,
+    "islandMissingRespawnAggroGraceMs": 120000,
+    "spawnAuraParticle": "E_sphere",
+    "spawnAuraDurationSec": 10.0,
+    "selectedAdminId": "bandit",
+    "profiles": {
+      "bandit": {
+        "battleMusicEnabled": true,
+        "combatRange": 40.0,
+        "minionWaveHpRatio": 0.5,
+        "minionWaveCount": 3,
+        "minionHarassRange": 52.0,
+        "phase1MaxHp": 500,
+        "phase2MaxHp": 700,
+        "phase3MaxHp": 900
+      },
+      "magic": {
+        "battleMusicEnabled": false,
+        "combatRange": 16.0,
+        "minionWaveHpRatio": 0.5,
+        "minionWaveCount": 1,
+        "minionHarassRange": 18.0,
+        "phase1MaxHp": 520,
+        "phase2MaxHp": 520,
+        "phase3MaxHp": 520
+      },
+      "astral": {
+        "battleMusicEnabled": false,
+        "combatRange": 28.0,
+        "minionWaveHpRatio": 0.5,
+        "minionWaveCount": 4,
+        "minionHarassRange": 28.0,
+        "phase1MaxHp": 2000,
+        "phase2MaxHp": 2000,
+        "phase3MaxHp": 2000
+      }
+    }
+  },
+  "compat": {
+    "lootrBridgeEnabled": true,
+    "rpgRewardsEnabled": true,
+    "rpgSuppressKillXp": true,
+    "rpgBossClearXp": 1000.0,
+    "mmoRewardsEnabled": true,
+    "mmoBossKillXpMult": 2.5,
+    "mmoBossClearDefenseXp": 350
+  },
+  "merchant": {
+    "enabled": false,
+    "durationSeconds": 3600,
+    "cooldownMinSeconds": 10800,
+    "cooldownMaxSeconds": 14400,
+    "firstDelaySeconds": 3600,
+    "maxSpawns": -1,
+    "aetherhavenTownExclusionEnabled": true,
+    "aetherhavenTownExclusionPadding": 48
+  }
+}

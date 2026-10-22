@@ -252,3 +252,4 @@ tests always come first.
 225. P8d: new tree upgrades buyable, Alchemy / Smithing / Fishing rows open, Beastmastery VP
 226. P7: Bazaar prices by tier, death 5 % (island safe), merchants by zone, AH no gathering armor, Smithing Combat section (rolls rarity, never UT / Mythic)
 227. Bronze lock says Copper/Iron V; backpacks craftable; level-up coins on the curve; respec cost; Wanderer/Cartographer coins
+228. PACK: StructureV2 + Souls like Bosses ON - explore NEW land for camps / towers / ships / boss islands (no traveling merchant); Structure Money turns into coins; Souls bosses show a level + boss rank; no guns drop (they turn into a crossbow / arrows)
