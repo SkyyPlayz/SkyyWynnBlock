@@ -4183,7 +4183,7 @@ CLASS_FX = {
     "Warrior.b1.r3b": ((("drRanged", 3),), None, "{v}% less ranged damage taken"),
     "Warrior.b1.r4a": ((("blockSlow", 12),), "an enemy whose hit you block is slowed 12% per rank for 2s", "a blocked attacker is {v}% slower for 2 s"),
     "Warrior.b1.r4b": ((("blockHeal", 1),), None, "a blocked hit heals you {v}% of your max Health"),
-    "Warrior.b1.r5b": ((("drStill", 5),), "-5% damage taken per rank while you stand still", "{v}% less damage taken after 1 s standing still"),
+    "Warrior.b1.r5b": ((("drStill", 3),), "-3% damage taken per rank while you stand still", "{v}% less damage taken after 1 s standing still"),   # Balance P4 T2: 5 -> 3
     "Warrior.b1.r6": ((("xAegis", 1),), "Challenge holds until its target dies (30s at most); while it holds, players within 6 blocks of you take 10% less damage, and your blocks slow attackers 40% for 2s",
                       "Challenge holds until its target falls; allies near you take 10% less; blocks slow 40%"),
     "Warrior.b2.r2b": ((("a.ShieldShockwave.stunChance", 12),), "12% chance per rank that a Shockwave hit stuns 1s longer", "{v}% chance of a 1 s longer stun"),
@@ -4232,7 +4232,7 @@ CLASS_FX = {
     "Spellblade.b2.r4a": ((("spreadDebuff", 1),), None, "a Breached / Sundered enemy's death spreads it to {v} more"),
     "Spellblade.b2.r4b": ((("a.ArcaneBreach.dur", 2), ("a.ShatteringArc.dur", 2), ("a.Sunder.dur", 2)), "Arcane Breach, Shattering Arc and Sunder last +2s per rank", "your debuffs last +{v} s"),
     "Spellblade.b2.r6": ((("xFracture", 1),), "Sunder's cooldown is halved, and Shattering Arc deals +50% to Sundered enemies", "Sunder cooldown halved; Arc +50% on Sundered"),
-    "Spellblade.b3.r1a": ((("momChance", 20),), None, "{v}% chance a melee hit grants 1 Momentum"),
+    "Spellblade.b3.r1a": ((("momChance", 12),), "melee hits grant 1 Momentum at 12% chance per rank", "{v}% chance a melee hit grants 1 Momentum"),   # Balance P4 T5: 20 -> 12
     "Spellblade.b3.r3b": ((("a.ShatteringArc.rad", 0.5),), "Shattering Arc reaches +0.5 blocks per rank", "Shattering Arc +{v} blocks"),
     "Spellblade.b3.r4a": ((("imbueSlow", 10),), None, "imbued hits slow {v}% for 2 s"),
     "Spellblade.b3.r4b": ((("imbueHeal", 1),), None, "imbued hits heal you {v}% of max Health (twice a second at most)"),
@@ -4240,7 +4240,7 @@ CLASS_FX = {
     "Spellblade.b3.r6": ((("xCascade", 1),), "at full Momentum (20) your next ability is free, reaches +2 blocks and releases a 5-block nova of 10% of a hit per Momentum (all Momentum spent)",
                          "at 20 Momentum: a free cast, +2 blocks and a Momentum nova"),
     # ---------------- MONK (speed disruptor / single-target control)
-    "Monk.b1.r1a": ((("move", 4),), None, "+{v}% move speed"),
+    "Monk.b1.r1a": ((("move", 3),), "+3% movement speed per rank", "+{v}% move speed"),   # Balance P4 T6: 4 -> 3
     "Monk.b1.r1b": ((("sreg", 10),), None, "Stamina refills {v}% faster"),
     "Monk.b1.r2a": ((("fistsDmg", 5),), "+5% damage per rank while Hundred Fists runs (punch speed is fixed per weapon)", "+{v}% damage while Hundred Fists runs"),
     "Monk.b1.r5a": ((("dodgeStun", 0.3),), "a dodge roll stuns enemies it passes (within 1.5 blocks) for 0.3s per rank", "your rolls stun nearby enemies {v} s"),
@@ -4276,7 +4276,7 @@ CLASS_FX = {
     "Assassin.b2.r3c": ((("bigHitBuff", 3),), "a First Strike or God Killer hit gives +3% damage per rank for 4s (crits are your gear's)", "+{v}% damage for 4 s after a First Strike / God Killer"),
     "Assassin.b2.r4a": ((("clonePull", 1),), "First Strike pulls its target 3 blocks toward your Shadow Clone and the clone strikes it once (40% of the hit)", "First Strike pulls to your clone, which strikes"),
     "Assassin.b2.r4b": ((("lethal", 3),), "+3% chance per rank that a weapon hit is Lethal (+50% damage)", "{v}% chance of a Lethal hit (+50%)"),
-    "Assassin.b2.r5b": ((("dmgElite", 5),), None, "+{v}% damage to elites and bosses"),
+    "Assassin.b2.r5b": ((("dmgElite", 3),), "+3% dmg per rank vs elites and bosses", "+{v}% damage to elites and bosses"),   # Balance P4 T4: 5 -> 3
     "Assassin.b2.r6": ((("xDeicide", 1),), None, "God Killer + up to 60% by missing Health; a kill resets it"),
     "Assassin.b3.r1a": ((("a.Toxin.dur", 1),), "Toxin's cloud lasts +1s per rank", "Toxin lasts +{v} s"),
     "Assassin.b3.r1b": ((("kunaiWeak", 2),), None, "kunai hits weaken the target {v}% for 4 s"),
@@ -4297,7 +4297,7 @@ CLASS_FX = {
     "Archer.b1.r4a": ((("a.RapidFire.pow", 4),), None, "Rapid Fire +{v}% damage"),
     "Archer.b1.r4b": ((("dmgMarked", 5),), "hits on Marked enemies deal +5% per rank", "+{v}% on Marked enemies"),
     "Archer.b1.r5a": ((("move", 3), ("killStam", 5)), "+3% move speed per rank; a kill gives back 5 Stamina per rank", "+{v}% move speed; {v2} Stamina back per kill"),
-    "Archer.b1.r5b": ((("dmgFocus", 2),), None, "+{v}% per hit in a row on one target (5 at most)"),
+    "Archer.b1.r5b": ((("dmgFocus", 1),), "each consecutive hit on the same target +1% dmg per rank (max 5 stacks)", "+{v}% per hit in a row on one target (5 at most)"),   # Balance P4 T3: 2 -> 1
     "Archer.b1.r6": ((("xDeadEye", 1),), "Rapid Fire deals +50% to rooted (Pinned) enemies, and its hits keep Hunter's Mark on them", "Rapid Fire +50% on Pinned, keeps the Mark"),
     "Archer.b2.r1a": ((("bowSlow", 3),), None, "bow hits slow {v}% for 2 s"),
     "Archer.b2.r1b": ((("tripwire", 0.5),), "a dodge roll leaves a snare (6s): the first enemy to touch it is rooted 0.5s per rank", "your rolls leave a {v} s snare"),
@@ -4420,6 +4420,54 @@ def _fx_apply():
 
 _fx_apply()
 
+# ===================================================================================================================================
+# Balance P4 T7 (research/Balance-P4-Combat-Spec.md Part 4; 2026-10-21): one modifier of one ability gets at most 5 levels from the class
+# tree (mods.steps = Lv 2-5; SkyyClasses 0.1.44 also clamps all sources at 5 + the rebirth extra). The tree had up to 12 ranks on one
+# (ability, modifier) - e.g. Arcane Breach Power 5 + 5. The extra ranks moved to the row's other upgrade (up to its own 5-rank and
+# 5-per-modifier limits; the rest dropped). Saved ranks above a new max are clamped by SkyyTrees on read (TreeStore: num(.., 0, UMAX)),
+# the freed points are unspent again. key -> (old max, new max); computed once by the generator in tools/dev/scratch/balp4b (deleted).
+T7_MAX = {"Warrior.b3.r3a": (3, 2), "Warrior.b3.r3b": (3, 4),
+          "Berserker.b1.r2a": (5, 4), "Berserker.b1.r2b": (3, 4), "Berserker.b1.r4a": (5, 4), "Berserker.b1.r4b": (4, 5),
+          "Berserker.b1.r5a": (2, 4), "Berserker.b1.r5b": (3, 1), "Berserker.b2.r1a": (5, 1), "Berserker.b2.r1b": (4, 5),
+          "Berserker.b2.r5a": (3, 4), "Berserker.b2.r5b": (3, 2),
+          "Spellblade.b1.r1a": (5, 4), "Spellblade.b1.r1b": (4, 5), "Spellblade.b2.r1a": (5, 1), "Spellblade.b2.r1b": (3, 5),
+          "Spellblade.b3.r2b": (3, 1), "Spellblade.b3.r5a": (3, 5), "Spellblade.b3.r5b": (3, 1),
+          "Monk.b2.r1a": (5, 3), "Monk.b2.r1b": (4, 5), "Monk.b2.r2b": (3, 1), "Monk.b2.r4a": (4, 5), "Monk.b2.r4b": (4, 1),
+          "Monk.b3.r2a": (5, 4), "Monk.b3.r2b": (3, 4), "Monk.b3.r4a": (3, 5), "Monk.b3.r4b": (3, 1)}
+MOD_CAP = 5
+
+
+def _t7_apply():
+    seen = set()
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        for bn, b in enumerate(t["branches"]):
+            for r in b["rows"]:
+                for u in r["ups"]:
+                    k = "%s.b%d.%s" % (t["name"], bn + 1, u["id"])
+                    if k in T7_MAX:
+                        assert u["max"] == T7_MAX[k][0], ("T7: the old max moved", k, u["max"])
+                        u["max"] = T7_MAX[k][1]
+                        seen.add(k)
+    assert seen == set(T7_MAX), sorted(set(T7_MAX) - seen)
+
+
+def mod_ranks():
+    """{(ability, modifier): the most class-tree ranks one player can hold on it} (Balance P4 T7: each <= MOD_CAP)"""
+    out = {}
+    for t in TREES:
+        for b in t["branches"]:
+            for r in b["rows"]:
+                for u in r["ups"]:
+                    h = u.get("hook")
+                    if h and h[0] == "mod":
+                        out[(h[1], h[2])] = out.get((h[1], h[2]), 0) + u["max"]
+    return out
+
+
+_t7_apply()
+
 
 def check():
     """the table's own rules (every build script that imports it calls this)"""
@@ -4466,6 +4514,8 @@ def check():
                             assert per.setdefault(c, v) == v, ("one per-rank value for a ranked code", c)
     assert not [c for c in FX_CLASSES if c not in used], [c for c in FX_CLASSES if c not in used]
     assert not [c for c in FX_OWNER if c not in used], [c for c in FX_OWNER if c not in used]
+    _mr = mod_ranks()   # Balance P4 T7: no (ability, modifier) over MOD_CAP ranks in the class trees
+    assert all(v <= MOD_CAP for v in _mr.values()), sorted((k, v) for k, v in _mr.items() if v > MOD_CAP)
     return True
 
 

@@ -15,14 +15,15 @@ import skyybuild as B
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from scratch" (was "HUD mod" until 2026-10-15)
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
+# FLOOR (2026-10-21, Balance P4 combat): SkyyGear 0.3.34 + SkyyMobs 0.1.14 + SkyySkills 0.4.58 + SkyyClasses 0.1.44 + SkyyArmory 0.1.42 + SkyyTrees 0.4.4 pin + roll back TOGETHER (Gear's weapon / armor curves and Mobs' level tables are fit to each other: Gear alone back = Lv 20+ mobs ~2x too hard, Mobs alone back = 2-4x too easy). Needs Skills 0.4.57 (P3) pinned first. Before a rollback Undo the one-time P4 rows in Server Setup -> Changes (Gear migrateP4 4 rows, Mobs MobMigP4 13, Skills P4Mig 17 moved + 71 added, Classes migrateP4 up to 6) - older jars read the moved values as admin values. Skills 0.4.58 saves the class Health modifier skyyskill_classhp with the player: switch class.stats.enabled off for one session before rolling Skills back. Trees 0.4.4 lowers 28 upgrade maxima (T7): ranks above a new max are clamped on read (the class lines they opened are grandfathered in Class.<C>.gf until a respec) and a rollback does not give the ranks back.
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.24"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.30"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.33"), ("SkyySkills", "0.4.57"),
-    ("SkyyAccessories", "0.5.29"), ("SkyyClasses", "0.1.43"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.15"), ("SkyyTrees", "0.4.3"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.34"), ("SkyySkills", "0.4.58"),
+    ("SkyyAccessories", "0.5.29"), ("SkyyClasses", "0.1.44"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.15"), ("SkyyTrees", "0.4.4"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -69,7 +70,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.13"), ("SkyyWorldGen", "0.7.7"),
+    ("SkyyMobs", "0.1.14"), ("SkyyWorldGen", "0.7.7"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -118,7 +119,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.41"),
+    ("SkyyArmory", "0.1.42"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll

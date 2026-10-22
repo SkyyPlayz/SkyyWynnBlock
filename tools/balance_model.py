@@ -568,7 +568,625 @@ def assumptions_md():
     ])
 
 
+# ======================================================================================== P4 COMBAT (research/Balance-P4-Combat-Spec.md)
+# The combat core the builds (SkyyGear 0.3.34, SkyyMobs 0.1.14, SkyySkills 0.4.58, SkyyClasses 0.1.44, SkyyArmory 0.1.42) assert against.
+# Ported from the spec's scratch model (tools/dev/scratch/p4/p4model.py, deleted): F_new, the mob RULE, ttk, hits to die, speed, Mana.
+# Sources: P4 = research/Balance-P4-Combat-Spec.md section; MC = research/Mob-Curve-Spec.md; CR = research/Class-Roles-Sheet.md.
+P4_G = 1.045                                  # P4 1.2: +4.5 % a level past Lv 20 (weapon F, armor H, mobs)
+P4_F20 = [(1, 1.0), (4, 1.6), (10, 2.0), (20, 2.333333)]           # today's F up to Lv 20 (P4 1.2: unchanged)
+P4_F_LEVELS = [1, 4, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+P4_F_TEXT = "1:1,4:1.6,10:2,20:2.333333,30:3.624,40:5.627,50:8.739,60:13.572,70:21.076,80:32.731,90:50.83,100:78.937"   # P4 1.4
+P4_S_TEXT = "1:1,8:1.67,20:2.333333,40:4.67,60:6.07,80:10.99,100:28.75"   # P4 1.4 (DERIVED T7: each metal's charged shot keeps its ratio)
+P4_RES = [(1, 1.0), (10, 1.4), (20, 1.7), (40, 2.2), (100, 3.0)]   # base.resCurve (unchanged)
+P4_RES_PER = 0.18                              # MC 2.3: resistance = 18 % x R(L) (Lv 1 18 %, Lv 20 30.6 %, Lv 40 39.6 %)
+P4_BAND_STARTS = [1, 8, 15, 20, 28, 35, 40, 48, 55, 60, 68, 75, 80, 88, 95, 100]   # tools/tier_tags.py METAL_BANDS starts
+P4_LEVELS = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+# today's 0.1.12 Normal tables (stretched, SkyyMobs live = combat.md); P4 keeps them to Lv 20
+P4_HP_NORMAL_012 = [(1, 1.0), (20, 2.14), (30, 3.03), (40, 4.62), (47, 6.97), (53, 10.69), (60, 15.63), (65, 19.66), (73, 21.48), (80, 23.0), (100, 27.56)]
+P4_DMG_NORMAL_012 = [(1, 1.0), (20, 1.57), (30, 2.04), (40, 2.62), (47, 3.33), (53, 4.2), (60, 5.39), (65, 6.45), (73, 6.89), (80, 7.24), (100, 8.29)]
+P4_DIFF = {"easy": (0.6, 0.6), "normal": (1.0, 1.1), "hard": (1.6, 1.8)}   # P4 1.2 (Normal damage x1.1 = the M class Defense 10)
+# P4 1.4 - the exact file values (the spec's numbers; health = the RULE to 0.01, damage = the RULE within P4_DMG_TOL - see p4_dmg_rule)
+P4_TABLES = {
+    ("hp", "easy"): "1=0.6, 5=0.74, 10=0.92, 15=1.1, 20=1.28, 25=1.62, 30=2.08, 35=2.67, 40=3.4, 45=4.27, 50=5.49, 55=7.03, 60=8.95, 65=11.26, 70=14.44, 75=18.47, 80=23.5, 85=29.54, 90=37.84, 95=48.35, 100=61.47",
+    ("dmg", "easy"): "1=0.6, 5=0.67, 10=0.76, 15=0.85, 20=0.94, 25=1.07, 30=1.25, 35=1.46, 40=1.74, 45=2.04, 50=2.46, 55=2.99, 60=3.65, 65=4.46, 70=5.58, 75=7.01, 80=8.83, 85=11.05, 90=14.15, 95=18.14, 100=23.24",
+    ("hp", "normal"): "1=1, 5=1.24, 10=1.54, 15=1.84, 20=2.14, 25=2.69, 30=3.46, 35=4.44, 40=5.66, 45=7.12, 50=9.15, 55=11.72, 60=14.92, 65=18.76, 70=24.07, 75=30.78, 80=39.17, 85=49.23, 90=63.07, 95=80.58, 100=102.45",
+    ("dmg", "normal"): "1=1.1, 5=1.23, 10=1.4, 15=1.56, 20=1.73, 25=1.96, 30=2.28, 35=2.69, 40=3.19, 45=3.75, 50=4.51, 55=5.48, 60=6.7, 65=8.18, 70=10.22, 75=12.85, 80=16.18, 85=20.26, 90=25.93, 95=33.26, 100=42.6",
+    ("hp", "hard"): "1=1.6, 5=1.98, 10=2.46, 15=2.94, 20=3.42, 25=4.31, 30=5.54, 35=7.11, 40=9.06, 45=11.4, 50=14.64, 55=18.75, 60=23.88, 65=30.02, 70=38.51, 75=49.25, 80=62.67, 85=78.77, 90=100.92, 95=128.93, 100=163.92",
+    ("dmg", "hard"): "1=1.8, 5=2.02, 10=2.29, 15=2.56, 20=2.83, 25=3.21, 30=3.74, 35=4.39, 40=5.22, 45=6.13, 50=7.38, 55=8.97, 60=10.96, 65=13.38, 70=16.73, 75=21.02, 80=26.48, 85=33.15, 90=42.44, 95=54.42, 100=69.71",
+}
+P4_DMG_TOL = 0.025          # the spec's damage table vs this model's EHP rule (2.5 %): the scratch model's exact EHP is gone (build note)
+P4_HP_FLOOR = 70            # strength.floor 50 -> 70 (P4 1.2)
+P4_GAP = {"free": 3, "dealtStep": 5.0, "dealtMin": 40.0, "takenStep": 3.0, "takenMax": 1.5}   # P4 1.6
+P4_RANK = {"elite": (3.0, 1.5), "mini": (10.0, 2.0)}                # P4 1.7 (Skyy Q7)
+P4_BOSS_BASE, P4_BOSS_DMG, P4_BOSS_UPTIME = 4500.0, 2.0, 0.6
+P4_REF_HIT, P4_REF_DPS = 7.67, 17.0          # MC 5.2: Warrior Crude/Copper sword Lv 1 6 / 6 / 11 a swing, ~0.45 s
+P4_KIT = {"plain": 1.0, "expected": 1.73, "best": 3.0}              # P4 1.3 (Q14 "About 3x"; expected = halfway in log space)
+P4_TRASH, P4_TOUGH = (70.0, 12.0), (200.0, 27.0)                    # (base Health, base hit) - trash at the floor, a tough mob (bears / golems)
+# P4 2.1 - the rating -> number map; 2.2 - the classes (CR ratings)
+P4_RATE = {"health": {"SL": -20, "L": -10, "M": 0, "H": 15, "SH": 35}, "defense": {"SL": 0, "L": 5, "M": 10, "H": 25, "SH": 45},
+           "damage": {"SL": 0.55, "L": 0.75, "M": 1.0, "H": 1.25, "SH": 1.5}, "speed": {"SL": -12, "L": -6, "M": 0, "H": 6, "SH": 12},
+           "weight": {"SL": 2.0, "L": 1.5, "M": 1.0, "H": 0.5, "SH": 0.25}}
+# class: (weight, health %, defense, stamina base, stamina / lv, own-armor speed %, native armor, damage rating)
+P4_CLASSES = {"Warrior": ("SH", 35, 45, 10, 0.13, -6, "Heavy", 1.0), "Berserker": ("H", 15, 10, 13, 0.17, 0, "Heavy", 1.25),
+              "Spellblade": ("M", 0, 10, 7, 0.09, 0, "Light", 1.25), "Monk": ("L", 0, 5, 13, 0.17, 12, "Light", 1.0),
+              "Assassin": ("SL", -10, 5, 10, 0.13, 12, "Light", 1.5), "Archer": ("L", 0, 10, 10, 0.13, 6, "Light", 1.25),
+              "Mage": ("SL", -20, 0, 4, 0.05, 6, "Cloth", 1.5), "Priest": ("L", 0, 10, 4, 0.05, 6, "Cloth", 0.75)}
+P4_LOAD = {"Cloth": 0.0, "Light": 1.0, "Heavy": 3.0}                # type load (P4 2.3)
+P4_SLOT = {"Head": 0.20, "Chest": 0.35, "Legs": 0.30, "Hands": 0.15}   # slot share (sums to 1)
+P4_PER_LOAD = 4.0                                                    # % slower per load point x weight factor
+P4_MAX_FACTOR = 1.8                                                  # move.maxFactor (total speed ceiling)
+# P4 2.4 - class damage factor: 100 x rating x the Warrior's measured DPS / this class's measured DPS (casters: Mana budget decides; Archer
+# MC 5.2). MEASURED by p4_measure() from Assets.zip (vanilla starter weapon, primary chain): the SkyySkills build asserts these
+P4_CLASS_DAMAGE = {"Warrior": 100, "Berserker": 130, "Spellblade": 148, "Monk": 202, "Assassin": 120, "Archer": 200, "Mage": 100, "Priest": 100}
+P4_STARTERS = {"Warrior": "Weapon_Sword_Crude", "Berserker": "Weapon_Battleaxe_Crude", "Spellblade": "Weapon_Longsword_Crude",
+               "Monk": "Weapon_Staff_Bo_Wood", "Assassin": "Weapon_Daggers_Crude"}
+# P4 3.2 - Mana
+# BUILD RE-TUNE (balp4b, 2026-10-21): the spec's 3.2 pools (Mage 80 / 9.5, Priest 40 / 7, Spellblade 50 / 3) emptied in 16 s at Lv 20 and
+# "never" once the quick refill ran between charged shots (the first build's harness). Fixes: (1) the quick refill only starts once the bar
+# is DRY (under mana.refillBelow 20 % of max) and then runs until the bar is full (pausing mana.refillDelay after each charged shot /
+# ability) - so it can never stretch the first 20-30 s; (2) the benchmark uses SkyyArmory's full 16-rung cost ladder (the 8 new metals'
+# costs, Copper from Lv 4) instead of 7 rungs, and SkyyClasses' REAL walking costs + cooldowns (P4_ABIL; the old reader guessed the alts);
+# (3) pools + cost growth re-fit by a grid search (tools/dev/scratch/balp4b, deleted) so that
+# Lv 1 / 5 / 10 / 20 / 30 / 40 / 60 / 80 / 100 all run dry in 18-30 s (the 4 s charged-shot steps make the times lumpy: 20 / 24 / 28).
+# Fix round (balp4bfix): the critic asked for Skyy's approved pools (docs/answered/classes.md 2026-10-20 "Bigger pool, slower regen": Mage 80 /
+# 9.5, Priest 40 / 7, Spellblade 50 / 3) with the target met another way. Not possible: the levers that shorten nothing are Skyy-locked
+# (SkyyArmory's ONE wand / staff cost table + STAFF_FACTOR 2, Spellblade x2 costs, regen growth 3 %) and the approved pools run dry in
+# 5-16 s (Mage Lv 20: a 50-Mana staff shot every 4 s alone empties 272 x 0.8 in 17 s). The least-change fit that keeps Skyy's Mage base 80:
+# Mage 80 / 14.5 (was 70 / 15.5); Priest 60 / 10 and Spellblade 70 / 6 are the only grid fits within +-30 base (QUESTION for Skyy, see report).
+P4_MANA = {"Mage": (80, 14.5), "Priest": (60, 10.0), "Spellblade": (70, 6.0), "Archer": (24, 1.0), "Warrior": (21, 1.0), "Assassin": (24, 1.0),
+           "Monk": (21, 1.0), "Berserker": (12, 1.0)}
+P4_MANA_012 = {"Mage": (45, 9.5), "Priest": (42, 4.5), "Spellblade": (33, 3.0)}
+P4_REGEN = (3.333, 0.65, 3.0, 20)          # vanilla Mana regen / s, in-combat share, growth % a level (5 -> 3), from level
+P4_REGEN_CLASS = {"Spellblade": 50}        # mana.regen.class (% of regen), others 100
+P4_REFILL = {"Mage": 15, "Priest": 15, "Spellblade": 15}             # mana.refillPct (% of max a second), delay 1 s
+P4_REFILL_DELAY = 1.0
+P4_REFILL_BELOW = 20.0                     # mana.refillBelow: the refill starts once the bar is under this % (dry), runs until full
+P4_COST_PER_LEVEL = {"Mage": 0.0, "Spellblade": 2.5}                 # abil.costPerLevel %, others 1.5 (build re-tune: Priest 1 -> 1.5, Spellblade 1.5 -> 2.5)
+P4_SB_MANA = {"ArcaneBreach": 16, "ElementalImbue": 14, "Sunder": 18, "RiftCleave": 20, "ShatteringArc": 18}   # P4 3.2 (x2)
+# SkyyArmory's ONE cost table by band start (WANDS + the 8 new metals, nm_interp rounded to 5; Onyxium = Mithril's 85, the parked tier);
+# Wood (5) to Lv 3, Copper (10) from Lv 4 (Zone 1's first craft); a Mage staff = 2 x
+P4_WANDS = [(1, 5), (4, 10), (8, 15), (20, 25), (28, 30), (35, 35), (40, 40), (48, 45), (55, 50), (60, 60), (68, 65), (75, 75), (80, 85),
+            (88, 95), (95, 105), (100, 85)]
+P4_TREE = {"dmgCap": 40, "drCap": 35}       # P4 Part 4 T1 / T2
+
+
+def p4_interp(points, x):
+    if x <= points[0][0]:
+        return points[0][1]
+    if x >= points[-1][0]:
+        return points[-1][1]
+    for (a, b), (c, d) in zip(points, points[1:]):
+        if x <= c:
+            return b + (d - b) * (x - a) / (c - a)
+    return points[-1][1]
+
+
+def p4_F(L):
+    """weapon curve F = armor Health curve H (exact form; the game evaluates the P4_F_TEXT points with straight lines)"""
+    return p4_interp(P4_F20, L) if L <= 20 else 2.333333 * P4_G ** (L - 20)
+
+
+def p4_band_start(L):
+    return max(s for s in P4_BAND_STARTS if s <= max(1, L))
+
+
+def p4_bonus(L):
+    b = p4_band_start(L)
+    return 1.0 if b <= 1 else 1.0 + 0.003 * b
+
+
+def p4_perk(L):
+    return 1.0 + 0.002 * L
+
+
+def p4_f_text():
+    return ",".join("%d:%s" % (L, ("%.6f" % p4_F(L)).rstrip("0").rstrip(".") if L == 20 else ("%.3f" % p4_F(L)).rstrip("0").rstrip("."))
+                    for L in P4_F_LEVELS)
+
+
+def p4_hp_rule(L, diff="normal"):
+    """mob Health multiplier: today's Normal to Lv 20, then x (F x bonus x perk)(L) / (the same at 20); x the difficulty factor"""
+    if L <= 20:
+        v = p4_interp(P4_HP_NORMAL_012, L)
+    else:
+        v = p4_interp(P4_HP_NORMAL_012, 20) * (p4_F(L) * p4_bonus(L) * p4_perk(L)) / (p4_F(20) * p4_bonus(20) * p4_perk(20))
+    return v * P4_DIFF[diff][0]
+
+
+def p4_player_hp(L):
+    """M class, plain kit: 100 + a full set's 25 x H x bonus + Overall Health (0.5 a level x L / 2 = 0.35 L incl. the Health perks; MC 2.3)"""
+    return 100.0 + 25.0 * p4_F(L) * p4_bonus(L) + 0.35 * L
+
+
+def p4_res(L):
+    return P4_RES_PER * p4_interp(P4_RES, L)
+
+
+def p4_ehp(L):
+    return p4_player_hp(L) / (1.0 - p4_res(L))
+
+
+def p4_dmg_rule(L, diff="normal"):
+    """mob damage multiplier: today's Normal (x1.1) to Lv 20, then x EHP(L) / EHP(20) - the same hits to die at every level"""
+    v = p4_interp(P4_DMG_NORMAL_012, min(L, 20)) * (1.0 if L <= 20 else p4_ehp(L) / p4_ehp(20))
+    return v * P4_DIFF[diff][1]
+
+
+def p4_table(kind, diff):
+    return [(int(a), float(b)) for a, b in (x.strip().split("=") for x in P4_TABLES[(kind, "normal" if diff == "custom" else diff)].split(","))]
+
+
+def p4_table_text(kind, diff, sep=", ", eq="="):
+    return sep.join("%d%s%s" % (a, eq, ("%.2f" % b).rstrip("0").rstrip(".")) for a, b in p4_table(kind, diff))
+
+
+def p4_table_problems():
+    """[] = every table holds the RULE (health to 0.01 at every point, damage to 0.01 up to Lv 20 and within P4_DMG_TOL above)"""
+    bad = []
+    for (kind, diff) in P4_TABLES:
+        pts = p4_table(kind, diff)
+        if [a for a, _b in pts] != P4_LEVELS:
+            bad.append("%s %s: levels %s" % (kind, diff, [a for a, _b in pts]))
+        for a, b in pts:
+            r = p4_hp_rule(a, diff) if kind == "hp" else p4_dmg_rule(a, diff)
+            ok = abs(b - r) <= 0.0051 + (0 if kind == "hp" or a <= 20 else P4_DMG_TOL * r)
+            if not ok:
+                bad.append("%s %s Lv %d: table %s, rule %.4f" % (kind, diff, a, b, r))
+        if any(pts[i][1] >= pts[i + 1][1] for i in range(len(pts) - 1)):
+            bad.append("%s %s: not rising" % (kind, diff))
+    return bad
+
+
+def p4_hit(L, kit="expected", cls_damage=1.0):
+    """one main-attack hit of an M-damage melee class (F x bonus x perk x kit)"""
+    return P4_REF_HIT * p4_F(L) * p4_bonus(L) * p4_perk(L) * P4_KIT[kit] * cls_damage
+
+
+def p4_ttk(base, L, kit="expected", diff="normal", hp_x=1.0):
+    """hits to kill a same-level mob of this base Health (the floor lifts trash)"""
+    return max(base, P4_HP_FLOOR) * hp_x * p4_interp(p4_table("hp", diff), L) / p4_hit(L, kit)
+
+
+def p4_hits_to_die(base_hit, L, kit="plain", diff="normal", cls=None, dmg_x=1.0):
+    """hits a same-level mob needs on you (plain armor; cls = class Health % + Defense, else M: +0 % / Defense 10)"""
+    hp_pct, dfn = (0, 10) if cls is None else (P4_CLASSES[cls][1], P4_CLASSES[cls][2])
+    ehp = p4_player_hp(L) * (1 + hp_pct / 100.0) * P4_KIT[kit] / (1.0 - p4_res(L)) * (100.0 + dfn) / 100.0
+    return ehp / (base_hit * dmg_x * p4_interp(p4_table("dmg", diff), L))
+
+
+def p4_boss_seconds(L, cls="Warrior", kit="expected", diff="normal"):
+    dps = P4_REF_DPS * p4_F(L) * p4_bonus(L) * p4_perk(L) * P4_KIT[kit] * P4_CLASSES[cls][7] * P4_BOSS_UPTIME
+    return P4_BOSS_BASE * p4_interp(p4_table("hp", diff), L) / dps
+
+
+def p4_gap(over):
+    """(your damage factor, its damage factor) a mob `over` levels above you gets (P4 1.6)"""
+    x = max(0, over - P4_GAP["free"])
+    return max(P4_GAP["dealtMin"] / 100.0, 1.0 - P4_GAP["dealtStep"] / 100.0 * x), min(P4_GAP["takenMax"], 1.0 + P4_GAP["takenStep"] / 100.0 * x)
+
+
+def p4_gap_hard(L, over):
+    """'as hard' = kill time x damage taken vs a same-level mob (the curve between the levels + the gap rule)"""
+    d, t = p4_gap(over)
+    hp = p4_interp(p4_table("hp", "normal"), L + over) / p4_interp(p4_table("hp", "normal"), L)
+    dm = p4_interp(p4_table("dmg", "normal"), L + over) / p4_interp(p4_table("dmg", "normal"), L)
+    return hp / d * dm * t
+
+
+def p4_speed(cls, armor):
+    """move speed % of a class in a full set of armor type `armor` (P4 2.3)"""
+    w = P4_RATE["weight"][P4_CLASSES[cls][0]]
+    base = P4_CLASSES[cls][5] + P4_PER_LOAD * P4_LOAD[P4_CLASSES[cls][6]] * w
+    return base - P4_PER_LOAD * P4_LOAD[armor] * w
+
+
+def p4_pool(cls, L, new=True):
+    b, per = (P4_MANA if new else dict(P4_MANA, **P4_MANA_012))[cls]
+    return b + per * L + 0.1 * L          # + Overall Mana 0.2 a level x Overall Level L / 2
+
+
+def p4_regen(cls, L, growth=None):
+    base, share, g, frm = P4_REGEN
+    g = g if growth is None else growth
+    return base * (1 + g / 100.0 * max(0, L - frm)) * share * P4_REGEN_CLASS.get(cls, 100) / 100.0
+
+
+def p4_wand(L):
+    return [c for s, c in P4_WANDS if s <= max(1, L)][-1]
+
+
+# SkyyClasses 0.1.44's walking defaults (AbilDefs.mana(ai, 0) / cdMs(ai, 0) after AbilNum.sync - the Classes harness asserts the jar = this
+# table): {class: [(ability, tier 0 A1 / 1 A2 / 2 A2-alt / 3 A1-alt A / 4 A1-alt B, Mana, cooldown s, passive)]}. Guardian Spirit is a
+# passive (it pays per save, no cooldown) - never part of the casting benchmark. Mana here is BEFORE abil.costPerLevel.
+P4_ABIL = {
+    "Warrior": [("RallyingGuard", 0, 5.0, 24.0, False), ("ShieldShockwave", 1, 4.0, 12.0, False), ("IronChain", 2, 5.0, 14.0, False), ("Challenge", 3, 5.0, 20.0, False)],
+    "Berserker": [("Enrage", 0, 3.0, 30.0, False), ("Whirlwind", 1, 3.0, 14.0, False), ("Earthsplitter", 2, 3.0, 12.0, False), ("BloodFrenzy", 3, 1.0, 10.0, False)],
+    "Spellblade": [("ArcaneBreach", 0, 16.0, 5.0, False), ("ElementalImbue", 1, 14.0, 18.0, False), ("Sunder", 2, 18.0, 30.0, False), ("RiftCleave", 3, 20.0, 20.0, False), ("ShatteringArc", 4, 18.0, 20.0, False)],
+    "Monk": [("FlowingForm", 0, 2.0, 40.0, False), ("PalmStrike", 1, 3.0, 6.0, False), ("CycloneKick", 2, 4.0, 8.0, False), ("HundredFists", 3, 3.0, 40.0, False), ("StillWater", 4, 7.0, 25.0, False)],
+    "Assassin": [("CloakFirstStrike", 0, 6.0, 30.0, False), ("Toxin", 1, 5.0, 16.0, False), ("GodKiller", 2, 6.0, 45.0, False), ("VanishingAct", 3, 7.0, 28.0, False)],
+    "Archer": [("PinningShot", 0, 4.0, 12.0, False), ("RapidFire", 1, 6.0, 20.0, False), ("ExplosiveArrow", 2, 5.0, 14.0, False), ("ArrowRain", 3, 7.0, 20.0, False)],
+    "Mage": [("Meteor", 0, 23.0, 14.0, False), ("ManaBarrier", 1, 16.0, 30.0, False), ("FrostNova", 2, 19.0, 22.0, False), ("Starfall", 3, 28.0, 18.0, False), ("ArcaneBeam", 4, 23.0, 18.0, False)],
+    "Priest": [("SacredHeal", 0, 18.0, 8.0, False), ("ShieldBubble", 1, 20.0, 24.0, False), ("GuardianSpirit", 2, 15.0, 0.0, True), ("Sanctuary", 3, 26.0, 28.0, False), ("MartyrsGrace", 4, 22.0, 18.0, False)],
+}
+
+
+def p4_abilities():
+    """{class: [[id, tier, Mana, cooldown s]]} - the casting benchmark's abilities (P4_ABIL, passives left out)"""
+    return dict((c, [[a, t, m, cd] for a, t, m, cd, ps in rows if not ps]) for c, rows in P4_ABIL.items())
+
+
+P4_UNLOCK = {0: 1, 1: 10, 2: 20, 3: 30, 4: 40}
+P4_MANA_LEVELS = (1, 5, 10, 20, 30, 40, 60, 80, 100)   # P4 3.3
+P4_DODGE_COST = 2.0   # P4 3.4: a dodge roll's Stamina - the fallback; p4_dodge_cost() reads the real one from Assets.zip (VERIFIED 2026-10-21: 2)
+
+
+def p4_dodge_cost():
+    """P4 3.4 "the harness must read the dodge cost": Costs.Stamina of the vanilla Dodge_Left / Dodge_Right interactions (Assets.zip, read
+    only; both must agree); P4_DODGE_COST when Assets.zip cannot be read"""
+    try:
+        import zipfile
+        import json as _js
+        import re as _re
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import serverjar as _SJ
+        z = zipfile.ZipFile(_SJ.assets_zip())
+        got = []
+        for side in ("Left", "Right"):
+            t = z.read("Server/Item/Interactions/Dodge/Dodge_%s.json" % side).decode("utf-8")
+            t = _re.sub(r",\s*([}\]])", r"\1", _re.sub(r"//[^\n]*", "", t))
+            got.append(float(_js.loads(t)["Costs"]["Stamina"]))
+        assert got[0] == got[1], got
+        return got[0]
+    except Exception:
+        return P4_DODGE_COST
+
+
+def p4_stamina(cls, L):
+    """max Stamina of a class at class level L: vanilla 10 + SkyySkills 0.4.58's class base + per level (no Mining / tree / gear Stamina)"""
+    return 10.0 + P4_CLASSES[cls][3] + P4_CLASSES[cls][4] * L
+
+
+def p4_refill_step(pct, pool, cur, secs, since_cast, dry, fight=True):
+    """THE quick refill rule (SkyySkills 0.4.58 ClassStat.refill, the same maths): Mana added this pulse - in combat, the bar dry (it fell
+    under mana.refillBelow and has not been full since), mana.refillDelay passed since the last charged shot / ability (since_cast < 0 =
+    never cast = long ago); at most the room left"""
+    if not fight or not dry or pct <= 0 or pool <= 0 or cur >= pool or secs <= 0:
+        return 0.0
+    if 0 <= since_cast < P4_REFILL_DELAY:
+        return 0.0
+    return min(pool * pct * secs, pool - cur)
+
+
+def p4_tempty(cls, L, refill=True, growth=None, abil=None, horizon=600.0, dt=0.1, below=None):
+    """seconds of non-stop casting until the bar RUNS DRY (P4 3.1 benchmark): every owned ability the moment its cooldown ends, a charged
+    band-weapon shot every 4 s (Mage staff = 2 x the wand cost, Priest wand; the Spellblade has none), quick shots between cost nothing
+    here; in-combat regen. Dry = the next cast cannot be paid OR the bar is under mana.refillBelow (the quick refill starts there). The
+    refill (refill=True) is simulated too, but by its rule it cannot act before dry. None = never within the horizon."""
+    abil = abil if abil is not None else p4_abilities()
+    below = P4_REFILL_BELOW if below is None else below
+    rows = [r for r in abil.get(cls, []) if P4_UNLOCK.get(r[1], 99) <= L and r[1] != 4]   # one A1-alt (A locks out B)
+    per = 1.0 + (P4_COST_PER_LEVEL.get(cls, 1.5) / 100.0) * L
+    pool = p4_pool(cls, L)
+    m, t = pool, 0.0
+    ready = dict((r[0], 0.0) for r in rows)
+    shot = {"Mage": 2 * p4_wand(L), "Priest": p4_wand(L)}.get(cls, 0)
+    next_shot, last_cast, dry = 0.0, -99.0, False
+    while t < horizon:
+        for r in rows:
+            if t >= ready[r[0]] - 1e-9:
+                c = r[2] * per
+                if m < c:
+                    return t
+                m -= c
+                ready[r[0]] = t + r[3]
+                last_cast = t
+        if shot and t >= next_shot - 1e-9:
+            if m < shot:
+                return t
+            m -= shot
+            next_shot = t + 4.0
+            last_cast = t
+        if m < below / 100.0 * pool:
+            return t
+        m = min(pool, m + p4_regen(cls, L, growth) * dt)
+        if refill:
+            m += p4_refill_step(P4_REFILL.get(cls, 0) / 100.0, pool, m, dt, t - last_cast, dry)
+        t += dt
+    return None
+
+
+def p4_refill_seconds(cls, L, to=0.8, dt=0.1):
+    """seconds of basic attacks (quick shots 1 a second at 1/5 of the charged cost, no charged shot, no ability) from an empty, dry bar to
+    `to` of the bar (P4 3.2; the last charged shot / ability was just now, so the refill waits mana.refillDelay first)"""
+    pool = p4_pool(cls, L)
+    quick = {"Mage": 2 * p4_wand(L), "Priest": p4_wand(L)}.get(cls, 0) / 5.0
+    m, t, nq = 0.0, 0.0, 0.0
+    while m < to * pool and t < 120:
+        m = min(pool, m + p4_regen(cls, L) * dt)
+        m += p4_refill_step(P4_REFILL.get(cls, 0) / 100.0, pool, m, dt, t, True)
+        if t >= nq - 1e-9:
+            m = max(0.0, m - quick)
+            nq = t + 1.0
+        t += dt
+    return t
+
+
+def p4_rotation_share(cls, L, abil=None):
+    abil = abil if abil is not None else p4_abilities()
+    rows = [r for r in abil.get(cls, []) if P4_UNLOCK.get(r[1], 99) <= L and r[1] != 4]
+    per = 1.0 + (P4_COST_PER_LEVEL.get(cls, 1.5) / 100.0) * L
+    return sum(r[2] * per for r in rows) / p4_pool(cls, L)
+
+
+def p4_measure():
+    """{class: (avg hit, avg swing s, DPS)} of each melee class's vanilla starter weapon (Assets.zip, read only): the primary chain's swings
+    (Charging -> Chaining -> each swing's Simple / Selector / Parallel RunTime; the root's Cooldown as the floor of a swing) and each swing's
+    damage from the item's InteractionVars. UNVERIFIED vs the game's real swing timing (P4 6.8)."""
+    import zipfile
+    import json as _js
+    import re as _re
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import serverjar as _SJ
+    z = zipfile.ZipFile(_SJ.assets_zip())
+    names = z.namelist()
+
+    def lj(t):
+        t = _re.sub(r"//[^\n]*", "", t)
+        t = _re.sub(r"/\*.*?\*/", "", t, flags=_re.S)
+        return _js.loads(_re.sub(r",\s*([}\]])", r"\1", t))
+    items = dict((x.rsplit("/", 1)[1][:-5], x) for x in names if x.startswith("Server/Item/Items/") and x.endswith(".json"))
+    inter = dict((x.rsplit("/", 1)[1][:-5], x) for x in names if x.startswith("Server/Item/Interactions/") and x.endswith(".json"))
+    roots = dict((x.rsplit("/", 1)[1][:-5], x) for x in names if x.startswith("Server/Item/RootInteractions/") and x.endswith(".json"))
+
+    def idef(x):
+        if isinstance(x, dict):
+            if "Parent" in x and x["Parent"] in inter:
+                b = dict(idef(x["Parent"]))
+                b.update(dict((k, v) for k, v in x.items() if k != "Parent"))
+                return b
+            return x
+        if x in inter:
+            d = lj(z.read(inter[x]).decode("utf-8-sig"))
+            if "Parent" in d and d["Parent"] in inter:
+                b = dict(idef(d["Parent"]))
+                b.update(dict((k, v) for k, v in d.items() if k != "Parent"))
+                return b
+            return d
+        return None
+
+    def item(w):
+        chain = [lj(z.read(items[w]).decode("utf-8-sig"))]
+        while chain[-1].get("Parent") in items:
+            chain.append(lj(z.read(items[chain[-1]["Parent"]]).decode("utf-8-sig")))
+        out = {}
+        for c in reversed(chain):
+            for k, v in c.items():
+                if k in ("InteractionVars", "Interactions") and isinstance(v, dict):
+                    out.setdefault(k, {}).update(v)
+                else:
+                    out[k] = v
+        return out
+
+    def ivar_damage(iv, var):
+        v = iv.get(var)
+        if not v:
+            return None
+        if isinstance(v, str):
+            v = {"Interactions": [idef(v) or {}]}
+        tot = 0.0
+        for i in v.get("Interactions", []):
+            i = idef(i) or {}
+            tot += sum(float(x) for x in i.get("DamageCalculator", {}).get("BaseDamage", {}).values())
+        return tot or None
+
+    def resolve(x, iv):
+        d = idef(x)
+        if d and d.get("Type") == "Replace":
+            var = d.get("Var")
+            if var in iv and isinstance(iv[var], str):
+                return resolve(iv[var], iv)
+            if var in iv and iv[var].get("Interactions"):
+                return resolve(iv[var]["Interactions"][0], iv)
+            dv = d.get("DefaultValue", {}).get("Interactions", [])
+            return resolve(dv[0], iv) if dv else None
+        return d
+
+    def swing(d, iv, depth=0):
+        t, dmg = 0.0, 0.0
+        while d is not None and depth < 12:
+            depth += 1
+            if d.get("Type") == "Parallel":
+                best = (0.0, 0.0)
+                for br in d.get("Interactions", []):
+                    ii = br.get("Interactions", []) if isinstance(br, dict) else []
+                    if ii:
+                        r = swing(resolve(ii[0], iv), iv, depth)
+                        best = (max(best[0], r[0]), max(best[1], r[1]))
+                return t + best[0], max(dmg, best[1])
+            t += float(d.get("RunTime", 0) or 0)
+            he = d.get("HitEntity", {}).get("Interactions", []) if isinstance(d.get("HitEntity"), dict) else []
+            for h in he:
+                hd = idef(h)
+                if hd and hd.get("Type") == "Replace":
+                    v = ivar_damage(iv, hd.get("Var"))
+                    if v:
+                        dmg = max(dmg, v)
+            nx = d.get("Next")
+            if isinstance(nx, (dict, str)) and (not isinstance(nx, dict) or "Type" in nx or "Parent" in nx):
+                d = resolve(nx, iv)
+            else:
+                break
+        return t, dmg
+
+    res = {}
+    for cls, w in P4_STARTERS.items():
+        it = item(w)
+        iv = it.get("InteractionVars", {})
+        r = lj(z.read(roots[it["Interactions"]["Primary"]]).decode("utf-8-sig"))
+        cd = float(r.get("Cooldown", {}).get("Cooldown", 0) or 0)
+        d = resolve(r["Interactions"][0], iv)
+        sw = []
+        for _i in range(6):
+            if d is None:
+                break
+            if d.get("Type") == "Charging":
+                nx = d.get("Next", {})
+                d = resolve(nx.get("0") if isinstance(nx, dict) else nx, iv)
+                continue
+            if d.get("Type") == "Chaining":
+                sw = [swing(resolve(e, iv), iv) for e in d.get("Next", [])]
+            else:
+                sw = [swing(d, iv)]
+            break
+        per = [max(cd, t) for t, _d in sw]
+        if not sw or not sum(per) or not sum(x for _t, x in sw):
+            res[cls] = None
+            continue
+        res[cls] = (sum(x for _t, x in sw) / len(sw), sum(per) / len(sw), sum(x for _t, x in sw) / sum(per))
+    return res
+
+
+def p4_damage_factors(meas=None):
+    """{class: factor %} from the measurement (melee) + the fixed ones (Archer MC 5.2, casters 100)"""
+    meas = meas if meas is not None else p4_measure()
+    ref = meas["Warrior"][2]
+    out = {}
+    for cls, v in meas.items():
+        out[cls] = None if v is None else 100.0 * P4_CLASSES[cls][7] * ref / v[2]
+    for cls in ("Archer", "Mage", "Priest"):
+        out[cls] = float(P4_CLASS_DAMAGE[cls])
+    return out
+
+
+def p4_rows():
+    """the P4 6.5 check rows: (target, model text, ok)"""
+    rows = []
+    tr = [p4_ttk(P4_TRASH[0], L) for L in P4_LEVELS if L >= 20]
+    tg = [p4_ttk(P4_TOUGH[0], L) for L in P4_LEVELS if L >= 20]
+    z1 = [p4_ttk(P4_TRASH[0], L) / p4_ttk(P4_TRASH[0], 20) for L in P4_LEVELS if 5 <= L < 20]
+    rows.append(("Normal trash 4-6 hits (expected kit, M; Lv 20-100)", "%.1f-%.1f" % (min(tr), max(tr)), all(4.0 <= x <= 6.0 for x in tr)))
+    rows.append(("Normal tough 12-15 hits (Lv 20-100)", "%.1f-%.1f" % (min(tg), max(tg)), all(11.5 <= x <= 15.0 for x in tg)))
+    rows.append(("Zone 1 (Lv 5-19, today's curve) within 15 % of Lv 20", "x%.2f-x%.2f (Lv 1 x%.2f: no gear bonus yet)" % (min(z1), max(z1), p4_ttk(P4_TRASH[0], 1) / p4_ttk(P4_TRASH[0], 20)),
+                 all(0.85 <= x <= 1.15 for x in z1)))
+    hd = [p4_hits_to_die(P4_TRASH[1], L) for L in P4_LEVELS]
+    rows.append(("Trash needs 12-15 hits on you (M, plain)", "%.1f-%.1f" % (min(hd), max(hd)), all(11.5 <= x <= 15.0 for x in hd)))
+    bs = [p4_boss_seconds(L) / 60.0 for L in (20, 50, 100)]
+    rows.append(("Boss 3-4 min solo (M, expected)", "%.1f-%.1f min" % (min(bs), max(bs)), all(3.0 <= x <= 4.0 for x in bs)))
+    g5 = [p4_gap_hard(L, 5) for L in (30, 70)]
+    g10 = [p4_gap_hard(L, 10) for L in (30, 70)]
+    rows.append(("+5 levels 1.6-2.2x as hard", "x%.2f-x%.2f" % (min(g5), max(g5)), all(1.6 <= x <= 2.2 for x in g5)))
+    rows.append(("+10 levels >= 4x (a wall)", "x%.2f-x%.2f" % (min(g10), max(g10)), all(x >= 4.0 for x in g10)))
+    ab = p4_abilities()
+    te = [(c, L, p4_tempty(c, L, abil=ab)) for c in ("Mage", "Priest", "Spellblade") for L in P4_MANA_LEVELS]
+    rows.append(("Casters run dry in 18-30 s at Lv 1/5/10/20/30/40/60/80/100 (refill rule on; 4 s shot steps)",
+                 ", ".join("%s %s" % (c[:2], "/".join("%d" % (x[2] or 999) for x in te if x[0] == c)) for c in ("Mage", "Priest", "Spellblade")),
+                 all(x[2] is not None and 18.0 - 1e-6 <= x[2] <= 30.0 + 1e-6 for x in te)))
+    rf = [p4_refill_seconds(c, L) for c in ("Mage", "Priest", "Spellblade") for L in (20, 60)]
+    rows.append(("Refill 80 % in 5-8 s of basic attacks", "%.1f-%.1f s" % (min(rf), max(rf)), all(4.0 <= x <= 9.0 for x in rf)))
+    fc = [c for c in ("Warrior", "Berserker", "Monk", "Assassin", "Archer") if any(r[2] > 0 for r in ab.get(c, []))]   # Monk / Assassin: walking costs not in a row
+    rs = [p4_rotation_share(c, L, ab) for c in fc for L in (20, 40, 60, 100)]
+    rows.append(("Fighter rotation 20-80 %% of the bar from Lv 20 (%s)" % "/".join(c[:3] for c in fc), "%d-%d %%" % (100 * min(rs), 100 * max(rs)), all(0.2 <= x <= 0.8 for x in rs)))
+    rows.append(("Heavy class slowed less by heavy gear", "Warrior %+.0f %%, Mage %+.0f %%" % (p4_speed("Warrior", "Heavy") - p4_speed("Warrior", "Cloth"),
+                 p4_speed("Mage", "Heavy") - p4_speed("Mage", "Cloth")), p4_speed("Warrior", "Cloth") - p4_speed("Warrior", "Heavy") < 4 and p4_speed("Mage", "Cloth") - p4_speed("Mage", "Heavy") > 15))
+    own = [abs(p4_speed(c, P4_CLASSES[c][6]) - P4_CLASSES[c][5]) for c in P4_CLASSES]
+    rows.append(("Each class's own-armor speed = its rating", "max off %.2f %%" % max(own), max(own) < 1.0))
+    tb = p4_table_problems()
+    rows.append(("Mob tables = the RULE (health 0.01, damage %d %%)" % (100 * P4_DMG_TOL), "%d problems" % len(tb), not tb))
+    return rows
+
+
+def p4_md():
+    """### 6. Combat (P4) for research/balance/targets.md"""
+    out = ["", "### 6. Combat (P4, research/Balance-P4-Combat-Spec.md; Normal, M class unless named)", "",
+           "| Lv | F | mob Health x | mob damage x | player max HP (M plain) | resistance | trash hits (exp.) | tough hits | trash hits to die | boss min (M) |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
+    for L in (1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100):
+        out.append("| %d | %.2f | %.2f | %.2f | %.0f | %.1f %% | %.1f | %.1f | %.1f | %.1f |" % (
+            L, p4_F(L), p4_interp(p4_table("hp", "normal"), L), p4_interp(p4_table("dmg", "normal"), L), p4_player_hp(L), 100 * p4_res(L),
+            p4_ttk(P4_TRASH[0], L), p4_ttk(P4_TOUGH[0], L), p4_hits_to_die(P4_TRASH[1], L), p4_boss_seconds(L) / 60.0))
+    out += ["", "| Difficulty (Lv 50, expected) | trash hits | tough hits | boss min | trash hits to die | tough hits to die |", "|---|---|---|---|---|---|"]
+    for d in ("easy", "normal", "hard"):
+        out.append("| %s | %.1f | %.1f | %.1f | %.1f | %.1f |" % (d, p4_ttk(P4_TRASH[0], 50, diff=d), p4_ttk(P4_TOUGH[0], 50, diff=d), p4_boss_seconds(50, diff=d) / 60.0,
+                                                             p4_hits_to_die(P4_TRASH[1], 50, diff=d), p4_hits_to_die(P4_TOUGH[1], 50, diff=d)))
+    out += ["", "| Class | Health % | Defense | damage factor % | Stamina base / lv | speed cloth / light / heavy | hits to die trash / tough | boss min | Mana pool Lv 1 / 20 / 50 / 100 |",
+            "|---|---|---|---|---|---|---|---|---|"]
+    for c, v in P4_CLASSES.items():
+        out.append("| %s | %+d | %d | %d | %s / %s | %+.0f / %+.0f / %+.0f | %.1f / %.1f | %.1f | %s |" % (
+            c, v[1], v[2], P4_CLASS_DAMAGE[c], v[3], v[4], p4_speed(c, "Cloth"), p4_speed(c, "Light"), p4_speed(c, "Heavy"),
+            p4_hits_to_die(P4_TRASH[1], 20, cls=c), p4_hits_to_die(P4_TOUGH[1], 20, cls=c), p4_boss_seconds(50, cls=c) / 60.0,
+            " / ".join("%.0f" % p4_pool(c, L) for L in (1, 20, 50, 100))))
+    ab = p4_abilities()
+    out += ["", "| Class (P4 3.3) | base / per level Mana | ability Mana + %% a level | runs dry after s, Lv %s | 80 %% back after s (Lv 20 / 60) | one rotation %% of the bar, Lv 5 / 20 / 40 / 60 / 100 |"
+            % " / ".join(str(L) for L in P4_MANA_LEVELS), "|---|---|---|---|---|---|"]
+    for c in P4_CLASSES:
+        te = [p4_tempty(c, L, abil=ab) for L in P4_MANA_LEVELS]
+        out.append("| %s | %s / %s | %s | %s | %s | %s |" % (
+            c, P4_MANA[c][0], P4_MANA[c][1], P4_COST_PER_LEVEL.get(c, 1.5),
+            " / ".join("never" if x is None else "%.0f" % x for x in te),
+            " / ".join("%.1f" % p4_refill_seconds(c, L) for L in (20, 60)) if c in P4_REFILL else "-",
+            " / ".join("%.0f" % (100 * p4_rotation_share(c, L, ab)) for L in (5, 20, 40, 60, 100))))
+    dc = p4_dodge_cost()
+    out += ["", "| Class (P4 3.4, REPORT - no auto-tune) | Stamina Lv 1 / 50 / 100 | dodge rolls before empty (vanilla %g a roll read from Assets.zip Dodge_Left / Right, no regen) | spec target | flag |" % dc,
+            "|---|---|---|---|---|"]
+    for c in P4_CLASSES:
+        st = [p4_stamina(c, L) for L in (1, 50, 100)]
+        rolls = [x / dc for x in st]
+        sh = P4_CLASSES[c][3] >= 10   # the Stamina classes (H / SH rows of 2.2)
+        tgt = "6-8" if sh else "2-3"
+        flag = ("under 6" if sh and min(rolls) < 6 else "") if sh else ("over 4" if max(rolls) > 4 else "")
+        out.append("| %s | %s | %s | %s | %s |" % (c, " / ".join("%.1f" % x for x in st), " / ".join("%.0f" % x for x in rolls), tgt, flag or "-"))
+    out += ["", "| Target (P4 6.5) | Model | OK |", "|---|---|---|"]
+    for t, m, ok in p4_rows():
+        out.append("| %s | %s | %s |" % (t, m, "yes" if ok else "NO"))
+    out.append("")
+    out.append("Model notes: one main attack of an M-damage melee class = %.2f x F x material bonus x class perk x kit (plain 1, expected 1.73, best 3); "
+               "trash = %d base Health / %d hit, tough = %d / %d; boss = %d x the Health curve at %d %% uptime; casters run dry (the next cast "
+               "cannot be paid or the bar under mana.refillBelow %d %%) with every owned ability on cooldown + a charged band-weapon shot every "
+               "4 s (SkyyArmory's 16-rung ladder; quick shots free), in-combat regen only (no tree / gear / pet Mana); the quick refill "
+               "(%d %% of max a second) starts once dry, waits %d s after each charged shot / ability and runs until full; "
+               "the mob damage table is the spec's (this EHP rule within %d %%). `python tools/balance_model.py --combat` prints it, `--check` "
+               "exits 1 on a NO row." % (P4_REF_HIT, P4_TRASH[0], P4_TRASH[1], P4_TOUGH[0], P4_TOUGH[1], P4_BOSS_BASE, 100 * P4_BOSS_UPTIME,
+                                         P4_REFILL_BELOW, P4_REFILL["Mage"], P4_REFILL_DELAY, 100 * P4_DMG_TOL))
+    return "\n".join(out)
+
+
+def p4_write_section(md):
+    """put p4_md() into research/balance/targets.md as its '### 6. Combat' section: the old section (its heading up to the next '### ' or
+    '## ' heading, or the end) is replaced, else the section is appended; every other byte of the file is kept"""
+    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "research", "balance", "targets.md"))
+    raw = open(path, "rb").read().decode("utf-8")
+    nl = "\r\n" if "\r\n" in raw else "\n"
+    sec = md.strip("\n").replace("\n", nl) + nl
+    head = "### 6. Combat"
+    a = raw.find(nl + head)
+    if a < 0:
+        out, how = raw + ("" if raw.endswith(nl) else nl) + nl + sec, "appended"
+    else:
+        a += len(nl)
+        b = len(raw)
+        for mk in (nl + "### ", nl + "## "):
+            j = raw.find(mk, a + len(head))
+            if 0 <= j < b:
+                b = j + len(nl)
+        rest = raw[b:]
+        out, how = raw[:a] + sec + ((nl if not sec.endswith(nl + nl) else "") + rest if rest else ""), "replaced"
+    with open(path, "wb") as f:
+        f.write(out.encode("utf-8"))
+    return how
+
+
 def main():
+    if "--combat" in sys.argv or "--check" in sys.argv:
+        md = p4_md()
+        print(md)
+        bad = [r for r in p4_rows() if not r[2]]
+        if "--combat" in sys.argv:
+            print("\nwrote research/balance/targets.md section '### 6. Combat' (%s)" % p4_write_section(md))
+        if "--check" in sys.argv:
+            for t, m, _ok in bad:
+                print("FAIL %s: %s" % (t, m))
+            sys.exit(1 if bad else 0)
+        return
     body, gaps, vp = build()
     top = "\n".join(f"{i}. {g[1]}" for i, g in enumerate(gaps[:10], 1))
     print(f"SkyWynn pacing model (Balance Pass P1, {NOW} numbers) - target vs {NOW}, gaps marked !!")
@@ -591,7 +1209,7 @@ def main():
                     "\n### Top 10 gaps (P3 vs target)\n" + top + "\n\n### Answered (A:197, 2026-10-20)\n"
                     f"- The cap stretch: Skyy picked 'Middle: Lv 50 at ~33 h' -> levels.scale {LEVELS_SCALE} % (class Lv {CAP1} at "
                     f"{fmt(at_level(simulate_today()[0], CAP1)[0])} h in this model); the rest of the 40-50 h run = skills catch up, "
-                    "gear / UT / bosses, overflow XP for Void Particles.\n")
+                    "gear / UT / bosses, overflow XP for Void Particles.\n" + p4_md() + "\n")
         print("\nwrote research/balance/targets.md")
 
 
