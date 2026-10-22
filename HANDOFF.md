@@ -30,7 +30,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyAuctions | 0.1.14 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
 | SkyyQuests | 0.4.2 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
-| SkyyRebirth | 0.4.3 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature OFF by default; new |
+| SkyyRebirth | 0.4.3 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
 | SkyyZones | 0.2.0 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
 | SkyyShards | 0.4.4 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
