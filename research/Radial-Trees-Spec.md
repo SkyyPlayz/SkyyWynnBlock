@@ -431,3 +431,11 @@ No Hytale mod we can pack draws a radial talent web; ours is built from our own 
 8. Page emblems for Gathering / Crafting / Adventure: new art (cloud draws, skywynn-art) or the SkyWynn crest on all three? [new art; crest
    until it is approved]
 9. Rebirth Nexus in the trees' left rail while rebirth is off? [shown greyed "Rebirth is off" for players, opens for admins]
+
+## Probe results (SkyyUiProbe 0.7, Skyy 2026-10-22)
+
+- M1 / M1b / M1c: 688 / 1,203 / 1,602 elements open fine, no disconnect (server build 0-6 ms) -> element count is not a limit; Focus-only fallback NOT needed.
+- M2 draw order (lines under discs) OK; M3 dotted lines crisp at 1080p+.
+- M7: a 2-axis scroll box WORKS (wheel / bars, up-down AND left-right) -> Focus view = the tree at 2x in a scroll box (better than a separate small layout).
+- RULE learnt: every bound event (node click, Focus, Learn, any button) must answer with exactly ONE sendUpdate, else the client shows "Loading..." forever (M1 node clicks hung on 0.7; fixed in 0.7.1).
+- Open: M4 AssetImage swap, M5 Anchor move, M6 tooltips.
