@@ -241,3 +241,4 @@ tests always come first.
 213. skill-tree gates to 0/5/10/15/20/25 where possible, Head Start + Beastmastery Echo work, Weapon Tempering, Masterwork Pick, Accessory Compass / Sprint
 214. Balance P3 XP: same levels kept, XP rises with tier, catch-up + past-life boost; pets level at the old pace; ores/stone regrow in SKYBLOCK zones
 215. Balance P4 combat: Lv 40 sword vs Lv 40 wolf ~12 hits, casters dry in 20-30 s then quick refill, Mage slow in heavy, elites 3x
+216. Rebirth pace (past-life list, no 200 % clamp, unlimited rebirths), Tropical Smoothie XP, Furnace 4x faster + 1000 queue, totem idle 3 days, new-land zone crops
