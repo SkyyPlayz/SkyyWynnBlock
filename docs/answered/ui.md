@@ -167,3 +167,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-22 SKILL TREE PAGE (Skyy): "their skills menu seems buggy" -> look yes, their drag / zoom behaviour no; ours must be reliable first (research/UI-Ideas.md).
 - 2026-10-22 GUIDE ARROWS (Skyy, Hylterium screenshot): "they have guide arrows on the ground" -> research/UI-Ideas.md (quest trail: ground arrow + objective / distance label; plus HUD key hints).
 - 2026-10-22 QUEST WIDGET FOLD (Skyy, Hylterium screenshot): "their quest menu uses double crouch to expand to bigger or shrink" -> research/UI-Ideas.md (double-crouch fold for our quest widget; check the crouch-cast clash).
+- 2026-10-22 VANILLA FEED (Skyy, Hylterium screenshot): "and i like the way they tied their updates into the vanilla feed" -> research/UI-Ideas.md (our feed cards into the vanilla pickup feed).
