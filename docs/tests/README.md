@@ -336,3 +336,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Tree-page probe SkyyUiProbe 0.7 (radial map test M1-M7, op only) (DEPLOYED 2026-10-22, backup deploy-20261022-0713) | [2026-10](2026-10.md) |
 | Balance P6b: shorter collections, gathering costs by Fortune, Enchanted alloys from Dusk, F-pickup lock, level-up cap +10, UT >= Fabled, armor bags hide the piece (DEPLOYED 2026-10-22, backup deploy-20261022-0724) | [2026-10](2026-10.md) |
 | Cleanup: Normal colour for bags + charms (Scribing warning gone), element lines in %, Left Alt cooldown fix (DEPLOYED 2026-10-22, backup deploy-20261022-0800) | [2026-10](2026-10.md) |
+| Beastmastery skill (levels from pet XP) + its tree; class Health % no longer counts gear / pet % (DEPLOYED 2026-10-22, backup deploy-20261022-0837) | [2026-10](2026-10.md) |
