@@ -27,12 +27,13 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P8d): SkyyTrees 0.4.8 needs the P8c set (SkyySkills 0.4.60 + SkyyPets 0.4.9); SkyyRebirth 0.4.3 needs SkyySkills 0.4.60+ (arm.beastmastery). No saved data changed; they need not roll back together. Trees back to 0.4.7 = the 23 P8d upgrades coming soon again + old row unlocks (bought ranks stay saved, unused until a respec); Rebirth back to 0.4.2 only stops Beastmastery counting for VP.
 # FLOOR (2026-10-22, Balance P7 economy core): SkyyCoins 0.1.10 + SkyyBazaar 0.2.1 + SkyyMerchants 0.1.7 + SkyyAuctions 0.1.15 + SkyyGear 0.3.37 + SkyyCollections 0.2.32 pin + roll back TOGETHER (one coin curve coins:fn:curve read by Merchants / Gear / Collections; Bazaar prices re-set by tier). Before a rollback Undo the P7 rows in Server Setup -> Changes (Coins CoinMigP7 death 10/25 -> 5/5, Merchants 47 lines, Bazaar 262 prices, Collections tier coins, Gear migrateP7 cost rows) - older jars read them as admin values. Gear 0.3.37 also: Smithing combat section + bench veto, crafted never UT / Mythic, Skeleton_Elite = elite. P7 part 2 (Skills / Trees / Exploration / Shards) follows.
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
+# FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.27"), ("SkyyCoins", "0.1.10"), ("SkyyCollections", "0.2.32"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.37"), ("SkyySkills", "0.4.61"),
+    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.28"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.32"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.38"), ("SkyySkills", "0.4.61"),
     ("SkyyAccessories", "0.5.31"), ("SkyyClasses", "0.1.45"), ("SkyyMenu", "0.3.43"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.9"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -81,7 +82,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.15"), ("SkyyWorldGen", "0.7.8"),
+    ("SkyyMobs", "0.1.16"), ("SkyyWorldGen", "0.7.8"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited

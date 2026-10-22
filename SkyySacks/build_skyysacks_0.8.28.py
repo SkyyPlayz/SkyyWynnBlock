@@ -851,8 +851,15 @@ cost based on the new metal, farming, and gathering tiers.) i want the upgrade c
      need (0 = 1) <= tier) and by whyCode - the harness runs it for every bench x tier.
   Every other bench accessory was checked against Assets.zip: Workbench, Armor_Bench, Weapon_Bench, Farmingbench, Arcanebench,
   Furniture_Bench, Loombench, Salvagebench match their recipes' bench ids exactly, any tier counts as "at least" (no exact-id match
-  anywhere). Furnace / Tannery / Campfire are timed (own tabs). Side finding (not changed): 4 vanilla Utility recipes (Helipack, Leather /
-  Medium Backpack, Quiver) name the bench "ArmorBench" (no underscore), which no bench accessory unlocks.
+  anywhere). Furnace / Tannery / Campfire are timed (own tabs).
+  3. (packprep round, 2026-10-22, pinned with SkyyGear 0.3.38) THE 4 "ArmorBench" RECIPES: 4 vanilla Utility recipes (Helipack, Leather /
+     Medium Backpack, Quiver) name the bench "ArmorBench" (no underscore), which no bench accessory unlocked. CraftPage.accTier now
+     compares bench ids ignoring case AND underscores (CraftPage.benchKey), so the Armor Bench charm unlocks them in /craft like every
+     Armor_Bench recipe (no tier = any Armor Bench charm). No vanilla / pack file is edited. The harness checks against Assets.zip that
+     no two different bench ids become one key except ArmorBench / Armor_Bench.
+  4. (packprep fixer) craftWhy keeps each player's two recipe sets for 1.5 s (SackBridge.whySets, one entry per player in WHYM, pruned
+     past 32 entries) - SkyyGear asks once per locked group card
+     on one /smithing page; accTier builds the underscore-free bench key only when an underscore is involved (same answers).
   Saved data / config / commands / systems: none changed; one bridge key added. ROLLBACK to 0.8.27: safe (the key disappears; SkyyGear
   falls back to its own text).
 """
@@ -10521,13 +10528,21 @@ public static java.util.HashSet collectionRecipes(java.util.UUID u) {
 }""", cpg))
 # tabs: list of String[]{tabId, label} ; recipes for a tab: list of CraftingRecipe
 cpg.addMethod(CtNewMethod.make("""
+public static String benchKey(String id) {
+  return id == null ? "" : id.replace("_", "").toLowerCase();
+}""", cpg))
+cpg.addMethod(CtNewMethod.make("""
 public static int accTier(java.util.HashMap acc, String bench) {
   int best = 0;
   if (acc == null || bench == null) return 0;
-  java.util.Iterator ki = acc.keySet().iterator();
+  String bk = null;   // 0.8.28 (packprep): "ArmorBench" (4 vanilla Utility recipes) = the Armor_Bench charm
+  boolean bu = bench.indexOf('_') >= 0;   // fixer: the underscore-free key is only built when an underscore is involved (same answer, no
+  java.util.Iterator ki = acc.keySet().iterator();   //   per-recipe string work for the usual exact match / miss)
   while (ki.hasNext()) {
     String k = (String) ki.next();
-    if (k.equalsIgnoreCase(bench)) { int t = ((Integer) acc.get(k)).intValue(); if (t > best) best = t; }
+    boolean hit = k.equalsIgnoreCase(bench);
+    if (!hit && (bu || k.indexOf('_') >= 0)) { if (bk == null) bk = benchKey(bench); hit = benchKey(k).equals(bk); }
+    if (hit) { int t = ((Integer) acc.get(k)).intValue(); if (t > best) best = t; }
   }
   return best;
 }""", cpg))
@@ -13750,6 +13765,39 @@ public static Object[] benchNeed(@CRR@ r) {
   }
   return null;
 }"""), sbr))
+# fixer (packprep critics): SkyyGear asks craftWhy once per locked group card while it builds ONE /smithing page - the two recipe sets
+# (collectionRecipes + craftSet, each a walk over every recipe) are kept for 1.5 s per player instead of rebuilt per card. fixer 2 (critic:
+# one global slot thrashed when two players' pages interleave): WHYM = UUID -> Object[] { UUID, Long time, HashSet coll, Set craft }, one entry
+# per player, each array swapped whole (no lock); whyPrune drops entries older than 1.5 s when the map passes 32 (and clears it past 256).
+# Only whyCode reads it (craftList is never cached).
+sbr.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap WHYM = new java.util.concurrent.ConcurrentHashMap();", sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static int whyPrune(long now) {
+  if (WHYM.size() <= 32) return 0;
+  int n = 0;
+  Object[] ks = WHYM.keySet().toArray();
+  for (int i = 0; i < ks.length; i++) {
+    Object o = WHYM.get(ks[i]);
+    long at = o instanceof Object[] && ((Object[]) o).length > 1 && ((Object[]) o)[1] instanceof Long ? ((Long) ((Object[]) o)[1]).longValue() : -1L;
+    if (at < 0L || now < at || now - at >= 1500L) { WHYM.remove(ks[i]); n++; }
+  }
+  if (WHYM.size() > 256) { n += WHYM.size(); WHYM.clear(); }
+  return n;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object[] whySets(java.util.UUID u) {
+  long now = System.currentTimeMillis();
+  Object o = WHYM.get(u);
+  if (o instanceof Object[]) {
+    Object[] wc = (Object[]) o;
+    long at = ((Long) wc[1]).longValue();
+    if (now >= at && now - at < 1500L) return wc;
+  }
+  Object[] nw = new Object[] { u, Long.valueOf(now), @PKG@.CraftPage.collectionRecipes(u), @PKG@.CraftPage.craftSet(u) };
+  whyPrune(now);
+  WHYM.put(u, nw);
+  return nw;
+}"""), sbr))
 # 0.8.28 sacks:fn:craftWhy (patch docstring): WHY craftList leaves a recipe out - the craftWhy order (table, Collections tab, bench set, knowledge)
 sbr.addMethod(CtNewMethod.make(jt(r"""
 public static String whyCode(java.util.UUID u, String rid) {
@@ -13760,9 +13808,10 @@ public static String whyCode(java.util.UUID u, String rid) {
   @PLA@ p = playerOf(u);
   if (p == null) return "paused";
   if (@PKG@.CraftPage.tableOnly(r)) return "table";
-  java.util.HashSet coll = @PKG@.CraftPage.collectionRecipes(u);
+  Object[] ws = whySets(u);   // fixer: cached 1.5 s per player (one page build asks per locked card)
+  java.util.HashSet coll = (java.util.HashSet) ws[2];
   if (coll.contains(rid)) return null;
-  if (!@PKG@.CraftPage.craftSet(u).contains(rid)) {
+  if (!((java.util.Set) ws[3]).contains(rid)) {
     Object[] b = benchNeed(r);
     if (b == null) return "bench||1|0";
     String bid = (String) b[0];
