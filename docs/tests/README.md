@@ -328,3 +328,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Skill Trees R3 (class + skill upgrades live), Bazaar order book, Rebirth Void Particles, NEW SkyyZones (DEPLOYED 2026-10-20, backup deploy-20261020-1804) | [2026-10](2026-10.md) |
 | Skill trees follow-up: gates, Head Start, rebirth pet XP, gear + accessory upgrades (DEPLOYED 2026-10-20, backup deploy-20261020-1916) | [2026-10](2026-10.md) |
 | Balance P3: one XP curve (Lv 50 ~33 h), pets keep pace, ores regrow in zones (DEPLOYED 2026-10-20, backup deploy-20261020-2158) | [2026-10](2026-10.md) |
+| Balance P4 combat: one gear + mob curve, class stats + speed, casters run dry 20-30 s, elites / bosses, tree caps (DEPLOYED 2026-10-21, backup deploy-20261021-2050) | [2026-10](2026-10.md) |
