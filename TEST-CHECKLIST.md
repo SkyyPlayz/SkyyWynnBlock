@@ -251,3 +251,4 @@ tests always come first.
 224. Probe 0.7.1: clicks no longer hang; M4 picture swap, M5 ring move, M6 tooltips (then retire the probe)
 225. P8d: new tree upgrades buyable, Alchemy / Smithing / Fishing rows open, Beastmastery VP
 226. P7: Bazaar prices by tier, death 5 % (island safe), merchants by zone, AH no gathering armor, Smithing Combat section (rolls rarity, never UT / Mythic)
+227. Bronze lock says Copper/Iron V; backpacks craftable; level-up coins on the curve; respec cost; Wanderer/Cartographer coins

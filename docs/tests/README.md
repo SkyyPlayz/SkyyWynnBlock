@@ -340,3 +340,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Tree-page probe 0.7.1: every click answers (no more stuck Loading...) (DEPLOYED 2026-10-22, backup deploy-20261022-0908) | [2026-10](2026-10.md) |
 | Last skill trees (P8d): Farming / Cooking / Alchemy / Fishing / Smithing / Acrobatics / Exploration upgrades live, stuck rows fixed; Beastmastery counts for Void Particles (DEPLOYED 2026-10-22, backup deploy-20261022-0939) | [2026-10](2026-10.md) |
 | Balance P7 economy core (coins x10 curve, Bazaar by tier, merchants, AH, death 5 %) + Smithing combat crafting (DEPLOYED 2026-10-22, backup deploy-20261022-1102) | [2026-10](2026-10.md) |
+| Smithing shows the real lock reason, backpack recipes unlocked, farming textures fixed, pack prep (boss ranks, money -> coins, no guns) + P7 part 2 (level-up coins, respec, exploration + shard coins) (DEPLOYED 2026-10-22, backup deploy-20261022-1240) | [2026-10](2026-10.md) |
