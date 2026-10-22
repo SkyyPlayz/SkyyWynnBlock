@@ -5,6 +5,8 @@
     python tools/balance_model.py --md       also rewrite research/balance/targets.md (always the P3 numbers)
     python tools/balance_model.py --gather   P6 gathering + crafting (collections, tier-up / armor costs, hits, Furnace) -> targets.md section 8
     python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
+    python tools/balance_model.py --p9       P9 whole first run (player types, the 1-hour rule, zone hours, rebirths, every Skyy goal, stacking) -> targets.md
+                                             section 10 with --md; --p9 --check exits 1 on a failed goal (research/Balance-P9-Check.md); --p3 = no P9 LIVE corrections
     python tools/balance_model.py --econ     P7 economy (coin curve, Bazaar prices by tier, costs on the curve, loop routes) -> targets.md section 9
                                              (--econ --check: exit 1 unless the gathering skills are within 0.85-1.15 of each other and on G
                                              in every zone, every tier step >= 1.2x, and all 17 loop routes lose money)
@@ -136,8 +138,16 @@ ORE_BASE, LOG_BASE, CROP_BASE, DISH_BASE = 50, 33, 38, 800   # P3 3.1-3.3; 3.5: 
 ALCH_XP_P3 = {1: 1500, 2: 7400, 3: 18200, 4: 33900, 5: 54400}          # P3 3.6 alchemy.tierXp = 1,500 x f(zone start)
 FISH_P3, FISH_H = 60, 200          # P3 3.8: a common fish = 60 x f(own level), fish.xp.mult 6; GUESS 200 fish / h (focused Fishing ~ Foraging)
 CATCHUP = dict(on=True, free=5, per=0.10, max=1.0,                      # P3 section 4 (Q2 default: on, +10 % a level past 5 behind, <= +100 %)
-               skills=("Mining", "Foraging", "Farming", "Fishing", "Alchemy", "Smithing", "Cooking", "Acrobatics"))
-PAST_LIFE = [1.2, 1.45, 1.8, 2.25, 2.8]                                  # P3 section 5 rebirth.pastLifeXp (Q3 default)
+               skills=("Mining", "Foraging", "Farming", "Fishing", "Alchemy", "Smithing", "Cooking", "Acrobatics",
+                       "Beastmastery"))                                 # P9 LIVE: SkyySkills 0.4.60+ catchup.skills has Beastmastery
+PAST_LIFE = [1.2, 1.45, 1.8, 2.25, 2.8]                                  # P3 section 5 rebirth.pastLifeXp (Q3 default) - kept for balance_rebirth --live
+PAST_LIFE_LIVE = [1.1, 1.35, 1.6, 2.0, 2.45, 2.15, 2.25, 2.4, 2.55, 2.7]   # P9 LIVE: SkyySkills 0.4.61 rebirth.pastLifeXp (skills:5560) = balance_rebirth PAST_LIFE_P8
+# ---- P9 LIVE corrections (2026-10-22, research/Balance-P9-Check.md "live vs model"): live numbers the P3 model did not have
+MINING_XP_X = 1.25        # SkyySkills 0.4.61 mining.xpMultiplier 1.25 (EVEN_MINE, skills:5249) - every mined block's Mining XP x1.25
+FELL_OTHER_PCT = 70.0     # SkyySkills 0.4.61 fell.otherLogsPercent 70 (skills:5249) - every felled log but the chopped one pays 70 %
+LOGS_PER_TREE = 10        # GUESS logs a felled tree (Tree Feller is on from Lv 0: fell.enabled, no level gate)
+FELL_X = (1 + (LOGS_PER_TREE - 1) * FELL_OTHER_PCT / 100.0) / LOGS_PER_TREE   # = 0.73 of the table XP per log
+LIVE = "--p3" not in sys.argv     # --p3: the P3-era model (no P9 live corrections) for comparison
 BEFORE = "--before" in sys.argv     # the P1 view: today's live tables (0.4.56) instead of the P3 numbers
 NOW = "today" if BEFORE else "P3"   # the label of the model column
 if not BEFORE:
@@ -204,12 +214,14 @@ def xp_per_hour(skill, level, class_level):
     if BEFORE:
         return xp_per_hour_p1(skill, level, class_level)
     t = tier_at(max(1, class_level))
+    if LIVE and skill in ("Mining", "Foraging", "Farming"):
+        t = tier_at(max(1, level))          # P9 LIVE: a tool / hoe tier-up needs the SKILL level of the new tier (Gathering-Shards-Spec 4.1, gate.*)
     if skill == "Class":
         return KILLS_H * kill_xp(max(1, class_level))
     if skill == "Mining":
-        return BLOCKS_H * ((1 - ORE_FRAC) * STONE_XP + ORE_FRAC * xp_t(ORE_BASE, t))
+        return BLOCKS_H * ((1 - ORE_FRAC) * STONE_XP + ORE_FRAC * xp_t(ORE_BASE, t)) * (MINING_XP_X if LIVE else 1.0)
     if skill == "Foraging":
-        return LOGS_H * xp_t(LOG_BASE, t) + LEAVES_H * 1
+        return LOGS_H * xp_t(LOG_BASE, t) * (FELL_X if LIVE else 1.0) + LEAVES_H * 1
     if skill == "Farming":
         return CROPS_H * xp_t(CROP_BASE, t)
     if skill == "Cooking":
@@ -241,7 +253,16 @@ def xp_per_hour_p1(skill, level, class_level):
     return FISH_XP_H
 
 
+_P9_PX = []
+
+
 def coins_per_hour(class_level):
+    """coins per PLAYED hour from sales (P9 LIVE: the P7 Bazaar prices + the combat 0.815 G rule; --before / --p3: P1's ZONE_GATHER prices)"""
+    if LIVE and not BEFORE:
+        t = min(15, tier_at(max(1, class_level)))   # T16 Onyxium has no Bazaar row: price as T15
+        px = _P9_PX[0] if _P9_PX else _P9_PX.append(p7_table()) or _P9_PX[0]   # p7_table() once (it re-fits on every call)
+        gat = sum(SHARE[s] * p7_hour(s, t, px) for s in P7_SKILLS)
+        return gat + SHARE["Class"] * P7_COMBAT_X * p7_G(t) + SHARE["Fishing"] * p7_G(t)
     z = ZONE_GATHER[zone_of(class_level)]
     mine = BLOCKS_H * ((1 - ORE_FRAC) * STONE_PX + ORE_FRAC * z["ore_px"]) * SELL
     return (SHARE["Mining"] * mine + SHARE["Foraging"] * LOGS_H * z["log_px"] * SELL
@@ -277,7 +298,7 @@ def simulate_today(cap=CAP1, hours=RUN1_HOURS, dt=0.02, share=None, catchup=True
             while lv[s] < cap and xp[s] >= CURVES[s][lv[s]]:
                 xp[s] -= CURVES[s][lv[s]]
                 lv[s] += 1
-                coins += COINS_PER_LEVEL * lv[s]
+                coins += p7_level_coins(lv[s]) if (LIVE and not BEFORE) else COINS_PER_LEVEL * lv[s]   # P9 LIVE: levelCoins (0.4.61)
                 up = True
         coins += coins_per_hour(max(1, lv["Class"])) * dt
         t += dt
@@ -460,6 +481,8 @@ def build():
     rows = []
     geo = {1: COIN_END[1], 2: math.sqrt(COIN_END[1] * COIN_END[3]), 3: COIN_END[3],
            4: math.sqrt(COIN_END[3] * COIN_END[5]), 5: COIN_END[5]}   # zones 2 / 4 = geometric middle (GUESS)
+    if LIVE and not BEFORE:
+        geo = dict(P7_END)          # P9 LIVE: the x10 targets (P7) - sales are 80 % of them (P7 Part 2), level-up / collection coins on top
     prev, cum_h = 0, 0
     for z, lo, hi, hrs, _ in ZONES:
         cum_h += hrs
@@ -473,7 +496,7 @@ def build():
             note("coins", today_h / tgt_h, f"Coins (worst: Zone {z}): target ~{fmt(tgt_h)}/h, {NOW} ~{fmt(today_h)}/h from "
                  f"selling gathered items alone ({rx(today_h / tgt_h)})")
         prev = geo[z]
-    table("3. Coins (never spending; economy.md:162 Q18; Zones 2 / 4 = geometric middle, GUESS)",
+    table("3. Coins (never spending; economy.md:162 Q18%s; Zones 2 / 4 = geometric middle, GUESS)" % (" x10 = P7 targets; sales/h = P7 prices, a played hour" if LIVE and not BEFORE else ""),
           ["Zone", "Target at zone end", "Target coins/h", "Gathering sales/h today", "Today at zone end (+level coins)",
            "Gap"], rows)
 
@@ -530,7 +553,7 @@ def build():
         cls = {"Class": SHARE["Class"]}
         for r in vp:
             n, cap = r["n"], r["cap"]
-            boost = PAST_LIFE[min(n, len(PAST_LIFE)) - 1]
+            boost = PAST_LIFE_LIVE[min(n, len(PAST_LIFE_LIVE)) - 1] if LIVE else PAST_LIFE[min(n, len(PAST_LIFE)) - 1]
             prev = min(CAP_MAX, cap - CAP_STEP)
             tr, _g = simulate_today(cap=cap, hours=80, share=cls, catchup=False, speed=r["have"], past_cap=prev, past_mult=boost)
             tr0, _g = simulate_today(cap=cap, hours=80, share=cls, catchup=False, speed=r["have"])
@@ -542,7 +565,7 @@ def build():
             if got is None or not tgt * 0.8 <= got <= tgt * 1.25:
                 note("pastlife", (got or 99) / tgt, f"Rebirth {n}: class cap {cap} at {fmt(got)} h with the past-life boost x{boost} "
                      f"vs {tgt:.1f} h target")
-        table(f"5c. Rebirths with the past-life XP boost {PAST_LIFE} (rebirth.pastLifeXp): hours to the class cap (target = run 1's "
+        table(f"5c. Rebirths with the past-life XP boost {PAST_LIFE_LIVE[:5] if LIVE else PAST_LIFE} (rebirth.pastLifeXp): hours to the class cap (target = run 1's "
               f"{t_cap1:.1f} h x {REBIRTH_SHRINK}^n); only levels below the last run's cap are boosted",
               ["Rebirth", "Cap", "VP + kept speed", "Past-life boost", "Target h to cap", "With boost", "Without",
                "Each first-time level", "Gap"], rows)
@@ -796,15 +819,18 @@ def p4_speed(cls, armor):
     return base - P4_PER_LOAD * P4_LOAD[armor] * w
 
 
+P4_POOL_X, P4_REGEN_X = [1.0], [1.0]     # P9: the Mana stacking what-if (trees / Void Charms / pets); 1.0 = the P4 benchmark (no tree / gear / pet Mana)
+
+
 def p4_pool(cls, L, new=True):
     b, per = (P4_MANA if new else dict(P4_MANA, **P4_MANA_012))[cls]
-    return b + per * L + 0.1 * L          # + Overall Mana 0.2 a level x Overall Level L / 2
+    return (b + per * L + 0.1 * L) * P4_POOL_X[0]          # + Overall Mana 0.2 a level x Overall Level L / 2
 
 
 def p4_regen(cls, L, growth=None):
     base, share, g, frm = P4_REGEN
     g = g if growth is None else growth
-    return base * (1 + g / 100.0 * max(0, L - frm)) * share * P4_REGEN_CLASS.get(cls, 100) / 100.0
+    return base * (1 + g / 100.0 * max(0, L - frm)) * share * P4_REGEN_CLASS.get(cls, 100) / 100.0 * P4_REGEN_X[0]
 
 
 def p4_wand(L):
@@ -2585,7 +2611,443 @@ def p7_write_section(md):
     return how
 
 
+# ======================================================================================== P9 (2026-10-22): the whole first-run check
+# research/Balance-Pass-Spec.md section 8 P9 + research/Balance-P9-Check.md. `python tools/balance_model.py --p9` prints the goal table,
+# `--p9 --check` exits 1 on a failed goal. One simulation per kind of player (time split) over run 1 (cap 50) with the LIVE numbers
+# (the P9 LIVE corrections above): every class / skill level-up, every gear upgrade (combat drops + crafts + item level-ups, gathering
+# armor pieces + tool tier-ups), Beastmastery from the pet's XP, the hour the run is "done" (class + the 5 essential skills at the cap).
+P9_TYPES = [   # name, time split (sums to 1; Beastmastery levels from the pet, Fishing 2 % = 'nice to have until its rework')
+    ("even", dict(SHARE)),
+    ("fighter-first", dict(Class=0.70, Mining=0.07, Foraging=0.07, Farming=0.06, Cooking=0.04, Alchemy=0.04, Fishing=0.02, Beastmastery=0.0)),
+    ("gatherer-first", dict(Class=0.25, Mining=0.25, Foraging=0.22, Farming=0.16, Cooking=0.05, Alchemy=0.05, Fishing=0.02, Beastmastery=0.0))]
+P9_ESSENTIAL = ("Mining", "Foraging", "Farming", "Cooking", "Alchemy", "Beastmastery")   # taken to the cap before the first rebirth (A:187 Q4: Mining,
+#   Foraging, combat, beast taming essential; Farming / Cooking / Alchemy useful; Fishing nice-to-have until its rework = left out)
+P9_GATHER = ("Mining", "Foraging", "Farming")
+P9_SEEDS = 40
+P9_HOURS = 60.0
+P9_SMITH_STEP = 0.5          # SkyyGear 0.3.38 smithing step-up: Smithing level x 0.5 % (max 50 %) moves a craft one rarity up (G:19358)
+P9_SMITH_LAG = 5             # GUESS: Smithing trails the class by ~5 levels (it is in catchup.skills)
+P9_LOOT_CAP = LOOT_CAP       # loot.mob.capPerHour 20
+P9_MANA_STACK = {"Mage": (0.16 + 0.24 + 0.37, 0.10), "Priest": (0.24 + 0.37, 0.10), "Spellblade": (0.24 + 0.37, 0.0)}   # max pool + regen from
+#   the tree (Mage Mana Well 4 x 4 %, Attunement / Clarity +10 % regen), the Void Charm Intelligence line (Mythic +24 %), a Mythic Mana pet
+#   (Skrill / Void Eye / Void Larva 21 % x 1.75) - SkyyTrees 0.4.9 / SkyyAccessories 0.5.31 / SkyyPets 0.4.9 (P9 audit)
+P9_FORT_EXTRA = {"Mining": 0.0, "Foraging": 6.0, "Farming": 16.0}   # live tree Fortune OUTSIDE TREE_FORT_MAX 40 (Foraging FFortune 3 x 2, Farming
+#   AFortune 5 x 2 + AFortune II 3 x 2 - trees_v3_effects.py aliases, P9 audit)
+P9_IDLE = {"share": P6_TOTEM, "hours": P7_OFFLINE_H}   # SkyyShards 0.4.5: Totem I..V = 20..100 % of a farming hour, banked up to 72 h (Skyy's choice)
+P9_BEAST_X = [1.0]          # SkyySkills 0.4.61 beast.xpFactor (Beastmastery XP per pet XP)
+P9_PET_OVERFLOW = [False]    # live: a pet earns XP only from skills BELOW the cap (balance_rebirth BEAST "pet"); True = the F8 what-if
+P9_BANK = [(1_000_000, 0.02), (5_000_000, 0.01), (10_000_000, 0.005)]   # SkyyBank 0.1.x daily interest tiers (cap 10M) - not in the P7 totals
+
+
+def p9_craft_rarity(rng, L, smith):
+    """a Smithing craft (SkyyGear 0.3.37+ craftRarityMob): the MOB odds column (x the loot.levelShift 2 % a level, as bags), Mythic / UT never;
+    then a step-up of one rarity with chance Smithing level x 0.5 % (max 50 %), never past Fabled"""
+    f = 1.0 + 0.02 * (max(1, L) - 1)
+    r = rng.choices(range(5), [P5_ODDS_MOB[0]] + [x * f for x in P5_ODDS_MOB[1:]])[0]
+    if r < 4 and rng.random() * 100.0 < min(50.0, P9_SMITH_STEP * max(0, smith)):
+        r += 1
+    return r
+
+
+def p9_run(share, seed, cap=CAP1, hours=P9_HOURS, dt=0.02, gear=True):
+    """one player of run 1 with the live numbers. Returns a dict: level-up times (any / class), gear-upgrade times (combat / gathering),
+    class Lv 20 / 40 / cap hours, the 'run done' hour (class + P9_ESSENTIAL at the cap), Beastmastery level at the class cap and at done,
+    coins (sales + level-up coins) at class Lv 20 / 40 / 50."""
+    rng = random.Random(seed)
+    tab = p5_roll_table()
+    sk = [s for s in share if share[s] > 0 or s == "Beastmastery"]
+    lv = dict((s, 0) for s in sk)
+    xp = dict((s, 0.0) for s in sk)
+    pxp, bxp = 0.0, 0.0
+    worn = dict((s, None) for s in P5_SLOTS)
+    worn["Weapon"] = [1, 0, 1]
+    bands = set()
+    gtier = dict((s, 0) for s in P9_GATHER)            # gathering kit tier owned (0 = vanilla)
+    gstep = dict((s, 0) for s in P9_GATHER)            # 0 = tool next, 1-4 = armor pieces
+    gbank = dict((s, 0.0) for s in P9_GATHER)          # focused hours banked toward the next piece
+    ups, cups, gups, aups = [], [], [], []
+    res = dict(t20=None, t40=None, tcap=None, done=None, bm_cap=None, bm_done=None, coins={}, lv_done=None)
+    coins = 0.0
+    loot_h, loot_n = 0, 0
+    t = 0.0
+    own, oth = P5_PET_XP[0] / 100.0, P5_PET_XP[1] / 100.0
+
+    def score(s):
+        w = worn[s]
+        return 0.0 if w is None else p5_score(s, w[0], w[1], tab)
+
+    def offer(s, L, r):
+        if p5_score(s, L, r, tab) > score(s) * 1.03:
+            worn[s] = [L, r, L]
+            return True
+        return False
+    while t < hours:
+        cl = lv["Class"]
+        up_l = up_c = up_g = up_a = False
+        # the cap stretch: a capped activity's time moves to the uncapped class / essential skills (by their own split); Fishing keeps its 2 %
+        free = sum(share[s] for s in sk if s not in ("Beastmastery", "Fishing") and lv[s] >= cap)
+        open_ = [s for s in sk if s not in ("Beastmastery", "Fishing") and lv[s] < cap and share[s] > 0]
+        wsum = sum(share[s] for s in open_)
+        eff = dict((s, share[s] + (free * share[s] / wsum if (s in open_ and wsum > 0) else 0.0)) for s in sk)
+        for s in sk:
+            if s == "Beastmastery":
+                continue
+            sh = eff[s]
+            g = xp_per_hour(s, max(1, min(lv[s], cap)), cl) * sh * dt * catchup_mult(s, lv[s], cl)
+            if lv[s] < cap or P9_PET_OVERFLOW[0]:
+                pxp_g = g * (own if s == "Mining" else oth)          # the pet: a Mining pet (P5's default), raw skill XP, only below the cap (live)
+                bxp += pxp_g * catchup_mult("Beastmastery", lv["Beastmastery"], cl) * P9_BEAST_X[0]
+            if lv[s] < cap:
+                xp[s] += g
+                while lv[s] < cap and xp[s] >= CURVES[s][lv[s]]:
+                    xp[s] -= CURVES[s][lv[s]]
+                    lv[s] += 1
+                    coins += p7_level_coins(lv[s])
+                    up_l = True
+                    if s == "Class":
+                        up_c = True
+            if s in P9_GATHER and gear:
+                gbank[s] += sh * dt
+                nt = gtier[s] + 1 if gstep[s] == 0 else gtier[s]          # the tier the next piece belongs to
+                if nt <= 16 and tier_at(max(1, lv[s])) >= nt:
+                    zh = P6_ARMOR_H[p6_zone(nt) - 1]
+                    cost = zh * P6_TOOL_SHARE if gstep[s] == 0 else zh * P6_SLOT[P6_SLOTS[gstep[s] - 1]]
+                    if gbank[s] >= cost:
+                        gbank[s] -= cost
+                        if gstep[s] == 0:
+                            gtier[s] += 1
+                        gstep[s] = (gstep[s] + 1) % 5
+                        up_g = True
+                else:
+                    gbank[s] = min(gbank[s], 2.0)          # nothing to buy yet: materials sit in the sacks (capped at 2 h worth)
+        while lv["Beastmastery"] < cap and bxp >= CURVES["Beastmastery"][lv["Beastmastery"]]:
+            bxp -= CURVES["Beastmastery"][lv["Beastmastery"]]
+            lv["Beastmastery"] += 1
+            coins += p7_level_coins(lv["Beastmastery"])
+            up_l = True
+        coins += coins_per_hour(max(1, cl)) * dt
+        ncl = lv["Class"]
+        if gear and ncl < cap:
+            b = max(x for x in BAND if x <= max(1, ncl))
+            if b not in bands:          # a new metal: craft a full set at your level (Smithing ~ class - 5)
+                bands.add(b)
+                for s in P5_SLOTS:
+                    up_a = offer(s, max(1, ncl), p9_craft_rarity(rng, ncl, ncl - P9_SMITH_LAG)) or up_a
+            if int(t) != loot_h:
+                loot_h, loot_n = int(t), 0
+            if loot_n < P9_LOOT_CAP and rng.random() < LOOT_CHANCE * KILLS_H * share["Class"] * dt:
+                loot_n += 1
+                L = max(1, ncl + rng.randint(-2, 2))
+                f = 1.0 + 0.02 * (L - 1)
+                r = rng.choices(range(5), [P5_ODDS_MOB[0]] + [x * f for x in P5_ODDS_MOB[1:]])[0]
+                s = min(P5_SLOTS, key=lambda x: (score(x), rng.random())) if rng.random() * 100.0 < P5_SMART else (
+                    "Weapon" if rng.random() < 0.5 else rng.choice(P5_SLOTS[1:]))
+                if s != "Weapon" or rng.random() * 100.0 < P5_LEAN:
+                    up_a = offer(s, L, r) or up_a
+            if up_c:          # item level-ups (levelUp.cap +10 over the found level, never past your level)
+                for s in P5_SLOTS:
+                    w = worn[s]
+                    if w is not None and w[0] < ncl and w[0] < w[2] + P5_LVCAP:
+                        w[0] += 1
+                        up_a = True
+        t += dt
+        if up_l:
+            ups.append(t)
+        if up_c:
+            cups.append(t)
+        if up_a:
+            aups.append(t)
+        if up_g:
+            gups.append(t)
+        for hh in (10, 20, 30):
+            if ("lv%d" % hh) not in res and t >= hh:
+                res["lv%d" % hh] = dict(lv)
+        for L, k in ((20, "t20"), (40, "t40"), (cap, "tcap")):
+            if res[k] is None and lv["Class"] >= L:
+                res[k] = t
+                res["coins"][L] = coins
+                if k == "tcap":
+                    res["bm_cap"] = lv["Beastmastery"]
+        if res["done"] is None and lv["Class"] >= cap and all(lv.get(s, cap) >= cap for s in P9_ESSENTIAL):
+            res["done"], res["bm_done"], res["lv_done"] = t, lv["Beastmastery"], dict(lv)
+            break
+    res["end"] = t
+    res["lv_end"] = dict(lv)
+    res["ups"], res["cups"], res["aups"], res["gups"] = ups, cups, aups, gups
+    return res
+
+
+def p9_gap(times, start, end):
+    """the longest stretch without an event between start and end (hours)"""
+    pts = [start] + [x for x in times if start <= x <= end] + [end]
+    return max(b - a for a, b in zip(pts, pts[1:]))
+
+
+_P9_RUNS = {}
+
+
+def p9_runs(name, share, seeds=P9_SEEDS):
+    if name not in _P9_RUNS:
+        _P9_RUNS[name] = [p9_run(share, P5_SEED + 101 * k) for k in range(seeds)]
+    return _P9_RUNS[name]
+
+
+def p9_type_rows():
+    """per player type: medians / p90 of the run (the 1-hour rule split into level-ups and gear upgrades)"""
+    out = []
+    for name, sh in P9_TYPES:
+        runs = p9_runs(name, sh)
+        tc = [r["tcap"] or P9_HOURS for r in runs]
+        dn = [r["done"] or P9_HOURS for r in runs]
+        g_lv = [p9_gap(r["ups"], 0.0, r["done"] or r["end"]) for r in runs]
+        g_gear_pre = [p9_gap(sorted(r["aups"] + r["gups"]), 0.0, r["tcap"] or r["end"]) for r in runs]
+        g_gear_all = [p9_gap(sorted(r["aups"] + r["gups"]), 0.0, r["done"] or r["end"]) for r in runs]
+        g_both = [max(a, b) for a, b in zip(g_lv, g_gear_pre)]
+        g_cls = [p9_gap(r["cups"], 0.0, r["tcap"] or r["end"]) for r in runs]
+        out.append(dict(name=name, t20=statistics.median([r["t20"] or P9_HOURS for r in runs]),
+                        t40=statistics.median([r["t40"] or P9_HOURS for r in runs]), tcap=statistics.median(tc), done=statistics.median(dn),
+                        gap_lv=p5_p90(g_lv), gap_gear=p5_p90(g_gear_pre), gap_gear_all=p5_p90(g_gear_all), gap_both=p5_p90(g_both), gap_cls=p5_p90(g_cls),
+                        bm_cap=statistics.median([r["bm_cap"] or 0 for r in runs]), bm_done=statistics.median([(r["bm_done"] if r["bm_done"] is not None else r["lv_end"]["Beastmastery"]) for r in runs]),
+                        lv_cap=runs[0]["lv_done"] or runs[0]["lv_end"],
+                        coins=dict((L, statistics.median([r["coins"].get(L, 0.0) for r in runs])) for L in (20, 40, CAP1)),
+                        n_gear=statistics.median([len(r["aups"]) + len(r["gups"]) for r in runs]),
+                        lag=dict((hh, runs[0].get("lv%d" % hh, runs[0]["lv_end"])) for hh in (10, 20, 30))))
+    return out
+
+
+def p9_rebirth():
+    """balance_rebirth's greedy campaign on the live past-life list (imports balance_rebirth: its own copy of this module, same argv flags)
+    -> per rebirth (n, cap, hours to cap, target, ratio, first-time level hours Lv prev..cap)"""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import balance_rebirth as RB
+    past = RB.PAST_LIFE_P8
+    if FIXES:
+        RB.BM.p9_apply_fixes(RB.BM)
+        RB.CURVES = RB.BM.CURVES
+        past = RB.BM.PAST_LIFE_LIVE
+    rows = RB.rb_campaign("greedy", past, 5)
+    out = []
+    for r in rows[1:]:
+        n, cap = r["n"], r["cap"]
+        prev = min(RB.CAPMAX, RB.CAP1 + RB.STEP * (n - 1))
+        m = RB.rb_mults(r["ranks"], r["held"], n)
+        tp, _lv, _e = RB.rebirth_run(prev, max(r["target"] * 1.8, 14.0), m, prev, r["past"])
+        first = (r["t_cap"] - tp) if (r["t_cap"] and tp and cap > prev) else None
+        out.append(dict(n=n, cap=cap, t=r["t_cap"], target=r["target"], ratio=(r["t_cap"] / r["target"]) if r["t_cap"] else None,
+                        first=first, prev=prev))
+    return out, rows[0]["t_cap"]
+
+
+def p9_mana(cls, stack=1.0):
+    """seconds to run dry at Lv 20 / 60 / 100 with `stack` of the P9_MANA_STACK pool + regen bonus (0 = the P4 benchmark, 1 = everything at max)"""
+    pool, reg = P9_MANA_STACK[cls]
+    P4_POOL_X[0], P4_REGEN_X[0] = P9_POOL_BASE[0] * (1.0 + pool * stack), 1.0 + reg * stack
+    try:
+        return [p4_tempty(cls, L) for L in (20, 60, 100)]
+    finally:
+        P4_POOL_X[0], P4_REGEN_X[0] = P9_POOL_BASE[0], 1.0
+
+
+P9_POOL_BASE = [1.0]
+P9_FIX = {   # the ranked fix list of research/Balance-P9-Check.md as numbers (--p9 --fixes = the what-if with all of them)
+    "F2": dict(mining_x=1.0, fell_pct=100.0),                        # SkyySkills mining.xpMultiplier 1.25 -> 1, fell.otherLogsPercent 70 -> 100
+    "F3": dict(catchup_max=0.20),                                    # SkyySkills catchup.max 100 -> 20 (%)
+    "F4": dict(k4=1.5, k5=1.9, past=[1.1, 1.52, 2.05, 3.35, 4.92, 2.92, 3.08, 3.25, 3.44, 3.67]),   # levels 61-80 x1.5, 81-100 x1.9 + pastLifeXp
+    "F1": dict(beast_x=1.5),                                         # SkyySkills beast.xpFactor 1 -> 1.5 (Beastmastery reaches the run-1 cap)
+    "F5": dict(pool=1.0, charm_int=0.3, pet_mana=0.3)}               # Void Charm Intelligence line (6..24 % -> 2..7 %) + Mana pets (21 % -> 6 %) x0.3
+
+
+def p9_apply_fixes(M):
+    """apply P9_FIX to a balance_model module object M (this one, or balance_rebirth's own copy)"""
+    f = P9_FIX
+    M.MINING_XP_X = f["F2"]["mining_x"]
+    M.FELL_OTHER_PCT = f["F2"]["fell_pct"]
+    M.FELL_X = (1 + (M.LOGS_PER_TREE - 1) * M.FELL_OTHER_PCT / 100.0) / M.LOGS_PER_TREE
+    M.CATCHUP["max"] = f["F3"]["catchup_max"]
+    new = [x * (f["F4"]["k4"] if 60 <= i < 80 else (f["F4"]["k5"] if i >= 80 else 1.0)) for i, x in enumerate(M.P3_LEVELS)]
+    for s in list(M.CURVES):
+        M.CURVES[s] = new
+    M.PAST_LIFE_LIVE = list(f["F4"]["past"])
+    M.P9_POOL_BASE[0] = M.P4_POOL_X[0] = f["F5"]["pool"]
+    c, pm = f["F5"]["charm_int"], f["F5"]["pet_mana"]
+    M.P9_MANA_STACK = {"Mage": (0.16 + 0.24 * c + 0.37 * pm, 0.10), "Priest": (0.24 * c + 0.37 * pm, 0.10), "Spellblade": (0.24 * c + 0.37 * pm, 0.0)}
+    M.P9_BEAST_X[0] = f["F1"]["beast_x"]
+    M._P9_RUNS.clear()
+
+
+def p9_fortune_rows():
+    """live max gathering Fortune at T15 / Lv 100 vs the P5 budget (p6_best_fortune(15)): budget + the tree Fortune outside the 40 cap"""
+    b = p6_best_fortune(15)
+    return [(s, b, b + P9_FORT_EXTRA[s], (b + P9_FORT_EXTRA[s]) / b) for s in P9_GATHER]
+
+
+def p9_smith_rows(n=4000, seed=P5_SEED):
+    """mean worth of one Smithing craft vs one mob bag at Lv 50 (P5 weapon score; 1.0 = a Normal roll), Smithing 0 / 45 / 100"""
+    rng = random.Random(seed)
+    tab = p5_roll_table()
+    base = p5_score("Weapon", 50, 0, tab)
+    bag = statistics.mean(p5_score("Weapon", 50, rng.choices(range(5), [P5_ODDS_MOB[0]] + [x * 1.98 for x in P5_ODDS_MOB[1:]])[0], tab) for _ in range(n)) / base
+    out = [("mob bag (Lv 50, levelShift x1.98)", bag)]
+    for sm in (0, 45, 100):
+        v = statistics.mean(p5_score("Weapon", 50, p9_craft_rarity(rng, 50, sm), tab) for _ in range(n)) / base
+        out.append(("Smithing %d craft" % sm, v))
+    out.append(("P5 model craft odds (60/25/10/4/1, no step-up)", statistics.mean(p5_score("Weapon", 50, rng.choices(range(5), P5_ODDS_CRAFT)[0], tab) for _ in range(n)) / base))
+    return out
+
+
+def p9_idle_rows():
+    """SkyyShards 0.4.5 idle bank: one 72 h absence at Totem k (zone k) in active farming hours and coins vs the zone's whole coin span"""
+    out = []
+    for z in range(1, 6):
+        hrs = P9_IDLE["share"][z - 1] / 100.0 * P9_IDLE["hours"]
+        coins = hrs * p7_G_mid(z)
+        span = P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0)
+        out.append((z, hrs, coins, coins / span))
+    return out
+
+
+def p9_rows():
+    """(goal, model text, ok, fix id) - the P9 pass / fail table"""
+    out = []
+    tr = p9_type_rows()
+    T = dict((r["name"], r) for r in tr)
+    ev, fi, ga = T["even"], T["fighter-first"], T["gatherer-first"]
+    for r in tr:
+        out.append(("%s: a level-up every <= 1 h (p90 worst gap, start -> run done)" % r["name"], "p90 %.2f h (class level-ups alone %.2f h before the cap)" % (r["gap_lv"], r["gap_cls"]),
+                    r["gap_lv"] <= MAX_GAP_H, "F1" if r["gap_lv"] > MAX_GAP_H else ""))
+        out.append(("%s: a gear upgrade every <= 1 h (p90 worst gap, start -> class cap)" % r["name"], "p90 %.2f h (to run done %.2f h; %d upgrades)" % (r["gap_gear"], r["gap_gear_all"], r["n_gear"]),
+                    r["gap_gear"] <= MAX_GAP_H, ""))
+    out.append(("Zone 1 (class Lv 20) ~12 h, even player (+-15 %)", "%.1f h (fighter %.1f, gatherer %.1f)" % (ev["t20"], fi["t20"], ga["t20"]), 10.2 <= ev["t20"] <= 13.8, ""))
+    out.append(("Zone 2 (class Lv 40) ~26 h, even player (+-15 %)", "%.1f h (fighter %.1f, gatherer %.1f)" % (ev["t40"], fi["t40"], ga["t40"]), 22.1 <= ev["t40"] <= 29.9, ""))
+    out.append(("Class Lv 50 ~33 h, even player (+-10 %)", "%.1f h (fighter %.1f, gatherer %.1f)" % (ev["tcap"], fi["tcap"], ga["tcap"]), 29.7 <= ev["tcap"] <= 36.3, ""))
+    hx = lambda x: ("%.1f" % x) if x < P9_HOURS else "never by %d" % P9_HOURS
+    out.append(("First rebirth 40-50 h (class + Mining / Foraging / Farming / Cooking / Alchemy / Beastmastery at the cap), even player", "%s h (fighter %s, gatherer %s)" % (hx(ev["done"]), hx(fi["done"]), hx(ga["done"])),
+                40.0 <= ev["done"] <= 50.0, "F6" if not 40.0 <= ev["done"] <= 50.0 else ""))
+    lagv = []
+    for hh in (10, 20, 30):
+        L = ev["lag"][hh]
+        lagv.append((hh, L["Class"], dict((s, L["Class"] - L[s]) for s in P9_ESSENTIAL)))
+    worst = max(abs(d - 4) for _h, _c, dd in lagv for d in dd.values())
+    out.append(("Skills trail the class by ~3-5 levels (even player, 10 / 20 / 30 h; ok = every essential skill 1-7 behind)",
+                "; ".join("%d h class %d: %s" % (hh, c, " ".join("%s %+d" % (s[:4], -d) for s, d in dd.items())) for hh, c, dd in lagv),
+                all(1 <= d <= 7 for _h, _c, dd in lagv for d in dd.values()), "F2" if not all(1 <= d <= 7 for _h, _c, dd in lagv for d in dd.values()) else ""))
+    fast = min(fi["done"], ga["done"])
+    out.append(("Even skills easier: the even player is done no later than a focused player (+10 % slack)", "even %s h vs fighter %s / gatherer %s (x%.2f)" % (hx(ev["done"]), hx(fi["done"]), hx(ga["done"]), ev["done"] / fast),
+                ev["done"] <= 1.10 * fast, "F3" if ev["done"] > 1.10 * fast else ""))
+    out.append(("Focus allowed: fighter-first reaches Lv 50 >= 15 % sooner, gatherer-first still reaches it by ~60 h", "fighter x%.2f of even; gatherer %.1f h" % (fi["tcap"] / ev["tcap"], ga["tcap"]),
+                fi["tcap"] <= 0.85 * ev["tcap"] and ga["tcap"] < P9_HOURS, ""))
+    rb, t0 = p9_rebirth()
+    rats = [x["ratio"] for x in rb]
+    out.append(("Rebirth runs 15 % shorter each (greedy player, ratio 0.97-1.03, rebirths 1-5)", " / ".join("%.2f" % x if x else "-" for x in rats), all(x and 0.97 <= x <= 1.03 for x in rats), ""))
+    z4 = sum(x["first"] for x in rb if x["prev"] >= 60 and x["cap"] <= 80 and x["first"])
+    z5 = sum(x["first"] for x in rb if x["prev"] >= 80 and x["first"])
+    out.append(("Zone 4 (Lv 60-80, first time = rebirths 2-3) ~12-16 h of first-time levels", "%.1f h" % z4, 10.0 <= z4 <= 18.0, "F4" if not 10.0 <= z4 <= 18.0 else ""))
+    out.append(("Zone 5 (Lv 80-100, rebirths 4-5) ~15-20 h of first-time levels", "%.1f h" % z5, 12.5 <= z5 <= 22.0, "F4" if not 12.5 <= z5 <= 22.0 else ""))
+    p7 = dict((r[0], r) for r in p7_rows())
+    eq = [r for k, r in p7.items() if "gathering skills within" in k]
+    out.append(("Gathering skills ~equal coins / h (0.85-1.15 in every zone, P7 prices)", "%d / 5 zones ok" % sum(1 for r in eq if r[2]), all(r[2] for r in eq), ""))
+    ct = [r for k, r in p7.items() if k.startswith("Coins at zone end")][0]
+    out.append(("Coin targets x10 at zone end (active play, 0.85-1.15)", ct[1], ct[2], ""))
+    sim = [ev["coins"][L] for L in (20, 40, CAP1)]
+    out.append(("  (sim check) even player's sales + level coins at class Lv 20 / 40 / 50 vs ~80-87 % of the x10 target", " / ".join(fmt(x) for x in sim) + " vs " +
+                " / ".join(fmt(x) for x in (P7_END[1], P7_END[2], (P7_END[2] + P7_END[3]) / 2.0)), 0.7 <= sim[0] / P7_END[1] <= 1.1 and 0.7 <= sim[1] / P7_END[2] <= 1.1, ""))
+    p5 = dict((r[0], r) for r in p5_rows())
+    kit = [r for k, r in p5.items() if k.startswith("Kit best / plain")][0]
+    out.append(("Best gear ~3x plain (kit DPS x3.2 / EHP x2.8 +-15 %)", kit[1], kit[2], ""))
+    sp = [r for k, r in p5.items() if k.startswith("Split 35")][0]
+    out.append(("Power split 35 / 30 / 20 / 15 (+-4 points)", sp[1], sp[2], ""))
+    p4 = dict((r[0], r) for r in p4_rows())
+    for key in ("Normal trash 4-6 hits", "Normal tough 12-15", "Trash needs 12-15 hits on you", "Boss 3-4 min", "+5 levels", "+10 levels"):
+        r = [v for k, v in p4.items() if k.startswith(key)][0]
+        out.append(("Combat TTK: " + r[0], r[1], r[2], ""))
+    cd = [v for k, v in p4.items() if k.startswith("Casters run dry")][0]
+    out.append(("Casters run dry every 20-30 s (P4 benchmark: no tree / gear / pet Mana)", cd[1], cd[2], ""))
+    half = dict((c, p9_mana(c, 0.5)) for c in P9_MANA_STACK)
+    full = dict((c, p9_mana(c, 1.0)) for c in P9_MANA_STACK)
+    hs = [x for v in half.values() for x in v]
+    out.append(("Casters dry 20-30 s with HALF the live Mana stack (tree + charm + pet; typical mid-game kit)", "; ".join("%s %s s" % (c[:2], "/".join(fmt(x) for x in v)) for c, v in half.items()),
+                all(x is not None and x <= 33 for x in hs), "F5" if not all(x is not None and x <= 33 for x in hs) else ""))
+    fs = [x for v in full.values() for x in v]
+    out.append(("  (info) dry time with the FULL live Mana stack (Lv 20 / 60 / 100)", "; ".join("%s %s s" % (c[:2], "/".join(fmt(x) for x in v)) for c, v in full.items()),
+                True, "F5" if not all(x is not None and x <= 40 for x in fs) else ""))
+    fr = p9_fortune_rows()
+    out.append(("Stacking: max gathering Fortune within the P5 budget +5 % (tree Fortune outside the 40 cap)", "; ".join("%s %.0f / %.0f (x%.3f)" % (s, l, b, x) for s, b, l, x in fr),
+                all(x <= 1.05 for _s, _b, _l, x in fr), ""))
+    lc = [r for k, r in p7.items() if k.startswith("P7b level-up coins (SkyySkills")][0]
+    out.append(("Stacking: level-up coins 4.5-9.5 % of each zone's coins (P7b)", lc[1], lc[2], ""))
+    sm = p9_smith_rows()
+    bag, s100 = sm[0][1], sm[3][1]
+    out.append(("Stacking: a Smithing-100 craft worth <= 1.25x a mob bag (crafts pick the slot + skip identify)", "craft x%.2f of a bag (Smithing 0 x%.2f, 45 x%.2f); bag x%.2f of Normal" % (s100 / bag, sm[1][1] / bag, sm[2][1] / bag, bag),
+                s100 / bag <= 1.25, ""))
+    bmv = [(r["name"], r["bm_cap"], r["bm_done"]) for r in tr]
+    out.append(("Beastmastery pace: reaches the run-1 cap (pet XP only flows from skills below the cap) - every player type", "; ".join("%s Lv %d at the class cap, %d at the end" % x for x in bmv),
+                all(x[2] >= CAP1 for x in bmv), "F1" if not all(x[2] >= CAP1 for x in bmv) else ""))
+    idle = p9_idle_rows()
+    out.append(("  (report, Skyy's choice) one 3-day absence at Totem I..V = x zone's whole coin span", " / ".join("Z%d %.0f h = x%.2f" % (z, h, x) for z, h, _c, x in idle), True, "F7"))
+    return out
+
+
+def p9_md():
+    rows = p9_rows()
+    tr = p9_type_rows()
+    out = ["", "### 10. Whole first run (P9, research/Balance-P9-Check.md; `python tools/balance_model.py --p9 --check`)", "",
+           "Live numbers (P9 LIVE corrections: Mining XP x%.2f, felled logs %.0f %% = x%.2f a log, levelCoins, P7 prices, past-life %s); %d seeds a player type." % (
+               MINING_XP_X, FELL_OTHER_PCT, FELL_X, "/".join("%g" % x for x in PAST_LIFE_LIVE[:5]), P9_SEEDS), "",
+           "| Player | Class Lv 20 / 40 / 50 h | Run done h | Level-up gap p90 | Gear gap p90 (to cap / to done) | Beastmastery at cap / done | Levels at done |",
+           "|---|---|---|---|---|---|---|"]
+    for r in tr:
+        out.append("| %s | %.1f / %.1f / %.1f | %.1f | %.2f h | %.2f / %.2f h | %d / %d | %s |" % (
+            r["name"], r["t20"], r["t40"], r["tcap"], r["done"], r["gap_lv"], r["gap_gear"], r["gap_gear_all"], r["bm_cap"], r["bm_done"],
+            ", ".join("%s %d" % (k[:4], v) for k, v in r["lv_cap"].items())))
+    out += ["", "| Goal | Model | OK | Fix |", "|---|---|---|---|"]
+    for g, m, ok, fx in rows:
+        out.append("| %s | %s | %s | %s |" % (g, m, "yes" if ok else "NO", fx))
+    out.append("")
+    return "\n".join(out)
+
+
+def p9_write_section(md):
+    """put p9_md() into research/balance/targets.md as its '### 10. Whole first run' section (p7_write_section's rule)"""
+    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "research", "balance", "targets.md"))
+    raw = open(path, "rb").read().decode("utf-8")
+    nl = "\r\n" if "\r\n" in raw else "\n"
+    sec = md.strip("\n").replace("\n", nl) + nl
+    head = "### 10. Whole first run"
+    a = raw.find(nl + head)
+    if a < 0:
+        out, how = raw + ("" if raw.endswith(nl) else nl) + nl + sec, "appended"
+    else:
+        a += len(nl)
+        b = len(raw)
+        for mk in (nl + "### ", nl + "## "):
+            j = raw.find(mk, a + len(head))
+            if 0 <= j < b:
+                b = j + len(nl)
+        rest = raw[b:]
+        out, how = raw[:a] + sec + ((nl if not sec.endswith(nl + nl) else "") + rest if rest else ""), "replaced"
+    with open(path, "wb") as f:
+        f.write(out.encode("utf-8"))
+    return how
+
+
+FIXES = "--fixes" in sys.argv     # --p9 --fixes: the what-if with every P9_FIX applied (never written to targets.md)
+
+
 def main():
+    if "--p9" in sys.argv and FIXES:
+        p9_apply_fixes(sys.modules[__name__])
+    if "--p9" in sys.argv:            # P9 whole first run: targets.md section 10 (--md: also write it); --check: exit 1 on a failed goal
+        md = p9_md()
+        print(md)
+        if "--md" in sys.argv and not FIXES:
+            print("\nwrote research/balance/targets.md section '### 10. Whole first run' (%s)" % p9_write_section(md))
+        if "--check" in sys.argv:
+            bad = [r for r in p9_rows() if not r[2]]
+            for g, m, _ok, fx in bad:
+                print("FAIL %s: %s%s" % (g, m, (" -> fix " + fx) if fx else ""))
+            print("P9 first-run check: %d goals, %d fail" % (len(p9_rows()), len(bad)))
+            sys.exit(1 if bad else 0)
+        return
     if "--econ" in sys.argv:          # P7 economy: targets.md section 9; with --check: exit 1 on any P7 row that fails
         md = p7_md()
         print(md)
