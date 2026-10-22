@@ -134,6 +134,34 @@ EFFECTS = [
     ("Combat", 3, "r3b", "SkyyMobs", "rare", 1.0, None, 0),                         # Rare Drop: +1 % a rank 1 more of the kill's rarest loot
     ("Combat", 3, "r4a", "SkyyMobs", "bossRoll", 3.0, None, 0),                     # Boss Hunter: +3 % a rank a boss / mini boss drops its loot again
     ("Combat", 3, "r5a", "SkyyMobs", "dbl", 2.0, None, 0),                          # Lucky Kill: 2 % a rank a kill drops its whole loot twice
+    # ---------------- Balance P8c (2026-10-22, research/Balance-P8-Rebirth-Spec.md 4.4; SkyyPets 0.4.9, SkyySkills 0.4.60, SkyyTrees 0.4.7):
+    # the Beastmastery tree (points = the Beastmastery skill level). SkyyPets applies every row: petxp.<kind> = more XP for that kind of pet
+    # (combat / mining / green = Farming and Foraging pets / all), petsyn.<kind> = that kind of pet's stats + x % (the Mining tree's Pet
+    # Synergy rule; rare = pets of Rare rarity or better; all = every pet). Budgets per pet kind (check()): pet XP <= TREE_XP_MAX 30 %, pet stats
+    # <= 15 %. P8c fixer: docs/answered/skills.md 2026-10-16 BEASTMASTERY GLOBAL NODE (Skyy: "actually, do add the +% global power at the
+    # bottom") = the bottom capstone Kinship of the Wild's "all equipped pets gain +x % all stats" part, live as petsyn.all +3 % (its extra pet
+    # slot stays coming soon); Gentle Giant 2.5 -> 1 % a rank so every kind stays at 15 % (4 + 6 + 2 + 3).
+    ("Beastmastery", 1, "r1a", "SkyyPets", "petxp.combat", 0.006, None, 0),         # Whistle Training: +0.6 % Combat pet XP a rank (was +2 flat)
+    ("Beastmastery", 1, "r1b", "SkyyPets", "petxp.combat", 0.03, None, 0),          # Fang Familiar: +3 % Combat pet XP a rank
+    ("Beastmastery", 1, "r3a", "SkyyPets", "petsyn.combat", 0.01, None, 0),         # Battle Bond: +1 % all stats from Combat pets a rank
+    ("Beastmastery", 1, "r4b", "SkyyPets", "petxp.combat", 0.04, None, 0),          # Fang Tempering: +4 % Combat pet XP a rank
+    ("Beastmastery", 1, "r5a", "SkyyPets", "petsyn.combat", 0.02, None, 0),         # Predator's Gift: +2 % all stats from Combat pets a rank
+    ("Beastmastery", 1, "r5b", "SkyyPets", "petxp.all", 0.02, None, 0),             # Rapid Learner: +2 % XP for every pet a rank
+    ("Beastmastery", 2, "r1a", "SkyyPets", "petxp.mining", 0.024, None, 0),         # Digger's Calling: +2.4 % Mining pet XP a rank (was 3: budget)
+    ("Beastmastery", 2, "r3a", "SkyyPets", "petsyn.mining", 0.01, None, 0),         # Stone Bond: +1 % all stats from Mining pets a rank
+    ("Beastmastery", 2, "r4b", "SkyyPets", "petxp.mining", 0.04, None, 0),          # Deep Tempering: +4 % Mining pet XP a rank
+    ("Beastmastery", 2, "r5a", "SkyyPets", "petsyn.mining", 0.02, None, 0),         # Earthen Gift: +2 % all stats from Mining pets a rank
+    ("Beastmastery", 3, "r1a", "SkyyPets", "petxp.green", 0.024, None, 0),          # Green Companion: +2.4 % Farming / Foraging pet XP a rank
+    ("Beastmastery", 3, "r3a", "SkyyPets", "petsyn.farming", 0.01, None, 0),        # Verdant Bond: +1 % all stats from Farming pets a rank
+    ("Beastmastery", 3, "r3b", "SkyyPets", "petsyn.foraging", 0.01, None, 0),       # Wild Bond: +1 % all stats from Foraging pets a rank
+    ("Beastmastery", 3, "r4b", "SkyyPets", "petxp.green", 0.04, None, 0),           # Roots Tempering: +4 % Farming / Foraging pet XP a rank
+    ("Beastmastery", 3, "r5a", "SkyyPets", "petsyn.green", 0.02, None, 0),          # Nature's Gift: +2 % all stats from Farming and Foraging pets
+    ("Beastmastery", 3, "r5b", "SkyyPets", "petsyn.rare", 0.01, None, 0),           # Gentle Giant: +1 % all stats of Rare or better pets a rank (fixer: was 2.5, room for Kinship)
+    ("Beastmastery", 3, "r6", "SkyyPets", "petsyn.all", 0.03, None, 0),             # Kinship of the Wild (capstone): +3 % all stats of every pet - Skyy's "+% global power at the bottom"
+    # P8c fixer 2: docs/answered/pets.md 2026-10-16 (LOCKED, Skyy: "the hatchery has limited slots (upgradable in beast masters skill tree")
+    # -> Gentle Hand (was "+3% pet happiness/rank" - no happiness system) = +1 Hatchery slot a rank, 3 ranks (SkyyPets PetHatchery.extra:
+    # pets.hatch.slots 2 + this + pets:hatch:slots:<uuid>, at most 10 extra / 12 slots)
+    ("Beastmastery", 3, "r1b", "SkyyPets", "hatch", 1.0, None, 0),                  # Gentle Hand: +1 Hatchery slot a rank
 ]
 
 # R3c FIRST-PASS NUMBERS (builder 2026-10-20; Skyy "if you have any doubt, do research to get good data to base your default on" + the four power
@@ -253,12 +281,12 @@ VMAX = {  # (tree, branch, id, effect) -> ceiling in effect units; rows not name
 
 def flat(eff):
     """a flat-points effect (no %): max Health, max Stamina (R3c); P8b: Vein Burst ore, Tree Feller logs"""
-    return eff in ("hp", "stam", "vein", "feller")
+    return eff in ("hp", "stam", "vein", "feller", "hatch")   # P8c fixer 2: + Hatchery slots
 
 
 def unit(eff):
     """display unit: fractions (Fortune / XP / Breaking Power / synergy / chances) show x100 as %, SkyyGear stats are whole % already"""
-    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "gem.", "coins.", "extra.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0
+    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0
 
 
 def natural(e):
@@ -288,7 +316,9 @@ _EW = {"hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Powe
        "spd": "Speed", "stam": "Stamina",
        # P8b
        "vein": "Ore", "feller": "Logs", "fall": "Fall", "gem": "Gems", "coins": "Coins", "extra": "Extra", "dmgLow": "Damage", "dmgBoss": "Damage",
-       "drAll": "Guard", "kbRes": "Steady", "drop": "Drop", "rare": "Rare", "bossRoll": "Boss", "dbl": "Double"}
+       "drAll": "Guard", "kbRes": "Steady", "drop": "Drop", "rare": "Rare", "bossRoll": "Boss", "dbl": "Double",
+       # P8c
+       "petxp": "Pet XP", "hatch": "Slots"}
 
 
 def _scale_words(e):
@@ -325,7 +355,14 @@ def describe(e):
                                                                      "dmgBoss": "damage vs bosses", "drAll": "damage reduction",
                                                                      "kbRes": "knockback resistance", "drop": "chance of 1 more loot item",
                                                                      "coins": "chance a kill pays coins", "rare": "chance of 1 more rarest item",
-                                                                     "bossRoll": "chance a boss drops loot again", "dbl": "chance of double loot"}[eff]
+                                                                     "bossRoll": "chance a boss drops loot again", "dbl": "chance of double loot",
+                                                                     # P8c (the Beastmastery tree, SkyyPets)
+                                                                     "petxp.combat": "Combat pet XP", "petxp.mining": "Mining pet XP",
+                                                                     "petxp.green": "Farming and Foraging pet XP", "petxp.all": "XP for every pet",
+                                                                     "petsyn.combat": "Combat pet stats", "petsyn.farming": "Farming pet stats",
+                                                                     "petsyn.foraging": "Foraging pet stats", "petsyn.green": "Farming and Foraging pet stats",
+                                                                     "petsyn.rare": "stats of Rare or better pets", "petsyn.all": "stats of every pet",
+                                                                     "hatch": "Hatchery slot"}[eff]
     return "+%s%s %s %s" % (_n(e[5] * unit(eff)), "" if flat(eff) else " %", what, _scale_words(e))
 
 
@@ -361,11 +398,11 @@ def _flat_note(applier):
     fl = sorted(set(e[4] for e in rows(applier) if flat(e[4])))
     if fl == ["hp"]:
         return " Health rows are in Health points, not %."
-    return " %s rows are in points, not %%." % " / ".join({"hp": "Health", "stam": "Stamina", "vein": "Vein Burst ore", "feller": "Tree Feller log"}[f] for f in fl)
+    return " %s rows are in points, not %%." % " / ".join({"hp": "Health", "stam": "Stamina", "vein": "Vein Burst ore", "feller": "Tree Feller log", "hatch": "Hatchery slot"}[f] for f in fl)
 
 
 def _flat_word(eff):
-    return {"hp": "Health", "stam": "Stamina", "vein": "ore", "feller": "logs"}[eff]
+    return {"hp": "Health", "stam": "Stamina", "vein": "ore", "feller": "logs", "hatch": "slots"}[eff]
 
 
 PER_HI, MAX_HI = 100, 1000     # the Server Setup bounds (display units)
@@ -510,6 +547,29 @@ def tree_hp(tree):
     return sum(vmax(e) for e in EFFECTS if e[0] == tree and e[4] == "hpp")
 
 
+# ---------------------------------------------------------------------------------------------------- P8c PET BUDGETS (spec 4.4)
+TREE_PETSTAT_MAX = 0.15   # the most "+x % all stats from <kind> pets" the Beastmastery tree adds to one pet kind (the pets' 15 % power share)
+PET_KINDS = ("combat", "mining", "farming", "foraging", "exploration")   # SkyyPets' pet skills (PetKind.skill, lower case)
+PET_XP_KINDS = ("combat", "mining", "green", "all")                      # petxp.<k>: green = Farming + Foraging pets, all = every pet
+PET_SYN_KINDS = ("combat", "mining", "farming", "foraging", "green", "rare", "all")   # petsyn.<k>: rare = Rare or better pets of any kind; all = every pet (fixer)
+HATCH_EXTRA_MAX = 10      # P8c fixer 2: SkyyPets PetHatchery.extra clamps the extra Hatchery slots to 10 (pets.hatch.slots 2 + 10 = MAX_SLOTS 12)
+
+
+def _pet_match(k, pk):
+    """P8c: does a petxp / petsyn suffix k apply to a pet of skill pk (lower case)? (rare = any kind - the rarity decides at run time)"""
+    return k == pk or k in ("all", "rare") or (k == "green" and pk in ("farming", "foraging"))
+
+
+def pet_xp(pk):
+    """P8c: the most pet XP % (fraction) the Beastmastery tree gives one pet kind"""
+    return sum(vmax(e) for e in EFFECTS if e[0] == "Beastmastery" and e[4].startswith("petxp.") and _pet_match(e[4][6:], pk))
+
+
+def pet_stat(pk):
+    """P8c: the most pet stat % (fraction) the Beastmastery tree gives one pet kind (a Rare+ pet: Gentle Giant included)"""
+    return sum(vmax(e) for e in EFFECTS if e[0] == "Beastmastery" and e[4].startswith("petsyn.") and _pet_match(e[4][7:], pk))
+
+
 def check():
     V3D.check()
     for t, b, uid, eff, per in TREE_OWN_FORT:
@@ -528,7 +588,17 @@ def check():
         assert scale not in ("weapon", "pick") or mod == "SkyyGear", ("R3c: only SkyyGear knows the held weapon / pick scales", e)
         assert len(set(m for (t2, b2, i2, m, _e, _p, _s, _c) in EFFECTS if (t2, b2, i2) == (tree, b, uid))) == 1, ("one applier per upgrade", e)
         assert "," not in key(tree, b, uid)
-    assert not [e for e in EFFECTS if e[0] == "Beastmastery"], "Beastmastery stays coming soon (no skill yet)"
+    # P8c: the Beastmastery tree is SkyyPets' (the Beastmastery skill exists since SkyySkills 0.4.60): pet XP / pet stat rows only, each
+    # pet kind's budgets held (spec 4.4: pet XP <= TREE_XP_MAX per kind, pet stats <= TREE_PETSTAT_MAX per kind)
+    assert all(e[3] == "SkyyPets" and (e[4].startswith(("petxp.", "petsyn.")) or e[4] == "hatch") and e[6] is None for e in EFFECTS if e[0] == "Beastmastery"), "P8c: Beastmastery = SkyyPets pet rows"
+    # P8c fixer 2: the Hatchery slot row(s) - Beastmastery only, whole slots, inside the extra-slot clamp
+    assert all(e[0] == "Beastmastery" and e[5] == int(e[5]) for e in EFFECTS if e[4] == "hatch"), "P8c: hatch rows"
+    assert sum(vmax(e) for e in EFFECTS if e[4] == "hatch") <= HATCH_EXTRA_MAX, "P8c: Hatchery slots over the clamp"
+    assert not [e for e in EFFECTS if e[4].startswith("petxp.") and (e[0] != "Beastmastery" or e[4][6:] not in PET_XP_KINDS)], "P8c: petxp.<kind> rows"
+    assert not [e for e in EFFECTS if e[4].startswith("petsyn.") and e[4][7:] not in PET_SYN_KINDS], "P8c: petsyn.<kind> rows"
+    for pk in PET_KINDS:
+        assert pet_xp(pk) <= TREE_XP_MAX + 1e-9, ("Beastmastery pet XP budget", pk, pet_xp(pk))
+        assert pet_stat(pk) <= TREE_PETSTAT_MAX + 1e-9, ("Beastmastery pet stat budget", pk, pet_stat(pk))
     assert not [e for e in EFFECTS if e[0] == "Exploration" and e[4].startswith("xp.")], "Exploration never gets XP bonuses (Skyy, SkyySkills rule)"
     # the ceilings: every VMAX names a row; the tree Fortune rows of one skill add at most TREE_FORT_MAX together; no non-pet Fortune row over
     # ROW_FORT_MAX; a pet row never above its x1.5 value
@@ -565,3 +635,4 @@ if __name__ == "__main__":
         print(m, reads_csv(m))
     for _t in ("Mining", "Foraging", "Combat"):
         print("%s: Fortune %.1f, XP %.1f %%, move %.1f %%, Health %.1f %%" % (_t, 100 * tree_fort(_t.lower()), 100 * tree_xp(_t), tree_move(_t), 100 * tree_hp(_t)))
+    print("Beastmastery (P8c): " + "; ".join("%s pets XP %.1f %%, stats %.1f %%" % (_k, 100 * pet_xp(_k), 100 * pet_stat(_k)) for _k in PET_KINDS))

@@ -23,14 +23,15 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-21, Balance P5 power): SkyyGear 0.3.35 + SkyyAccessories 0.5.30 + SkyyPets 0.4.8 + SkyyArmory 0.1.43 + SkyyTrees 0.4.5 + SkyyGuilds 0.1.13 pin + roll back TOGETHER (slot power, armor Defense / Health %, charm ladder and pet power are fit to each other). Before a rollback Undo the one-time P5 rows in Server Setup -> Changes (Gear migrateP5 rarity / ramp / reforge / loot / gathering armor rows + Armor_Iron, Accessories migrateP5 config + power rows, Pets PetsMigP5 kinds + scalars, Armory migrateP5 sigil chances, Trees TreeMigP5 Mining.MFortune.per, Guilds GP5Mig levelBase / levelStep) - older jars read the moved values as admin values. Gear 0.3.35 saves the max Health modifier skyygear_hp with the player (0.3.34 knows only skyygear_ut_hp): switch part.stats off for one session before rolling Gear back. Fabled / Mythic Void Charms (20 new ids) are unknown items to Accessories 0.5.29 - never roll Accessories back once one exists. Pets 0.4.7 reads health / mana pet stats as flat values again. Gear's luck/ folder (UT meter, Mythic pity) is ignored by 0.3.34 (kept).
 # FLOOR (2026-10-22, Balance P8b skill-tree hooks): SkyyTrees 0.4.6 + SkyyClasses 0.1.45 + SkyyMobs 0.1.15 pin + roll back TOGETHER (Trees gates count rows only Classes / Mobs make buyable; an older Classes or Mobs shows them as coming soon). No saved-data change; a rollback leaves bought ranks saved but unused (a respec refunds them); trees.properties (Classes, Mobs) + tree-effects.properties (Trees) stay, ignored by older jars.
 # FLOOR (2026-10-22, Balance P6 part B): SkyyGear 0.3.36 + SkyyCollections 0.2.31 pin + roll back TOGETHER (Gear's Dusk/Azurvane/Cinder/Lumen tier-ups pay Enchanted alloys that Collections 0.2.31 unlocks at V+V). Before a rollback Undo the P6 rows in Server Setup -> Changes (Gear migrateP6: ladder rows, xp.craftCurve + xp.craft, levelUp.cap, 40 utpow appended; Collections CollP6Mig curve.B/S/R/E, CollP6EnchMig ench.tier.<alloy>) - older jars read them as admin values. Items stay valid (armor bags open as their stored piece under 0.3.35); collection tiers already paid stay paid.
+# FLOOR (2026-10-22, Balance P8c Beastmastery): SkyySkills 0.4.60 + SkyyPets 0.4.9 + SkyyTrees 0.4.7 pin + roll back TOGETHER. NEVER roll SkyySkills below 0.4.60 once a Beastmastery line has been saved (0.4.59 drops the unknown key on its next save = Beastmastery XP lost). Before any rollback Undo the 2 BmMigP8c rows in Server Setup -> Changes. Older Pets / Trees ignore bought Beastmastery ranks (kept saved; a respec refunds them).
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.27"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.31"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.36"), ("SkyySkills", "0.4.59"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.36"), ("SkyySkills", "0.4.60"),
     ("SkyyAccessories", "0.5.31"), ("SkyyClasses", "0.1.45"), ("SkyyMenu", "0.3.43"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.6"),
+    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -87,7 +88,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.8"),
+    ("SkyyPets", "0.4.9"),
     ("SkyyWardrobe", "0.2.10"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes

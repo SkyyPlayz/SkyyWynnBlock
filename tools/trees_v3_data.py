@@ -4597,3 +4597,50 @@ def _p8b_apply():
 
 _p8b_apply()
 check()
+
+# ===================================================================================================================================
+# Balance P8c (research/Balance-P8-Rebirth-Spec.md 4.4; SkyySkills 0.4.60 + SkyyPets 0.4.9 + SkyyTrees 0.4.7, 2026-10-22): the Beastmastery
+# tree. Skyy (2026-10-20/21): "keep going down the list. dont stop until the entire list is done" + "just go with the recommended on all of
+# them" (spec Q5 [yes]: an upgrade that cannot work as drafted gets the nearest working effect with honest text; Q7 [yes]: the Beastmastery
+# skill levels from the XP your pets gain and its points open this tree). The pet XP / pet stat rows are applied by SkyyPets through
+# tools/trees_v3_effects.py EFFECTS (hook None, like P8b); the per-pet-kind budgets (pet XP <= 30 %, pet stats <= 15 % a kind) are proved by
+# trees_v3_effects.check(). P8C_TEXT = the texts that change (the rest of the wired texts already say what the row does):
+#   Whistle Training "+2 flat pet XP/rank" -> a % (flat pet XP is meaningless after Balance P3's per-tier XP; the Combat pet XP budget 30 % =
+#     3 + 9 + 12 + 6), Digger's Calling / Green Companion +3 % -> +2.4 % a rank (5 x 2.4 + 12 + 6 = 30 %, the spec's per-kind pet XP budget),
+#     Gentle Giant "+10% pet bonus from rare pets/rank" -> +1 % all stats of Rare or better pets a rank, and (fixer) the bottom capstone Kinship
+#     of the Wild's "all equipped pets gain +10% all stats" -> +3 % all stats of every pet (docs/answered/skills.md 2026-10-16 BEASTMASTERY
+#     GLOBAL NODE, Skyy: "actually, do add the +% global power at the bottom"; each kind's pet stats 4 + 6 + 2 + 3 = 15 %; the extra pet slot
+#     stays coming soon).
+# Coming soon (no system yet, named in the spec 4.4 / 4.1): Bond of Beasts (needs a pet-active kill counter), the actives Rally Cry / Pet Dig /
+# Pet Harvest and their modifier rows, Pack Speed / Alpha's Mark / Pack Instinct / Guard Dog (summoned fighters attack with the game's own NPC
+# attacks - SkyyPets has no pet damage numbers yet), Cave Nose (ore detection), Ore Sniffer / Fertile Trail / Gem Hound / Burrow Rush (the
+# Mining / Foraging / Farming Fortune and speed budgets are their own trees'), Pet Picnic (no feeding system),
+# Glimmering Coat (visual), the capstones Apex Bond / Heart of Stone (Rally Cry / Pet Dig) and Kinship's extra pet slot.
+P8C_TEXT = {"Beastmastery.b1.r1a": "+0.6% Combat pet XP/rank",
+            "Beastmastery.b2.r1a": "+2.4% Mining pet XP/rank",
+            "Beastmastery.b3.r1a": "+2.4% Farming/Foraging pet XP/rank",
+            "Beastmastery.b3.r5b": "+1% all stats from Rare or better pets/rank",
+            "Beastmastery.b3.r1b": "+1 Hatchery slot/rank",   # fixer 2: docs/answered/pets.md 2026-10-16 LOCKED "the hatchery has limited slots (upgradable in beast masters skill tree" (no happiness system)
+            "Beastmastery.b3.r6": "+3% all stats from every pet you equip (the extra pet slot: coming soon)"}
+P8C_TEXT_OLD = {"Beastmastery.b1.r1a": "+2 flat pet XP/rank", "Beastmastery.b2.r1a": "+3% Mining pet XP/rank",
+                "Beastmastery.b3.r1a": "+3% Farming/Foraging pet XP/rank", "Beastmastery.b3.r5b": "+10% pet bonus from rare pets/rank",
+                "Beastmastery.b3.r1b": "+3% pet happiness/rank",
+                "Beastmastery.b3.r6": "equip one extra pet slot; all equipped pets gain +10% all stats (+20% for Farming and Foraging)."}
+
+
+def _p8c_apply():
+    t = tree("Beastmastery")
+    seen = set()
+    for bn, b in enumerate(t["branches"]):
+        for r in b["rows"]:
+            for u in r["ups"]:
+                k = "Beastmastery.b%d.%s" % (bn + 1, u["id"])
+                if k in P8C_TEXT:
+                    assert u["hook"] is None and u["text"] == P8C_TEXT_OLD[k], ("P8c: the text moved", k, u["text"])
+                    u["text"] = P8C_TEXT[k]
+                    seen.add(k)
+    assert seen == set(P8C_TEXT), sorted(set(P8C_TEXT) - seen)
+
+
+_p8c_apply()
+check()
