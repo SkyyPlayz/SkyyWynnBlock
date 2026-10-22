@@ -243,3 +243,4 @@ tests always come first.
 215. Balance P4 combat: Lv 40 sword vs Lv 40 wolf ~12 hits, casters dry in 20-30 s then quick refill, Mage slow in heavy, elites 3x
 216. Rebirth pace (past-life list, no 200 % clamp, unlimited rebirths), Tropical Smoothie XP, Furnace 4x faster + 1000 queue, totem idle 3 days, new-land zone crops
 217. Balance P5: weapon lines x1.18, armor Defense + Health %, UT meter /gear, unidentified weapons hide type, Fabled/Mythic charms, pet % stats
+218. Left Alt opens the Menu (every press? Alt-Tab?), switches in /settings + Server Setup

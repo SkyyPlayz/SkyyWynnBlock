@@ -331,3 +331,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Balance P4 combat: one gear + mob curve, class stats + speed, casters run dry 20-30 s, elites / bosses, tree caps (DEPLOYED 2026-10-21, backup deploy-20261021-2050) | [2026-10](2026-10.md) |
 | Rebirth pacing P8a + Cooking ingredient tiers + P6a zone spawns / totems / Furnace (DEPLOYED 2026-10-21, backup deploy-20261021-2316) | [2026-10](2026-10.md) |
 | Balance P5 power sources: slot power, armor Defense / Health %, UT meter + Mythic pity, Fabled / Mythic charms, pet power, Rich Seams, guild curve, bug 12 (DEPLOYED 2026-10-22, backup deploy-20261022-0512) | [2026-10](2026-10.md) |
+| Left Alt (Walk key) opens the SkyWynn Menu (DEPLOYED 2026-10-22, backup deploy-20261022-0635) | [2026-10](2026-10.md) |
