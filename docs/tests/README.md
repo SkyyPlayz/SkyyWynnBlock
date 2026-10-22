@@ -339,3 +339,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Beastmastery skill (levels from pet XP) + its tree; class Health % no longer counts gear / pet % (DEPLOYED 2026-10-22, backup deploy-20261022-0837) | [2026-10](2026-10.md) |
 | Tree-page probe 0.7.1: every click answers (no more stuck Loading...) (DEPLOYED 2026-10-22, backup deploy-20261022-0908) | [2026-10](2026-10.md) |
 | Last skill trees (P8d): Farming / Cooking / Alchemy / Fishing / Smithing / Acrobatics / Exploration upgrades live, stuck rows fixed; Beastmastery counts for Void Particles (DEPLOYED 2026-10-22, backup deploy-20261022-0939) | [2026-10](2026-10.md) |
+| Balance P7 economy core (coins x10 curve, Bazaar by tier, merchants, AH, death 5 %) + Smithing combat crafting (DEPLOYED 2026-10-22, backup deploy-20261022-1102) | [2026-10](2026-10.md) |
