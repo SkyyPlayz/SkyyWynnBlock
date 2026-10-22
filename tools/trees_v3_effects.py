@@ -162,6 +162,23 @@ EFFECTS = [
     # -> Gentle Hand (was "+3% pet happiness/rank" - no happiness system) = +1 Hatchery slot a rank, 3 ranks (SkyyPets PetHatchery.extra:
     # pets.hatch.slots 2 + this + pets:hatch:slots:<uuid>, at most 10 extra / 12 slots)
     ("Beastmastery", 3, "r1b", "SkyyPets", "hatch", 1.0, None, 0),                  # Gentle Hand: +1 Hatchery slot a rank
+    # ---------------- Balance P8d (2026-10-22, research/Balance-P8-Rebirth-Spec.md 4.5; SkyyTrees 0.4.8): the useful + light trees. Only
+    # SkyyTrees' OWN TreeSk rows (no applier mod rebuilt); the 0.3 node aliases are in tools/trees_v3_data.py P8D_OLD. New own effects:
+    # stam = flat max Stamina (skyytree_stamina), dodge.acrobatics = SkyySkills' dodge push (skill:bonus, fraction; SkyySkills clamps the
+    # tree part at acro.treeDodgeMax 0.25). See P8D NUMBERS below.
+    ("Farming", 1, "r1b", "SkyyTrees", "spd", 1.0, None, 0),                        # Quick Scythe: +1 % move speed a rank (crops break in one hit)
+    ("Farming", 1, "r4b", "SkyyTrees", "dd.farming", 0.009, None, 0),               # Bumper Crop: +0.9 Farming Fortune a rank (Farming tree 37.2 -> 39.9)
+    ("Cooking", 1, "r4a", "SkyyTrees", "hpp", 0.01, None, 0),                       # Comfort Food: +1 % max Health a rank (always on)
+    ("Alchemy", 3, "r1a", "SkyyTrees", "hpp", 0.01, None, 0),                       # Resist Tonic: +1 % max Health a rank
+    ("Smithing", 1, "r1a", "SkyyTrees", "xp.smithing", 0.02, None, 0),              # Steady Strikes: +2 % Smithing XP a rank (was the dead Smithing.SQuick alias)
+    ("Acrobatics", 1, "r3b", "SkyyTrees", "dodge.acrobatics", 0.02, None, 0),       # Combat Flip: +2 % dodge push a rank
+    ("Acrobatics", 1, "r3c", "SkyyTrees", "spd", 1.0, None, 0),                     # Gear Resonance: +1 % move speed a rank
+    ("Acrobatics", 2, "r1a", "SkyyTrees", "spd", 1.0, None, 0),                     # Adrenaline: +1 % move speed a rank (at any Health)
+    ("Acrobatics", 2, "r2b", "SkyyTrees", "fall", 0.02, None, 0),                   # Steady Land: -2 % fall damage a rank
+    ("Acrobatics", 2, "r3b", "SkyyTrees", "dodge.acrobatics", 0.02, None, 0),       # Evade Master: +2 % dodge push a rank
+    ("Acrobatics", 2, "r3c", "SkyyTrees", "fall", 0.03, None, 0),                   # Fearless: -3 % fall damage a rank (at any Health)
+    ("Exploration", 1, "r1b", "SkyyTrees", "stam", 0.3, None, 0),                   # Trail Mix: +0.3 max Stamina a rank (3 % of the base 10)
+    ("Exploration", 2, "r2b", "SkyyTrees", "fall", 0.05, None, 0),                  # Safe Landing: -5 % fall damage a rank
 ]
 
 # R3c FIRST-PASS NUMBERS (builder 2026-10-20; Skyy "if you have any doubt, do research to get good data to base your default on" + the four power
@@ -200,6 +217,20 @@ EFFECTS = [
 #   <= TREE_MOVE_MAX 10 %, max Health <= TREE_HP_MAX 10 % - each per skill tree, every applier's rows + SkyyTrees' own rows + the 0.3 XP node
 #   aliases (P8B_OLD_PER: the 0.3 node's per a level; SkyyTrees 0.4.6 asserts its defaults). Heartwood (Foraging b1 r1b, the 0.3 FFortune
 #   alias, +6 double-log %) is NOT in the Fortune budget (P5 counted only Rich Seams; the spec's 37.5 -> 39.9 leaves it out) - P9 decides.
+
+# BALANCE P8d NUMBERS (builder 2026-10-22, spec 4.5; Skyy "just go with the recommended on all of them"): every live row is a 4.1 kind,
+#   inside the 4.1 budgets (check()): Farming Fortune 37.2 -> 39.9 (Bumper Crop 2.7 fills the gap; Bountiful Rows / Double Reap / the potion
+#   crop rows are 0.3 node aliases, outside the budget as in P5 / P8b - P9 decides), XP Farming 25 / Cooking 23 / Alchemy 25 / Smithing 9 -> 17
+#   (Fishing XP stays 0: every Fishing XP is a skill:fn:addxp grant), move Farming 3 / Acrobatics 6 / Exploration 7.5, max Health Cooking 3 /
+#   Alchemy 3; the Acrobatics dodge rows 12 % of SkyySkills' 25 % tree-dodge clamp.
+#   Kept coming soon (no system yet, Q4 / Q5): every active and its modifier rows (Sweep Harvest, Animal Call, Compost Boost, Flash Fry, Banquet,
+#   Splash Mix, Mutagen Flask, Chum Cast, Quench, Field Repair, Roll, Scout Pulse, Waystone Recall), crop growth / golden / mutated crops,
+#   animal products and breeding, pet happiness / feeding, food buff timers / healing, potion strength / duration / drink rows (no brew code
+#   in the SET - the 4 dead Alchemy aliases of P8D_DROP too), stack / sack / carry rows, durability rows, the accessory / armor-tag rows of
+#   mods outside this round, daily / hourly capstones, the Fishing rework rows (A:187 Q4: Sea Legs, Waterproof, Calm Waters, Pet Angler,
+#   Rich Chum, Hook Line) and the Exploration XP rows Wanderer / Cartographer (Exploration XP takes no booster or tree bonus - Skyy's
+#   locked answer, docs/plans/SkyyExploration-Plan.md Answers Q3 "No XP boosters for Exploration XP" + docs/handoff/design-locks.md:140;
+#   the P8 spec 4.5 "-> SkyyExploration XP" conflicts with that locked answer, so these two stay coming soon).
 
 # 0.3 node aliases an applier newly READS (live with SkyyTrees 0.4.0: those nodes already name the applier in its READ_BY)
 # (old node key, applier, the v3 upgrade(s) that feed it, what the applier does with tree:fn:bonus)
@@ -281,12 +312,12 @@ VMAX = {  # (tree, branch, id, effect) -> ceiling in effect units; rows not name
 
 def flat(eff):
     """a flat-points effect (no %): max Health, max Stamina (R3c); P8b: Vein Burst ore, Tree Feller logs"""
-    return eff in ("hp", "stam", "vein", "feller", "hatch")   # P8c fixer 2: + Hatchery slots
+    return eff in ("hp", "stam", "vein", "feller", "hatch")   # P8c fixer 2: + Hatchery slots (P8d: SkyyTrees' own stam rows too)
 
 
 def unit(eff):
     """display unit: fractions (Fortune / XP / Breaking Power / synergy / chances) show x100 as %, SkyyGear stats are whole % already"""
-    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0
+    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.", "dodge.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0
 
 
 def natural(e):
@@ -318,7 +349,9 @@ _EW = {"hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Powe
        "vein": "Ore", "feller": "Logs", "fall": "Fall", "gem": "Gems", "coins": "Coins", "extra": "Extra", "dmgLow": "Damage", "dmgBoss": "Damage",
        "drAll": "Guard", "kbRes": "Steady", "drop": "Drop", "rare": "Rare", "bossRoll": "Boss", "dbl": "Double",
        # P8c
-       "petxp": "Pet XP", "hatch": "Slots"}
+       "petxp": "Pet XP", "hatch": "Slots",
+       # P8d
+       "dodge": "Dodge"}
 
 
 def _scale_words(e):
@@ -362,7 +395,9 @@ def describe(e):
                                                                      "petsyn.combat": "Combat pet stats", "petsyn.farming": "Farming pet stats",
                                                                      "petsyn.foraging": "Foraging pet stats", "petsyn.green": "Farming and Foraging pet stats",
                                                                      "petsyn.rare": "stats of Rare or better pets", "petsyn.all": "stats of every pet",
-                                                                     "hatch": "Hatchery slot"}[eff]
+                                                                     "hatch": "Hatchery slot",
+                                                                     # P8d (SkyyTrees' own Acrobatics rows)
+                                                                     "dodge.acrobatics": "dodge push"}[eff]
     return "+%s%s %s %s" % (_n(e[5] * unit(eff)), "" if flat(eff) else " %", what, _scale_words(e))
 
 
@@ -552,6 +587,8 @@ TREE_PETSTAT_MAX = 0.15   # the most "+x % all stats from <kind> pets" the Beast
 PET_KINDS = ("combat", "mining", "farming", "foraging", "exploration")   # SkyyPets' pet skills (PetKind.skill, lower case)
 PET_XP_KINDS = ("combat", "mining", "green", "all")                      # petxp.<k>: green = Farming + Foraging pets, all = every pet
 PET_SYN_KINDS = ("combat", "mining", "farming", "foraging", "green", "rare", "all")   # petsyn.<k>: rare = Rare or better pets of any kind; all = every pet (fixer)
+TREE_DODGE_MAX = 0.25     # P8d: SkyySkills acro.treeDodgeMax default - the most tree dodge push it applies (fraction)
+P8D_TREES = V3D.P8D_TREES   # P8d: the seven useful + light trees of round P8d
 HATCH_EXTRA_MAX = 10      # P8c fixer 2: SkyyPets PetHatchery.extra clamps the extra Hatchery slots to 10 (pets.hatch.slots 2 + 10 = MAX_SLOTS 12)
 
 
@@ -615,6 +652,12 @@ def check():
         assert tree_move(t["name"]) <= TREE_MOVE_MAX + 1e-9, ("tree move budget", t["name"], tree_move(t["name"]))
         assert tree_hp(t["name"]) <= TREE_HP_MAX + 1e-9, ("tree Health budget", t["name"], tree_hp(t["name"]))
     assert not [e for e in EFFECTS if e[4] in ("vein", "feller", "fall", "gem.mining", "coins.mining", "extra.foraging") and e[3] != "SkyyTrees"], "P8b: SkyyTrees' own effects"
+    # P8d: the dodge rows are SkyyTrees' own Acrobatics rows, inside SkyySkills' tree-dodge clamp; every SkyyTrees own effect is one TreeSk
+    # applies (xp. / dd. / dodge. through skill:bonus, spd / fall through the movement source, hpp / stam as stat modifiers, the gather rolls)
+    assert not [e for e in EFFECTS if e[4].startswith("dodge.") and (e[3] != "SkyyTrees" or e[4] != "dodge.acrobatics")], "P8d: dodge rows"
+    assert sum(vmax(e) for e in EFFECTS if e[4] == "dodge.acrobatics") <= TREE_DODGE_MAX + 1e-9, "P8d: tree dodge over SkyySkills' clamp"
+    _own = ("spd", "fall", "hpp", "stam", "vein", "feller", "gem.mining", "coins.mining", "extra.foraging", "dodge.acrobatics")
+    assert not [e for e in EFFECTS if e[3] == "SkyyTrees" and not (e[4] in _own or e[4].startswith(("xp.", "dd.")))], "P8d: an own effect TreeSk does not apply"
     assert not [e for e in EFFECTS if e[4] in ("dmgLow", "dmgBoss", "drAll", "kbRes") and e[3] != "SkyyClasses"], "P8b: SkyyClasses' fight rows"
     assert not [e for e in EFFECTS if e[4] in ("drop", "coins", "rare", "bossRoll", "dbl") and e[3] != "SkyyMobs"], "P8b: SkyyMobs' loot rows"
     for e in EFFECTS:
@@ -633,6 +676,6 @@ check()
 if __name__ == "__main__":
     for m in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs"):
         print(m, reads_csv(m))
-    for _t in ("Mining", "Foraging", "Combat"):
+    for _t in ("Mining", "Foraging", "Combat") + P8D_TREES:
         print("%s: Fortune %.1f, XP %.1f %%, move %.1f %%, Health %.1f %%" % (_t, 100 * tree_fort(_t.lower()), 100 * tree_xp(_t), tree_move(_t), 100 * tree_hp(_t)))
     print("Beastmastery (P8c): " + "; ".join("%s pets XP %.1f %%, stats %.1f %%" % (_k, 100 * pet_xp(_k), 100 * pet_stat(_k)) for _k in PET_KINDS))

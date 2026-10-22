@@ -4644,3 +4644,80 @@ def _p8c_apply():
 
 _p8c_apply()
 check()
+
+# ===================================================================================================================================
+# Balance P8d (research/Balance-P8-Rebirth-Spec.md 4.5; SkyyTrees 0.4.8, 2026-10-22): the useful trees Farming / Cooking / Alchemy and the
+# light trees Fishing / Smithing / Acrobatics / Exploration row by row. Skyy (2026-10-20/21): "keep going down the list. dont stop until the
+# entire list is done" + "just go with the recommended on all of them" (spec Q4 [yes]: actives stay coming soon; Q5 [yes]: an upgrade that
+# cannot work as drafted gets the nearest working effect with honest text). No applier mod is rebuilt: every new effect is a 0.3 node alias
+# (P8D_OLD, read by the mods that already read that node: SkyyTrees itself for Farming, SkyyCooking for the Grade nodes, SkyyFishing for Quick
+# Bite / Fishing Fortune) or one of SkyyTrees' own TreeSk rows (tools/trees_v3_effects.py EFFECTS, applier "SkyyTrees").
+# P8D_DROP (builder finding, 2026-10-22): 9 upgrades aliased a 0.3 node that NO mod in the SET reads any more (SkyySkills 0.4.60 has no brew
+# code - Alchemy.PDur / PDouble / PFrugal / PMaster; SkyyGear 0.3.36 / SkyySacks 0.8.27 never read Smithing.SQuick / SReforge / SRarity;
+# SkyyFishing 0.1.12 reads only NBite / NFortune / NTreasure - not NRare / NLine). They were never buyable ("Coming with <mod>") but their
+# ranks counted in the row gates, so Alchemy rows 2-6, Smithing rows 2-4 and Fishing row 3 could never open. They lose the dead hook (coming
+# soon, honestly) - Steady Strikes is rewired to Smithing XP (EFFECTS) - and the gates fall to what is really buyable. Nobody owns a rank in
+# them (never buyable; the live NewBetaTest files hold no rank in these seven trees).
+P8D_OLD = {"Farming.b1.r3b": (("old", "Farming.ASeeds", 4), "+4% chance per crop for 1 of its seeds (no auto-replant yet)"),
+           "Farming.b3.r3a": (("old", "Farming.ASeeds", 1), "+1% chance/rank per crop for 1 of its seeds"),
+           "Cooking.b1.r1b": (("old", "Cooking.CGourmet", 2), "+1.6% chance/rank a dish comes out 1 Grade higher"),
+           "Cooking.b1.r3b": (("old", "Cooking.CGourmet2", 2), "+2% chance/rank of +1 Grade on any dish"),
+           "Cooking.b2.r1b": (("old", "Cooking.CGourmet", 1), "+0.8% chance/rank a dish comes out 1 Grade higher"),
+           "Cooking.b3.r5a": (("old", "Cooking.CSig", 1), "+1% chance/rank of +2 Grades on a dish"),
+           "Alchemy.b2.r1a": (("old", "Farming.AHerbs", 2), "+3% extra-drop chance/rank on health, mana and stamina crops"),
+           "Alchemy.b2.r2a": (("old", "Farming.AHerbs", 2), "+3% extra-drop chance/rank on health, mana and stamina crops"),
+           "Fishing.b1.r3a": (("old", "Fishing.NBite", 2), "+2% bite speed/rank"),
+           "Fishing.b2.r3b": (("old", "Fishing.NFortune", 2), "+2% double-catch chance/rank")}
+P8D_DROP = {"Alchemy.b1.r1b": "Alchemy.PDur", "Alchemy.b1.r3a": "Alchemy.PDouble", "Alchemy.b1.r3b": "Alchemy.PFrugal", "Alchemy.b1.r4a": "Alchemy.PMaster",
+            "Smithing.b1.r1a": "Smithing.SQuick", "Smithing.b1.r2b": "Smithing.SReforge", "Smithing.b1.r3c": "Smithing.SRarity",
+            "Fishing.b1.r2a": "Fishing.NRare", "Fishing.b2.r2b": "Fishing.NLine"}
+# the texts of the rows SkyyTrees' own TreeSk applies (trees_v3_effects.py EFFECTS) + two live texts that said more than the node gives
+P8D_TEXT = {"Farming.b1.r1b": "+1% move speed/rank (crops already break in one hit)",
+            "Farming.b1.r4b": "+0.9 Farming Fortune/rank (on every harvest)",
+            "Cooking.b1.r4a": "+1% max Health/rank (always on - no meal timer yet)",
+            "Alchemy.b3.r1a": "+1% max Health/rank",
+            "Smithing.b1.r1a": "+2% Smithing XP/rank (craft speed is fixed by the game)",
+            "Acrobatics.b1.r3b": "+2% dodge push/rank (Hytale has no dodge chance)",
+            "Acrobatics.b1.r3c": "+1% move speed/rank",
+            "Acrobatics.b2.r1a": "+1% move speed/rank (at any Health)",
+            "Acrobatics.b2.r2b": "-2% fall damage/rank",
+            "Acrobatics.b2.r3b": "+2% dodge push/rank",
+            "Acrobatics.b2.r3c": "-3% fall damage/rank (at any Health)",
+            "Exploration.b1.r1b": "+0.3 max Stamina/rank (3% of the base 10)",
+            "Exploration.b2.r2b": "-5% fall damage/rank",
+            # live texts fixed (asserted against P8D_TEXT_OLD): Light Feet = 2 Soft Landing levels (-1 % each) a rank; Chain Jump = 5 Double
+            # Jump levels a rank (base 50 % + 5 % a level of your jump height: 75 % at rank 1, 100 % at rank 2 - one mid-air jump, never two)
+            "Acrobatics.b1.r3a": "-2% fall damage/rank",
+            "Acrobatics.b1.r2b": "one mid-air jump at 75% of your jump height (100% at rank 2)"}
+P8D_TEXT_OLD = {"Acrobatics.b1.r3a": "-5% fall damage/rank", "Acrobatics.b1.r2b": "+1 midair jump per 2 ranks"}
+P8D_TREES = ("Farming", "Cooking", "Alchemy", "Fishing", "Smithing", "Acrobatics", "Exploration")
+
+
+def _p8d_apply():
+    seen = set()
+    for t in TREES:
+        if t["name"] not in P8D_TREES:
+            continue
+        for bn, b in enumerate(t["branches"]):
+            for r in b["rows"]:
+                for u in r["ups"]:
+                    k = "%s.b%d.%s" % (t["name"], bn + 1, u["id"])
+                    if k in P8D_DROP:
+                        assert u["hook"] is not None and u["hook"][0] == "old" and u["hook"][1] == P8D_DROP[k], ("P8d: the dead alias moved", k, u["hook"])
+                        u["hook"] = None
+                        seen.add(k)
+                    if k in P8D_OLD:
+                        assert u["hook"] is None, ("P8d wires only coming-soon upgrades", k)
+                        u["hook"], u["text"] = P8D_OLD[k]
+                        seen.add(k)
+                    if k in P8D_TEXT:
+                        assert (u["hook"] is None) != (k in P8D_TEXT_OLD), ("P8d texts: a wired coming-soon upgrade or a fixed live one", k)
+                        assert k not in P8D_TEXT_OLD or u["text"] == P8D_TEXT_OLD[k], ("P8d: the live text moved", k, u["text"])
+                        u["text"] = P8D_TEXT[k]
+                        seen.add(k)
+    assert seen == set(P8D_OLD) | set(P8D_DROP) | set(P8D_TEXT), sorted(set(P8D_OLD) | set(P8D_DROP) | set(P8D_TEXT) - seen)
+    assert not set(P8D_OLD) & set(P8D_DROP)
+
+
+_p8d_apply()
+check()

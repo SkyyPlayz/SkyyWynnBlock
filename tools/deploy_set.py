@@ -24,6 +24,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P8b skill-tree hooks): SkyyTrees 0.4.6 + SkyyClasses 0.1.45 + SkyyMobs 0.1.15 pin + roll back TOGETHER (Trees gates count rows only Classes / Mobs make buyable; an older Classes or Mobs shows them as coming soon). No saved-data change; a rollback leaves bought ranks saved but unused (a respec refunds them); trees.properties (Classes, Mobs) + tree-effects.properties (Trees) stay, ignored by older jars.
 # FLOOR (2026-10-22, Balance P6 part B): SkyyGear 0.3.36 + SkyyCollections 0.2.31 pin + roll back TOGETHER (Gear's Dusk/Azurvane/Cinder/Lumen tier-ups pay Enchanted alloys that Collections 0.2.31 unlocks at V+V). Before a rollback Undo the P6 rows in Server Setup -> Changes (Gear migrateP6: ladder rows, xp.craftCurve + xp.craft, levelUp.cap, 40 utpow appended; Collections CollP6Mig curve.B/S/R/E, CollP6EnchMig ench.tier.<alloy>) - older jars read them as admin values. Items stay valid (armor bags open as their stored piece under 0.3.35); collection tiers already paid stay paid.
 # FLOOR (2026-10-22, Balance P8c Beastmastery): SkyySkills 0.4.60 + SkyyPets 0.4.9 + SkyyTrees 0.4.7 pin + roll back TOGETHER. NEVER roll SkyySkills below 0.4.60 once a Beastmastery line has been saved (0.4.59 drops the unknown key on its next save = Beastmastery XP lost). Before any rollback Undo the 2 BmMigP8c rows in Server Setup -> Changes. Older Pets / Trees ignore bought Beastmastery ranks (kept saved; a respec refunds them).
+# FLOOR (2026-10-22, Balance P8d): SkyyTrees 0.4.8 needs the P8c set (SkyySkills 0.4.60 + SkyyPets 0.4.9); SkyyRebirth 0.4.3 needs SkyySkills 0.4.60+ (arm.beastmastery). No saved data changed; they need not roll back together. Trees back to 0.4.7 = the 23 P8d upgrades coming soon again + old row unlocks (bought ranks stay saved, unused until a respec); Rebirth back to 0.4.2 only stops Beastmastery counting for VP.
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
@@ -31,7 +32,7 @@ SET = [
     ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.27"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.31"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.36"), ("SkyySkills", "0.4.60"),
     ("SkyyAccessories", "0.5.31"), ("SkyyClasses", "0.1.45"), ("SkyyMenu", "0.3.43"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.7"),
+    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.8"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -94,7 +95,7 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.4.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.4.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyRebirth", "0.4.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyZones", "0.2.0"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
     ("SkyyShards", "0.4.4"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-20, Skill Trees 3): SkyyTrees 0.4.0 + SkyyClasses 0.1.42 + SkyySkills 0.4.55 + SkyyMenu 0.3.41 deploy TOGETHER. Once treesV3 ran on a player file never roll SkyyTrees below 0.4.0 (0.3.x reads a v=3 file as empty trees and its next save rewrites it as v=2, wiping ranks + grandfathered abilities; rolling forward re-runs the update but pays NO second Dust refund - history/treesv3/<pkey>.done; old file in history/treesv3/<pkey>.properties - restore by hand with the server stopped; refunded Dust coins are not taken back). SkyyClasses below 0.1.42 only together with SkyyTrees below 0.4.0.

@@ -9,6 +9,7 @@ Run:  python tools/balance_rebirth.py --rebirth          the 2.4 table (P8 numbe
                                                          all-keep <= 1.15, buy-cheapest <= 1.25
       python tools/balance_rebirth.py --tune 10          re-derive the past-life list (bisection, greedy player)
       --live (today's +200 % class clamp + the P3 list), --past <a,b,...>, --kept <x>, --ceil <x> (rebirth.xpMultMax), --md (markdown rows)
+      --nobeast / --beastcap (P8d: Beastmastery never / always at its cap; default = levelled by a Mining pet's XP, see BEAST)
 SkyySkills 0.4.59 ships PAST_LIFE_P8 as rebirth.pastLifeXp (tools/skills_0_4_59_patch.py asserts the two are equal).
 """
 import math
@@ -32,10 +33,29 @@ CLASS_RB_MAX_LIVE, CLASS_RB_MAX = 2.0, 5.0                              # RbStat
 XP_BONUS_MAX = 5.0                                                      # SkillBonus.xpBonus clamp 0..5
 KEPT_PER_REBIRTH, KEPT_MAX = BM.KEPT_PER_REBIRTH, 0.30                  # GUESS (gear tiers / shards / pets kept)
 CAP1, STEP, CAPMAX, RUN1, SHRINK = 50, 10, 100, 45.0, 0.85
-SKILLS = ["Class", "Mining", "Foraging", "Farming", "Cooking", "Alchemy", "Fishing"]
+SKILLS = ["Class", "Mining", "Foraging", "Farming", "Cooking", "Alchemy", "Fishing", "Beastmastery"]   # P8d: + Beastmastery (share 0: no arm value)
 CEIL = None                                                             # rebirth.xpMultMax (None = off)
+# P8d (SkyyRebirth 0.4.3, spec Q7 / 4.4): Beastmastery counts for VP like the other skills (2 VP at its cap). Beastmastery XP = the XP your
+# pet gains x beast.xpFactor 1.0 (SkyySkills 0.4.60); pet XP = 50 % of its own skill's XP + 5 % of every other skill's (P5 5.2.6, SkyyPets
+# pets.xp.ownPercent / otherPercent; balance_model.p5_pet_xp_trace), raw skill XP, only while that skill is below the run's cap - the
+# model's pet is a Mining pet (P5's default); on a rebirth Beastmastery's own XP takes Insight + keep (bridge.bonus.addxpSkills) and the
+# past-life boost below last run's cap, like every rebirth-reset skill, and the P3 catch-up (SkyySkills 0.4.60 adds Beastmastery to
+# catchup.skills; balance_model.CATCHUP's list predates it, so bm_catchup() applies the same numbers); no Beastmastery Echo bought. BEAST = "pet" (that model, default), "cap" (the upper bound: at the cap every run),
+# "off" (never at the cap = SkyyRebirth 0.4.2's VP): --beastcap / --nobeast.
+BEAST = "pet"
+BEAST_OWN = "Mining"
+PET_OWN, PET_OTHER = BM.P5_PET_XP[0] / 100.0, BM.P5_PET_XP[1] / 100.0
 CEIL_HELP = 9.3                                                         # spec 2.5: 2.70 x 3.45 = runs stop shrinking at rebirth 10
 CLAMP = CLASS_RB_MAX                                                    # the class rebirth clamp the run uses (--live: 2.0)
+
+
+def bm_catchup(level, class_level):
+    """P8d: balance_model.catchup_mult's formula for Beastmastery (in SkyySkills' catchup.skills since 0.4.60)"""
+    C = BM.CATCHUP
+    gap = class_level - level
+    if not C["on"] or gap <= C["free"]:
+        return 1.0
+    return 1 + min(C["max"], C["per"] * (gap - C["free"]))
 
 
 def arms():
@@ -55,6 +75,7 @@ def rebirth_run(cap, hours, mult, past_cap, past_mult, dt=0.02):
     lv = dict((s, 0) for s in SHARE)
     xp = dict((s, 0.0) for s in SHARE)
     earned, t, t_cap = 0.0, 0.0, None
+    bxp = 0.0   # P8d: Beastmastery XP from the pet
     while t < hours:
         for s, sh in SHARE.items():
             if sh <= 0:
@@ -68,20 +89,28 @@ def rebirth_run(cap, hours, mult, past_cap, past_mult, dt=0.02):
                 earned += gain
             if lv[s] >= cap:
                 continue
+            if BEAST == "pet":   # P8d: the pet's XP (raw skill XP, as P5's pet trace) -> Beastmastery x its own rebirth multiplier
+                bm = mult.get("Beastmastery", (1.0, 1.0))[0] * (past_mult if lv["Beastmastery"] < past_cap else 1.0)
+                bxp += xp_per_hour(s, max(lv[s], 1), lv["Class"]) * sh * dt * catchup_mult(s, lv[s], lv["Class"]) * (PET_OWN if s == BEAST_OWN else PET_OTHER) * bm * bm_catchup(lv["Beastmastery"], lv["Class"])
             xp[s] += gain
             while lv[s] < cap and xp[s] >= CURVES[s][lv[s]]:
                 xp[s] -= CURVES[s][lv[s]]
                 lv[s] += 1
+        while BEAST == "pet" and lv["Beastmastery"] < cap and bxp >= CURVES["Beastmastery"][lv["Beastmastery"]]:
+            bxp -= CURVES["Beastmastery"][lv["Beastmastery"]]
+            lv["Beastmastery"] += 1
         t += dt
         if t_cap is None and lv["Class"] >= cap:
             t_cap = t
+    if BEAST == "cap":
+        lv["Beastmastery"] = cap
     return t_cap, lv, earned
 
 
 def vp_earned(n, lv, cap, earned_class):
     """REB:44-48 - VP of rebirth n from the finished run"""
-    capped = min(11, sum((3 if s == "Farming" else 1) for s in ("Mining", "Foraging", "Farming", "Cooking", "Alchemy", "Fishing")
-                         if lv.get(s, 0) >= cap))
+    capped = min(11, sum((3 if s == "Farming" else 1) for s in ("Mining", "Foraging", "Farming", "Cooking", "Alchemy", "Fishing", "Beastmastery")
+                         if lv.get(s, 0) >= cap))   # P8d: + Beastmastery (SkyyRebirth 0.4.3)
     r = earned_class / cum(CURVES["Class"], cap)
     over = math.floor(VP_OVER * (math.sqrt(min(r, 16)) - 1)) if r >= 1 else 0
     return VP_BASE + VP_PER * n + VP_SKILL * capped + over, capped, r
@@ -212,8 +241,12 @@ def _arg(name, default=None):
 
 
 def main():
-    global CEIL, CLAMP, KEPT_PER_REBIRTH
+    global CEIL, CLAMP, KEPT_PER_REBIRTH, BEAST
     live = "--live" in sys.argv
+    if "--nobeast" in sys.argv or live:
+        BEAST = "off"
+    if "--beastcap" in sys.argv:
+        BEAST = "cap"
     if live:
         CLAMP = CLASS_RB_MAX_LIVE
     past = PAST_LIFE_LIVE if live else PAST_LIFE_P8
@@ -239,7 +272,7 @@ def main():
         assert ceil_cut(3.0, 2.7, 9.3) == 9.3 / 2.7 - 1.0 and ceil_cut(3.0, 2.7, 0) == 3.0 and ceil_cut(3.0, 2.7, float("nan")) == 3.0
         rows = rb_table(past, 10, md=md)
         bad = rb_check(rows)
-        print("P8a model check: " + ("OK - rebirths 1-10 within 0.97-1.03 of '15 %% shorter each' (greedy %.2f-%.2f)" % (
+        print("P8a model check (Beastmastery %s): " % {"pet": "levelled by a Mining pet's XP", "cap": "at its cap every run", "off": "never at its cap"}[BEAST] + ("OK - rebirths 1-10 within 0.97-1.03 of '15 %% shorter each' (greedy %.2f-%.2f)" % (
             min(e["greedy"] for e in rows), max(e["greedy"] for e in rows)) if not bad else "FAIL\n  " + "\n  ".join(bad)))
         return 1 if bad else 0
     return 0
