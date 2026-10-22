@@ -249,3 +249,4 @@ tests always come first.
 222. Left Alt after closing another page opens at once; element lines in %; Normal bags / charms still white
 223. Beastmastery: /skills row, levels from pet XP, /tree beasts upgrades, rebirth resets it
 224. Probe 0.7.1: clicks no longer hang; M4 picture swap, M5 ring move, M6 tooltips (then retire the probe)
+225. P8d: new tree upgrades buyable, Alchemy / Smithing / Fishing rows open, Beastmastery VP

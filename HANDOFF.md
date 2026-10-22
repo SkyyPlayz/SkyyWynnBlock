@@ -23,14 +23,14 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyEssentials | 0.1.16 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.18 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.16 | Cooking dishes + food Grade; XP by craft difficulty |
-| SkyyTrees | 0.4.7 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
+| SkyyTrees | 0.4.8 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.3.2 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.13 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.9 | vault pages |
 | SkyyAuctions | 0.1.14 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
 | SkyyQuests | 0.4.2 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
-| SkyyRebirth | 0.4.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature OFF by default; new |
+| SkyyRebirth | 0.4.3 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature OFF by default; new |
 | SkyyZones | 0.2.0 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
 | SkyyShards | 0.4.4 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
