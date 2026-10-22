@@ -5,6 +5,9 @@
     python tools/balance_model.py --md       also rewrite research/balance/targets.md (always the P3 numbers)
     python tools/balance_model.py --gather   P6 gathering + crafting (collections, tier-up / armor costs, hits, Furnace) -> targets.md section 8
     python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
+    python tools/balance_model.py --econ     P7 economy (coin curve, Bazaar prices by tier, costs on the curve, loop routes) -> targets.md section 9
+                                             (--econ --check: exit 1 unless the gathering skills are within 0.85-1.15 of each other and on G
+                                             in every zone, every tier step >= 1.2x, and all 17 loop routes lose money)
 
 P3 (2026-10-20, Balance-P3-XP-Spec.md sections 2-5 + Skyy's popup answer A:197 "Middle: Lv 50 at ~33 h"): ONE curve for the class and every
 skill (need(L) = R(1100 x f(L) x s(L)) x levels.scale 130 %), XP per action x the tier factor F(T), the skill catch-up, the past-life XP
@@ -2067,7 +2070,461 @@ def p6_write_section(md):
 
 
 
+# ======================================================================================== P7 (research/Balance-P7-Economy-Spec.md, section 9.6)
+# Economy: coin targets x10 (Skyy popup 2026-10-21 "x10 targets (Recommended)"), THE coin curve (SkyyCoins coins.curve), Bazaar prices by tier
+# so every gathering skill earns the same per hour in a zone, costs / rewards on the curve, loop routes. Idle pay (Skyy popup 2026-10-21
+# "20-100%, 3 days"): P6's totem share stays and counts as a BONUS on top of the active targets (P7 Q11 overruled) - p7_totals shows both.
+# SkyyCoins 0.1.10 / SkyyBazaar 0.2.1 / SkyyMerchants 0.1.7 / SkyyGear 0.3.37 / SkyyCollections 0.2.32 compute the same numbers themselves;
+# their harnesses compare them with these functions.
+P7_K = 10                                                              # Q1: the coin unit x10
+P7_END = {1: 100_000.0, 3: 5_000_000.0, 5: 100_000_000.0}              # COIN_END x K (economy.md:162 Q18 + 2026-10-21 popup)
+P7_END[2] = math.sqrt(P7_END[1] * P7_END[3])                           # Zones 2 / 4 = the geometric middle (707k / 22.4M)
+P7_END[4] = math.sqrt(P7_END[3] * P7_END[5])
+P7_ZONE_H = [z[3] for z in ZONES]                                      # 12 / 14 / 14 / 16 / 20 h first run
+P7_MID_LV = [10, 30, 50, 70, 90]                                       # zone middles (the curve's anchor levels)
+P7_MID_T = [2, 5, 8, 11, 14]                                           # ladder tiers at the zone middles (G(T) anchors)
+P7_D = p6_drops                                                        # drops per block D(T) at the P5 Fortune (P6 Part 1)
+P7_RATE = {"Mining": P6_RATE["Mining"], "Stone": P6_STONE_H, "Foraging": P6_RATE["Foraging"], "Farming": P6_RATE["Farming"]}
+P7_SELL = SELL                                                         # instant sell = base x 0.9 at demand 1
+P7_FLOOR = 2.0                                                         # market.minSell (economy.md:130)
+P7_STONE_BASE = 2.25                                                   # Q4: plain stone (rubble) sells exactly at the floor
+P7_COBBLE_BASE = 4.5                                                   # fix: cobble keeps its 0.2.0 price = 2 rubble (vanilla: 1 cobble -> 2 halves -> 2 rubble by salvage; cobble at 2.25 = a money loop)
+P7_STEP_MIN = 1.2                                                      # Q2: each tier sells for >= 1.2x the tier below
+P7_ORE_T = {"Copper": 1, "Iron": 2, "Thorium": 4, "Lead": 5, "Cobalt": 7, "Chromium": 8, "Adamantite": 10, "Slag": 11, "Mithril": 13,
+            "Titanium": 14, "Onyxium": 16}                             # tools/tier_tags.py ORES + ZONE_METALS
+P7_ORE_NAME = dict((t, n) for n, t in P7_ORE_T.items())
+P7_CROP_T = {"Wheat": 1, "Lettuce": 2, "Carrot": 3, "Corn": 4, "Cauliflower": 5, "Turnip": 6, "Pumpkin": 7, "Aubergine": 8, "Tomato": 9,
+             "Chilli": 10, "Cotton": 11, "Rice": 12, "Potato": 13, "Onion": 14, "Mushroom": 15}          # tools/tier_tags.py CROPS + MUSHROOM_ROWS
+P7_CROP_Q = None                                                       # p6_crop_q() on first use (Assets.zip drop lists)
+P7_SHARE = {"gather": SHARE["Mining"] + SHARE["Foraging"] + SHARE["Farming"], "combat": SHARE["Class"], "fishing": SHARE["Fishing"]}
+P7_COMBAT_X = 0.815                                                    # Part 5.1: a combat hour sells for 0.815 G (fighter buys across at 1.5x)
+P7_BUDGET = {"sales": 0.80, "levelup": 0.07, "collections": 0.07, "other": 0.06}          # Part 2
+P7_TIER_W = (7.0, 7.0, 6.0)                                            # levels in a zone's three tiers (Part 3.2 rule 1)
+TIER_COINS = [25, 50, 100, 200, 400, 750, 1500, 3000, 6000, 12500]     # SkyyCollections tier.coins (COL:1210, the 0.2.21 default)
+P7_COLL_PER_ZONE = 13                                                  # Part 2.2 GUESS: collections a balanced player takes to V per zone
+P7_GEAR_H = {"reforge": 0.025, "levelUp": 0.01, "identify": 0.005}     # Part 6.2: hours of income per action at rarity factor 1
+P7_RARITY_X = {"normal": 1.0, "unique": 1.5, "rare": 2.0, "legendary": 3.0, "fabled": 4.0, "mythic": 6.0, "set": 3.0, "untiered": 4.0}
+P7_GEAR_BASE = {   # Part 6.2 Lv-10 bases (the spec's table - the SkyyGear 0.3.37 defaults; p7_gear_base() must agree within one round step)
+    "reforge": {"normal": 210, "unique": 310, "rare": 420, "legendary": 630, "fabled": 830, "mythic": 1300, "set": 630, "untiered": 830},
+    "levelUp": {"normal": 80, "unique": 120, "rare": 170, "legendary": 250, "fabled": 330, "mythic": 500, "set": 250, "untiered": 330},
+    "identify": {"normal": 40, "unique": 60, "rare": 80, "legendary": 120, "fabled": 170, "mythic": 250, "set": 120, "untiered": 170}}
+P7_RESPEC_H = 0.25                                                     # Part 6.2: a paid tree respec = 0.25 h x n
+P7_WEAPON_EARN_H = 1.25                                                # Part 5.1: hours to earn a keepable weapon from bags (P5)
+P7_BUY_ACROSS = 1.5                                                    # Q20 "~1.5x time"
+P7_DEATH = (5, 5)                                                      # Q7: penaltyMin / penaltyMax %
+P7_CURVE_LV = [1, 8, 10, 15, 20, 28, 30, 35, 40, 48, 50, 55, 60, 68, 70, 75, 80, 88, 90, 95, 100]   # band starts + zone middles + 1 / 100
+P7_CURVE_TEXT = ("1:0.476,8:0.848,10:1,15:1.51,20:2.28,28:4.41,30:5.2,35:8.49,40:13.8,48:30.3,50:36.8,55:50.5,60:69.2,68:115,70:130,75:179,"
+                 "80:246,88:410,90:466,95:641,100:881")                # spec 1.3 = SkyyCoins 0.1.10 coins.curve default
+P7_LEVEL_COINS_TEXT = "1:30,10:60,20:150,21:190,30:390,40:1000,41:1200,50:2800,60:5200,61:6400,70:11500,80:21500,81:28500,90:50500,100:95000"   # 2.1 (Skills - P7b)
+P7_MERCH_HOURS = P7_BUY_ACROSS * P7_WEAPON_EARN_H                      # 1.875 gathering hours (SkyyMerchants price.hours)
+P7_TOTEM = P6_TOTEM                                                    # Skyy 2026-10-21 "20-100%, 3 days": the P6 share stays (bonus on top)
+P7_OFFLINE_H = 72                                                      # shard.maxOfflineSec 259200 (kept)
+
+
+def p7_target_h(z):
+    """target coins per played hour in zone z (all activities, never spending)"""
+    return (P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0)) / P7_ZONE_H[z - 1]
+
+
+def p7_log_interp(points, x):
+    """log-linear interpolation through (x, y) points, extended past both ends along the end segments"""
+    pts = sorted(points)
+    if x <= pts[0][0]:
+        (x0, y0), (x1, y1) = pts[0], pts[1]
+    elif x >= pts[-1][0]:
+        (x0, y0), (x1, y1) = pts[-2], pts[-1]
+    else:
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            if x0 <= x <= x1:
+                break
+    return math.exp(math.log(y0) + (math.log(y1) - math.log(y0)) * (x - x0) / float(x1 - x0))
+
+
+def p7_curve_points():
+    """(zone middle level, target / h of that zone / Zone 1's) - THE coin curve's anchors"""
+    return [(P7_MID_LV[z - 1], p7_target_h(z) / p7_target_h(1)) for z in range(1, 6)]
+
+
+def p7_curve(level):
+    """the coin curve factor at a level (1.0 = Lv 10), clamped to 1..100"""
+    return p7_log_interp(p7_curve_points(), max(1, min(100, level)))
+
+
+def p7_curve_text():
+    """the coins.curve text: the curve at P7_CURVE_LV, 3 significant digits"""
+    return ",".join("%d:%s" % (lv, ("%.3g" % p7_curve(lv)).rstrip("0").rstrip(".") if "." in "%.3g" % p7_curve(lv) else "%.3g" % p7_curve(lv)) for lv in P7_CURVE_LV)
+
+
+def p7_curve_from_text(text, level):
+    """what every curve reader does with the coins.curve TEXT (SkyyCoins coins:fn:curve): log-linear between the points, ends extended, 1..100"""
+    pts = [(int(a), float(b)) for a, b in (kv.split(":") for kv in text.split(","))]
+    return p7_log_interp(pts, max(1, min(100, level)))
+
+
+def p7_G_mid(z):
+    """the focused gathering hour G of zone z: sales are 80 % of income, a played hour = 0.43 G gathering + 0.45 x 0.815 G combat + 0.02 G fishing"""
+    per = P7_SHARE["gather"] + P7_SHARE["combat"] * P7_COMBAT_X + P7_SHARE["fishing"]
+    return P7_BUDGET["sales"] * p7_target_h(z) / per
+
+
+def p7_G(t, corr=1.0):
+    """G at ladder tier t: log-linear through the zone-middle tiers, x the zone's fit correction"""
+    return p7_log_interp([(P7_MID_T[z - 1], p7_G_mid(z)) for z in range(1, 6)], t) * corr
+
+
+def p7_crop_q():
+    global P7_CROP_Q
+    if P7_CROP_Q is None:
+        q = p6_crop_q()
+        P7_CROP_Q = dict((c, q.get(c, 1.0)) for c in P7_CROP_T)
+    return P7_CROP_Q
+
+
+def p7_ore_tiers(name):
+    """the tiers an ore is the best ore for: its tier .. the next ore's tier - 1 (Onyxium: its own)"""
+    t = P7_ORE_T[name]
+    nxt = [x for x in sorted(P7_ORE_T.values()) if x > t]
+    return list(range(t, (nxt[0] if nxt else t + 1)))
+
+
+def p7_best_ore(t):
+    return P7_ORE_NAME[max(x for x in P7_ORE_T.values() if x <= t)]
+
+
+def p7_w(t):
+    return P7_TIER_W[(t - 1) % 3]
+
+
+def p7_round_base(sell):
+    """sell -> base (sell / 0.9) rounded to 0.5, never under the floor"""
+    b = math.floor(sell / P7_SELL * 2.0 + 0.5) / 2.0
+    return max(b, math.ceil(P7_FLOOR / P7_SELL * 2.0) / 2.0)
+
+
+def p7_prices(corr=None):
+    """ore / log / crop BASE prices: {'ore': {name: base}, 'log': {t: base}, 'crop': {name: base}, 'stone': base} + the unrounded sells.
+    corr = {skill: {zone: factor}}. Rule 5: each tier >= 1.2x the tier below (ores 1.2^gap, crops per harvest), fixed by lowering the lower."""
+    corr = corr or {}
+    c = lambda sk, t: corr.get(sk, {}).get(p6_zone(min(t, 15)), 1.0)
+    q = p7_crop_q()
+    st = P7_COBBLE_BASE * P7_SELL
+    ore = {}
+    for n in P7_ORE_T:
+        ts = p7_ore_tiers(n)
+        need = sum(p7_w(t) * p7_G(t, c("Mining", t)) for t in ts) - sum(p7_w(t) * P7_D(t) * P7_RATE["Stone"] * st for t in ts)
+        ore[n] = need / sum(p7_w(t) * P7_D(t) * P7_RATE["Mining"] for t in ts)
+    log = dict((t, p7_G(t, c("Foraging", t)) / (P7_RATE["Foraging"] * P7_D(t))) for t in range(1, 16))
+    crop = dict((n, p7_G(t, c("Farming", t)) / (P7_RATE["Farming"] * P7_D(t)) / q[n]) for n, t in P7_CROP_T.items())          # per item
+    names = sorted(P7_ORE_T, key=lambda n: P7_ORE_T[n])
+    for a, b in reversed(list(zip(names, names[1:]))):
+        ore[a] = min(ore[a], ore[b] / P7_STEP_MIN ** (P7_ORE_T[b] - P7_ORE_T[a]))
+    for t in range(14, 0, -1):
+        log[t] = min(log[t], log[t + 1] / P7_STEP_MIN)
+    cn = sorted(P7_CROP_T, key=lambda n: P7_CROP_T[n])
+    for a, b in reversed(list(zip(cn, cn[1:]))):
+        crop[a] = min(crop[a], crop[b] * q[b] / P7_STEP_MIN / q[a])
+    return {"ore": dict((n, p7_round_base(v)) for n, v in ore.items()), "log": dict((t, p7_round_base(v)) for t, v in log.items()),
+            "crop": dict((n, p7_round_base(v)) for n, v in crop.items()), "stone": P7_COBBLE_BASE,
+            "sell": {"ore": ore, "log": log, "crop": crop}}
+
+
+def p7_hour(skill, t, prices):
+    """coins of one focused hour of `skill` at tier t at these base prices (instant sell x 0.9, demand 1)"""
+    if skill == "Mining":
+        return P7_D(t) * (P7_RATE["Mining"] * prices["ore"][p7_best_ore(t)] + P7_RATE["Stone"] * prices["stone"]) * P7_SELL
+    if skill == "Foraging":
+        return P7_D(t) * P7_RATE["Foraging"] * prices["log"][t] * P7_SELL
+    n = [k for k, v in P7_CROP_T.items() if v == t][0]
+    return P7_D(t) * P7_RATE["Farming"] * p7_crop_q()[n] * prices["crop"][n] * P7_SELL
+
+
+def p7_zone_avg(skill, z, prices):
+    ts = [3 * z - 2, 3 * z - 1, 3 * z]
+    return sum(p7_w(t) * p7_hour(skill, t, prices) for t in ts) / sum(p7_w(t) for t in ts)
+
+
+P7_SKILLS = ("Mining", "Foraging", "Farming")
+_P7_FIT = {}
+
+
+def p7_fit(iters=40):
+    """per skill and zone, the correction that puts the skill's zone average (tiers weighted 7 / 7 / 6) on G (unrounded sells)"""
+    if iters in _P7_FIT:
+        return _P7_FIT[iters]
+    corr = dict((s, dict((z, 1.0) for z in range(1, 6))) for s in P7_SKILLS)
+    for _ in range(iters):
+        px = p7_prices(corr)
+        raw = {"ore": px["sell"]["ore"], "log": px["sell"]["log"], "crop": px["sell"]["crop"], "stone": P7_COBBLE_BASE}
+        unr = {"ore": dict((k, v / P7_SELL) for k, v in raw["ore"].items()), "log": dict((k, v / P7_SELL) for k, v in raw["log"].items()),
+               "crop": dict((k, v / P7_SELL) for k, v in raw["crop"].items()), "stone": P7_COBBLE_BASE}
+        for s in P7_SKILLS:
+            for z in range(1, 6):
+                corr[s][z] *= p7_G_mid(z) / p7_zone_avg(s, z, unr)
+    _P7_FIT[iters] = corr
+    return corr
+
+
+def p7_table():
+    """the Bazaar's P7 raw price table (base prices) - what SkyyBazaar 0.2.1 computes itself and prints"""
+    return p7_prices(p7_fit())
+
+
+def p7_levelups_per_zone():
+    """level-ups across every skill + the class per zone (P3 simulation, balance_model.simulate_today: 108 in Zone 1, 125 in Zone 2; the sim
+    stops at cap 50, so Zones 3-5 assume Zone 1's count - spec 9.8)"""
+    return {1: 108, 2: 125, 3: 108, 4: 108, 5: 108}
+
+
+def p7_level_coins(L, text=P7_LEVEL_COINS_TEXT):
+    pts = [(int(a), float(b)) for a, b in (kv.split(":") for kv in text.split(","))]
+    return p7_log_interp(pts, max(1, min(100, L)))
+
+
+def p7_band_start(t):
+    """the level band start of ladder tier t (T1 Lv 1 ... T15 Lv 95, T16 Onyxium Lv 100)"""
+    return BAND[max(1, min(16, t)) - 1]
+
+
+def p7_coll_coins(k, t, text=P7_CURVE_TEXT):
+    """SkyyCollections 0.2.32 tier.coinsByTier: tier k (1-based) of a collection whose item has tier t (None = untiered = curve 1.0)"""
+    f = 1.0 if t is None else p7_curve_from_text(text, p7_band_start(t))
+    return int(math.floor(TIER_COINS[k - 1] * f + 0.5))
+
+
+def p7_coll_scale():
+    """share of each zone's coins the collection tier coins pay (13 collections to V a zone, the zone's 3 tiers)"""
+    out = {}
+    for z in range(1, 6):
+        per_t = [sum(p7_coll_coins(k, t) for k in range(1, 6)) for t in (3 * z - 2, 3 * z - 1, 3 * z)]
+        out[z] = P7_COLL_PER_ZONE * sum(per_t) / 3.0 / (P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0))
+    return out
+
+
+def p7_H_at(L):
+    """target coins / h at level L (= the curve x Zone 1's)"""
+    return p7_curve(L) * p7_target_h(1)
+
+
+def p7_G_lv(L):
+    """the focused gathering hour at level L"""
+    return p7_curve(L) * p7_G_mid(1)
+
+
+def p7_round(x):
+    """costs: nearest 10 under 1,000, 100 under 10,000, 500 under 100,000, else 5,000 (half up)"""
+    st = 10 if x < 1000 else (100 if x < 10000 else (500 if x < 100000 else 5000))
+    return int(st * math.floor(x / st + 0.5))
+
+
+def p7_gear_base(kind, rarity):
+    """the Lv-10 base of a SkyyGear cost row computed from the hours rule (p7_round)"""
+    return p7_round(P7_GEAR_H[kind] * P7_RARITY_X[rarity] * p7_H_at(10))
+
+
+def p7_gear_cost(kind, rarity, L, text=P7_CURVE_TEXT):
+    """what SkyyGear 0.3.37 charges: the row's Lv-10 base x the curve at the item level, p7_round"""
+    return p7_round(P7_GEAR_BASE[kind][rarity] * p7_curve_from_text(text, L))
+
+
+def p7_merchant_price(L, hours=P7_MERCH_HOURS, text=P7_CURVE_TEXT):
+    """SkyyMerchants 0.1.7: price.hours x G at Lv 10 x the curve at the item level, p7_round"""
+    return p7_round(hours * p7_G_mid(1) * p7_curve_from_text(text, L))
+
+
+def p7_loops(prices):
+    """(route, margin, why) for the 17 routes of Part 4. margin = sell revenue / buy cost - 1 at the model's prices (premium 20 %,
+    buy x1.1 / sell x0.9); a structurally closed route has margin -1.0 (no coins come back)"""
+    B, S, PR, EN = 1.0 + SPREAD_P7, 1.0 - SPREAD_P7, 1.2, 1.2
+    out = []
+    ores = prices["ore"]
+    m1 = max((PR * b * S) / (b * B) - 1 for b in ores.values())
+    out.append(("L1 ore -> smelt (no fuel) -> bar", m1, "bar = 1.2 x ore"))
+    out.append(("L2 ore -> smelt with Smelting Fortune -> 2 bars", m1, "smelt.fortune.minedOnly: Fortune only on mined ore"))
+    out.append(("L3 100 bars -> Enchanted ore", max((100 * b * EN * S) / (100 * PR * b * B) - 1 for b in ores.values()), "premium counted once"))
+    raws = list(ores.values()) + list(prices["log"].values()) + list(prices["crop"].values())
+    out.append(("L4 100 raw -> Enchanted", max((100 * b * EN * S) / (100 * b * B) - 1 for b in raws), "0.9 x 1.2 < 1.1"))
+    out.append(("L5 two bars -> alloy (1 + 1 = 2) -> sell", max(PR * S / B - 1, 0.98 - 1), "AUTO / Bronze sell cap 0.98"))
+    out.append(("L6 Enchanted parents -> Enchanted alloy", PR * S / B - 1, "AUTO, premium once"))
+    for r, why in (("L7 log -> planks / sticks / charcoal", "fixed goods keep their 0.2.0 ratio + the build's _fixes hold"),
+                   ("L8 seeds / saplings -> plant -> sell", "production (time + land), seeds / saplings sell-capped"),
+                   ("L9 Eternal seeds -> sell back", "ETERNAL_CAP sell cap"), ("L10 crops -> dish -> sell", "dishes are no Bazaar product (check_assets)"),
+                   ("L11 Bazaar fish -> SkyyFishing SELL", "FI sells only its own kg fish"), ("L12 merchant weapon -> salvage", "salvage gives materials, never coins"),
+                   ("L13 merchant weapon -> AH", "player to player, fees burned"), ("L14 goods across a rebirth", "-18 % round trip"),
+                   ("L15 /pay or AH between own profiles", "coins:fn:sameacct"), ("L16 Collections coin unlock", "bypass.enabled false"),
+                   ("L17 Gear re-roll -> sell", "no pool item has a sell / salvage price")):
+        out.append((r, -0.18 if r.startswith("L14") else -1.0, why))
+    return out
+
+
+SPREAD_P7 = 0.10
+
+
+P7_OLD_LEVEL_COINS = 100                                               # SkyySkills 0.4.60 coinsPerLevel (100 x level) - what pays until Skills' P7b levelCoins
+
+
+def p7_level_coins_zone(z, old=False):
+    """level-up coins paid in zone z: p7_levelups_per_zone() level-ups spread evenly over the zone's 20 levels, each at p7_level_coins(L)
+    (P7b, Skills' levelCoins) or the old coinsPerLevel x L (old=True: Skills not yet on P7b)"""
+    lv = range(20 * z - 19, 20 * z + 1)
+    per = [(P7_OLD_LEVEL_COINS * L) if old else p7_level_coins(L) for L in lv]
+    return p7_levelups_per_zone()[z] * sum(per) / float(len(per))
+
+
+def p7_parts(z, old_levels=False):
+    """the zone's coins by source (no spending), from the real components: sales = G x (gather + combat x 0.815 + fishing shares) x hours,
+    level-up coins (p7_level_coins_zone), collection tier coins (p7_coll_scale share of the zone's coins), other = the 6 % budget (exploration /
+    shards / quests - not modelled here, GUESS)"""
+    span = P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0)
+    per = P7_SHARE["gather"] + P7_SHARE["combat"] * P7_COMBAT_X + P7_SHARE["fishing"]
+    return {"sales": p7_G_mid(z) * per * P7_ZONE_H[z - 1], "levelup": p7_level_coins_zone(z, old_levels),
+            "collections": p7_coll_scale()[z] * span, "other": P7_BUDGET["other"] * span}
+
+
+def p7_totals(idle=True, old_levels=False):
+    """coins at each zone end / the target (no spending): the SUM of p7_parts (sales + level-up + collection + other coins); idle = the P6 totem
+    share kept (Skyy 2026-10-21) as a bonus on top: farming share x Totem I..V (one totem tier a zone) of an active farming hour.
+    Returns {zone: (with idle / target, active / target)}; old_levels=True = SkyySkills still paying 100 x level (P7a deployed alone)"""
+    out = {}
+    for z in range(1, 6):
+        span = P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0)
+        act = sum(p7_parts(z, old_levels).values())
+        bonus = (SHARE["Farming"] * p7_G_mid(z) * P7_TOTEM[z - 1] / 100.0 * P7_ZONE_H[z - 1]) if idle else 0.0
+        out[z] = ((act + bonus) / span, act / span)
+    return out
+
+
+def p7_rows():
+    """(target, model text, ok) for --econ --check"""
+    out = []
+    px = p7_table()
+    out.append(("coins.curve text = the spec 1.3 default", p7_curve_text()[:60] + "...", p7_curve_text() == P7_CURVE_TEXT))
+    for z in range(1, 6):
+        h = dict((s, p7_zone_avg(s, z, px)) for s in P7_SKILLS)
+        mean = sum(h.values()) / 3.0
+        rr = [h[s] / mean for s in P7_SKILLS]
+        on = mean / p7_G_mid(z)
+        out.append(("Zone %d: gathering skills within 0.85-1.15 of each other (skills.md:187 Q4)" % z,
+                    "M / F / Fa %s (ratios %s)" % (" / ".join(fmt(h[s]) for s in P7_SKILLS), " / ".join("%.2f" % r for r in rr)), all(0.85 <= r <= 1.15 for r in rr)))
+        out.append(("Zone %d: the skills' mean on G %s +-15 %%" % (z, fmt(p7_G_mid(z))), "%.3f of G" % on, 0.85 <= on <= 1.15))
+    bad = []
+    for fam in ("log",):
+        for t in range(1, 15):
+            if px["log"][t + 1] < P7_STEP_MIN * px["log"][t] - 0.5 * P7_STEP_MIN:
+                bad.append("log T%d" % t)
+    q = p7_crop_q()
+    cn = sorted(P7_CROP_T, key=lambda n: P7_CROP_T[n])
+    for a, b in zip(cn, cn[1:]):
+        if px["crop"][b] * q[b] < P7_STEP_MIN * px["crop"][a] * q[a] - 0.5 * P7_STEP_MIN * q[a]:
+            bad.append("crop %s" % a)
+    on_ = sorted(P7_ORE_T, key=lambda n: P7_ORE_T[n])
+    for a, b in zip(on_, on_[1:]):
+        if px["ore"][b] < P7_STEP_MIN ** (P7_ORE_T[b] - P7_ORE_T[a]) * px["ore"][a] - 0.5 * P7_STEP_MIN:
+            bad.append("ore %s" % a)
+    low = [k for fam in ("ore", "log", "crop") for k, v in px[fam].items() if v * P7_SELL < P7_FLOOR - 1e-9]
+    out.append(("Each tier >= 1.2x the tier below (within one 0.5 rounding step), nothing under the 2-coin floor (economy.md:130-134)",
+                "breaks: %s; under the floor: %s" % (", ".join(bad) or "none", ", ".join(map(str, low)) or "none"), not bad and not low))
+    lp = p7_loops(px)
+    worst = max(lp, key=lambda r: r[1])
+    out.append(("All 17 loop routes lose money (Part 4)", "%d routes, worst %s %+.1f %%" % (len(lp), worst[0], 100 * worst[1]), len(lp) == 17 and all(m < 0 for _r, m, _w in lp)))
+    tot = p7_totals(idle=False)
+    out.append(("Coins at zone end on the x10 targets, active play only, 0.85-1.15 (Q1 + Q18)", " / ".join("x%.2f" % tot[z][1] for z in range(1, 6)),
+                all(0.85 <= tot[z][1] <= 1.15 for z in range(1, 6))))
+    gb = [(k, r, p7_gear_base(k, r), P7_GEAR_BASE[k][r]) for k in P7_GEAR_BASE for r in P7_RARITY_X]
+    off = [x for x in gb if abs(x[2] - x[3]) > (10 if x[3] < 1000 else 100)]
+    out.append(("Gear cost bases = the hours rule (6.2) within one rounding step", "off: %s" % (", ".join("%s.%s %d vs %d" % x for x in off) or "none"), not off))
+    cc = (p7_coll_coins(5, 1), p7_coll_coins(5, 8), p7_coll_coins(5, 14), p7_coll_coins(5, None))
+    out.append(("Collection tier V coins Copper 190 / Chromium ~12k / Titanium ~164k / untiered 400 (2.2)", " / ".join(str(x) for x in cc),
+                cc[0] == 190 and 11500 <= cc[1] <= 12500 and 160000 <= cc[2] <= 168000 and cc[3] == 400))
+    mp = (p7_merchant_price(10), p7_merchant_price(100))
+    out.append(("Merchant weapon 1.875 gathering hours: Lv 10 ~15.5k, Lv 100 ~13.5M (5.3)", "%s / %s" % (fmt(mp[0]), fmt(mp[1])), 15000 <= mp[0] <= 16000 and 13.0e6 <= mp[1] <= 14.0e6))
+    return out
+
+
+def p7_md():
+    """### 9. Economy (P7) for research/balance/targets.md"""
+    px = p7_table()
+    q = p7_crop_q()
+    out = ["", "### 9. Economy (P7, research/Balance-P7-Economy-Spec.md; `python tools/balance_model.py --econ`)", ""]
+    out += ["Targets x%d (Skyy 2026-10-21 \"x10 targets (Recommended)\"); idle totems stay %s %% / %d h banked (Skyy \"20-100%%, 3 days\") = a bonus "
+            "on top, not in the targets." % (P7_K, "/".join(str(x) for x in P7_TOTEM), P7_OFFLINE_H), "",
+            "| Zone | Hours | Coins at zone end | Target / h | Focused gathering hour G | x target active | x target + idle bonus |", "|---|---|---|---|---|---|---|"]
+    tot = p7_totals()
+    for z in range(1, 6):
+        out.append("| %d | %d | %s | %s | %s | x%.2f | x%.2f |" % (z, P7_ZONE_H[z - 1], fmt(P7_END[z]), fmt(p7_target_h(z)), fmt(p7_G_mid(z)), tot[z][1], tot[z][0]))
+    out += ["", "Zone coins by source (active, share of the zone's coins; other = the 6 % budget, not modelled): " + "; ".join(
+        "Z%d sales %.2f / level-up %.3f / collections %.3f / other %.2f" % ((z,) + tuple(p7_parts(z)[k] / (P7_END[z] - (P7_END[z - 1] if z > 1 else 0.0))
+                                                                        for k in ("sales", "levelup", "collections", "other"))) for z in range(1, 6)) + ".", ""]
+    old = p7_totals(idle=False, old_levels=True)
+    out += ["GO-TOGETHER: SkyyBazaar 0.2.1 + SkyyCollections 0.2.32 deployed while SkyySkills still pays %d x level (no P7b levelCoins) = zone-end coins %s "
+            "of target (level-up coins %s a zone vs P7b %s) - Zone 1 overshoots; pin Skills' levelCoins with them." % (
+                P7_OLD_LEVEL_COINS, " / ".join("x%.2f" % old[z][1] for z in range(1, 6)), " / ".join(fmt(p7_level_coins_zone(z, True)) for z in range(1, 6)),
+                " / ".join(fmt(p7_level_coins_zone(z)) for z in range(1, 6))), ""]
+    out += ["Coin curve (SkyyCoins `coins.curve`): `%s`" % p7_curve_text(), ""]
+    out += ["3.3 Bazaar raw prices (base; sell = x %g):" % P7_SELL, "", "| T | Ore | Log (every species) | Crop (q) |", "|---|---|---|---|"]
+    for t in range(1, 17):
+        o = P7_ORE_NAME.get(t)
+        cr = [n for n, v in P7_CROP_T.items() if v == t]
+        out.append("| %d | %s | %s | %s |" % (t, "%s %g" % (o, px["ore"][o]) if o else "-", ("%g" % px["log"][t]) if t in px["log"] else "-",
+                                             ("%s %g (q %g)" % (cr[0], px["crop"][cr[0]], q[cr[0]])) if cr else "-"))
+    out += ["", "Rubble base %g (sells %g); every Rock_* keeps its 0.2.0 price (cobble %g = 2 rubble: the salvage chain 1 cobble -> 2 halves -> 2 rubble) - mined stone counts at the cobble price." % (P7_STONE_BASE, P7_STONE_BASE * P7_SELL, P7_COBBLE_BASE), "", "3.4 Coins per focused hour (zone average, tiers 7 / 7 / 6):", "",
+            "| Zone | Mining | Foraging | Farming | ratios to their mean | mean / G |", "|---|---|---|---|---|---|"]
+    for z in range(1, 6):
+        h = [p7_zone_avg(s, z, px) for s in P7_SKILLS]
+        m = sum(h) / 3.0
+        out.append("| %d | %s | %s | %s | %s | %.3f |" % (z, fmt(h[0]), fmt(h[1]), fmt(h[2]), " / ".join("%.2f" % (x / m) for x in h), m / p7_G_mid(z)))
+    out += ["", "6.2 Costs on the curve (Lv-10 base -> Lv 10 / 50 / 90):", "", "| Row | normal | unique | rare | legendary | fabled | mythic | set | untiered | rare Lv 10 / 50 / 90 |",
+            "|---|---|---|---|---|---|---|---|---|---|"]
+    for k in ("reforge", "levelUp", "identify"):
+        out.append("| cost.%s | %s | %s |" % (k, " | ".join(str(P7_GEAR_BASE[k][r]) for r in P7_RARITY_X), " / ".join(fmt(p7_gear_cost(k, "rare", L)) for L in (10, 50, 90))))
+    out.append("| merchant weapon (%.3f h of G) | Lv 8 / 10 / 20 / 40 / 60 / 80 / 100: %s |" % (P7_MERCH_HOURS, " / ".join(fmt(p7_merchant_price(L)) for L in (8, 10, 20, 40, 60, 80, 100))))
+    out.append("| collection tier V by item tier T1 / T2 / T5 / T8 / T11 / T14 / untiered | %s |" % " / ".join(str(p7_coll_coins(5, t)) for t in (1, 2, 5, 8, 11, 14, None)))
+    out += ["", "Part 4 loop routes:", "", "| Route | Margin | Why closed |", "|---|---|---|"]
+    for r, m, w in p7_loops(px):
+        out.append("| %s | %s | %s |" % (r, "closed" if m <= -1.0 else "%+.1f %%" % (100 * m), w))
+    out += ["", "| Target (P7 9.5) | Model | OK |", "|---|---|---|"]
+    for t, m, ok in p7_rows():
+        out.append("| %s | %s | %s |" % (t, m, "yes" if ok else "NO"))
+    out += ["", "Model notes: GUESS rates %s / h (P6) and D(T) from the P5 Fortune budget; combat per-kill value and fish per hour are measured in game "
+            "(spec 9.7 steps 6 + 8); Zones 3-5 level-up counts assume Zone 1's 108 a zone." % " / ".join("%s %.0f" % kv for kv in P7_RATE.items()), ""]
+    return "\n".join(out)
+
+
+def p7_write_section(md):
+    """put p7_md() into research/balance/targets.md as its '### 9. Economy' section (p6_write_section's rule)"""
+    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "research", "balance", "targets.md"))
+    raw = open(path, "rb").read().decode("utf-8")
+    nl = "\r\n" if "\r\n" in raw else "\n"
+    sec = md.strip("\n").replace("\n", nl) + nl
+    head = "### 9. Economy"
+    a = raw.find(nl + head)
+    if a < 0:
+        out, how = raw + ("" if raw.endswith(nl) else nl) + nl + sec, "appended"
+    else:
+        a += len(nl)
+        b = len(raw)
+        for mk in (nl + "### ", nl + "## "):
+            j = raw.find(mk, a + len(head))
+            if 0 <= j < b:
+                b = j + len(nl)
+        rest = raw[b:]
+        out, how = raw[:a] + sec + ((nl if not sec.endswith(nl + nl) else "") + rest if rest else ""), "replaced"
+    with open(path, "wb") as f:
+        f.write(out.encode("utf-8"))
+    return how
+
+
 def main():
+    if "--econ" in sys.argv:          # P7 economy: targets.md section 9; with --check: exit 1 on any P7 row that fails
+        md = p7_md()
+        print(md)
+        print("\nwrote research/balance/targets.md section '### 9. Economy' (%s)" % p7_write_section(md))
+        if "--check" in sys.argv:
+            bad = [r for r in p7_rows() if not r[2]]
+            for t, m, _ok in bad:
+                print("FAIL %s: %s" % (t, m))
+            print("P7 economy check: %d rows, %d fail" % (len(p7_rows()), len(bad)))
+            sys.exit(1 if bad else 0)
+        return
     if "--gather" in sys.argv:
         md = p6_md()
         print(md)
@@ -2086,6 +2543,7 @@ def main():
         p5r = p5_rows()
         bad = [r for r in p4_rows() if not r[2]] + [r for r in p5r if not r[2] and r[0] not in P5_ASKED]          # P5: + the power-source rows (not the asked ones)
         bad += [r for r in p6_rows() if not r[2]]          # P6: + the gathering / crafting rows
+        bad += [r for r in p7_rows() if not r[2]]          # P7: + the economy rows
         asked = [r for r in p5r if not r[2] and r[0] in P5_ASKED]
         if "--combat" in sys.argv:
             print("\nwrote research/balance/targets.md section '### 6. Combat' (%s)" % p4_write_section(md))

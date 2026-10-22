@@ -25,12 +25,13 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P6 part B): SkyyGear 0.3.36 + SkyyCollections 0.2.31 pin + roll back TOGETHER (Gear's Dusk/Azurvane/Cinder/Lumen tier-ups pay Enchanted alloys that Collections 0.2.31 unlocks at V+V). Before a rollback Undo the P6 rows in Server Setup -> Changes (Gear migrateP6: ladder rows, xp.craftCurve + xp.craft, levelUp.cap, 40 utpow appended; Collections CollP6Mig curve.B/S/R/E, CollP6EnchMig ench.tier.<alloy>) - older jars read them as admin values. Items stay valid (armor bags open as their stored piece under 0.3.35); collection tiers already paid stay paid.
 # FLOOR (2026-10-22, Balance P8c Beastmastery): SkyySkills 0.4.60 + SkyyPets 0.4.9 + SkyyTrees 0.4.7 pin + roll back TOGETHER. NEVER roll SkyySkills below 0.4.60 once a Beastmastery line has been saved (0.4.59 drops the unknown key on its next save = Beastmastery XP lost). Before any rollback Undo the 2 BmMigP8c rows in Server Setup -> Changes. Older Pets / Trees ignore bought Beastmastery ranks (kept saved; a respec refunds them).
 # FLOOR (2026-10-22, Balance P8d): SkyyTrees 0.4.8 needs the P8c set (SkyySkills 0.4.60 + SkyyPets 0.4.9); SkyyRebirth 0.4.3 needs SkyySkills 0.4.60+ (arm.beastmastery). No saved data changed; they need not roll back together. Trees back to 0.4.7 = the 23 P8d upgrades coming soon again + old row unlocks (bought ranks stay saved, unused until a respec); Rebirth back to 0.4.2 only stops Beastmastery counting for VP.
+# FLOOR (2026-10-22, Balance P7 economy core): SkyyCoins 0.1.10 + SkyyBazaar 0.2.1 + SkyyMerchants 0.1.7 + SkyyAuctions 0.1.15 + SkyyGear 0.3.37 + SkyyCollections 0.2.32 pin + roll back TOGETHER (one coin curve coins:fn:curve read by Merchants / Gear / Collections; Bazaar prices re-set by tier). Before a rollback Undo the P7 rows in Server Setup -> Changes (Coins CoinMigP7 death 10/25 -> 5/5, Merchants 47 lines, Bazaar 262 prices, Collections tier coins, Gear migrateP7 cost rows) - older jars read them as admin values. Gear 0.3.37 also: Smithing combat section + bench veto, crafted never UT / Mythic, Skeleton_Elite = elite. P7 part 2 (Skills / Trees / Exploration / Shards) follows.
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.27"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.31"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.36"), ("SkyySkills", "0.4.60"),
+    ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.27"), ("SkyyCoins", "0.1.10"), ("SkyyCollections", "0.2.32"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.37"), ("SkyySkills", "0.4.60"),
     ("SkyyAccessories", "0.5.31"), ("SkyyClasses", "0.1.45"), ("SkyyMenu", "0.3.43"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.8"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -47,7 +48,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.9"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.14"),
+    ("SkyyAuctions", "0.1.15"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -84,7 +85,7 @@ SET = [
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1.6"),
+    ("SkyyMerchants", "0.1.7"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
