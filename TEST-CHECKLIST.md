@@ -248,3 +248,4 @@ tests always come first.
 221. P6b: collection tiers shorter, Anvil costs, own-tier ore 2+ hits, F-pickup lock, +10 level-up, armor bags hidden, UT >= Fabled
 222. Left Alt after closing another page opens at once; element lines in %; Normal bags / charms still white
 223. Beastmastery: /skills row, levels from pet XP, /tree beasts upgrades, rebirth resets it
+224. Probe 0.7.1: clicks no longer hang; M4 picture swap, M5 ring move, M6 tooltips (then retire the probe)
