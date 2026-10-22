@@ -333,3 +333,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Balance P5 power sources: slot power, armor Defense / Health %, UT meter + Mythic pity, Fabled / Mythic charms, pet power, Rich Seams, guild curve, bug 12 (DEPLOYED 2026-10-22, backup deploy-20261022-0512) | [2026-10](2026-10.md) |
 | Left Alt (Walk key) opens the SkyWynn Menu (DEPLOYED 2026-10-22, backup deploy-20261022-0635) | [2026-10](2026-10.md) |
 | Skill-tree hooks P8b: Mining / Foraging / Combat upgrades live, Combat gates, Spoils loot rows (DEPLOYED 2026-10-22, backup deploy-20261022-0654) | [2026-10](2026-10.md) |
+| Tree-page probe SkyyUiProbe 0.7 (radial map test M1-M7, op only) (DEPLOYED 2026-10-22, backup deploy-20261022-0713) | [2026-10](2026-10.md) |

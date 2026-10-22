@@ -245,3 +245,4 @@ tests always come first.
 217. Balance P5: weapon lines x1.18, armor Defense + Health %, UT meter /gear, unidentified weapons hide type, Fabled/Mythic charms, pet % stats
 218. Left Alt opens the Menu (every press? Alt-Tab?), switches in /settings + Server Setup
 219. P8b: Mining / Foraging / Combat tree upgrades buyable + working, Stoneskin + Combat Focus free perks, Spoils extra drops (never gear)
+220. Tree-page probe: /skyprobe m1..m7 (big map opens fast? 1,200 / 1,600 elements? lines crisp? picture swap, ring move, tooltips)
