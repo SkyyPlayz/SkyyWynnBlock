@@ -160,3 +160,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-22 PLAYER HEAD EXAMPLE (Skyy, RPG Leveling screenshot): "they found a way to show my player head. though its missing its hair." -> research/UI-Ideas.md (study of RPGLeveling-0.4.2 running).
 - 2026-10-22 HYLTERIUM / RPG LEVELING (Skyy): "im currently player this server. made by/with the rpg leveling mod" -> research/UI-Ideas.md (NPC dialogue bar, mod comparison running).
 - 2026-10-22 MENU ON LEFT ALT (Skyy, Hylterium screenshot): "they were able to tie the menu to Left alt" -> research/UI-Ideas.md; mechanism study running; goal: SkyWynn Menu opens on Left Alt.
+- 2026-10-22 COSMETICS SHOP (Skyy, Hylterium screenshot): "wow. didnt know you could sell in server cosmetics" -> research/UI-Ideas.md (SkyyWardrobe / P7 cosmetic sinks; monetization rules not checked).
