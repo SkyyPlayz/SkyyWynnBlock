@@ -571,3 +571,38 @@ gives at a glance" (docs/answered/ui.md). Applies to every hover tooltip on our 
   - minor info (ids, owned since): dim grey `#7f93a6`; actions ("Click: ...") yellow `#ffcc00`
 - Group lines: name / level first, then what it GIVES (coloured values), then requirements, then minor info last.
 - Rollout: kit first (one tooltip helper), then each mod's next round adopts it; Pets (the screenshot) first.
+
+## 16. Node maps: radial tree pages (kit 1.8, 2026-10-22)
+
+Skyy: "i definitely want to do the rebirth page like this, but id like to do our trees like this." + popups "Grouped pages", "Separate per
+tree", "Pips in the ring" + "is is posible to add shift scroll for in and out?" (docs/answered/ui.md; spec research/Radial-Trees-Spec.md).
+A NODE MAP page = the kit 1.7 hub page (rows 1 + 2, no sub row, no footer) whose content row is: left rail 232 | map canvas 840 x 774 |
+right panel 456 (`SUI.MAP_RAIL_W`, `SUI.MAP_CANVAS_W` x `SUI.MAP_CANVAS_H`, `SUI.MAP_PANEL_W`). First user: SkyyTrees 0.5.0; SkyyRebirth's Nexus (round R3) uses the same blocks.
+
+- Geometry + pictures: `tools/skyymap.py` (pure Python, our own geometry, no vanilla pixels): `skyymap.build()` / `skyymap.fit_page()` lay the map out and
+  `skyymap.check()` it (inside the canvas, discs >= 6 px apart, click squares >= 2 px apart, every node once); `skyymap.scaled()` = the same map at 150 /
+  200 %; `skyymap.base_picture()` (every line grey, one picture), `skyymap.gold_pictures()` (one per line, lit = drawn),
+  `skyymap.node_pictures()` (the state IS the picture). Build time only; the jar ships the @2x PNGs under `Common/UI/Custom/<Mod>/Map/`, markup paths without @2x
+  (`SUI.register_map_textures`).
+- Markup: `SUI.node_map(...)` -> page data (`.text()`, a jar text resource) drawn at run time by `SUI.java_node_map_methods()`
+  (`mapDraw`: static appends, lit lines, the halo, every node = picture + icon + click square). Never write map markup by hand.
+- Draw order (proven, probe M2): base lines, gold lines, emblem, hubs, banners, halo, nodes. Clicks land on the node's transparent click
+  square (`map_hit`, silent, list-row hover).
+- Node states (one picture each): locked (grey ring + padlock), coming soon (grey + "..."), open (row open, no point free: light grey ring),
+  ready (gold ring = can learn now), learnt k / m (the tree colour + k of m rank pips along the bottom of the ring), max (all pips + glow);
+  capstones carry a star; a row's free perk / ability = a diamond on the branch spine. Lit line = gold: a spine into an open row, a spoke
+  into an upgrade with a rank.
+- Colours: `SUI.TREE_COLOR` (one per tree; the class colour on a class page). Selected node = the cyan halo. Legend in the rail foot
+  (`map_legend`): learnt / ready / locked / selected.
+- Rail (`map_rail_row` / `map_rail_parts`): page rows (28) and their tree rows (42: 24 px icon, name 15 bold in the tree colour,
+  "Lv 23 - 4 points free" 15 px); the open page / tree = the selected row look. The rail IS the navigation (no Back button).
+- Right panel: tree head (icon, name, level, points, the next row's gate, respec price) + the zoom row (`map_zoom_row`: Zoom out / 100 % /
+  Zoom in - a '+' is no proven inline button text) + the talent (caption, name, Rank n / m, state, Now / Next, Cost, what it needs or
+  "Ready to unlock", how it works) + Learn (Primary, greyed when it cannot) + Respec (Destructive "Click again" pattern) + the result line.
+- Zoom = the same layout pre-laid-out at 150 / 200 % inside the 2-axis scroll box `map_scroll` (TopScrolling holding LeftScrolling, probe
+  M7 PROVED it; key `map-scroll` in PROBED). The server never sees the mouse wheel or a drag - no shift+wheel, no drag-to-pan.
+- EVERY click answers with exactly ONE page packet (a rebuild, or the page closes / another page opens) + a safety net at the end of
+  handleDataEvent (the engine's empty update when nothing was sent and the page is still open) - HANDOFF section 2, probe 0.7.1.
+- Not used until probed in game (M4-M6 not run): AssetImage picture swaps, moving the halo with an Anchor update, TooltipText on nodes.
+- Element guard: `SUI.assert_map_elements` (1,000 per page, every line lit; probe M1c opened 1,602). Check:
+  `python tools/test_skyymap.py`, `python tools/test_skyyui_map.py`.

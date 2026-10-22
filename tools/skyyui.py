@@ -4815,6 +4815,8 @@ def check_sky_paths(markups, outside_ok=False, tab_icons=False):
                 continue
             if up and not (outside_ok and path in known and "ItemQualities/" in folder):
                 raise ValueError("texture %s leaves the custom root (Common/UI/Custom) - not allowed on a hub / sky page" % path)
+            if not up and path in _MAP_PATHS:       # kit 1.8: a map picture the build registered (register_map_textures)
+                continue
             if path not in known:
                 raise ValueError("texture / sound path %s is neither a kit vanilla path nor a SkyyKit element" % path)
     return sorted(used)
@@ -6959,3 +6961,337 @@ def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None
         else:
             ct.addMethod(CtNewMethod.make(src, ct))
     return ct
+
+
+# ================================================================= 2026-10-22 KIT 1.8: NODE MAPS (additive)
+# research/Radial-Trees-Spec.md (round R1) + Skyy's words (docs/answered/ui.md 2026-10-22): "i definitely want to do the rebirth page like
+# this, but id like to do our trees like this." + popups "Grouped pages (Recommended)", "Separate per tree (Recommended)", "Pips in the
+# ring (Recommended)" + "is is posible to add shift scroll for in and out?" (the server never sees the wheel: ZOOM BUTTONS instead,
+# the map pre-laid-out at 100 / 150 / 200 % inside a 2-axis scroll box - probe M7 proved the box scrolls both ways and its nodes click).
+# A NODE MAP = one canvas Group (layout None) holding, in draw order: the grey base line picture, the lit gold edge pictures, the emblem,
+# the hubs (picture + icon), the banners (2 labels, texts by b.set), the cyan halo of the selected node, then every node = its state
+# picture (Group Background), its icon (ItemIcon) and a transparent click square (Button, silent). The geometry and the pictures come
+# from tools/skyymap.py (pure Python, our own art); the markup comes from here, so every map page shares one look and one set of checks.
+# The map markup is PAGE DATA (a jar text resource, the probe M1 way): node_map(...).text() at build time, java_node_map_methods()
+# draws it at run time with the node states the mod computes (only the state picture name and the lit edges change per player).
+# KIT_VERSION stays "1.5", KIT_HUB_VERSION "1.6", KIT_PAGE_VERSION "1.7" (pinned SET scripts assert them); this level is
+# KIT_MAP_VERSION. Every builder above is unchanged; check_sky_paths also accepts the map textures a build registered
+# (register_map_textures). Style Guide section 16 "Node maps". Test: python tools/test_skyyui_map.py.
+# PROVEN in game (SkyyUiProbe 0.7 / 0.7.1, Skyy 2026-10-22): 688 / 1,203 / 1,602 elements open fine (M1); lines under discs, clicks on
+# discs over line pictures (M2); crisp @2x dotted lines (M3); the 2-axis scroll box (M7). NOT proven (M4-M6 not run): an AssetImage swap
+# on an open page, an Anchor move of the halo, TooltipText - the kit has none of them (a plain rebuild on every click).
+KIT_MAP_VERSION = "1.8"
+# the tree colours (spec 2.3 / Q5 default; the SkyyRebirth arm colours where they exist) - data colours of the map pictures and the
+# tree names; "Void" = the Rebirth Nexus
+TREE_COLOR = {"Class": "#E8A93B", "Mining": "#8fc8ff", "Foraging": "#8fe08a", "Farming": "#f0d060", "Fishing": "#6fb7e8",
+              "Smithing": "#c0c8d0", "Cooking": "#ffb070", "Alchemy": "#7fe0d0", "Combat": "#ff8a7a", "Acrobatics": "#a8f0ff",
+              "Exploration": "#b8e07a", "Beastmastery": "#d68fd0", "Void": "#b58cff"}
+MAP_MAX_ELEMENTS = 1000             # a map page (shell + rail + canvas + panel, every edge lit) never above this (spec 2.5 check 6)
+MAP_RAIL_W, MAP_CANVAS_W, MAP_CANVAS_H, MAP_PANEL_W, MAP_GAP = 232, 840, 774, 456, 12    # the map page row (spec 2.1): 1552 wide
+MAP_PAGE_ROW_H, MAP_TREE_ROW_H, MAP_LEGEND_ROW_H = 28, 42, 21     # the left rail: page rows, tree rows, legend rows
+MAP_CAP_SIZE, MAP_MOTTO_SIZE = 15, 14   # "readable" (docs/answered/ui.md: lines at 14-18 px; Menu-Pattern 3.2 captions 15): rail sublines,
+#   legend captions = 15; the banner motto (line 2 under the 15 bold name) = 14
+MAP_HALO = 44                       # the cyan halo of the selected node at 100 % (x the zoom)
+MAP_ZOOMS = (100, 150, 200)         # the zoom buttons: - 100 % + (Hylterium's "- 110% +"); above 100 % the map sits in a scroll box
+MAP_ICON_FRAC = 18.0 / 32.0         # a node's icon = 18 px in a 32 px disc (scaled with the disc)
+MAP_HUB_ICON_FRAC = 26.0 / 44.0     # a hub's icon = 26 px in a 44 px hub
+HIT_NUM_MAP, HIT_DEN_MAP = 26, 32   # the click square = 26 / 32 of the disc (= tools/skyymap.HIT_NUM / HIT_DEN)
+_MAP_DIR_RE = re.compile(r"\A[A-Z][A-Za-z0-9]*/Map/(?:[A-Za-z0-9]+/)*[A-Za-z0-9]+\.png\Z")
+_MAP_PATHS = set()                  # markup paths (relative to Common/UI/Custom/, no @2x) a build registered for its own map art
+assert MAP_RAIL_W + MAP_GAP + MAP_CANVAS_W + MAP_GAP + MAP_PANEL_W == HUB_PAGE_IW, "kit 1.8: the map row = the hub page width"
+assert all(_COLOR_OK.fullmatch(c) for c in TREE_COLOR.values())
+# the 2-axis scroll box (probe M7 PASS, Skyy 2026-10-22: "a 2-axis scroll box WORKS (wheel / bars, up-down AND left-right)")
+PROVEN_LAYOUTS["LeftScrolling"] = ("map-scroll",)
+PROBED.add("map-scroll")
+
+
+def register_map_textures(paths):
+    """A build's own map pictures: markup paths "<Mod>/Map/.../<Name>.png" (relative to Common/UI/Custom/, written WITHOUT @2x: the
+    client loads <Name>@2x.png; no underscore, no '..'). check_sky_paths accepts them afterwards. Returns how many are registered."""
+    for p in paths:
+        if not isinstance(p, str) or not _MAP_DIR_RE.fullmatch(p) or "@2x" in p or "_" in p:
+            raise ValueError("map texture %r: write it '<Mod>/Map/<Name>.png' (letters / digits, no @2x, no underscore)" % (p,))
+        _MAP_PATHS.add(p)
+    return len(_MAP_PATHS)
+
+
+def map_pic(ident, l, t, w, h, tex):
+    """a picture at an absolute place: Group + Background texture (the map's own art, registered first)"""
+    check_id(ident)
+    if tex not in _MAP_PATHS:
+        raise ValueError("map_pic: %s is not a registered map texture (register_map_textures first)" % tex)
+    return 'Group #%s { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); Background: "%s"; }' % (ident, l, t, w, h, tex)
+
+
+def map_hit(ident, l, t, s):
+    """a node's transparent click square (a silent Button with the list-row hover, probe M1 / M2 proven: it sits on top of the disc)"""
+    check_id(ident)
+    return ("Button #%s { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); Style: ButtonStyle(Hovered: (Background: %s)); }"
+            % (ident, l, t, s, s, COLOR["hover"]))
+
+
+def map_scroll(ident, inner_id, canvas_id, w, h, cw, ch, bg="well"):
+    """the 2-axis scroll box of a zoomed map (probe M7): [the outer TopScrolling box (w x h), the inner LeftScrolling (under the
+    outer), the canvas cw x ch (under the inner)] - the caller appends them in this order"""
+    for i in (ident, inner_id, canvas_id):
+        check_id(i)
+    sb = scrollbar_style()
+    return [group(ident, layout="TopScrolling", w=w, h=h, extra="ScrollbarStyle: %s;" % sb),
+            "Group #%s { Anchor: (Height: %d); LayoutMode: LeftScrolling; ScrollbarStyle: %s; }" % (inner_id, ch, sb),
+            "Group #%s { Anchor: (Width: %d, Height: %d); Background: %s; }" % (canvas_id, cw, ch, COLOR[bg])]
+
+
+class NodeMap(object):
+    """One map layout's page data (node_map()): static appends + sets, the gold edges by index, the nodes by index (state picture
+    split around its name, icon, click square, halo). text() = the jar resource the Java draws (java_node_map_methods)."""
+
+    def __init__(self, prefix, canvas):
+        self.prefix, self.canvas = prefix, canvas
+        self.static, self.sets, self.edges, self.nodes = [], [], {}, []
+
+    def markups(self, lit=None, sel=None, sample=None):
+        """every (parent, markup) of the map as drawn with these lit edges (None = all) and this selected node; sample = one picture
+        name for every node (default: the name each node was built with)"""
+        out = [(p, mk) for p, mk in self.static]
+        for k in sorted(self.edges):
+            if lit is None or k in lit:
+                out.append(("#" + self.canvas, self.edges[k]))
+        if sel is not None and self.nodes and self.nodes[sel]["halo"]:
+            out.append(("#" + self.canvas, self.nodes[sel]["halo"]))
+        for n in self.nodes:
+            out.append(("#" + self.canvas, n["pre"] + (sample or n["sample"]) + n["suf"]))
+            if n["icon"]:
+                out.append(("#" + n["id"], n["icon"]))
+            out.append(("#" + n["id"], n["hit"]))
+        return out
+
+    def elements(self, lit=None, sel=None):
+        return sum(_strip_quoted(render(mk)).count("{") for _p, mk in self.markups(lit, sel))
+
+    def text(self):
+        """the page data: A <parent> <markup> | S <selector.Text> <text> | E <k> <markup> | N <k> <pre> <suf> <icon or -> <hit> <halo>
+        <hit selector>, one per line, tab separated (no tab / newline inside any field - checked)"""
+        lines = []
+        for p, mk in self.static:
+            lines.append("A\t%s\t%s" % (p, mk))
+        for sel_, txt in self.sets:
+            lines.append("S\t%s\t%s" % (sel_, txt))
+        for k in sorted(self.edges):
+            lines.append("E\t%d\t%s" % (k, self.edges[k]))
+        for k, n in enumerate(self.nodes):
+            lines.append("N\t%d\t%s\t%s\t%s\t%s\t%s\t#%s" % (k, n["pre"], n["suf"], n["icon"] or "-", n["hit"], n["halo"], n["id"] + "B"))
+        for ln in lines:
+            fs_ = ln.split("\t")
+            if "\n" in ln or "\r" in ln or any(has_j(f) for f in fs_):
+                raise ValueError("node map line with a newline / J() value: %s" % ln[:80])
+        return "\n".join(lines) + "\n"
+
+
+def node_map(prefix, canvas, lay, tex, node_tex, node_icon, hub_tex, hub_icon, base_tex, edge_tex, emblem_tex=None, halo_tex=None,
+             banner_texts=None, banner_cols=None, edge_boxes=None):
+    """The markup of one map layout (tools/skyymap.py place() / scaled(); its zoom = lay["zoom"], default 1). prefix = the page's id
+    prefix, canvas = the canvas Group id (the caller makes it: layout None, lay W x H). tex(name) -> the registered markup path of a
+    picture name; node_tex(k, node) -> the node's sample picture name (its state is swapped at run time); node_icon(k, node) -> an item
+    id or None (a free diamond has no icon) - every state picture of a map sits in ONE folder: the run time writes the picture's own
+    name (the part after the last /) into the same path; hub_tex(hub) / hub_icon(hub) per hub; base_tex / emblem_tex / halo_tex picture names;
+    edge_tex(k) = the gold picture name of drawn edge k, edge_boxes = {k: (l, t, w, h)} (skyymap.edge_boxes, scaled for a zoom);
+    banner_texts = [(line 1, line 2)] per banner (set by b.set: names may hold punctuation), banner_cols = their line-1 colours."""
+    z = float(lay.get("zoom", 1.0))
+    m = NodeMap(prefix, canvas)
+    cv = "#" + canvas
+    m.static.append((cv, map_pic(prefix + "Bs", 0, 0, lay["W"], lay["H"], tex(base_tex))))
+    for k, (l, t, w, h) in sorted((edge_boxes or {}).items()):
+        m.edges[k] = map_pic(prefix + "E%d" % k, l, t, w, h, tex(edge_tex(k)))
+    if emblem_tex:
+        m.static.append((cv, map_pic(prefix + "Em", lay["emb_l"], lay["emb_t"], lay["emb"], lay["emb"], tex(emblem_tex))))
+    for i, hb in enumerate(lay["hubs"]):
+        hs = lay["hub"]
+        m.static.append((cv, map_pic(prefix + "H%d" % i, hb["l"], hb["t"], hs, hs, tex(hub_tex(hb)))))
+        ic = hub_icon(hb)
+        if ic:
+            isz = int(round(hs * MAP_HUB_ICON_FRAC))
+            m.static.append(("#" + prefix + "H%d" % i, item_icon(prefix + "H%dI" % i, ic, size=isz,
+                                                                 anchor={"left": (hs - isz) // 2, "top": (hs - isz) // 2})))
+    for i, b in enumerate(lay["banners"]):
+        t1, t2 = (banner_texts or [("", "")] * len(lay["banners"]))[i]
+        col = (banner_cols or ["gold"] * len(lay["banners"]))[i]
+        m.static.append((cv, label(prefix + "Bn%dA" % i, "", "default", size=15, bold=True, col=col, w=b["w"], h=22, align=b["align"],
+                                   anchor={"left": b["l"], "top": b["t"]})))
+        m.static.append((cv, label(prefix + "Bn%dB" % i, "", "caption", size=MAP_MOTTO_SIZE, w=b["w"], h=20, align=b["align"],
+                                   anchor={"left": b["l"], "top": b["t"] + 22})))
+        for sel_, txt in (("#%sBn%dA.Text" % (prefix, i), t1.upper()), ("#%sBn%dB.Text" % (prefix, i), t2)):
+            if "\t" in txt or "\n" in txt or has_j(txt):
+                raise ValueError("node_map: a banner text with a tab / newline / J(): %r" % txt)
+            m.sets.append((sel_, txt))
+    hz = int(round(MAP_HALO * z))
+    for k, n in enumerate(lay["nodes"]):
+        nid = prefix + "N%d" % k
+        s = n["size"]
+        path = tex(node_tex(k, n))
+        full = map_pic(nid, n["l"], n["t"], s, s, path)
+        name = path.rsplit("/", 1)[1][:-4]             # the picture's own name: the part the run time swaps (same folder)
+        cut = full.index('"' + path + '"') + 1 + len(path) - len(name) - 4
+        pre, suf = full[:cut], full[cut + len(name):]
+        if not (pre + name + suf == full and suf.startswith('.png"') and pre.endswith("/")):
+            raise ValueError("node_map: the state picture split: %s" % path)
+        ic = node_icon(k, n)
+        icon = None
+        if ic:
+            isz = int(round(s * MAP_ICON_FRAC))
+            icon = item_icon(nid + "I", ic, size=isz, anchor={"left": (s - isz) // 2, "top": (s - isz) // 2})
+        hsz = int(round(s * HIT_NUM_MAP / float(HIT_DEN_MAP)))
+        ho = (s - hsz) // 2
+        halo = (map_pic(prefix + "Sel", int(round(n["cx"] - hz / 2.0)), int(round(n["cy"] - hz / 2.0)), hz, hz, tex(halo_tex))
+                if halo_tex else "")
+        m.nodes.append(dict(id=nid, pre=pre, suf=suf, sample=name, icon=icon, hit=map_hit(nid + "B", ho, ho, hsz), halo=halo))
+    for _p, mk in m.markups(sel=0 if m.nodes else None):
+        check_markup(mk, prefix=prefix)
+    return m
+
+
+def assert_map_elements(n, what="map page", limit=MAP_MAX_ELEMENTS):
+    """the element guard: a map page (every edge lit, the worst case) holds at most `limit` elements"""
+    if n > limit:
+        raise ValueError("%s: %d elements > %d (kit 1.8 guard; probe M1c opened 1,602 - raise MAP_MAX_ELEMENTS only after a probe)"
+                         % (what, n, limit))
+    return n
+
+
+def map_rail_row(ident, kind, selected=False, w=MAP_RAIL_W):
+    """one rail row (a silent hover_row): kind "page" (28 high) or "tree" (42 high); its children: map_rail_parts"""
+    if kind not in ("page", "tree"):
+        raise ValueError("map_rail_row kind page / tree")
+    return hover_row(ident, "selected" if selected else "normal", h=MAP_PAGE_ROW_H if kind == "page" else MAP_TREE_ROW_H, pad=0, w=w)
+
+
+def map_rail_parts(ident, kind, w=MAP_RAIL_W, icon=None, col="rowName"):
+    """the children of a rail row [(parent, markup)], texts empty (b.set #<ident>L .Text for a page row; #<ident>N / S .Text for a
+    tree row: the name 15 bold in the tree colour, 'Lv 23 - 4 points' 15 px); icon = an item id or a J() value"""
+    if kind == "page":
+        return [("#" + ident, label(ident + "L", "", "section", h=MAP_PAGE_ROW_H, w=w - 8, anchor={"left": 8}))]
+    return [("#" + ident, item_icon(ident + "I", icon or "Tool_Pickaxe_Iron", size=24, anchor={"left": 10, "right": 8})),
+            ("#" + ident, group(ident + "C", layout="Top", w=w - 50, h=MAP_TREE_ROW_H)),
+            ("#" + ident + "C", label(ident + "N", "", "default", size=15, bold=True, col=col, h=22, w=w - 50)),
+            ("#" + ident + "C", label(ident + "S", "", "rowSub", size=MAP_CAP_SIZE, h=20, w=w - 50))]
+
+
+def map_legend(prefix, items, w=MAP_RAIL_W):
+    """the legend rows: [(row markup, [(parent, markup), ...])] for items = [(registered markup path of the 20 px picture, caption)];
+    ids <prefix>Lg<i> / <i>P / <i>T (captions static: [A-Za-z0-9 <>/-] only)"""
+    out = []
+    for i, (tex, cap) in enumerate(items):
+        if tex not in _MAP_PATHS:
+            raise ValueError("map_legend: %s is not a registered map texture" % tex)
+        lid = prefix + "Lg%d" % i
+        out.append((group(lid, layout="Left", w=w, h=MAP_LEGEND_ROW_H),
+                    [("#" + lid, 'Group #%s { Anchor: (Width: 20, Height: 20, Right: 6); Background: "%s"; }' % (lid + "P", tex)),
+                     ("#" + lid, label(lid + "T", cap, "caption", size=MAP_CAP_SIZE, h=20, w=w - 26))]))
+    return out
+
+
+def map_zoom_row(prefix, w, btn_w=130, texts=("Zoom out", "Zoom in")):
+    """the zoom row (Hylterium's "- 110% +"; a '+' is not a proven inline Text character, so the buttons say Zoom out / Zoom in):
+    (row markup, [(parent, markup)]): #<prefix>ZmO, the label #<prefix>ZmL ("100 %", b.set), #<prefix>ZmI"""
+    rid = prefix + "Zm"
+    lw = w - 2 * btn_w - 12
+    if lw < 60:
+        raise ValueError("map_zoom_row: %d px leave no room for the zoom label" % w)
+    kids = [("#" + rid, button(prefix + "ZmO", texts[0], "secondary", "small", w=btn_w, anchor={"right": 6})),
+            ("#" + rid, label(prefix + "ZmL", "", "bold", w=lw, h=BTN_SMALL_H, size=16, align="Center", col="gold")),
+            ("#" + rid, button(prefix + "ZmI", texts[1], "secondary", "small", w=btn_w, anchor={"left": 6}))]
+    return group(rid, layout="Left", w=w, h=BTN_SMALL_H), kids
+
+
+# the Java that draws a node map from its page data (install these methods in ONE class of the mod: CtNewMethod.make each, in this
+# order). mapDraw appends every A line, b.sets every S line, appends E lines whose edge is lit, then the halo of node `sel` (if any),
+# then every node with the picture name tex[k] and its click binding a = <evp><k>; returns the element count. A short / odd line is
+# skipped, never thrown on.
+NODE_MAP_JAVA = (
+    r"""
+public static String[] mapRead(ClassLoader cl, String res) {
+  java.io.InputStream in = cl == null ? null : cl.getResourceAsStream(res);
+  if (in == null) return new String[0];
+  java.util.ArrayList out = new java.util.ArrayList();
+  try {
+    java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
+    String s = r.readLine();
+    while (s != null) { if (s.length() > 0) out.add(s); s = r.readLine(); }
+  } catch (Throwable e) {
+    return new String[0];
+  } finally {
+    try { in.close(); } catch (Throwable t) { }
+  }
+  return (String[]) out.toArray(new String[0]);
+}""",
+    r"""
+public static int mapCount(String s) {
+  int n = 0;
+  boolean q = false;
+  for (int i = 0; i < s.length(); i++) {
+    char c = s.charAt(i);
+    if (c == '"') q = !q;
+    else if (c == '{' && !q) n++;
+  }
+  return n;
+}""",
+    r"""
+public static int mapDraw(@UCB@ b, @UEB@ ev, String[] l, String cv, boolean[] lit, String[] tex, int sel, String evp) {
+  if (l == null) return 0;
+  int els = 0;
+  int n0 = -1;
+  for (int i = 0; i < l.length; i++) {
+    String s = l[i];
+    if (s.length() < 3) continue;
+    char k = s.charAt(0);
+    if (k == 'N') { if (n0 < 0) n0 = i; continue; }
+    String[] f = s.split("\t", -1);
+    if (k == 'A' && f.length >= 3) {
+      b.appendInline(f[1].length() == 0 ? cv : f[1], f[2]);
+      els = els + mapCount(f[2]);
+    } else if (k == 'S' && f.length >= 3) {
+      b.set(f[1], f[2]);
+    } else if (k == 'E' && f.length >= 3) {
+      int e = -1;
+      try { e = Integer.parseInt(f[1]); } catch (Throwable x) { e = -1; }
+      if (e >= 0 && lit != null && e < lit.length && lit[e]) { b.appendInline(cv, f[2]); els = els + 1; }
+    }
+  }
+  if (n0 < 0) return els;
+  if (sel >= 0 && n0 + sel < l.length) {
+    String[] h = l[n0 + sel].split("\t", -1);
+    if (h.length >= 8 && h[6].length() > 0) { b.appendInline(cv, h[6]); els = els + 1; }
+  }
+  for (int i = n0; i < l.length; i++) {
+    if (l[i].length() < 3 || l[i].charAt(0) != 'N') continue;
+    String[] f = l[i].split("\t", -1);
+    if (f.length < 8 || f[7].length() < 3) continue;
+    int k = -1;
+    try { k = Integer.parseInt(f[1]); } catch (Throwable x) { k = -1; }
+    if (k < 0) continue;
+    String t = (tex != null && k < tex.length && tex[k] != null) ? tex[k] : "Locked";
+    String id = f[7].substring(1, f[7].length() - 1);
+    b.appendInline(cv, f[2] + t + f[3]);
+    els = els + 1;
+    if (!f[4].equals("-")) { b.appendInline("#" + id, f[4]); els = els + 1; }
+    b.appendInline("#" + id, f[5]);
+    els = els + 1;
+    ev.addEventBinding(@BT@.Activating, f[7], @EVD@.of("a", evp + k));
+  }
+  return els;
+}""",
+)
+
+
+def java_node_map_methods(types=None):
+    """NODE_MAP_JAVA with the engine types filled in (HUB_TYPES; types= overrides): [method source, ...] in compile order"""
+    require_verified()
+    rep = dict(HUB_TYPES, **(types or {}))
+    out = []
+    for src in NODE_MAP_JAVA:
+        s = src.strip()
+        for k, v in rep.items():
+            s = s.replace("@%s@" % k, v)
+        if re.search(r"@[A-Z]+@", s):
+            raise ValueError("java_node_map_methods: unfilled placeholder in %s" % s[:80])
+        out.append(s)
+    return out

@@ -15,3 +15,4 @@ Every script: build kits, patches, deploy, CI checks, art generators, contracts.
 - A new patch: `tools/<mod>_<ver>_patch.py`. A new tool: here, plus one line in the `tools/` row of `INDEX.md`.
 
 Map of the whole repo: `INDEX.md`. Rules: `PROJECT-RULES.md`.
+- `skyymap.py` - radial node-map layout (`radial_layout()` + `check()`) for the SkyyTrees radial pages and the Rebirth Nexus page; self-test `test_skyymap.py`; kit draw side = `skyyui.py` 1.8 `SUI.node_map` (`test_skyyui_map.py`).
