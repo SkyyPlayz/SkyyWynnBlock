@@ -14,34 +14,19 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### project  (answers -> docs/answered/project.md, topic `project`)
 
 ### world  (answers -> docs/answered/world.md, topic `world`)
-- ZONE GATHERING + SEEDS + CROP ISLANDS (research/Zone-Gathering-Spec.md, 10 questions with defaults; Q1 = what 100 / +200 / +500 means - spec reads it as 100 / 300 / 800 planted crops per crop-island tier). Answer before that round starts.
-- ORE SPAWN FACTORS (SkyyWorldGen 0.7.3, Server Setup > World Gen > Ore veins): base boost Thorium / Cobalt / Adamantite x1.15; Lead / Chromium / Slag x0.85 of the boosted base (= 0.98x vanilla); Zone 5 Mithril x0.85 of Adamantite, Titanium x0.85 of that; Gold added to Zones 4-5 at the Zone 1-3 rate. OK? [yes, as built]
-- ZONE 5 MITHRIL: the old Mithril sphere veins were taken off Zone 5 (Mithril there now comes from the Adamantite copies, so it is not doubled); Zone 4 Mithril unchanged. OK? [yes]
-- STRUCTURES (research/Structure-Mods-Survey.md 2026-10-17 block): send the drafted ask to joszza now? [yes]
-- STRUCTURES: switch joszza's StructureV2 on in a test-world copy for a look (its merchant package would duplicate SkyyMerchants)? [yes, copy only]
 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
-- UT DROP RATE (Gear 0.3.27): with UTs only from elites / mini bosses / dungeons, today's odds give ~0.12% per elite kill (6% bag x 2% orange). Raise it? [default: raise utdrop.mob for elites to ~2% orange of a 25% bag = ~0.5% per elite kill - say a number]
-- UT BANDS vs ZONE LEVELS: alloy bands don't match zone level bands (Cinder 39-47 starts inside zone 3's 30-45; Lumen 50-60 sits below zone 5's 60-75). Re-band the alloys to sit at the END of each zone? [default: yes, in the elements / UT round]
-- BOSS LIST: Skeleton_Elite is in bosses.roles (so it drops Mythic bags); Goblin Duke / Trork Chieftain - full bosses or mini bosses? [default: Skeleton_Elite = elite (UT, no Mythic); Duke + Chieftain stay full bosses]
-- ORE GATE TIGHTENED (Gear 0.3.23, spec default): now that every ladder step has a pickaxe, ores 2+ steps above your pickaxe take the spec's slow hits again (e.g. Thorium pick on Cobalt 10 -> 40, Iron pick on Lead ~8 -> 40). [default taken overnight: spec as approved; Server Setup gate.nextByLadder off + gate.oreFloor 'Lead,Chromium,Slag,Titanium' = exactly the 0.3.22 hits]
-- ONYXIUM vs LUMEN: Onyxium is parked at T16 but its weapons equal Mithril's, so the new Titanium / Lumen weapons (Armory 0.1.33) out-damage Onyxium. [default taken overnight: leave; re-band Onyxium up when its zone is built]
-- ORE HITS (Gear 0.3.22): an ore 1-2 tiers above your pickaxe takes ~2.5x the hits (gate.nextFactor 0.4) instead of the spec's 10x, so today's pickaxe steps don't get 4x slower; Bronze items keep the 15-23 level band. OK? [default taken overnight: yes; gate.nextFactor 0.1 = strict spec]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 
 ### bags  (answers -> docs/answered/bags.md, topic `bags`)
 
 ### classes  (answers -> docs/answered/classes.md, topic `classes`)
-- MAGE PA4 Meteor from the Rift (Classes 0.1.38): fires automatically on every staff blink landing whenever Meteor is ready (an escape blink spends Meteor too); -10% applies to every Meteor with the node (not Starfall). OK? [default taken overnight: yes, as built; Server Setup ab.Meteor.rift turns it off]
 
 ### pets  (answers -> docs/answered/pets.md, topic `pets`)
-- NESTKEEPER (research/Nestkeeper-Pack-Check.md): ask Aures to allow recoloured element dragons (only Plain + Tundra exist)? [yes, ask]
-- NESTKEEPER: keep its own taming next to our dragon pet? [yes, both]
 - NESTKEEPER: are wild Zone-1 adult dragons too strong? [test in game first]
-- NESTKEEPER: pack the same author's Rare Monsters + Horse Skins too? [no, Nestkeeper only for now]
 
 ### social  (answers -> docs/answered/social.md, topic `social`)
 
@@ -54,4 +39,3 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### ui  (answers -> docs/answered/ui.md, topic `ui`)
 
 ## Pet eggs (research/Pet-Eggs-Spec.md, asked 2026-10-15)  (answers -> docs/answered/pets.md, topic `pets`)
-- [classes] COPPER STAFF MANA (2026-10-18, from Armory 0.1.39 review): the Copper Staff costs 20 Mana of a 40 Mana pool at its new first level Lv 1 (50%, over the 40% rule); Skyy's locked wand/staff cost table - drop it to 15? [keep 20; the pool passes 40% at Lv 3] -> answer goes to docs/answered/classes.md
