@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-20 09:10 MDT; reset done - working the AFTER THE RESET list top to bottom, Skyy: "when tokens reset at 9 am work through the entire local resume list from top to bottom")
+# SkyWynn - RESUME HERE (updated 2026-10-21 23:05 MDT; reset done - working the AFTER THE RESET list top to bottom, Skyy: "when tokens reset at 9 am work through the entire local resume list from top to bottom")
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -45,7 +45,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - DEPLOYED today: 210 Skill Trees 3 R0-R2 + chests + water bucket; 211 bench keeper; 212 Skill Trees R3 (class trees live, 26 skill upgrades), Bazaar 0.2.0 order book, Rebirth 0.4.0 VP, NEW SkyyZones 0.1.0.
 - DEPLOYED 19:18 (TEST-CHECKLIST 213): Trees 0.4.3, Pets 0.4.6, Rebirth 0.4.1, Gear 0.3.33, Accessories 0.5.29 (skill gates, Head Start, R3c upgrades). Workbench republished.
 - DEPLOYED 22:00 (TEST-CHECKLIST 214): Balance P3 XP (Lv 50 ~33 h, levels kept), Pets 0.4.7 (pet pace kept), SkyyZones 0.2.0 (ores/stone regrow; Z3 trees/crops need live probes).
-- RUNNING: balp4 (Balance P4 combat: Gear 0.3.34, Mobs 0.1.14, Skills 0.4.58, Classes 0.1.44, Armory 0.1.42, Trees 0.4.4), P5 power-sources spec draft (research/Balance-P5-Power-Spec.md).
+- RUNNING (10-21 23:05): balp4b = Balance P4 combat restart (workflow skywynn-round; Gear 0.3.34, Mobs 0.1.14, Skills 0.4.58, Classes 0.1.44, Armory 0.1.42, Trees 0.4.4, all six pin + roll back together). First try balp4 cut off 10-20 night. Its uncommitted leftovers (tools/balance_model.py P4 section, gear/mobs/skills patches) are the builder's to reuse - don't commit them by hand. After P4: beta bugs 12 + 17 (Gear/Armory), then P5 (spec done).
 - NEXT: (workbench republished 19:30) Rich Seams overshoot: Mining tree Fortune 67.5 at max vs budget 40 (Rich Seams = +10 Fortune/rank via old MFortune node, text says +2% double-ore) -> fix in P5/P6; remaining Skills-side coming-soon (actives, streaks, capstones); P4 combat+classes -> P5 power sources (+ pet XP rescale from P3, Heavy Lv 16-19 gap) -> P6 -> P7 -> P8 -> P9; SkyyZones Z2 regen + Z3/Z4; tooltips pass; Cooking ING_TIER v3; then the Later list.
 
 - AFTER P9 (Skyy 2026-10-20): turn the Class Balance Workbench into a full GAME REVIEW / BALANCE SHEET - overview visual of how all systems connect + a click-in page per area (gathering, gear armor/tool stats + rolls, rarities side by side, pets, accessories, skills/trees, combat, economy, rebirth, zones...), covering everything the pack does (docs/answered/project.md 2026-10-20).
