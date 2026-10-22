@@ -246,3 +246,4 @@ tests always come first.
 218. Left Alt opens the Menu (every press? Alt-Tab?), switches in /settings + Server Setup
 219. P8b: Mining / Foraging / Combat tree upgrades buyable + working, Stoneskin + Combat Focus free perks, Spoils extra drops (never gear)
 220. Tree-page probe: /skyprobe m1..m7 (big map opens fast? 1,200 / 1,600 elements? lines crisp? picture swap, ring move, tooltips)
+221. P6b: collection tiers shorter, Anvil costs, own-tier ore 2+ hits, F-pickup lock, +10 level-up, armor bags hidden, UT >= Fabled
