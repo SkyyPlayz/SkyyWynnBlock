@@ -277,13 +277,13 @@ Gathering pets: a Fortune-only kind 88, two-stat 70 at Lv 100: Rare Lv 30 = 34 F
 
 3.2 / 3.3 drops: the UT meter (2.5 % a point, sure at 36 points): hunting 40 points / h = **1.64 UT / h, longest dry 0.90 h** (open play 4.5 points / h: 0.17 / h; without the sure bag 1.01 / h). Mythic: 12 % a boss kill + sure by the 10th dry kill = **mean 6.0 kills, most 10**.
 
-6. The 1-hour rule (40 seeds, the P3 player of section 1; bags 4.05 / h, smart 50 %, class lean 75 %, crafting each new metal, level-ups to +6, a 3 % better item = an upgrade):
+6. The 1-hour rule (40 seeds, the P3 player of section 1; bags 4.05 / h, smart 50 %, class lean 75 %, crafting each new metal, level-ups to +10, a 3 % better item = an upgrade):
 
 | Case | Longest stretch without a gear upgrade before the cap (median / p90) | Whole run 0-45 h (median / p90) |
 |---|---|---|
 | Today: random slot, crafting each new metal | 2.61 h / 4.20 h | 4.74 h / 6.38 h |
 | + smart bags 50 %, class lean 75 | 2.59 h / 3.62 h | 4.54 h / 7.26 h |
-| + item level-ups | 0.70 h / 2.02 h | 4.87 h / 8.60 h |
+| + item level-ups | 0.70 h / 0.72 h | 5.48 h / 8.70 h |
 
 | Target (P5 7.5) | Model | OK |
 |---|---|---|
@@ -296,12 +296,101 @@ Gathering pets: a Fortune-only kind 88, two-stat 70 at Lv 100: Rare Lv 30 = 34 F
 | Combat pets: Lv 100 at the start rarity = 1 + 0.42 x rarity +- 5 % (P5 5.2.1) | 14 / 14 kinds | yes |
 | UT 1-2 / h hunting (A:190 Q16) | 1.64 / h, longest dry 0.90 h | yes |
 | Mythic 1 per 5-10 boss kills (economy.md:162) | mean 6.0, most 10 | yes |
-| <= 1 h without a gear upgrade before the cap (A:187 Q2) | p90 2.02 h (with level-ups) | NO - asked Skyy |
+| <= 1 h without a gear upgrade before the cap (A:187 Q2) | p90 0.72 h (with level-ups) | yes |
 | A pet reaches its Lv 50 cap at hour 28-33 of run 1 (P5 5.2.6) | Mining pet 30.46 h, combat pet 29.44 h | yes |
 | Mining Power Fortune vs the 1.1 budget +-15 % (P5 4.2.5: end of Zone 1 51, Zone 5 257) | 44 / 286 (pw.Mining.dd.mining 10.5) | yes |
 | Mining tree Fortune <= 40 (TREE_FORT_MAX) | 40.0 (Rich Seams 7.5 + 15 + 7.5 + 10; tools/trees_v3_effects.py check()) | yes |
 | Fortune budget end of Zone 5 ~1300 (P5 1.1) | 1326 | yes |
 
-Asked Skyy (these rows fail until answered; `--check` lists them but does not fail on them): **<= 1 h without a gear upgrade before the cap (A:187 Q2)** - P5 fix round: the +6 item level-up cap (LOCKED by Skyy, docs/answered/gear.md 2026-10-04 + 10-09) is the bottleneck: p90 2.02 h (+10 would be 0.72 h) - the gaps sit between metal bands 7-8 levels apart once every slot is at +6. Raise the cap to +10, or let the UT meter run before the cap too? [keep +6 until Skyy answers]
-
 Model notes: DPS = Damage % x Strength x Charged (25 % of hits) x crit (base 0, x2 x (1 + Crit Damage %)) x (1 + the % lines); EHP = (1 + Health %) x (100 + 10 + Defense) / (100 + 10) x Life Steal (+2 % a point) x Health Regen % (+0.25 % a point). The SkyyGear 0.3.35 harness runs the REAL GearRoll.rollMods (2000 rolls a rarity) against this table (+-8 %). The cap stretch (after class Lv 50) has no item levels: the UT meter + boss Mythic pity are its upgrades (Skyy: 'unless they are just afk'). Known one-way term NOT in the kit numbers: SkyySkills 0.4.59's class Health % and Rebirth Health / Mana % (ClassStat.skip / RbStat.skip) still count SkyyGear's skyygear_hp and SkyyPets' skyypet_health / skyypet_mana in their base, so a +25 % class on a gear 30 % adds ~7.5 % of the flat max on top (tanks a little above this EHP; no loop - Gear / Pets / Accessories skip the Skills keys); the next SkyySkills round adds the three keys to both skip lists.
+
+### 8. Gathering + crafting (P6, research/Balance-P6-Gathering-Spec.md; `python tools/balance_model.py --gather`)
+
+Part 1 - Fortune while gathering (tier T-1's kit) and drops per block:
+
+| T | 1 Copper | 2 Iron | 3 Bronze | 4 Thorium | 5 Lead | 6 Dusk | 7 Cobalt | 8 Chromium | 9 Azurvane | 10 Adamantite | 11 Slag | 12 Cinder | 13 Mithril | 14 Titanium | 15 Lumen |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| expected Fortune | 0 | 125 | 185 | 245 | 305 | 374 | 444 | 515 | 586 | 656 | 727 | 798 | 868 | 939 | 1010 |
+| drops / block | 1.00 | 2.25 | 2.85 | 3.45 | 4.05 | 4.73 | 5.44 | 6.15 | 6.86 | 7.56 | 8.27 | 8.98 | 9.68 | 10.39 | 11.10 |
+| best at end of T (P5) | 160 | 235 | 310 | 385 | 468 | 554 | 640 | 726 | 811 | 897 | 983 | 1068 | 1154 | 1240 | 1326 |
+
+2.3 Mining (225 ore / h; T2-T5 bars, T6+ Enchanted; alloys from Dusk in Enchanted alloys):
+
+| T | metal | set h | set base items | Head / Chest / Legs / Hands | pickaxe | furnace h (25 %) | today set |
+|---|---|---|---|---|---|---|---|
+| 2 | Iron | 0.75 | 380 | 75 / 135 / 115 / 55 | 125 | 0.37 | 450 bars |
+| 3 | Bronze | 0.75 | 481 | 95 / 170 / 145 / 70 | 160 | 0.40 | 450 bars |
+| 4 | Thorium | 0.94 | 730 | 145 / 255 / 220 / 110 | 245 | 0.91 | 450 bars |
+| 5 | Lead | 0.94 | 857 | 170 / 300 / 255 / 130 | 285 | 1.07 | 450 bars |
+| 6 | Dusk | 0.94 | 1001 | 2 / 4 / 3 / 2 | 3 | ~0 (Ench) | 4 Ench |
+| 7 | Cobalt | 1.10 | 1347 | 3 / 5 / 4 / 2 | 4 | ~0 (Ench) | 4 Ench |
+| 8 | Chromium | 1.10 | 1522 | 3 / 5 / 5 / 2 | 5 | ~0 (Ench) | 4 Ench |
+| 9 | Azurvane | 1.10 | 1697 | 3 / 6 / 5 / 3 | 6 | ~0 (Ench) | 4 Ench |
+| 10 | Adamantite | 1.30 | 2212 | 4 / 8 / 7 / 3 | 7 | ~0 (Ench) | 4 Ench |
+| 11 | Slag | 1.30 | 2419 | 5 / 8 / 7 / 4 | 8 | ~0 (Ench) | 4 Ench |
+| 12 | Cinder | 1.30 | 2626 | 5 / 9 / 8 / 4 | 9 | ~0 (Ench) | 4 Ench |
+| 13 | Mithril | 1.50 | 3268 | 7 / 11 / 10 / 5 | 11 | ~0 (Ench) | 4 Ench |
+| 14 | Titanium | 1.50 | 3507 | 7 / 12 / 11 / 5 | 12 | ~0 (Ench) | 4 Ench |
+| 15 | Lumen | 1.50 | 3746 | 7 / 13 / 11 / 6 | 12 | ~0 (Ench) | 4 Ench |
+
+| T | Foraging set (H / C / L / Hd) | hatchet log part | Farming set q=1 (H / C / L / Hd) | hoe / sickle crop part q=1 |
+|---|---|---|---|---|
+| 2 | 135 / 235 / 200 / 100 | 225 | 170 / 295 / 255 / 125 | 280 |
+| 3 | 170 / 300 / 255 / 130 | 285 | 215 / 375 / 320 / 160 | 355 |
+| 4 | 260 / 455 / 390 / 195 | 430 | 325 / 570 / 485 / 245 | 540 |
+| 5 | 305 / 535 / 455 / 230 | 510 | 380 / 665 / 570 / 285 | 635 |
+| 6 | 4 / 6 / 5 / 3 | 6 | 4 / 8 / 7 / 3 | 7 |
+| 7 | 5 / 8 / 7 / 4 | 8 | 6 / 10 / 9 / 4 | 10 |
+| 8 | 5 / 9 / 8 / 4 | 9 | 7 / 12 / 10 / 5 | 11 |
+| 9 | 6 / 11 / 9 / 5 | 10 | 8 / 13 / 11 / 6 | 13 |
+| 10 | 8 / 14 / 12 / 6 | 13 | 10 / 17 / 15 / 7 | 16 |
+| 11 | 9 / 15 / 13 / 6 | 14 | 11 / 19 / 16 / 8 | 18 |
+| 12 | 9 / 16 / 14 / 7 | 16 | 12 / 20 / 18 / 9 | 19 |
+| 13 | 12 / 20 / 17 / 9 | 19 | 15 / 25 / 22 / 11 | 24 |
+| 14 | 12 / 22 / 19 / 9 | 21 | 16 / 27 / 23 / 12 | 26 |
+| 15 | 13 / 23 / 20 / 10 | 22 | 17 / 29 / 25 / 12 | 28 |
+
+Crop q (Assets drop lists): Wheat 1.5, Corn 3, Tomato 2, Chilli 2, Cotton 2, Rice 2, Potato 3, Onion 3 (others 1). The Gear build multiplies Farming by the step crop's q.
+
+3.2 Collections (curve.scale Foraging:180,Farming:220,Cobblestone:300,Sandstone:300,Shale:300,Slate:300,Basalt:300,Volcanic:300,Sand:300,Rubble:300,Wheat:330,Corn:660,Tomato:440,Chilli:440,Cotton:440,Rice:440,Potato:660,Onion:660):
+
+| Letter | I | II | III | IV | V | VI | VII | VIII | IX | X |
+|---|---|---|---|---|---|---|---|---|---|---|
+| S (was) | 15 (50) | 40 (100) | 100 (250) | 175 (500) | 250 (1000) | 500 (2500) | 1000 (5000) | 2000 (10000) | 4000 (20000) | - |
+| B (was) | 15 (50) | 40 (100) | 100 (250) | 175 (500) | 250 (1000) | 500 (2500) | 1000 (5000) | 2000 (10000) | 4000 (25000) | 8000 (50000) |
+| R (was) | 8 (25) | 20 (50) | 50 (100) | 90 (250) | 125 (500) | 250 (1000) | 500 (2500) | 1000 (5000) | - | - |
+| E (was) | 4 (10) | 10 (25) | 25 (50) | 45 (100) | 60 (250) | 125 (500) | 250 (1000) | - | - | - |
+
+Minutes to each S tier at 225 ore / h: I 4, II 11, III 27, IV 47, V 67, VI 133, VII 267, VIII 533, IX 1067.
+
+5.2 Hits per block (own-tier ore; Breaking Power fresh = armor 25 + 10 a tier, best = + 5 % x 10 T lines; min 2 hits):
+
+| T | fresh | +5 line levels | best | uncapped best | blocks / h fresh / best |
+|---|---|---|---|---|---|
+| 1 | 4 | 3 | 3 | 3 | 900 / 1000 |
+| 3 | 3 | 3 | 2 | 2 | 1000 / 1125 |
+| 6 | 3 | 2 | 2 | 1 | 1000 / 1125 |
+| 9 | 2 | 2 | 2 | 1 | 1125 / 1125 |
+| 15 | 2 | 2 | 2 | 1 | 1125 / 1125 |
+
+6.2 Coins per hour at TODAY's prices (x D(zone middle tier), Bazaar sell x 0.9) - for P7:
+
+| Zone | Mining | Foraging | Farming (q 1.5) | log price that equals Mining (today) | crop price that equals Mining (today) |
+|---|---|---|---|---|---|
+| 1 | 28k | 16k | 18k | 34 (20) | 18 (12) |
+| 2 | 188k | 131k | 98k | 129 (90) | 69 (36) |
+| 3 | 824k | 478k | 299k | 372 (216) | 198 (72) |
+| 4 | 3.6M | 1.7M | 804k | 1223 (576) | 652 (144) |
+| 5 | 13.7M | 2.2M | 2.8M | 3653 (576) | 1948 (400) |
+
+| Target (P6 11.5) | Model | OK |
+|---|---|---|
+| Collection tier II ~10 min in every skill (A:191 Q21) | ore 10.7, logs 10.5, Wheat 10.4, Corn 10.6, stone 10.7 min | yes |
+| Collection tier V 1-2 h (A:191 Q21) | 1.11 h (ore, curve S) | yes |
+| One gathering armor set 0.75 h (Z1) .. 1.5 h (Z5) +-15 % (A:191 Q22) | worst Mining T6 1.03 h (target 0.94) | yes |
+| Furnace never the bottleneck: a plain set's bars <= 1.1 h at 25 %, queue 1000 (11.5: <= 1.07 h) | T2 0.37 h, T3 0.40 h, T4 0.91 h, T5 1.07 h (Lead's smelt time = Thorium's, GUESS) | yes |
+| Blocks / h near the P3 model's 900 (own-tier ore, min 2 hits) | 900-1125 | yes |
+| No Enchanted cost below Dusk (Skyy 2026-10-18) | T2-T5 pay plain (p6_pay: at least 5 plain items) | yes |
+| A gathering upgrade every <= 25 min of play (A:187 Q2) | Mining 4, Foraging 4, Farming 2 min of that skill per upgrade (4 pieces + tool + 5 collection tiers a tier) | yes |
+
+Model notes: every time number rests on the GUESS rates Mining 225 / Foraging 400 / Farming 500 / h and the P5 Fortune budget (Part 1); Fortune extras are items, never collection credit (SkyySkills collections.doubleDrops false). Totems (SkyyShards 0.4.4, Part A): idle share 20 / 40 / 60 / 80 / 100 % at Totem I-V.

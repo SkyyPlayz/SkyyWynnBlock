@@ -3,6 +3,7 @@
     python tools/balance_model.py            print the target tables next to the P3 numbers (research/Balance-P3-XP-Spec.md), gaps (!!)
     python tools/balance_model.py --before   the same tables with the P1 numbers (before P3: the live 0.4.56 tables)
     python tools/balance_model.py --md       also rewrite research/balance/targets.md (always the P3 numbers)
+    python tools/balance_model.py --gather   P6 gathering + crafting (collections, tier-up / armor costs, hits, Furnace) -> targets.md section 8
     python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
 
 P3 (2026-10-20, Balance-P3-XP-Spec.md sections 2-5 + Skyy's popup answer A:197 "Middle: Lv 50 at ~33 h"): ONE curve for the class and every
@@ -478,12 +479,16 @@ def build():
     coll_ii_min = COLL_S[0] / ore_h * 60
     coll_v_h = COLL_S[1] / ore_h
     set_h = 4 * ENCH_SIZE / ore_h
+    if not BEFORE:          # P6 (11.6): the new curve S + the Fortune-scaled Zone 1 Mining set (Iron, T2) of SkyyGear 0.3.36
+        coll_ii_min = p6_coll_minutes(P6_CURVE_NEW["S"], 2, ore_h)
+        coll_v_h = p6_coll_minutes(P6_CURVE_NEW["S"], 5, ore_h) / 60.0
+        set_h = p6_set_hours("Mining", 2)
     loot_h = min(LOOT_CAP, KILLS_H * SHARE["Class"] * LOOT_CHANCE)
     ut_h = ELITE_KILLS_H * UT_CHANCE if BEFORE else p5_ut_sim()[0]          # P5 3.2: the UT meter (40 points / h hunting)
     checks = [  # what, target low, target high, today, unit, source
         ("Collection tier II (ore, curve S)", COLL_II_MIN, COLL_II_MIN, coll_ii_min, "min", "A:191 / H:11"),
         ("Collection tier V (ore)", *COLL_V_H, coll_v_h, "h", "A:191 / H:11"),
-        ("One armor set (4 x 1 Enchanted ore)", *ARMOR_SET_H, set_h, "h", "A:191 / G:485 garmor.ladders"),
+        ("One armor set (4 x 1 Enchanted ore)" if BEFORE else "One armor set (Zone 1 Iron Mining set, P6 ladder)", *ARMOR_SET_H, set_h, "h", "A:191 / G:485 garmor.ladders"),
         ("UT drops per hour of elite hunting", *UT_PER_H, ut_h, "/h", "A:190 / G:356"),
         ("Boss kills per Mythic", *MYTHIC_PER_BOSS, 1 / MYTHIC_CHANCE if BEFORE else p5_mythic_sim()[0], "kills", "economy.md:162 / G:1589 / P5 3.3"),
         (f"Longest stretch without any level-up (run 1, cap {CAP1})", 0, MAX_GAP_H, worst_gap, "h", "A:187 Q2")]
@@ -1512,6 +1517,7 @@ P5_ODDS_MOB = [50, 30, 13, 5, 1.5]           # odds.<r> mob column, Normal .. Fa
 P5_ODDS_CRAFT = [60, 25, 10, 4, 1]
 P5_SMART, P5_LEAN = 50.0, 75.0               # loot.smart, loot.classLean (P5 3.1)
 P5_SLOTS = ["Weapon", "Head", "Chest", "Legs", "Hands"]
+P5_LVCAP = 10          # levelUp.cap Normal .. Fabled + Set (Skyy 2026-10-22 popup "Raise to +10 (Recommended)"; SkyyGear 0.3.36 - was +6)
 
 
 def p5_score(slot, L, r, tab):
@@ -1564,7 +1570,7 @@ def p5_upgrade_sim(seed, smart=True, levelups=True, hours=RUN1_HOURS, dt=0.02):
         if levelups and cl > lvl_prev and lvl_prev > 0:
             for s in P5_SLOTS:
                 w = worn[s]
-                if w is not None and w[0] < cl and w[0] < w[2] + 6:
+                if w is not None and w[0] < cl and w[0] < w[2] + P5_LVCAP:
                     w[0] += 1
                     up = True
         lvl_prev = cl
@@ -1630,11 +1636,7 @@ P5_KIT_SPEC = (3.2, 2.8)          # P5 1 / 7.5: the kit's best / plain DPS / EHP
 P5_KIT_TOL = 0.15
 # rows that FAIL on purpose until Skyy answers a question (shown "NO - asked Skyy" in targets.md and printed by --check, but not a --check failure);
 # the main session puts each question in OPEN-QUESTIONS.md; take the row out of here once Skyy has answered (the answer then decides the fix)
-P5_ASKED = {
-    "<= 1 h without a gear upgrade before the cap (A:187 Q2)":
-        "P5 fix round: the +6 item level-up cap (LOCKED by Skyy, docs/answered/gear.md 2026-10-04 + 10-09) is the bottleneck: p90 2.02 h (+10 would be 0.72 h) "
-        "- the gaps sit between metal bands 7-8 levels apart once every slot is at +6. Raise the cap to +10, or let the UT meter run before the cap too? [keep +6 until Skyy answers]",
-}
+P5_ASKED = {}          # 2026-10-22: the 1-hour rule row was answered ("Raise to +10 (Recommended)", docs/answered/gear.md) -> P5_LVCAP 10
 
 
 def p5_kit():
@@ -1737,7 +1739,7 @@ def p5_md():
     out += ["3.2 / 3.3 drops: the UT meter (%.1f %% a point, sure at %g points): hunting %g points / h = **%.2f UT / h, longest dry %.2f h** (open play %.1f points / h: %.2f / h; "
             "without the sure bag %.2f / h). Mythic: %g %% a boss kill + sure by the %dth dry kill = **mean %.1f kills, most %d**."
             % (P5_UT["chance"], P5_UT["pity"], P5_UT_HUNT_PTS_H, ut_h, ut_dry, P5_UT_OPEN_PTS_H, ut_o, ut_np, P5_MYTHIC[0], P5_MYTHIC[1], my_m, my_w), ""]
-    out += ["6. The 1-hour rule (40 seeds, the P3 player of section 1; bags %.2f / h, smart %g %%, class lean %g %%, crafting each new metal, level-ups to +6, a 3 %% better item = an upgrade):" % (P5_BAGS_H, P5_SMART, P5_LEAN), "",
+    out += ["6. The 1-hour rule (40 seeds, the P3 player of section 1; bags %.2f / h, smart %g %%, class lean %g %%, crafting each new metal, level-ups to +%d, a 3 %% better item = an upgrade):" % (P5_BAGS_H, P5_SMART, P5_LEAN, P5_LVCAP), "",
             "| Case | Longest stretch without a gear upgrade before the cap (median / p90) | Whole run 0-%d h (median / p90) |" % RUN1_HOURS, "|---|---|---|"]
     for name, m1, p1, m2, p2 in p5_upgrade_rows():
         out.append("| %s | %.2f h / %.2f h | %.2f h / %.2f h |" % (name, m1, p1, m2, p2))
@@ -1783,7 +1785,295 @@ def p5_write_section(md):
     return how
 
 
+# ======================================================================================== P6 (research/Balance-P6-Gathering-Spec.md, section 11.6)
+# Gathering + crafting: collection sizes, tier-up / armor costs, hits per block, the Furnace (SkyyGear 0.3.36 + SkyyCollections 0.2.31 +
+# SkyySacks 0.8.26). The Gear / Collections builds compute the same numbers themselves; their harnesses compare them with these functions.
+P6_RATE = {"Mining": 225.0, "Foraging": 400.0, "Farming": 500.0}          # Part 1 GUESS: ore (900 blocks x 25 %), Tree Feller logs, harvests (x q)
+P6_ARMOR_H = [0.75, 0.94, 1.10, 1.30, 1.50]          # Q1: one gathering armor set = this many hours of focused gathering, Zones 1-5
+P6_ZONE_H = [z[3] for z in ZONES]                     # hours of play per zone (the 1-hour rule notes)
+P6_TOOL_SHARE = 1.0 / 3.0                             # Q2: a tool tier-up = a third of the armor set's time
+P6_SLOT = {"Head": 0.20, "Chest": 0.35, "Legs": 0.30, "Hands": 0.15}          # the P5 slot shares
+P6_SLOTS = ("Head", "Chest", "Legs", "Hands")
+P6_ARMOR_TODAY = (450, 4)                             # SkyyGear 0.3.35 garmor.ladders: plain sets 75 + 150 + 150 + 75 bars, Enchanted 1 a piece
+P6_ALLOY = {"Bronze": 3, "Dusk": 6, "Azurvane": 9, "Cinder": 12, "Lumen": 15}          # alloys on the ladder; from Dusk (T6) paid in Enchanted alloys
+P6_SMELT_S = {"Copper": 10, "Iron": 14, "Gold": 10, "Thorium": 18, "Cobalt": 18, "Adamantite": 20, "Mithril": 30,
+              "Lead": 18, "Chromium": 18, "Slag": 20, "Titanium": 30, "Bronze": 12, "Dusk": 18, "Azurvane": 18, "Cinder": 20, "Lumen": 30}
+# vanilla Ingredient_Bar_* TimeSeconds (Assets); zone metals = their pair (GUESS); an alloy = both parents' times for 2 bars
+P6_METALS = ("Copper", "Iron", "Bronze", "Thorium", "Lead", "Dusk", "Cobalt", "Chromium", "Azurvane", "Adamantite", "Slag", "Cinder",
+             "Mithril", "Titanium", "Lumen")          # ladder T1 .. T15 (tools/tier_tags.py LADDER)
+P6_FURNACE_PCT = 25                                   # Q6: SkyySacks bench.furnacePct
+P6_CURVE_OLD = {"B": [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000], "S": [50, 100, 250, 500, 1000, 2500, 5000, 10000, 20000],
+                "R": [25, 50, 100, 250, 500, 1000, 2500, 5000], "E": [10, 25, 50, 100, 250, 500, 1000]}
+P6_CURVE_NEW = {"B": [15, 40, 100, 175, 250, 500, 1000, 2000, 4000, 8000], "S": [15, 40, 100, 175, 250, 500, 1000, 2000, 4000],
+                "R": [8, 20, 50, 90, 125, 250, 500, 1000], "E": [4, 10, 25, 45, 60, 125, 250]}          # Q4 (3.2)
+P6_STONES = ("Cobblestone", "Sandstone", "Shale", "Slate", "Basalt", "Volcanic", "Sand", "Rubble")
+P6_STONE_H = BLOCKS_H * (1 - ORE_FRAC)                # 675 stone / h
+P6_MIN_HITS = 2                                       # Q7: SkyyGear gate.minHitsOwn
+P6_ORE_BASE = 0.25                                    # SkyyGear ORE_BASE (a vanilla pickaxe on its own ore)
+P6_CROP_Q_FALLBACK = {"Wheat": 1.5, "Corn": 3.0, "Cotton": 2.0, "Rice": 2.0, "Potato": 3.0, "Onion": 3.0}          # VERIFIED 2026-10-21 (others 1)
+P6_TOTEM = (20, 40, 60, 80, 100)                      # Q13 (SkyyShards 0.4.4 - deployed with Part A)
+
+
+def p6_crop_q():
+    """crop -> mean harvest quantity q = (QuantityMin + QuantityMax) / 2 of Plant_Crop_<X>_Item in the vanilla
+    Drops_Plant_Crop_<X>_StageFinal_Harvest list (Assets.zip, read only); the VERIFIED fallback when Assets.zip cannot be read"""
+    crops = ("Wheat", "Lettuce", "Carrot", "Corn", "Cauliflower", "Turnip", "Pumpkin", "Aubergine", "Tomato", "Chilli", "Cotton", "Rice",
+             "Potato", "Onion", "Mushroom")
+    try:
+        import zipfile
+        import json as _js
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import serverjar as _SJ
+        z = zipfile.ZipFile(_SJ.assets_zip())
+        names = set(z.namelist())
+        out = {}
+        for c in crops:
+            n = "Server/Drops/Crop/%s/Drops_Plant_Crop_%s_StageFinal_Harvest.json" % (c, c)
+            q = 1.0
+            if n in names:
+                stack = [_js.loads(z.read(n).decode("utf-8-sig"))]
+                while stack:
+                    x = stack.pop()
+                    if isinstance(x, dict):
+                        it = x.get("Item")
+                        if isinstance(it, dict) and it.get("ItemId") == "Plant_Crop_%s_Item" % c:
+                            q = (float(it.get("QuantityMin", 1)) + float(it.get("QuantityMax", 1))) / 2.0
+                        stack.extend(x.values())
+                    elif isinstance(x, list):
+                        stack.extend(x)
+            out[c] = q
+        return out
+    except Exception:
+        return dict((c, P6_CROP_Q_FALLBACK.get(c, 1.0)) for c in crops)
+
+
+def p6_scale_default(q=None):
+    """the curve.scale default rows: skills + stones + one entry per crop collection with q > 1 = round(220 x q)"""
+    q = p6_crop_q() if q is None else q
+    rows = [("Foraging", 180), ("Farming", 220)] + [(_s, 300) for _s in P6_STONES]
+    rows += [(c, int(round(220 * v))) for c, v in q.items() if v > 1.0]
+    return rows
+
+
+def p6_zone(t):
+    """the zone of ladder tier t (3 tiers a zone)"""
+    return max(1, min(5, (int(t) + 2) // 3))
+
+
+def p6_best_fortune(t):
+    """P5's best-in-tier Fortune at the END of tier t: tool +3 a level x 10 levels, the armor set, the Void Charm + pet budgets, the full tree"""
+    return 30.0 * t + p5_armor_fort(t) + 17.1 * t + 12.9 * t + 40.0
+
+
+def p6_exp_fortune(t):
+    """Part 1: the Fortune of tier t-1's kit while gathering tier t's materials (half the charm / pet budget, half the tree)"""
+    if t <= 1:
+        return 0.0
+    k = t - 1
+    return 30.0 * k + p5_armor_fort(k) + 0.5 * (17.1 + 12.9) * k + 20.0
+
+
+def p6_drops(t):
+    """drops per block = 1 + Fortune / 100 (uncapped Fortune, Skyy)"""
+    return 1.0 + p6_exp_fortune(t) / 100.0
+
+
+def p6_items(skill, t, hours, q=1.0):
+    """base items gathered in `hours` of focused gathering at tier t (Farming x the crop's q)"""
+    return hours * P6_RATE[skill] * (q if skill == "Farming" else 1.0) * p6_drops(t)
+
+
+def p6_pay(t, base):
+    """T1-T5 plain items rounded to 5 (at least 5); T6+ Enchanted = round(base / 100), at least 1 (Ench = 100 base items)"""
+    if t <= 5:
+        return max(5, int(5 * round(base / 5.0)))
+    return max(1, int(round(base / 100.0)))
+
+
+def p6_armor(skill, t, q=1.0):
+    """slot -> paid count of tier t's armor tier-up (the set = P6_ARMOR_H of its zone, split by P6_SLOT)"""
+    base = p6_items(skill, t, P6_ARMOR_H[p6_zone(t) - 1], q)
+    return dict((s, p6_pay(t, base * P6_SLOT[s])) for s in P6_SLOTS)
+
+
+def p6_tool(skill, t, q=1.0):
+    """the paid count of tier t's tool tier-up (a third of the armor time)"""
+    return p6_pay(t, p6_items(skill, t, P6_ARMOR_H[p6_zone(t) - 1] * P6_TOOL_SHARE, q))
+
+
+def p6_scaled(n, scale=100):
+    """a collection tier size: the curve number, or round5(n x scale / 100) (at least 1) when scale != 100 (SkyyCollections curve.scale)"""
+    if scale == 100:
+        return int(n)
+    v = n * scale / 100.0
+    r = int(5 * math.floor(v / 5.0 + 0.5))          # = Java Math.round (half up), as SkyyCollections CollReg.scaled
+    return r if r >= 1 else max(1, int(math.floor(v + 0.5)))
+
+
+def p6_coll_minutes(curve, tier, rate=225.0, scale=100):
+    """minutes of gathering at `rate` items / h to reach collection tier `tier` (1-based) of `curve` at `scale` %"""
+    return p6_scaled(curve[tier - 1], scale) / rate * 60.0
+
+
+def p6_furnace_h(t, bars, pct=P6_FURNACE_PCT, charm=0.0):
+    """Furnace hours for `bars` bars of ladder tier t's metal (vanilla time x pct / 100 x (1 - charm %))"""
+    return bars * P6_SMELT_S[P6_METALS[t - 1]] * pct / 100.0 * (1.0 - charm / 100.0) / 3600.0
+
+
+def p6_hits(t_tool, t_block, bp_pct, min_own=P6_MIN_HITS):
+    """hits to break: ceil(1 / (ORE_BASE x 1.4^(tool - block) x (1 + Breaking Power))), never under min_own on a block at / above the tool's tier"""
+    d = P6_ORE_BASE * 1.4 ** (t_tool - t_block) * (1.0 + bp_pct / 100.0)
+    h = int(math.ceil(1.0 / d - 1e-9))
+    if min_own > 0 and t_block >= t_tool:
+        h = max(h, min_own)
+    return max(1, h)
+
+
+def p6_blocks_h(hits, swing=0.4, overhead=2.4):
+    """blocks an hour: 3600 / (walk + aim overhead + hits x swing) (GUESS timings)"""
+    return 3600.0 / (overhead + hits * swing)
+
+
+def p6_bp(t, kind):
+    """Breaking Power % at tier t: fresh = the gathering armor (25 + 10 a tier); lines5 = + five 5 % line levels; best = + every line (5 % x 10 T)"""
+    a = 25.0 + 10.0 * (t - 1)
+    return a if kind == "fresh" else (a + 25.0 if kind == "lines5" else a + 50.0 * t)
+
+
+def p6_set_hours(skill, t, q=1.0):
+    """the hours a PAID set of tier t takes to gather (paid items back to base items / the gathering rate)"""
+    a = p6_armor(skill, t, q)
+    tot = sum(a.values()) * (1 if t <= 5 else 100)
+    return tot / (P6_RATE[skill] * (q if skill == "Farming" else 1.0) * p6_drops(t))
+
+
+def p6_coins_rows():
+    """6.2: coins per hour at today's prices (ZONE_GATHER x D(zone middle tier) x Bazaar sell) + the prices that equal Mining"""
+    out = []
+    for z in range(1, 6):
+        g = ZONE_GATHER[z]
+        d = p6_drops(3 * z - 1)
+        mine = (P6_RATE["Mining"] * g["ore_px"] + P6_STONE_H * STONE_PX) * d * SELL
+        forg = P6_RATE["Foraging"] * g["log_px"] * d * SELL
+        farm = P6_RATE["Farming"] * 1.5 * g["crop_px"] * d * SELL
+        out.append((z, mine, forg, farm, mine / (P6_RATE["Foraging"] * d * SELL), mine / (P6_RATE["Farming"] * 1.5 * d * SELL), g["log_px"], g["crop_px"]))
+    return out
+
+
+def p6_rows():
+    """(target, model text, ok) for --check and the targets.md section 8"""
+    out = []
+    q = p6_crop_q()
+    sc = dict(p6_scale_default(q))
+    ii = [("ore", p6_coll_minutes(P6_CURVE_NEW["S"], 2)), ("logs", p6_coll_minutes(P6_CURVE_NEW["S"], 2, P6_RATE["Foraging"], sc["Foraging"])),
+          ("Wheat", p6_coll_minutes(P6_CURVE_NEW["S"], 2, P6_RATE["Farming"] * q["Wheat"], sc.get("Wheat", 220))),
+          ("Corn", p6_coll_minutes(P6_CURVE_NEW["S"], 2, P6_RATE["Farming"] * q["Corn"], sc.get("Corn", 220))),
+          ("stone", p6_coll_minutes(P6_CURVE_NEW["S"], 2, P6_STONE_H, 300))]
+    out.append(("Collection tier II ~10 min in every skill (A:191 Q21)", ", ".join("%s %.1f" % kv for kv in ii) + " min",
+                all(7.5 <= m <= 13.0 for _k, m in ii)))
+    v = p6_coll_minutes(P6_CURVE_NEW["S"], 5) / 60.0
+    out.append(("Collection tier V 1-2 h (A:191 Q21)", "%.2f h (ore, curve S)" % v, COLL_V_H[0] <= v <= COLL_V_H[1]))
+    worst = []
+    for sk in ("Mining", "Foraging", "Farming"):
+        for t in range(2, 16):
+            h = p6_set_hours(sk, t)
+            worst.append((abs(h / P6_ARMOR_H[p6_zone(t) - 1] - 1), sk, t, h))
+    w = max(worst)
+    out.append(("One gathering armor set 0.75 h (Z1) .. 1.5 h (Z5) +-15 % (A:191 Q22)", "worst %s T%d %.2f h (target %.2f)" % (w[1], w[2], w[3], P6_ARMOR_H[p6_zone(w[2]) - 1]),
+                w[0] <= 0.15))
+    fur = [(p6_furnace_h(t, p6_items("Mining", t, P6_ARMOR_H[p6_zone(t) - 1])), t) for t in range(2, 6)]          # Dusk+ pay Enchanted alloys (~0)
+    out.append(("Furnace never the bottleneck: a plain set's bars <= 1.1 h at 25 %, queue 1000 (11.5: <= 1.07 h)", ", ".join("T%d %.2f h" % (t, h) for h, t in fur)
+                + " (Lead's smelt time = Thorium's, GUESS)", max(h for h, t in fur) <= 1.1))
+    bh = [p6_blocks_h(p6_hits(t, t, p6_bp(t, k))) for t in (1, 3, 6, 9, 15) for k in ("fresh", "best")]
+    out.append(("Blocks / h near the P3 model's 900 (own-tier ore, min 2 hits)", "%d-%d" % (min(bh), max(bh)), 850 <= min(bh) and max(bh) <= 1130))
+    out.append(("No Enchanted cost below Dusk (Skyy 2026-10-18)", "T2-T5 pay plain (p6_pay: at least 5 plain items)", all(p6_pay(t, 50.0) >= 5 for t in range(1, 6))))
+    up = []
+    for sk in ("Mining", "Foraging", "Farming"):
+        mins = ZONES[0][3] / 3.0 * SHARE[sk] * 60.0          # minutes of this skill per Zone 1 tier (12 h / 3 tiers x the skill's share)
+        up.append((sk, mins / (4 + 1 + 5)))
+    out.append(("A gathering upgrade every <= 25 min of play (A:187 Q2)", ", ".join("%s %.0f" % kv for kv in up) + " min of that skill per upgrade (4 pieces + tool + 5 collection tiers a tier)",
+                all(m <= 25 for _s, m in up)))
+    return out
+
+
+def p6_md():
+    """### 8. Gathering + crafting (P6) for research/balance/targets.md"""
+    q = p6_crop_q()
+    out = ["", "### 8. Gathering + crafting (P6, research/Balance-P6-Gathering-Spec.md; `python tools/balance_model.py --gather`)", ""]
+    out += ["Part 1 - Fortune while gathering (tier T-1's kit) and drops per block:", "",
+            "| T | " + " | ".join("%d %s" % (t, P6_METALS[t - 1]) for t in range(1, 16)) + " |", "|---|" + "---|" * 15,
+            "| expected Fortune | " + " | ".join("%.0f" % p6_exp_fortune(t) for t in range(1, 16)) + " |",
+            "| drops / block | " + " | ".join("%.2f" % p6_drops(t) for t in range(1, 16)) + " |",
+            "| best at end of T (P5) | " + " | ".join("%.0f" % p6_best_fortune(t) for t in range(1, 16)) + " |", ""]
+    out += ["2.3 Mining (%.0f ore / h; T2-T5 bars, T6+ Enchanted; alloys from Dusk in Enchanted alloys):" % P6_RATE["Mining"], "",
+            "| T | metal | set h | set base items | Head / Chest / Legs / Hands | pickaxe | furnace h (%d %%) | today set |" % P6_FURNACE_PCT, "|---|---|---|---|---|---|---|---|"]
+    for t in range(2, 16):
+        a = p6_armor("Mining", t)
+        base = p6_items("Mining", t, P6_ARMOR_H[p6_zone(t) - 1])
+        out.append("| %d | %s | %.2f | %.0f | %s | %d | %s | %s |" % (t, P6_METALS[t - 1], P6_ARMOR_H[p6_zone(t) - 1], base, " / ".join(str(a[s]) for s in P6_SLOTS),
+                                                                      p6_tool("Mining", t), "%.2f" % p6_furnace_h(t, base) if t <= 5 else "~0 (Ench)",
+                                                                      "%d bars" % P6_ARMOR_TODAY[0] if t <= 5 else "%d Ench" % P6_ARMOR_TODAY[1]))
+    out += ["", "| T | Foraging set (H / C / L / Hd) | hatchet log part | Farming set q=1 (H / C / L / Hd) | hoe / sickle crop part q=1 |", "|---|---|---|---|---|"]
+    for t in range(2, 16):
+        fa, fr = p6_armor("Foraging", t), p6_armor("Farming", t)
+        out.append("| %d | %s | %d | %s | %d |" % (t, " / ".join(str(fa[s]) for s in P6_SLOTS), p6_tool("Foraging", t), " / ".join(str(fr[s]) for s in P6_SLOTS), p6_tool("Farming", t)))
+    out += ["", "Crop q (Assets drop lists): " + ", ".join("%s %g" % kv for kv in q.items() if kv[1] != 1.0) + " (others 1). The Gear build multiplies Farming by the step crop's q.", ""]
+    out += ["3.2 Collections (curve.scale %s):" % ",".join("%s:%d" % kv for kv in p6_scale_default(q)), "",
+            "| Letter | " + " | ".join(["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]) + " |", "|---|" + "---|" * 10]
+    for k in "SBRE":
+        out.append("| %s (was) | %s |" % (k, " | ".join("%d (%d)" % (n, o) for n, o in zip(P6_CURVE_NEW[k], P6_CURVE_OLD[k])) + " | -" * (10 - len(P6_CURVE_NEW[k]))))
+    out.append("")
+    out.append("Minutes to each S tier at 225 ore / h: " + ", ".join("%s %.0f" % (r, p6_coll_minutes(P6_CURVE_NEW["S"], i + 1)) for i, r in enumerate(["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"])) + ".")
+    out += ["", "5.2 Hits per block (own-tier ore; Breaking Power fresh = armor 25 + 10 a tier, best = + 5 %% x 10 T lines; min %d hits):" % P6_MIN_HITS, "",
+            "| T | fresh | +5 line levels | best | uncapped best | blocks / h fresh / best |", "|---|---|---|---|---|---|"]
+    for t in (1, 3, 6, 9, 15):
+        hf, h5, hb, hu = p6_hits(t, t, p6_bp(t, "fresh")), p6_hits(t, t, p6_bp(t, "lines5")), p6_hits(t, t, p6_bp(t, "best")), p6_hits(t, t, p6_bp(t, "best"), 0)
+        out.append("| %d | %d | %d | %d | %d | %.0f / %.0f |" % (t, hf, h5, hb, hu, p6_blocks_h(hf), p6_blocks_h(hb)))
+    out += ["", "6.2 Coins per hour at TODAY's prices (x D(zone middle tier), Bazaar sell x %g) - for P7:" % SELL, "",
+            "| Zone | Mining | Foraging | Farming (q 1.5) | log price that equals Mining (today) | crop price that equals Mining (today) |", "|---|---|---|---|---|---|"]
+    for z, mi, fo, fa, lp, cp, lp0, cp0 in p6_coins_rows():
+        out.append("| %d | %s | %s | %s | %.0f (%g) | %.0f (%g) |" % (z, fmt(mi), fmt(fo), fmt(fa), lp, lp0, cp, cp0))
+    out += ["", "| Target (P6 11.5) | Model | OK |", "|---|---|---|"]
+    for t, m, ok in p6_rows():
+        out.append("| %s | %s | %s |" % (t, m, "yes" if ok else "NO"))
+    out += ["", "Model notes: every time number rests on the GUESS rates %s / h and the P5 Fortune budget (Part 1); Fortune extras are items, never "
+            "collection credit (SkyySkills collections.doubleDrops false). Totems (SkyyShards 0.4.4, Part A): idle share %s %% at Totem I-V." % (
+                " / ".join("%s %.0f" % kv for kv in P6_RATE.items()), " / ".join(str(x) for x in P6_TOTEM)), ""]
+    return "\n".join(out)
+
+
+def p6_write_section(md):
+    """put p6_md() into research/balance/targets.md as its '### 8. Gathering + crafting' section (p5_write_section's rule)"""
+    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "research", "balance", "targets.md"))
+    raw = open(path, "rb").read().decode("utf-8")
+    nl = "\r\n" if "\r\n" in raw else "\n"
+    sec = md.strip("\n").replace("\n", nl) + nl
+    head = "### 8. Gathering + crafting"
+    a = raw.find(nl + head)
+    if a < 0:
+        out, how = raw + ("" if raw.endswith(nl) else nl) + nl + sec, "appended"
+    else:
+        a += len(nl)
+        b = len(raw)
+        for mk in (nl + "### ", nl + "## "):
+            j = raw.find(mk, a + len(head))
+            if 0 <= j < b:
+                b = j + len(nl)
+        rest = raw[b:]
+        out, how = raw[:a] + sec + ((nl if not sec.endswith(nl + nl) else "") + rest if rest else ""), "replaced"
+    with open(path, "wb") as f:
+        f.write(out.encode("utf-8"))
+    return how
+
+
+
 def main():
+    if "--gather" in sys.argv:
+        md = p6_md()
+        print(md)
+        print("\nwrote research/balance/targets.md section '### 8. Gathering + crafting' (%s)" % p6_write_section(md))
+        if "--check" not in sys.argv and "--power" not in sys.argv:
+            return
     if "--power" in sys.argv:
         md = p5_md()
         print(md)
@@ -1795,6 +2085,7 @@ def main():
         print(md)
         p5r = p5_rows()
         bad = [r for r in p4_rows() if not r[2]] + [r for r in p5r if not r[2] and r[0] not in P5_ASKED]          # P5: + the power-source rows (not the asked ones)
+        bad += [r for r in p6_rows() if not r[2]]          # P6: + the gathering / crafting rows
         asked = [r for r in p5r if not r[2] and r[0] in P5_ASKED]
         if "--combat" in sys.argv:
             print("\nwrote research/balance/targets.md section '### 6. Combat' (%s)" % p4_write_section(md))
@@ -1827,7 +2118,7 @@ def main():
                     "\n### Top 10 gaps (P3 vs target)\n" + top + "\n\n### Answered (A:197, 2026-10-20)\n"
                     f"- The cap stretch: Skyy picked 'Middle: Lv 50 at ~33 h' -> levels.scale {LEVELS_SCALE} % (class Lv {CAP1} at "
                     f"{fmt(at_level(simulate_today()[0], CAP1)[0])} h in this model); the rest of the 40-50 h run = skills catch up, "
-                    "gear / UT / bosses, overflow XP for Void Particles.\n" + p4_md() + "\n" + p5_md() + "\n")
+                    "gear / UT / bosses, overflow XP for Void Particles.\n" + p4_md() + "\n" + p5_md() + "\n" + p6_md() + "\n")
         print("\nwrote research/balance/targets.md")
 
 
