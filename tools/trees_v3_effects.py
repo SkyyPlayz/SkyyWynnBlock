@@ -51,6 +51,11 @@ Combat Accessory Plates (fixer 2, four power sources: Combat had no accessory ro
 (the spec's "+2% max health" read against the base 100 Health - SkyyAccessories' Health is flat since 0.5, the Vitality booster too),
 at most 5 accessories = +30 at rank 3 (a Lv 1 Copper armor set gives +25, a Lv 40 set ~+269: docs/answered/gear.md 2026-10-03/04);
 added to the Power's own Health (skyyacc_health), no reader needed.
+BALANCE P5 (2026-10-21, research/Balance-P5-Power-Spec.md 4.2.2 / 7.1; SkyyAccessories 0.5.30, SkyyGear 0.3.35, SkyyTrees 0.4.5): Accessory
+Plates is now % of max Health (effect "hpp", a fraction: +0.5 % a rank a counting accessory, 7.5 % at rank 3 x 5 - the Void Charms Health
+line became % too); Masterwork Pick's Fortune +5 / +10 (was 7.5 / 15); SkyyTrees' own Rich Seams (Mining.MFortune, +2.5 a rank, 7.5 at
+rank 3) counts in TREE_FORT_MAX (TREE_OWN_FORT) -> the Mining tree's whole Fortune = 7.5 + 15 + 7.5 + 10 = 40.0 (was 67.5). The pet rows
+keep their x1.5 ceiling (PET_FACTOR_MAX) although SkyyPets 0.4.8's Mythic rarity is x1.75: a Fabled / Mythic pet reaches the row ceiling.
 """
 import trees_v3_data as V3D
 
@@ -74,7 +79,7 @@ EFFECTS = [
     ("Combat", 1, "r1b", "SkyyGear", "cc", 2, None, 0),                            # Weak Spot: +2% crit chance per rank
     ("Combat", 1, "r4a", "SkyyGear", "cd", 3, None, 0),                            # Crit Mastery: +3% crit damage per rank
     ("Combat", 1, "r4b", "SkyyGear", "dmg", 2, "armor:combat", 4),                 # Gear Resonance: +2% damage per combat armor piece
-    ("Combat", 2, "r4a", "SkyyAccessories", "hp", 2, "acc", 5),                    # Accessory Plates: +2 max Health per accessory (fixer 2; flat = 2% of the base 100)
+    ("Combat", 2, "r4a", "SkyyAccessories", "hpp", 0.005, "acc", 5),               # Accessory Plates: +0.5 % max Health per accessory (Balance P5 4.2.2: was +2 FLAT; ceiling 7.5 %)
     ("Combat", 3, "r3a", "SkyyPets", "xp.combat", 0.02, "pet:Combat", 6),          # Pet Fang: +2% combat (class) XP ...
     ("Combat", 3, "r3a", "SkyyPets", "dmg", 1, "pet:Combat", 6),                   # ... and +1% damage x the Combat pet's rarity bonus
     ("Combat", 3, "r5b", "SkyySkills", "class.xp", 0.02, None, 0),                 # Combat Insight: +2% combat (class) XP per rank
@@ -96,7 +101,7 @@ EFFECTS = [
     # (appended at the end: the R3b rows keep their indexes = their V3P<i> / V3X<i> fields). See R3C below for every number's reason.
     ("Combat", 1, "r5b", "SkyyGear", "dmg", 1, "weapon", 5),                       # Weapon Tempering: +1% damage per weapon tier above Iron (at most 5), per rank (tree text 2: R3C)
     ("Mining", 2, "r6", "SkyyGear", "bp.mining", 0.25, "pick", 2),                  # Masterwork Pick (capstone): +25% Breaking Power on a held pick, x2 on your own lifelong one
-    ("Mining", 2, "r6", "SkyyGear", "dd.mining", 0.075, "pick", 2),                 # ... and +7.5 Mining Fortune, x2 = 15 (the row ceiling; tree text 10: R3C)
+    ("Mining", 2, "r6", "SkyyGear", "dd.mining", 0.05, "pick", 2),                  # ... and +5 Mining Fortune, x2 = 10 (Balance P5 7.1: was 7.5 / 15 - the Mining tree budget with Rich Seams counted)
     ("Exploration", 2, "r3a", "SkyyAccessories", "spd", 0.5, "acc", 5),            # Accessory Compass: +0.5% move Speed per counting accessory per rank (tree text 2: R3C)
     ("Acrobatics", 2, "r3a", "SkyyAccessories", "stam", 0.2, "acc", 5),             # Accessory Sprint: +0.2 max Stamina (2% of the base 10) per counting accessory per rank
 ]
@@ -175,6 +180,10 @@ def maxrank(tree, branch, uid):
 
 # ---------------------------------------------------------------------------------------------------- CEILINGS (fixer 2026-10-20, see the header)
 TREE_FORT_MAX = 0.40     # the most all tree Fortune rows of ONE skill add together (40 Fortune), proved by check()
+# Balance P5 (research/Balance-P5-Power-Spec.md 7.1): SkyyTrees' OWN Fortune node counts in the same budget - (tree, branch, id, effect,
+# per rank in effect units; the rank max comes from trees_v3_data). Rich Seams = the 0.3 node Mining.MFortune (SkyyTrees' trees.properties
+# nodes.Mining[MFortune.per], 0.025 = +2.5 a rank since SkyyTrees 0.4.5; was 0.1 = +10, outside the budget): 3 ranks = 7.5.
+TREE_OWN_FORT = [("Mining", 1, "r1b", "dd.mining", 0.025)]
 PET_FACTOR_MAX = 1.5     # SkyyPets pets.rarity.mythic default (x1 Common .. x1.5 Mythic) - a pet row's natural top
 ROW_FORT_MAX = 0.15      # a non-pet Fortune row stops at 15 (pets.fortune.cap 10 x 1.5)
 VMAX = {  # (tree, branch, id, effect) -> ceiling in effect units; rows not named stop at their natural top (natural())
@@ -193,7 +202,7 @@ def flat(eff):
 
 def unit(eff):
     """display unit: fractions (Fortune / XP / Breaking Power / synergy / chances) show x100 as %, SkyyGear stats are whole % already"""
-    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith("petsyn.") or eff in ("class.xp", "cook.ingr")) else 1.0
+    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith("petsyn.") or eff in ("class.xp", "cook.ingr", "hpp")) else 1.0
 
 
 def natural(e):
@@ -219,7 +228,7 @@ def ckey(e):
     return "tree.%s.b%d.%s.%s" % (e[0], e[1], e[2], e[4].split(".")[0])
 
 
-_EW = {"hp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance",
+_EW = {"hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance",
        "spd": "Speed", "stam": "Stamina"}
 
 
@@ -247,7 +256,7 @@ def describe(e):
     what = {"dd": "%s Fortune", "xp": "%s XP", "bp": "%s Breaking Power"}.get(eff.split(".")[0])
     what = (what % eff.split(".", 1)[1].capitalize()) if what else {"dmg": "Damage", "cc": "Crit Chance", "cd": "Crit Damage",
                                                                      "petsyn.mining": "Mining pet stats", "class.xp": "class XP",
-                                                                     "cook.ingr": "double ingredient chance", "hp": "max Health",
+                                                                     "cook.ingr": "double ingredient chance", "hp": "max Health", "hpp": "max Health",
                                                                      "spd": "move Speed", "stam": "max Stamina"}[eff]
     return "+%s%s %s %s" % (_n(e[5] * unit(eff)), "" if flat(eff) else " %", what, _scale_words(e))
 
@@ -366,8 +375,20 @@ def cfg_rows(applier, cls, file, cat):
     return out
 
 
+def own_fort(sk):
+    """Balance P5: the Fortune SkyyTrees' own nodes of one skill add at max rank (TREE_OWN_FORT, effect units)"""
+    return sum(per * maxrank(t, b, uid) for t, b, uid, eff, per in TREE_OWN_FORT if eff == "dd." + sk)
+
+
+def tree_fort(sk):
+    """Balance P5: the whole tree Fortune of one skill at max (own nodes + every applier row's ceiling, effect units)"""
+    return own_fort(sk) + sum(vmax(e) for e in EFFECTS if e[4] == "dd." + sk)
+
+
 def check():
     V3D.check()
+    for t, b, uid, eff, per in TREE_OWN_FORT:
+        assert up(t, b, uid)["hook"] == ("old", "Mining.MFortune", 1) and eff == "dd.mining" and per > 0, (t, b, uid)
     seen = set()
     for e in EFFECTS:
         tree, b, uid, mod, eff, per, scale, cap = e
@@ -388,7 +409,7 @@ def check():
     names = set((e[0], e[1], e[2], e[4]) for e in EFFECTS)
     assert all(k in names for k in VMAX), [k for k in VMAX if k not in names]
     for sk in set(e[4][3:] for e in EFFECTS if e[4].startswith("dd.")):
-        tot = sum(vmax(e) for e in EFFECTS if e[4] == "dd." + sk)
+        tot = sum(vmax(e) for e in EFFECTS if e[4] == "dd." + sk) + own_fort(sk)
         assert tot <= TREE_FORT_MAX + 1e-9, ("tree Fortune budget", sk, tot)
     for e in EFFECTS:
         assert 0 < vmax(e) <= natural(e) + 1e-12, e

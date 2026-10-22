@@ -20,21 +20,22 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # the PlMigP8 row in Server Setup -> Changes (rebirth.pastLifeXp; 0.4.58 keeps whatever list the file holds = P8 pace with the old 200 % class
 # clamp, harmless) - rebirth.xpMultMax is ignored by 0.4.58. Rebirth 0.4.2 alone back = the dust.first row returns, no data change.
 # P6a (2026-10-21): WorldGen 0.7.8 / Shards 0.4.4 / Sacks 0.8.26 each roll back alone (Shards back to 0.4.3 resets its xp / worker cap / storage rows to defaults, no data lost; Sacks 0.8.25 = parked off-hand refill, never pin it).
+# FLOOR (2026-10-21, Balance P5 power): SkyyGear 0.3.35 + SkyyAccessories 0.5.30 + SkyyPets 0.4.8 + SkyyArmory 0.1.43 + SkyyTrees 0.4.5 + SkyyGuilds 0.1.13 pin + roll back TOGETHER (slot power, armor Defense / Health %, charm ladder and pet power are fit to each other). Before a rollback Undo the one-time P5 rows in Server Setup -> Changes (Gear migrateP5 rarity / ramp / reforge / loot / gathering armor rows + Armor_Iron, Accessories migrateP5 config + power rows, Pets PetsMigP5 kinds + scalars, Armory migrateP5 sigil chances, Trees TreeMigP5 Mining.MFortune.per, Guilds GP5Mig levelBase / levelStep) - older jars read the moved values as admin values. Gear 0.3.35 saves the max Health modifier skyygear_hp with the player (0.3.34 knows only skyygear_ut_hp): switch part.stats off for one session before rolling Gear back. Fabled / Mythic Void Charms (20 new ids) are unknown items to Accessories 0.5.29 - never roll Accessories back once one exists. Pets 0.4.7 reads health / mana pet stats as flat values again. Gear's luck/ folder (UT meter, Mythic pity) is ignored by 0.3.34 (kept).
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.34"), ("SkyySacks", "0.8.26"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.30"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.34"), ("SkyySkills", "0.4.59"),
-    ("SkyyAccessories", "0.5.29"), ("SkyyClasses", "0.1.44"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.4"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.0"), ("SkyyGear", "0.3.35"), ("SkyySkills", "0.4.59"),
+    ("SkyyAccessories", "0.5.30"), ("SkyyClasses", "0.1.44"), ("SkyyMenu", "0.3.41"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.4.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
     ("SkyyExploration", "0.3.2"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
-    ("SkyyGuilds", "0.1.12"),
+    ("SkyyGuilds", "0.1.13"),
     # beta backlog round (Skyy 2026-09-24 20:10 list, cross-checked together): SkyySkills 0.4.2 + SkyyTrees 0.2.1 + SkyyCollections
     # 0.2.1 deploy TOGETHER (felled-log crediting: Skills -> coll:fn:add "skills:felled" + skill:on:felled; Double Jump: Trees posts
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
@@ -84,7 +85,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.7"),
+    ("SkyyPets", "0.4.8"),
     ("SkyyWardrobe", "0.2.10"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -123,7 +124,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.42"),
+    ("SkyyArmory", "0.1.43"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll

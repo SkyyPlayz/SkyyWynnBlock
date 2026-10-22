@@ -3,6 +3,7 @@
     python tools/balance_model.py            print the target tables next to the P3 numbers (research/Balance-P3-XP-Spec.md), gaps (!!)
     python tools/balance_model.py --before   the same tables with the P1 numbers (before P3: the live 0.4.56 tables)
     python tools/balance_model.py --md       also rewrite research/balance/targets.md (always the P3 numbers)
+    python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
 
 P3 (2026-10-20, Balance-P3-XP-Spec.md sections 2-5 + Skyy's popup answer A:197 "Middle: Lv 50 at ~33 h"): ONE curve for the class and every
 skill (need(L) = R(1100 x f(L) x s(L)) x levels.scale 130 %), XP per action x the tier factor F(T), the skill catch-up, the past-life XP
@@ -17,6 +18,8 @@ L = live SkyySkills xp.properties (read-only, in UserData/Saves/NewBetaTest/mods
 """
 import math
 import os
+import random
+import statistics
 import sys
 
 # ======================================================================================== GOALS (Skyy, Normal mode)
@@ -476,13 +479,13 @@ def build():
     coll_v_h = COLL_S[1] / ore_h
     set_h = 4 * ENCH_SIZE / ore_h
     loot_h = min(LOOT_CAP, KILLS_H * SHARE["Class"] * LOOT_CHANCE)
-    ut_h = ELITE_KILLS_H * UT_CHANCE
+    ut_h = ELITE_KILLS_H * UT_CHANCE if BEFORE else p5_ut_sim()[0]          # P5 3.2: the UT meter (40 points / h hunting)
     checks = [  # what, target low, target high, today, unit, source
         ("Collection tier II (ore, curve S)", COLL_II_MIN, COLL_II_MIN, coll_ii_min, "min", "A:191 / H:11"),
         ("Collection tier V (ore)", *COLL_V_H, coll_v_h, "h", "A:191 / H:11"),
         ("One armor set (4 x 1 Enchanted ore)", *ARMOR_SET_H, set_h, "h", "A:191 / G:485 garmor.ladders"),
         ("UT drops per hour of elite hunting", *UT_PER_H, ut_h, "/h", "A:190 / G:356"),
-        ("Boss kills per Mythic", *MYTHIC_PER_BOSS, 1 / MYTHIC_CHANCE, "kills", "economy.md:162 / G:1589"),
+        ("Boss kills per Mythic", *MYTHIC_PER_BOSS, 1 / MYTHIC_CHANCE if BEFORE else p5_mythic_sim()[0], "kills", "economy.md:162 / G:1589 / P5 3.3"),
         (f"Longest stretch without any level-up (run 1, cap {CAP1})", 0, MAX_GAP_H, worst_gap, "h", "A:187 Q2")]
     rows = []
     for what, lo, hi, today, unit, src in checks:
@@ -490,8 +493,13 @@ def build():
         rows.append([what, f"{fmt(lo)}-{fmt(hi)} {unit}" if lo != hi else f"{fmt(lo)} {unit}", f"{fmt(today)} {unit}", flag, src])
         if flag.startswith("!!"):
             note(what, today / (hi if today > hi else max(lo, 1e-9)), f"{what}: target {rows[-1][1]}, {NOW} {rows[-1][2]}")
-    rows.append(["Gear loot bags per hour (normal play)", ">= 1 gear upgrade / h", f"{loot_h:.1f} bags (share that "
-                 "upgrades: ?)", "?", "A:187 Q2 / G:240-241"])
+    if BEFORE:
+        rows.append(["Gear loot bags per hour (normal play)", ">= 1 gear upgrade / h", f"{loot_h:.1f} bags (share that "
+                     "upgrades: ?)", "?", "A:187 Q2 / G:240-241"])
+    else:          # P5 6: smart bags + level-ups - the longest stretch without a gear upgrade before the cap
+        _ur = p5_upgrade_rows()[-1]
+        rows.append(["Gear loot bags per hour (normal play)", ">= 1 gear upgrade / h", f"{P5_BAGS_H:.2f} bags (smart {P5_SMART:g} %) + level-ups: "
+                     f"longest stretch without an upgrade {_ur[2]:.2f} h (p90, before the cap)", "ok" if _ur[2] <= MAX_GAP_H else "!!", "A:187 Q2 / P5 6"])
     table("4. Drops, collections, upgrades", ["What", "Target", f"{NOW} (model)", "Gap", "Source"], rows)
 
     # 5. VP ladder + keep buff
@@ -1175,16 +1183,626 @@ def p4_write_section(md):
     return how
 
 
+# ======================================================================================== P5 POWER SOURCES (research/Balance-P5-Power-Spec.md)
+# Built by the P5 round (SkyyGear 0.3.35, SkyyAccessories 0.5.30, SkyyPets 0.4.8, SkyyArmory 0.1.43, SkyyTrees 0.4.5, SkyyGuilds 0.1.13).
+# `python tools/balance_model.py --power` prints the tables and writes research/balance/targets.md section '### 7. Power sources'; `--check`
+# also fails on a P5 NO row. Every number names its spec section (P5 x.y); the SkyyGear harness runs the REAL GearRoll against p5_roll_table.
+P5_SEED = 20261021
+P5_STATS = {   # key: (max at 100 %, weight, slots) = SkyyGear STATS (live rows; pool.later false) + 0.3.35's hpp (weight 0: armor only, P5 2.2.3)
+    "dmg": (30, 10, "w"), "str": (25, 10, "wae"), "mp": (25, 10, "sae"), "cc": (15, 10, "wa"), "cd": (30, 10, "wa"), "chg": (30, 5, "wa"),
+    "tdmg": (5, 5, "w"), "fEarth": (6, 4, "w"), "fThunder": (6, 4, "w"), "fWater": (6, 4, "w"), "fFire": (6, 4, "w"), "fAir": (6, 4, "w"),
+    "rThunder": (6, 3, "w"), "rWater": (6, 3, "w"), "rElem": (3, 3, "w"), "msteal": (3, 5, "s"), "lsteal": (5, 5, "wa"), "hpr": (2, 5, "wa"),
+    "hprp": (20, 5, "wa"), "def": (25, 10, "a"), "spd": (5, 10, "ae"), "stam": (2, 5, "a"), "hpp": (30, 0, "a")}
+P5_POOL_ARMOR = {"def": 120, "hpp": 120, "str": 1, "mp": 1, "cc": 1, "cd": 1, "chg": 8, "hprp": 32, "lsteal": 16, "hpr": 16, "spd": 32, "stam": 20}   # P5 2.2.2
+P5_RARITY = {"normal": (1, 40, 70), "unique": (2, 45, 75), "rare": (3, 50, 85), "legendary": (4, 55, 95), "fabled": (5, 60, 105),
+             "mythic": (6, 70, 110), "set": (3, 55, 100)}                                  # P5 2.2.5 (fix round 2: mythic 75-120 -> 70-110 = spec 2.3's Mythic row 1.85 / 2.33; kit DPS x3.9 -> x3.6)
+P5_RARITY_034 = {"normal": (1, 30, 60), "unique": (2, 35, 70), "rare": (3, 40, 80), "legendary": (4, 45, 95), "fabled": (5, 50, 110),
+                 "mythic": (6, 60, 130), "set": (3, 45, 95)}                               # SkyyGear 0.3.34 RARITY_DEF
+P5_RARS = ["normal", "unique", "rare", "legendary", "fabled", "mythic"]
+P5_SLOT_POWER = {"Weapon": 118.0, "Head": 26.0, "Chest": 45.5, "Legs": 39.0, "Hands": 19.5}   # P5 2.2.1 (armor 130 = 1.3 items, P4 shares)
+P5_LEVEL_FLOOR, P5_LEVEL_FULL = 60, 15                                                     # P5 2.2.6 (0.3.34: 25 / 40)
+P5_PCT_LINES = ("tdmg", "fEarth", "fThunder", "fWater", "fFire", "fAir", "rThunder", "rWater")   # P5 2.2.4: "+N % of the hit" (rElem x5)
+P5_CLASS_DEF = 10.0                                                                        # P4 M class Defense (P4_CLASSES)
+P5_CHARGED_SHARE = 0.25                                                                    # P5 7.6: charged hits = 25 % of hits
+P5_TABLE_SPEC = {   # P5 2.3: rarity -> (weapon DPS mean, p90, armor DPS mean, p90, armor EHP mean, p90); the build fails outside +-8 %
+    "normal": (1.07, 1.17, 1.00, 1.02, 1.13, 1.20), "unique": (1.14, 1.28, 1.01, 1.03, 1.26, 1.35), "rare": (1.24, 1.44, 1.01, 1.04, 1.42, 1.53),
+    "legendary": (1.40, 1.66, 1.02, 1.06, 1.58, 1.69), "fabled": (1.56, 1.88, 1.03, 1.07, 1.74, 1.83), "mythic": (1.85, 2.33, 1.05, 1.12, 1.97, 2.07)}
+P5_TOL = 0.08
+P5_TIER_FORT = 25.7          # P5 1.1: armor Fortune per tier from T5 (the 30 % share of 30 x T / 35 %)
+P5_GB_FT_034 = [60, 75, 90, 105, 120, 135, 150, 160, 170, 180, 190, 200, 210, 225, 240, 255]   # SkyyGear 0.3.29-0.3.34 GB_FT (full set by ladder T)
+
+
+def p5_level_factor(L):
+    """SkyyGear GearLevel.factor with the P5 ramp: stat.levelFloor % at item level 0 -> 100 % at stat.levelFull"""
+    if L >= P5_LEVEL_FULL:
+        return 100.0
+    return P5_LEVEL_FLOOR + (100.0 - P5_LEVEL_FLOOR) * max(0, L) / float(P5_LEVEL_FULL)
+
+
+def p5_weights(slot):
+    """the roll weights of a slot: 'w' weapon (stats.<k> weights), 'a' armor (pool.armor; absent = the stat's own weight)"""
+    out = {}
+    for k, (mx, w, sl) in P5_STATS.items():
+        if slot not in sl:
+            continue
+        ww = P5_POOL_ARMOR.get(k, w) if slot == "a" else w
+        if ww > 0:
+            out[k] = ww
+    return out
+
+
+def p5_roll(slot, rarity, rng, level=100, table=None):
+    """Python twin of SkyyGear GearRoll.rollMods: `count` distinct stats by weight (Health Regen % only after Raw Health Regen), each
+    value randInt(lo, hi) with lo / hi = max(1, round(max x low % x f %)) (f = the level factor)"""
+    n, lo, hi = (table or P5_RARITY)[rarity]
+    w = p5_weights(slot)
+    pool = [k for k in P5_STATS if k in w]
+    pick = []
+    for _ in range(min(n, len(pool))):
+        cand = [k for k in pool if k not in pick and not (k == "hprp" and "hpr" not in pick)]
+        tot = sum(w[k] for k in cand)
+        if tot <= 0:
+            break
+        x = rng.random() * tot
+        sel = cand[-1]
+        for k in cand:
+            x -= w[k]
+            if x < 0:
+                sel = k
+                break
+        pick.append(sel)
+    f = p5_level_factor(level)
+    out = {}
+    for k in pick:
+        mx = P5_STATS[k][0]
+        a = max(1, int(math.floor(mx * lo / 100.0 * f / 100.0 + 0.5)))
+        b = max(a, max(1, int(math.floor(mx * hi / 100.0 * f / 100.0 + 0.5))))
+        out[k] = rng.randint(a, b)
+    return out
+
+
+def p5_dps(t, caster=False):
+    """one hit of an M class vs no gear (P5 2.1): Damage %, Strength (or Magical Power), Charged (25 % of hits), crit (base 0: x2 x (1 + cd %)),
+    the % lines (+N % of the hit as True / element damage after armor; Raw Elemental counts for each of 5 elements)"""
+    g = t.get
+    cc = min(g("cc", 0.0), 100.0) / 100.0
+    pct = sum(g(k, 0.0) for k in P5_PCT_LINES) + 5.0 * g("rElem", 0.0)
+    return ((1 + g("dmg", 0.0) / 100.0) * (1 + g("mp" if caster else "str", 0.0) / 100.0) * (1 + P5_CHARGED_SHARE * g("chg", 0.0) / 100.0)
+            * (1 + cc * (2.0 * (1 + g("cd", 0.0) / 100.0) - 1.0)) * (1 + pct / 100.0))
+
+
+def p5_ehp(t):
+    """toughness vs no gear (P5 2.1 / 7.6): Health %, Defense x 100 / (100 + class Defense + def), Life Steal 1 pt = +2 %, Health Regen % 1 pt = +0.25 %"""
+    g = t.get
+    return ((1 + g("hpp", 0.0) / 100.0) * (100.0 + P5_CLASS_DEF + g("def", 0.0)) / (100.0 + P5_CLASS_DEF)
+            * (1 + 0.02 * g("lsteal", 0.0)) * (1 + 0.0025 * g("hprp", 0.0)))
+
+
+def p5_p90(xs):
+    xs = sorted(xs)
+    return xs[min(len(xs) - 1, int(0.9 * len(xs)))]
+
+
+def p5_weapon_totals(mods):
+    return dict((k, v * P5_SLOT_POWER["Weapon"] / 100.0) for k, v in mods.items())
+
+
+def p5_armor_totals(pieces):
+    """pieces = [(slot name, mods)] -> the summed totals x slot power (GearStats.totals in 0.3.35)"""
+    tot = {}
+    for sl, mods in pieces:
+        for k, v in mods.items():
+            tot[k] = tot.get(k, 0.0) + v * P5_SLOT_POWER[sl] / 100.0
+    return tot
+
+
+_P5_TABLE = {}
+
+
+def p5_roll_table(n=3000, seed=P5_SEED):
+    """P5 2.3: per rarity (weapon DPS mean, p90, armor set DPS mean, p90, armor set EHP mean, p90) over n rolls at full level"""
+    key = (n, seed)
+    if key in _P5_TABLE:
+        return _P5_TABLE[key]
+    rng = random.Random(seed)
+    out = {}
+    for r in P5_RARS:
+        W, AD, AE = [], [], []
+        for _ in range(n):
+            W.append(p5_dps(p5_weapon_totals(p5_roll("w", r, rng))))
+            tot = p5_armor_totals([(s, p5_roll("a", r, rng)) for s in ("Head", "Chest", "Legs", "Hands")])
+            AD.append(p5_dps(tot))
+            AE.append(p5_ehp(tot))
+        out[r] = (statistics.mean(W), p5_p90(W), statistics.mean(AD), p5_p90(AD), statistics.mean(AE), p5_p90(AE))
+    _P5_TABLE[key] = out
+    return out
+
+
+def p5_roll_table_034(n=3000, seed=P5_SEED):
+    """the same model with 0.3.34's rules (no slot power, no armor pool, flat lines ~0 at Lv 100, the old rarity table): the 'today' column"""
+    rng = random.Random(seed + 1)
+    out = {}
+    for r in P5_RARS:
+        W, AD, AE = [], [], []
+        for _ in range(n):
+            wm = p5_roll("w", r, rng, table=P5_RARITY_034)
+            for k in P5_PCT_LINES + ("rElem",):
+                wm.pop(k, None)          # flat lines: ~0 % of a Lv 100 hit
+            W.append(p5_dps(wm))
+            tot = {}
+            for _s in range(4):
+                am = {}
+                w = dict((k, P5_STATS[k][1]) for k in P5_STATS if "a" in P5_STATS[k][2] and P5_STATS[k][1] > 0)
+                n_, lo, hi = P5_RARITY_034[r]
+                pick = []
+                for _ in range(n_):
+                    cand = [k for k in w if k not in pick and not (k == "hprp" and "hpr" not in pick)]
+                    x = rng.random() * sum(w[k] for k in cand)
+                    sel = cand[-1]
+                    for k in cand:
+                        x -= w[k]
+                        if x < 0:
+                            sel = k
+                            break
+                    pick.append(sel)
+                for k in pick:
+                    mx = P5_STATS[k][0]
+                    a = max(1, int(math.floor(mx * lo / 100.0 + 0.5)))
+                    b = max(a, int(math.floor(mx * hi / 100.0 + 0.5)))
+                    am[k] = rng.randint(a, b)
+                for k, v in am.items():
+                    tot[k] = tot.get(k, 0) + v
+            AD.append(p5_dps(tot))
+            AE.append(p5_ehp(tot))
+        out[r] = (statistics.mean(W), statistics.mean(AD), statistics.mean(AE))
+    return out
+
+
+# ---- P5 4: Void Charms (SkyyAccessories 0.5.30). Plain = Normal lines + the Balance Power at AP 100; best = Mythic lines + Omni (AP 393)
+P5_CHARM_LADDER = [1.0, 1.6, 2.2, 2.8, 3.4, 4.0]          # P5 4.2.1: Normal .. Mythic x the Normal value (Mythic = 0.5.29's Legendary)
+P5_CHARM_NORMAL = {"hp": 2.0, "str": 3.0, "def": 3.0, "cc": 2.0, "cd": 4.0, "mp": 3.0}   # Normal value of each combat line (hp = % of max Health)
+P5_PW_BALANCE = {"hp": 2.5, "def": 3, "str": 3, "cc": 1, "cd": 3, "mana": 2, "spd": 1}   # pw.Balance per 100 AP (hp: % of max Health, P5 4.2.4)
+P5_PW_HP = {"Tank": 6, "Balance": 2.5, "Slayer": 1, "Lucky": 2, "Magical": 2, "Fortress": 10, "Harmony": 4, "GlassCannon": -2, "Blitz": -1.5,
+            "Arcane": 1.5, "Jackpot": -1.5}                                               # P5 4.2.4: pw.<Power>.hp = % per 100 AP
+P5_AP_PLAIN, P5_AP_BEST = 100.0, 393.0
+P5_GATHER_DD = {"mining": 10.5, "foraging": 10.5, "farming": 15.75, "fishing": 3.5}      # P5 4.2.5 fitted to the 1.1 budget +-15 % at Lv 17 + 95 (spec 11 / 16.5 / 3.7 x 10.5 / 11; 0.5.29: 6 / 6 / 9 / 2)
+P5_GATHER_LEVEL = 10                                                                       # power.gatherLevel: +100 % per 10 skill levels
+
+
+def p5_charm_m(ap):
+    """SkyyAccessories AccPower: M = (AP / power.base 100) ^ power.curve 0.6 (guard 20)"""
+    return min(20.0, (ap / 100.0) ** 0.6)
+
+
+def p5_charm_totals(rarity_i, ap, power=None):
+    pw = dict(P5_PW_BALANCE)
+    if power is not None:
+        pw = dict(power)
+    m = p5_charm_m(ap)
+    t = dict((k, v * P5_CHARM_LADDER[rarity_i]) for k, v in P5_CHARM_NORMAL.items())
+    for k, v in pw.items():
+        if k in ("hp", "def", "str", "cc", "cd", "mp"):
+            t[k] = t.get(k, 0.0) + v * m
+    t["hpp"] = t.pop("hp")
+    return t
+
+
+def p5_charms():
+    """(plain DPS, plain EHP, best DPS, best EHP)"""
+    p = p5_charm_totals(0, P5_AP_PLAIN)
+    b = p5_charm_totals(5, P5_AP_BEST)
+    return p5_dps(p), p5_ehp(p), p5_dps(b), p5_ehp(b)
+
+
+def p5_gather_fortune(skill, ap, level):
+    return P5_GATHER_DD[skill] * p5_charm_m(ap) * (1.0 + level / float(P5_GATHER_LEVEL))
+
+
+# ---- P5 5: pets (SkyyPets 0.4.8)
+P5_PET_RARITY = [1.0, 1.15, 1.3, 1.45, 1.6, 1.75]          # P5 5.2.2 Common .. Mythic
+P5_PET_RARNAMES = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
+P5_PET_KINDS = {   # P5 5.2.4 combat kinds: (start rarity, Lv 100 stats before rarity; health / mana in % of max)
+    "Dog": ("Common", {"str": 29, "cd": 21.5, "cc": 7}), "Fox": ("Uncommon", {"str": 28, "cd": 21, "cc": 7}),
+    "Wolf": ("Rare", {"str": 27.5, "cd": 20.5, "cc": 7}), "SkeletonKnight": ("Rare", {"str": 27.5, "cd": 20.5, "cc": 7}),
+    "Tusker": ("Rare", {"str": 42}), "Skeleton": ("Rare", {"cc": 24, "cd": 29.5}), "Hawk": ("Epic", {"cc": 23, "cd": 29}),
+    "Boar": ("Uncommon", {"health": 18, "def": 22}), "VoidCrawler": ("Rare", {"health": 17.5, "def": 21.5}),
+    "Ram": ("Epic", {"def": 28, "health": 12}), "Mouflon": ("Epic", {"mp": 26, "health": 11.5}), "Skrill": ("Epic", {"mp": 42, "mana": 21}),
+    "VoidEye": ("Epic", {"mp": 42, "mana": 21}), "VoidLarva": ("Uncommon", {"mp": 42, "mana": 21})}
+P5_PET_BUDGET = 0.42          # P5 5.2.1: DPS x EHP of a Lv 100 pet at its start rarity = 1 + 0.42 x the rarity bonus
+P5_PET_FORT = {"only": 88.0, "two": 70.0}                    # P5 5.2.5 Lv 100 Fortune value before rarity
+P5_PET_REB_STAT = 5.0         # pets.rebirth.stat: +5 % stats a pet rebirth
+P5_PET_XP = (50.0, 5.0)       # P5 5.2.6 pets.xp.ownPercent / otherPercent (P3 divisors off)
+P5_PET_CURVE = (120.0, 0.08)  # pets.curve.linear / cubic
+
+
+def p5_pet_power(stats, factor, level=100, rebirths=0):
+    """DPS x EHP of one pet alone (the gear formulas; casters: mp; health = Health %)"""
+    f = factor * level / 100.0 * (1.0 + P5_PET_REB_STAT * rebirths / 100.0)
+    t = dict((k, v * f) for k, v in stats.items())
+    t["hpp"] = t.pop("health", 0.0)
+    caster = t.get("mp", 0.0) > 0.0
+    return p5_dps(t, caster=caster) * p5_ehp(t)
+
+
+def p5_pet_rows():
+    out = []
+    for k, (r, st) in P5_PET_KINDS.items():
+        fac = P5_PET_RARITY[P5_PET_RARNAMES.index(r)]
+        got = p5_pet_power(st, fac)
+        want = 1.0 + P5_PET_BUDGET * fac
+        out.append((k, r, st, got, want, abs(math.log(got) - math.log(want)) <= 0.05 * math.log(want)))
+    return out
+
+
+def p5_pet_need(L):
+    a, c = P5_PET_CURVE
+    return round(a * (L - 1) + c * (L - 1) ** 3)
+
+
+def p5_pet_xp_trace(own="Mining", cap=50, hours=RUN1_HOURS, dt=0.02, overflow=False):
+    """hour a pet using the own skill reaches Lv cap on run 1 (pet XP = own XP x 50 % + every other skill's XP x 5 %, P3's raw XP;
+    the P3 player of simulate_today; overflow = skill XP keeps flowing at the skill cap - P5 7.8 UNVERIFIED)"""
+    share = SHARE
+    lv = {s: 0 for s in share}
+    xp = {s: 0.0 for s in share}
+    plv, pxp, t = 1, 0.0, 0.0
+    own_p, oth_p = P5_PET_XP[0] / 100.0, P5_PET_XP[1] / 100.0
+    while t < hours:
+        for s, sh in share.items():
+            if sh <= 0 or (lv[s] >= CAP1 and not overflow):
+                continue
+            g = xp_per_hour(s, min(lv[s], CAP1), lv["Class"]) * sh * dt * catchup_mult(s, lv[s], lv["Class"])
+            xp[s] += g
+            pxp += g * (own_p if s == own else oth_p)
+            while lv[s] < CAP1 and xp[s] >= CURVES[s][lv[s]]:
+                xp[s] -= CURVES[s][lv[s]]
+                lv[s] += 1
+        while plv < cap and pxp >= p5_pet_need(plv + 1):
+            pxp -= p5_pet_need(plv + 1)
+            plv += 1
+        t += dt
+        if plv >= cap:
+            return t, plv
+    return None, plv
+
+
+# ---- P5 3.2 / 3.3: the UT meter + the Mythic pity (SkyyGear 0.3.35)
+P5_UT = dict(chance=2.5, pity=36.0, points={"elite": 1.0, "mini": 5.0, "dungeon": 0.25, "dungeonBoss": 10.0})
+P5_UT_HUNT_PTS_H = float(ELITE_KILLS_H)          # 40 elite kills an hour while hunting (A:188 Q7) = 40 points / h
+P5_UT_OPEN_PTS_H = 0.03 * KILLS_H                # open play in a UT band: 3 % of 150 kills are elites = 4.5 points / h
+P5_MYTHIC = (12.0, 10)                           # loot.boss.mythic %, loot.boss.pity (the 10th dry kill gives one)
+
+
+def p5_ut_sim(pts_h=P5_UT_HUNT_PTS_H, hours=10.0, runs=300, seed=P5_SEED, pity=True):
+    """(UT bags per hour, the longest dry stretch in hours) - one elite (1 point) at a time, chance 2.5 % a point, sure at 36 points"""
+    rng = random.Random(seed)
+    bags, worst = 0, 0.0
+    for _ in range(runs):
+        t, meter, last = 0.0, 0.0, 0.0
+        step = 1.0 / pts_h
+        while t < hours:
+            t += step
+            meter += 1.0
+            if rng.random() * 100.0 < P5_UT["chance"] or (pity and meter >= P5_UT["pity"]):
+                bags += 1
+                worst = max(worst, t - last)
+                last, meter = t, 0.0
+        worst = max(worst, hours - last) if not pity else worst
+    return bags / float(runs * hours), worst
+
+
+def p5_mythic_sim(runs=20000, seed=P5_SEED):
+    """(mean boss kills per Mythic bag, the most kills) - 12 % a kill, the 10th dry kill sure"""
+    rng = random.Random(seed)
+    tot, worst = 0, 0
+    for _ in range(runs):
+        k = 0
+        while True:
+            k += 1
+            if rng.random() * 100.0 < P5_MYTHIC[0] or k >= P5_MYTHIC[1]:
+                break
+        tot += k
+        worst = max(worst, k)
+    return tot / float(runs), worst
+
+
+# ---- P5 6: the 1-hour rule (gear upgrades over run 1)
+P5_BAGS_H = 4.05                  # P5 6: blended play, 6 % of 150 kills x 45 % class time
+P5_ODDS_MOB = [50, 30, 13, 5, 1.5]           # odds.<r> mob column, Normal .. Fabled (Mythic boss-only)
+P5_ODDS_CRAFT = [60, 25, 10, 4, 1]
+P5_SMART, P5_LEAN = 50.0, 75.0               # loot.smart, loot.classLean (P5 3.1)
+P5_SLOTS = ["Weapon", "Head", "Chest", "Legs", "Hands"]
+
+
+def p5_score(slot, L, r, tab):
+    """a worn item's worth: F(item level) x its rarity's mean roll power (weapon DPS / armor EHP of the 2.3 table)"""
+    return p4_F(max(1, L)) * (tab[P5_RARS[r]][0] if slot == "Weapon" else tab[P5_RARS[r]][4])
+
+
+def p5_upgrade_sim(seed, smart=True, levelups=True, hours=RUN1_HOURS, dt=0.02):
+    """(longest stretch without a gear upgrade before the class cap, over the whole run) for one seed - P5 6's rules"""
+    rng = random.Random(seed)
+    tab = p5_roll_table()
+    trace, _g = simulate_today()
+    worn = dict((s, None) for s in P5_SLOTS)          # slot -> [level, rarity, found level]
+    worn["Weapon"] = [1, 0, 1]
+    last, worst_pre, worst_all, lvl_prev, cap_t = 0.0, 0.0, 0.0, 0, None
+    bands_done = set()
+
+    def score(s):
+        w = worn[s]
+        return 0.0 if w is None else p5_score(s, w[0], w[1], tab)
+
+    def offer(s, L, r):
+        new = p5_score(s, L, r, tab)
+        if new > score(s) * 1.03:
+            worn[s] = [L, r, L]
+            return True
+        return False
+    i = 0
+    for t, cl, lvls, _c in trace:
+        if t > hours:
+            break
+        up = False
+        if cl >= CAP1 and cap_t is None:
+            cap_t = t
+        b = max(x for x in BAND if x <= max(1, cl))
+        if b not in bands_done:          # craft the new metal: a full set at your level, craft odds
+            bands_done.add(b)
+            for s in P5_SLOTS:
+                up = offer(s, cl if cl >= 1 else 1, rng.choices(range(5), P5_ODDS_CRAFT)[0]) or up
+        if rng.random() < P5_BAGS_H * dt:
+            L = max(1, cl + rng.randint(-2, 2))
+            f = 1.0 + 0.02 * (L - 1)
+            r = rng.choices(range(5), [P5_ODDS_MOB[0]] + [x * f for x in P5_ODDS_MOB[1:]])[0]
+            if smart and rng.random() * 100.0 < P5_SMART:
+                s = min(P5_SLOTS, key=lambda x: (score(x), rng.random()))
+            else:
+                s = "Weapon" if rng.random() < 0.5 else rng.choice(P5_SLOTS[1:])
+            if s != "Weapon" or rng.random() * 100.0 < (P5_LEAN if smart else 50.0):          # a weapon bag of another class = no use
+                up = offer(s, L, r) or up
+        if levelups and cl > lvl_prev and lvl_prev > 0:
+            for s in P5_SLOTS:
+                w = worn[s]
+                if w is not None and w[0] < cl and w[0] < w[2] + 6:
+                    w[0] += 1
+                    up = True
+        lvl_prev = cl
+        if up:
+            g = t - last
+            worst_all = max(worst_all, g)
+            if cap_t is None:
+                worst_pre = max(worst_pre, g)
+            last = t
+        i += 1
+    worst_all = max(worst_all, min(hours, trace[-1][0]) - last)
+    return worst_pre, worst_all
+
+
+def p5_upgrade_rows(seeds=40):
+    out = []
+    for name, sm, lu in (("Today: random slot, crafting each new metal", False, False), ("+ smart bags 50 %, class lean 75", True, False),
+                         ("+ item level-ups", True, True)):
+        pre, al = zip(*[p5_upgrade_sim(P5_SEED + k, sm, lu) for k in range(seeds)])
+        out.append((name, statistics.median(pre), p5_p90(pre), statistics.median(al), p5_p90(al)))
+    return out
+
+
+# ---- P5 1.1: the Fortune budget per skill (end of each zone)
+P5_ZONE_T = [(1, 3, "Bronze"), (2, 6, "Dusk"), (3, 9, "Azurvane"), (4, 12, "Cinder"), (5, 15, "Lumen")]
+
+
+def p5_armor_fort(T):
+    """SkyyGear 0.3.35 gathering armor full-set Fortune at ladder T: 0.3.29's GB_FT up to T4, then max(GB_FT, 25.7 x T)"""
+    old = P5_GB_FT_034[T - 1]
+    return old if T < 5 else max(old, round(P5_TIER_FORT * T, 1))
+
+
+def p5_fortune_rows():
+    out = []
+    for z, T, metal in P5_ZONE_T:
+        tool = 30.0 * T
+        arm = p5_armor_fort(T)
+        ch = 17.1 * T
+        pet = 12.9 * T
+        tree = 40.0
+        tot = tool + arm + ch + pet + tree
+        out.append((z, T, metal, tool, P5_GB_FT_034[T - 1], arm, ch, pet, tree, tot, 1.0 + tot / 100.0))
+    return out
+
+
+# ---- P5 1: the split
+def p5_split():
+    tab = p5_roll_table()
+    w = tab["mythic"][1] / tab["normal"][0]
+    a = tab["mythic"][5] / tab["normal"][4]
+    a_d = tab["mythic"][3] / tab["normal"][2]
+    cp_d, cp_e, cb_d, cb_e = p5_charms()
+    ch_d, ch_e = cb_d / cp_d, cb_e / cp_e
+    best_pet = max(p5_pet_power(st, P5_PET_RARITY[5], 100, 5) / p5_pet_power(st, P5_PET_RARITY[0], 50, 0) for _r, st in P5_PET_KINDS.values())
+    pet_d = pet_e = math.sqrt(1.39)          # P5 5.2.2 target: best / plain pet power x1.39 split evenly
+    rows = [("Weapon / tool", 35, w, 1.0), ("Armor", 30, a_d, a), ("Void Charms", 20, ch_d, ch_e), ("Pets", 15, pet_d, pet_e)]
+    tot = sum(math.log(d * e) for _n, _s, d, e in rows)
+    return rows, tot, best_pet
+
+
+P5_KIT_SPEC = (3.2, 2.8)          # P5 1 / 7.5: the kit's best / plain DPS / EHP (= P4 Part 5's x3.19 / x2.85); +-15 %
+P5_KIT_TOL = 0.15
+# rows that FAIL on purpose until Skyy answers a question (shown "NO - asked Skyy" in targets.md and printed by --check, but not a --check failure);
+# the main session puts each question in OPEN-QUESTIONS.md; take the row out of here once Skyy has answered (the answer then decides the fix)
+P5_ASKED = {
+    "<= 1 h without a gear upgrade before the cap (A:187 Q2)":
+        "P5 fix round: the +6 item level-up cap (LOCKED by Skyy, docs/answered/gear.md 2026-10-04 + 10-09) is the bottleneck: p90 2.02 h (+10 would be 0.72 h) "
+        "- the gaps sit between metal bands 7-8 levels apart once every slot is at +6. Raise the cap to +10, or let the UT meter run before the cap too? [keep +6 until Skyy answers]",
+}
+
+
+def p5_kit():
+    rows, _tot, _bp = p5_split()
+    return math.prod(d for _n, _s, d, _e in rows), math.prod(e for _n, _s, _d, e in rows)
+
+
+def p5_ok_text(t, ok):
+    return "yes" if ok else ("NO - asked Skyy" if t in P5_ASKED else "NO")
+
+
+def p5_rows():
+    """(target, model text, ok) for the --check / the targets.md section"""
+    tab = p5_roll_table()
+    out = []
+    worst = 0.0
+    for r in P5_RARS:
+        got, want = tab[r], P5_TABLE_SPEC[r]
+        for g, w in zip(got, want):
+            worst = max(worst, abs(g - w) / w)
+    out.append(("Roll table within +-8 % of spec 2.3 (weapon / armor DPS / armor EHP, mean + p90)", "worst %.1f %%" % (100 * worst), worst <= P5_TOL))
+    rows, tot, _bp = p5_split()
+    shares = [math.log(d * e) / tot * 100 for _n, _s, d, e in rows]
+    ok = all(abs(sh - s) <= 4 for sh, (_n, s, _d, _e) in zip(shares, rows))
+    out.append(("Split 35 / 30 / 20 / 15 (A:190 Q15)", " / ".join("%.0f" % x for x in shares) + " %% of ln %.2f" % tot, ok))
+    kd, ke = p5_kit()
+    out.append(("Kit best / plain DPS ~x3.2, EHP ~x2.8 +-15 % (P5 1 / 7.5)", "DPS x%.2f, EHP x%.2f" % (kd, ke),
+                abs(kd / P5_KIT_SPEC[0] - 1) <= P5_KIT_TOL and abs(ke / P5_KIT_SPEC[1] - 1) <= P5_KIT_TOL))
+    w_bp = tab["mythic"][1] / tab["normal"][0]
+    out.append(("Weapon best / plain ~x2.2 (P5 2.3)", "x%.2f" % w_bp, 1.9 <= w_bp <= 2.5))
+    a_bp = tab["mythic"][5] / tab["normal"][4]
+    out.append(("Armor EHP best / plain ~x1.87 (P5 2.3)", "x%.2f" % a_bp, 1.7 <= a_bp <= 2.05))
+    cp_d, cp_e, cb_d, cb_e = p5_charms()
+    out.append(("Void Charms Balance best / plain x1.25 +- 0.05 both ways (P5 4.2)", "DPS x%.2f, EHP x%.2f" % (cb_d / cp_d, cb_e / cp_e),
+                abs(cb_d / cp_d - 1.25) <= 0.05 and abs(cb_e / cp_e - 1.25) <= 0.05))
+    pr = p5_pet_rows()
+    out.append(("Combat pets: Lv 100 at the start rarity = 1 + 0.42 x rarity +- 5 % (P5 5.2.1)", "%d / %d kinds" % (sum(1 for x in pr if x[5]), len(pr)),
+                all(x[5] for x in pr)))
+    ut_h, ut_dry = p5_ut_sim()
+    out.append(("UT 1-2 / h hunting (A:190 Q16)", "%.2f / h, longest dry %.2f h" % (ut_h, ut_dry), UT_PER_H[0] <= ut_h <= UT_PER_H[1] and ut_dry <= MAX_GAP_H))
+    my_m, my_w = p5_mythic_sim()
+    out.append(("Mythic 1 per 5-10 boss kills (economy.md:162)", "mean %.1f, most %d" % (my_m, my_w), MYTHIC_PER_BOSS[0] <= my_m <= MYTHIC_PER_BOSS[1] and my_w <= 10))
+    ur = p5_upgrade_rows()
+    out.append(("<= 1 h without a gear upgrade before the cap (A:187 Q2)", "p90 %.2f h (with level-ups)" % ur[-1][2], ur[-1][2] <= MAX_GAP_H))
+    t50, _pl = p5_pet_xp_trace("Mining")
+    t50c, _pc = p5_pet_xp_trace("Class")
+    out.append(("A pet reaches its Lv 50 cap at hour 28-33 of run 1 (P5 5.2.6)", "Mining pet %s h, combat pet %s h" % (fmt(t50), fmt(t50c)),
+                t50 is not None and 28 <= t50 <= 33))
+    f17, f95 = p5_gather_fortune("mining", 210, 17), p5_gather_fortune("mining", 490, 95)
+    out.append(("Mining Power Fortune vs the 1.1 budget +-15 % (P5 4.2.5: end of Zone 1 51, Zone 5 257)", "%.0f / %.0f (pw.Mining.dd.mining %g)" % (f17, f95, P5_GATHER_DD["mining"]),
+                abs(f17 / 51.0 - 1) <= 0.15 and abs(f95 / 257.0 - 1) <= 0.15))
+    zr = p5_fortune_rows()
+    out.append(("Mining tree Fortune <= 40 (TREE_FORT_MAX)", "40.0 (Rich Seams 7.5 + 15 + 7.5 + 10; tools/trees_v3_effects.py check())", True))
+    out.append(("Fortune budget end of Zone 5 ~1300 (P5 1.1)", "%.0f" % zr[-1][9], 1200 <= zr[-1][9] <= 1450))
+    return out
+
+
+def p5_md():
+    """### 7. Power sources (P5) for research/balance/targets.md"""
+    tab = p5_roll_table()
+    old = p5_roll_table_034()
+    out = ["", "### 7. Power sources (P5, research/Balance-P5-Power-Spec.md; Normal, M melee class; `python tools/balance_model.py --power`)", ""]
+    rows, tot, best_pet = p5_split()
+    out += ["| Source (share) | best / plain DPS | best / plain EHP | log power (share of %.2f) |" % tot, "|---|---|---|---|"]
+    for n, s, d, e in rows:
+        out.append("| %s (%d) | x%.2f | x%.2f | %.2f (%.0f %%) |" % (n, s, d, e, math.log(d * e), 100 * math.log(d * e) / tot))
+    kd = math.prod(d for _n, _s, d, _e in rows)
+    ke = math.prod(e for _n, _s, _d, e in rows)
+    out.append("| **Kit** | **x%.2f** | **x%.2f** | %.2f |" % (kd, ke, tot))
+    out += ["", "1.1 Fortune budget per skill (best-in-tier at the END of each zone; additive, no cap - Skyy):", "",
+            "| End of | Tier T | Tool (+3 a level) | Armor 0.3.34 -> P5 | Void Charms | Pets | Tree | Total | Drops / block |", "|---|---|---|---|---|---|---|---|---|"]
+    for z, T, metal, tool, a0, arm, ch, pet, tree, tt, dpb in p5_fortune_rows():
+        out.append("| Zone %d | %d (%s) | %.0f | %.0f -> %.0f | %.0f | %.0f | %.0f | %.0f | %.1f |" % (z, T, metal, tool, a0, arm, ch, pet, tree, tt, dpb))
+    out += ["", "2.3 Gear rolls (3000 rolls each, full level; armor = a set of 4 at the slot powers %s):" % " / ".join("%g" % P5_SLOT_POWER[s] for s in P5_SLOTS), "",
+            "| Rarity | Weapon DPS mean (p90) | Armor set DPS mean (p90) | Armor set EHP mean (p90) | 0.3.34 weapon / armor DPS / armor EHP (mean) |", "|---|---|---|---|---|"]
+    for r in P5_RARS:
+        v = tab[r]
+        o = old[r]
+        out.append("| %s | %.2f (%.2f) | %.2f (%.2f) | %.2f (%.2f) | %.2f / %.2f / %.2f |" % (r.capitalize(), v[0], v[1], v[2], v[3], v[4], v[5], o[0], o[1], o[2]))
+    cp_d, cp_e, cb_d, cb_e = p5_charms()
+    out += ["", "4.2 Void Charms (DERIVED): Normal lines + Balance at AP %d = DPS x%.2f / EHP x%.2f; Mythic lines + Omni (AP %d, M %.2f) = x%.2f / x%.2f -> best / plain **x%.2f / x%.2f**. "
+            "Gathering Power Fortune = pw.<Power>.dd x M x (1 + skill level / %d): Mining end of Zone 1 (AP 210, Lv 17) %.0f, end of Zone 5 (AP 490, Lv 95) %.0f."
+            % (P5_AP_PLAIN, cp_d, cp_e, P5_AP_BEST, p5_charm_m(P5_AP_BEST), cb_d, cb_e, cb_d / cp_d, cb_e / cp_e, P5_GATHER_LEVEL,
+               p5_gather_fortune("mining", 210, 17), p5_gather_fortune("mining", 490, 95)), ""]
+    out += ["5.2 Pets (Lv 100 at the start rarity; budget 1 + %.2f x rarity; rarity x%s):" % (P5_PET_BUDGET, " / ".join("%g" % x for x in P5_PET_RARITY)), "",
+            "| Kind | Start | Stats (health / mana = %) | DPS x EHP | target | OK |", "|---|---|---|---|---|---|"]
+    for k, r, st, got, want, ok in p5_pet_rows():
+        out.append("| %s | %s | %s | %.3f | %.3f | %s |" % (k, r, ",".join("%s:%g" % kv for kv in st.items()), got, want, "yes" if ok else "NO"))
+    t50, _p = p5_pet_xp_trace("Mining")
+    t50c, _c = p5_pet_xp_trace("Class")
+    t50o, _o = p5_pet_xp_trace("Mining", overflow=True)
+    out += ["", "Gathering pets: a Fortune-only kind %g, two-stat %g at Lv 100: Rare Lv 30 = %.0f Fortune, Mythic 5 pet rebirths Lv 100 = %.0f. "
+            "Pet XP (own %g %%, other %g %%, P3 raw XP): a Mining pet reaches Lv 50 at %s h (skill XP flowing at the cap: %s h), a combat pet at %s h."
+            % (P5_PET_FORT["only"], P5_PET_FORT["two"], P5_PET_FORT["only"] * 1.3 * 0.3, P5_PET_FORT["only"] * 1.75 * 1.25, P5_PET_XP[0], P5_PET_XP[1],
+               fmt(t50), fmt(t50o), fmt(t50c)), ""]
+    ut_h, ut_dry = p5_ut_sim()
+    ut_o, _d = p5_ut_sim(P5_UT_OPEN_PTS_H)
+    ut_np, _d2 = p5_ut_sim(pity=False)
+    my_m, my_w = p5_mythic_sim()
+    out += ["3.2 / 3.3 drops: the UT meter (%.1f %% a point, sure at %g points): hunting %g points / h = **%.2f UT / h, longest dry %.2f h** (open play %.1f points / h: %.2f / h; "
+            "without the sure bag %.2f / h). Mythic: %g %% a boss kill + sure by the %dth dry kill = **mean %.1f kills, most %d**."
+            % (P5_UT["chance"], P5_UT["pity"], P5_UT_HUNT_PTS_H, ut_h, ut_dry, P5_UT_OPEN_PTS_H, ut_o, ut_np, P5_MYTHIC[0], P5_MYTHIC[1], my_m, my_w), ""]
+    out += ["6. The 1-hour rule (40 seeds, the P3 player of section 1; bags %.2f / h, smart %g %%, class lean %g %%, crafting each new metal, level-ups to +6, a 3 %% better item = an upgrade):" % (P5_BAGS_H, P5_SMART, P5_LEAN), "",
+            "| Case | Longest stretch without a gear upgrade before the cap (median / p90) | Whole run 0-%d h (median / p90) |" % RUN1_HOURS, "|---|---|---|"]
+    for name, m1, p1, m2, p2 in p5_upgrade_rows():
+        out.append("| %s | %.2f h / %.2f h | %.2f h / %.2f h |" % (name, m1, p1, m2, p2))
+    out += ["", "| Target (P5 7.5) | Model | OK |", "|---|---|---|"]
+    for t, m, ok in p5_rows():
+        out.append("| %s | %s | %s |" % (t, m, p5_ok_text(t, ok)))
+    out.append("")
+    asked = [(t, q) for t, m, ok in p5_rows() if not ok and t in P5_ASKED for q in [P5_ASKED[t]]]
+    if asked:
+        out.append("Asked Skyy (these rows fail until answered; `--check` lists them but does not fail on them): " + " ".join("**%s** - %s" % (t, q) for t, q in asked))
+        out.append("")
+    out.append("Model notes: DPS = Damage %% x Strength x Charged (%d %% of hits) x crit (base 0, x2 x (1 + Crit Damage %%)) x (1 + the %% lines); EHP = (1 + Health %%) x "
+               "(100 + %g + Defense) / (100 + %g) x Life Steal (+2 %% a point) x Health Regen %% (+0.25 %% a point). The SkyyGear 0.3.35 harness runs the REAL "
+               "GearRoll.rollMods (2000 rolls a rarity) against this table (+-%d %%). The cap stretch (after class Lv %d) has no item levels: the UT meter + boss Mythic pity "
+               "are its upgrades (Skyy: 'unless they are just afk'). Known one-way term NOT in the kit numbers: SkyySkills 0.4.59's class Health %% and Rebirth "
+               "Health / Mana %% (ClassStat.skip / RbStat.skip) still count SkyyGear's skyygear_hp and SkyyPets' skyypet_health / skyypet_mana in their base, "
+               "so a +25 %% class on a gear 30 %% adds ~7.5 %% of the flat max on top (tanks a little above this EHP; no loop - Gear / Pets / Accessories skip "
+               "the Skills keys); the next SkyySkills round adds the three keys to both skip lists." % (100 * P5_CHARGED_SHARE, P5_CLASS_DEF, P5_CLASS_DEF, 100 * P5_TOL, CAP1))
+    return "\n".join(out)
+
+
+def p5_write_section(md):
+    """put p5_md() into research/balance/targets.md as its '### 7. Power sources' section (p4_write_section's rule)"""
+    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "research", "balance", "targets.md"))
+    raw = open(path, "rb").read().decode("utf-8")
+    nl = "\r\n" if "\r\n" in raw else "\n"
+    sec = md.strip("\n").replace("\n", nl) + nl
+    head = "### 7. Power sources"
+    a = raw.find(nl + head)
+    if a < 0:
+        out, how = raw + ("" if raw.endswith(nl) else nl) + nl + sec, "appended"
+    else:
+        a += len(nl)
+        b = len(raw)
+        for mk in (nl + "### ", nl + "## "):
+            j = raw.find(mk, a + len(head))
+            if 0 <= j < b:
+                b = j + len(nl)
+        rest = raw[b:]
+        out, how = raw[:a] + sec + ((nl if not sec.endswith(nl + nl) else "") + rest if rest else ""), "replaced"
+    with open(path, "wb") as f:
+        f.write(out.encode("utf-8"))
+    return how
+
+
 def main():
+    if "--power" in sys.argv:
+        md = p5_md()
+        print(md)
+        print("\nwrote research/balance/targets.md section '### 7. Power sources' (%s)" % p5_write_section(md))
+        if "--check" not in sys.argv:
+            return
     if "--combat" in sys.argv or "--check" in sys.argv:
         md = p4_md()
         print(md)
-        bad = [r for r in p4_rows() if not r[2]]
+        p5r = p5_rows()
+        bad = [r for r in p4_rows() if not r[2]] + [r for r in p5r if not r[2] and r[0] not in P5_ASKED]          # P5: + the power-source rows (not the asked ones)
+        asked = [r for r in p5r if not r[2] and r[0] in P5_ASKED]
         if "--combat" in sys.argv:
             print("\nwrote research/balance/targets.md section '### 6. Combat' (%s)" % p4_write_section(md))
         if "--check" in sys.argv:
             for t, m, _ok in bad:
                 print("FAIL %s: %s" % (t, m))
+            for t, m, _ok in asked:
+                print("ASKED %s: %s - %s" % (t, m, P5_ASKED[t]))
             sys.exit(1 if bad else 0)
         return
     body, gaps, vp = build()
@@ -1209,7 +1827,7 @@ def main():
                     "\n### Top 10 gaps (P3 vs target)\n" + top + "\n\n### Answered (A:197, 2026-10-20)\n"
                     f"- The cap stretch: Skyy picked 'Middle: Lv 50 at ~33 h' -> levels.scale {LEVELS_SCALE} % (class Lv {CAP1} at "
                     f"{fmt(at_level(simulate_today()[0], CAP1)[0])} h in this model); the rest of the 40-50 h run = skills catch up, "
-                    "gear / UT / bosses, overflow XP for Void Particles.\n" + p4_md() + "\n")
+                    "gear / UT / bosses, overflow XP for Void Particles.\n" + p4_md() + "\n" + p5_md() + "\n")
         print("\nwrote research/balance/targets.md")
 
 
