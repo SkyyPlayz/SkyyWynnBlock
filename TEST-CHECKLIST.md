@@ -243,7 +243,7 @@ tests always come first.
 215. Balance P4 combat: Lv 40 sword vs Lv 40 wolf ~12 hits, casters dry in 20-30 s then quick refill, Mage slow in heavy, elites 3x
 216. Rebirth pace (past-life list, no 200 % clamp, unlimited rebirths), Tropical Smoothie XP, Furnace 4x faster + 1000 queue, totem idle 3 days, new-land zone crops
 217. Balance P5: weapon lines x1.18, armor Defense + Health %, UT meter /gear, unidentified weapons hide type, Fabled/Mythic charms, pet % stats
-218. Left Alt opens the Menu (every press? Alt-Tab?), switches in /settings + Server Setup
+218. Left Alt opens the Menu - WORKS (Skyy 10-22); still open: every press? Alt-Tab pops it? switches in /settings + Server Setup
 219. P8b: Mining / Foraging / Combat tree upgrades buyable + working, Stoneskin + Combat Focus free perks, Spoils extra drops (never gear)
 220. Tree-page probe: /skyprobe m1..m7 (big map opens fast? 1,200 / 1,600 elements? lines crisp? picture swap, ring move, tooltips)
 221. P6b: collection tiers shorter, Anvil costs, own-tier ore 2+ hits, F-pickup lock, +10 level-up, armor bags hidden, UT >= Fabled
