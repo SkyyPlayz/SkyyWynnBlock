@@ -175,3 +175,8 @@ section 6 when it reviews the results.
 - 2026-10-23: P7 economy sink survey -> research/cloud/Economy-Sinks-Survey.md (live sinks/sources, 5 unshipped candidate sinks, default pick)
 - 2026-10-23: SkyyZones spec check -> research/cloud/SkyyZones-Spec-Check.md (0.2.0 vs spec gaps, config keys, commands, Z3/Z4 next steps)
 - 2026-10-23: Wynn elements spec review -> research/cloud/Wynn-Elements-Review.md (spec vs shipped, 8 gaps, remaining build order)
+- 2026-10-23: Dragon pet spec review (D5 secret sources, Aures blocks, art list) -> research/cloud/Dragon-Pet-Review.md
+- 2026-10-23: Zone gathering spots spec review + test plan -> research/cloud/Zone-Gathering-Review.md
+- 2026-10-23: Fishing rework survey (4 mods, all learn) -> research/cloud/Fishing-Rework-Survey.md
+- 2026-10-23: UT design draft 12 armor sets + 32 weapons -> research/cloud/UT-Design-Draft.md
+- 2026-10-23: Powders spec draft (5 tiers x 5 elements, sockets, build split) -> research/cloud/Powders-Spec-Draft.md
