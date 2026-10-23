@@ -346,3 +346,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | UI test tour SkyyUiProbe 0.8 (/skyprobe tour, 15 cases, op only) (DEPLOYED 2026-10-22, backup deploy-20261022-2114) | [2026-10](2026-10.md) |
 | UI round 1: ALT - Menu key hint, double-crouch folds the quest tracker, Stats by source (DEPLOYED 2026-10-22, backup deploy-20261022-2244) | [2026-10](2026-10.md) |
 | Wynn elements (Earth / Thunder / Water / Fire / Air + Poison): element damage + Defence, mob elements, pet elements, element charms, element charts; UT bands at zone end (DEPLOYED 2026-10-23, backup deploy-20261023-0205) | [2026-10](2026-10.md) |
+| Elemental swords (Flame / Ice / Poison / Gravity) as Spellblade Mythic boss drops (DEPLOYED 2026-10-23, backup deploy-20261023-0259) | [2026-10](2026-10.md) |
