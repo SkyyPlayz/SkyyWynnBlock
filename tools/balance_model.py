@@ -3116,6 +3116,61 @@ def el_patch(on):
     _P9_RUNS.clear()
 
 
+# ---- the dragon pet fight (SkyyPets 0.4.12, research/Dragon-Pet-Spec.md 4 = round D1; dragond1, 2026-10-23). A summoned dragon gives
+# pets.slot2.buffPercent (50 %) of its buffs AND bites: its bite DPS = share % x (level / 100) x (rarity factor / Rare's) x (1 + 5 % a pet
+# rebirth) x the stage factor (pets.dragon.stageDamage) of the OWNER's own DPS (SkyyPets measures the owner's real hits). The share per kind
+# is fitted so a summoned (fighting) dragon at Lv 100 Rare = the same dragon in the pet slot = the P5 pet budget (+- 5 %), and it is never
+# stronger than in the pet slot by more than 5 % at any level / rarity / rebirth. SkyyPets 0.4.12 builds its row default from this table.
+P5_DRAGONS = {   # kind: (start rarity, Lv 100 stats before rarity, element) = SkyyPets 0.4.11 DRAGONS
+    "DragonPlain": ("Rare", {"str": 28, "cd": 21, "def": 11}, "Earth"), "DragonTundra": ("Rare", {"mp": 28, "def": 11}, "Water"),
+    "DragonFire": ("Rare", {"str": 23, "cc": 9, "cd": 23}, "Fire"), "DragonStorm": ("Rare", {"mp": 42, "mana": 18}, "Thunder"),
+    "DragonSky": ("Rare", {"cc": 18, "cd": 30.5, "def": 7.5}, "Air")}
+P5_DRAGON_SHARE = {"DragonPlain": 23.0, "DragonTundra": 23.0, "DragonFire": 25.5, "DragonStorm": 22.0, "DragonSky": 28.0}   # pets.dragon.fight.share (%)
+P5_DRAGON_STAGE = (40.0, 60.0, 80.0, 100.0)      # pets.dragon.stageDamage (% of the bite: Weakling, Smalling, Biteling, Flyling)
+P5_DRAGON_STAGE_LV = (4, 7, 10)                  # pets.dragon.stage2 / 3 / 4
+P5_DRAGON_SLOT2 = 0.5                            # pets.slot2.buffPercent
+
+
+def p5_dragon_stage(L):
+    return 4 if L >= P5_DRAGON_STAGE_LV[2] else (3 if L >= P5_DRAGON_STAGE_LV[1] else (2 if L >= P5_DRAGON_STAGE_LV[0] else 1))
+
+
+def p5_dragon_share(kind, L, rarity_i, rebirths=0):
+    """the bite DPS as a fraction of the owner's DPS (SkyyPets PetFight.share)"""
+    return (P5_DRAGON_SHARE[kind] / 100.0 * L / 100.0 * P5_PET_RARITY[rarity_i] / P5_PET_RARITY[2] * (1.0 + P5_PET_REB_STAT * rebirths / 100.0)
+            * P5_DRAGON_STAGE[(4 if rebirths > 0 else p5_dragon_stage(L)) - 1] / 100.0)          # a reborn dragon keeps its grown stage (SkyyPets 0.3.0)
+
+
+def p5_dragon_power(kind, L, rarity_i, rebirths=0):
+    """(summoned = 50 % buffs x (1 + bites), the same dragon in the pet slot) - DPS x EHP, its element damage on (pets.elemDmg)"""
+    _r, st, el = P5_DRAGONS[kind]
+    st = dict(st)
+    st["f" + el] = st.get("f" + el, 0.0) + EL_PET_DMG
+    fac = P5_PET_RARITY[rarity_i]
+    pet = p5_pet_power(st, fac, L, rebirths)
+    summ = p5_pet_power(st, fac * P5_DRAGON_SLOT2, L, rebirths) * (1.0 + p5_dragon_share(kind, L, rarity_i, rebirths))
+    return summ, pet
+
+
+def p5_dragon_rows():
+    """(target, model text, ok): Lv 100 at the start rarity on the P5 pet budget (+- 5 %, the pet rows' tolerance); never above the pet slot
+    by more than 5 % (Lv 1-100, Rare-Mythic, 0-5 pet rebirths); the bite share at a few levels (report)"""
+    out = []
+    for k, (r, _st, _el) in P5_DRAGONS.items():
+        ri = P5_PET_RARNAMES.index(r)
+        want = 1.0 + P5_PET_BUDGET * P5_PET_RARITY[ri]
+        got, _pet = p5_dragon_power(k, 100, ri)
+        out.append(("[dragon] %s summoned + fighting, Lv 100 %s = the P5 pet budget +- 5 %%" % (k, r), "%.3f (budget %.3f, bites %.1f %% of your DPS)"
+                    % (got, want, 100.0 * p5_dragon_share(k, 100, ri)), abs(math.log(got) - math.log(want)) <= 0.05 * math.log(want)))
+        worst = max((p5_dragon_power(k, L, i, rb)[0] / p5_dragon_power(k, L, i, rb)[1], L, i, rb)
+                    for L in range(1, 101) for i in range(2, 6) for rb in range(0, 6))
+        out.append(("[dragon] %s summoned never above the pet slot by more than 5 %% (Lv 1-100, Rare-Mythic, 0-5 rebirths)" % k,
+                    "worst x%.3f (Lv %d %s, %d rebirths)" % (worst[0], worst[1], P5_PET_RARNAMES[worst[2]], worst[3]), worst[0] <= 1.05))
+    out.append(("[report] dragon bite share of your DPS at Lv 1 / 5 / 10 / 50 / 100 (Plain, Rare)",
+                " / ".join("%.1f %%" % (100.0 * p5_dragon_share("DragonPlain", L, 2)) for L in (1, 5, 10, 50, 100)), True))
+    return out
+
+
 def el_rows(with_p9=False):
     """(target, model text, ok) - the P5 rows + the P4 time-to-kill rows + (with_p9) the P9 goals, all with the elements ON"""
     off = p5_roll_table()
@@ -3146,6 +3201,7 @@ def el_rows(with_p9=False):
                     abs(k_on[0] / off_k[0] - 1) <= 0.08 and abs(k_on[1] / off_k[1] - 1) <= 0.08))
         for a in EL_AFFIN:
             out.append(("[report] a %+d %% mob with a 6 %% element weapon: the hit x" % a, "x%.3f" % ((100.0 + 6.0 * (1 + a / 100.0)) / 106.0), True))
+        out += p5_dragon_rows()          # dragond1 (SkyyPets 0.4.12): the summoned dragon's bites on the P5 pet budget
         if with_p9:
             for g_, m_, ok_, fx_ in p9_rows():
                 out.append(("[elements on] P9 " + g_, m_, ok_))

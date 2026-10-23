@@ -31,6 +31,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-23, dragon D1 + D6 dragond1): SkyyPets 0.4.12 + SkyyMobs 0.1.18 - no new floor, no saved data, no migration (9 new Server Setup > Pets > Dragons rows, 2 new Mobs > Ranks rows; a missing line = the default). They roll back alone: Pets 0.4.11 = summoned dragons stop fighting (its role is Invulnerable again; the 0.4.11 floor stands - never below 0.4.11 once a dragon or dragon egg exists); Mobs 0.1.17 = bosses stop dropping dragon eggs (eggs already dropped stay SkyyPets items). Mobs 0.1.18 caps the egg chance at SkyyGear's live loot.boss.mythic (config:fn:SkyyGear get; Gear absent = 12 %).
 # FLOOR (2026-10-23, dragon pet D0): NEVER roll SkyyPets below 0.4.11 once a dragon pet or a Skyy_PetEgg_Dragon_* item exists (unknown kind / items to older jars); take dragon eggs out of the Hatchery before any rollback; the jar ships the Skyy_Pet_Dragon role - switch pets off for one session before removing the jar (0.2 removal rule).
 SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
@@ -86,7 +87,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.17"), ("SkyyWorldGen", "0.7.8"),
+    ("SkyyMobs", "0.1.18"), ("SkyyWorldGen", "0.7.8"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -96,7 +97,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.11"),
+    ("SkyyPets", "0.4.12"),
     ("SkyyWardrobe", "0.2.10"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
