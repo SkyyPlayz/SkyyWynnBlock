@@ -26,7 +26,8 @@ NOTE = '''0.3.44 (2026-10-23) = TIER TAG ON TOP + SMITHING SET PAGES (round gear
   2. NO DUPLICATE: the grey italic flavour slot no longer starts with the tag; a lang description that leads with a tag shows only the text after
      " - " (GearView.descRest; its <color is=...> spans kept by GearView.markup), a description that is only a tag shows no flavour line.
      Every other line, the Ability 1 block and the order below stay as 0.3.43.
-  3. PLAIN TEXT (gear:fn:describe, /gear, the Auctions box): the tag joins the name line ("Woolen Cuirass - T1 Crude Cloth") - same line count.
+  3. PLAIN TEXT (gear:fn:describe, /gear, the Auctions box): line 0 stays the BARE name (Auctions gearName / stackName, Wardrobe twinKey,
+     Exploration loot cards read it); the tag leads line 1 ("T1 Crude Cloth - Lv. Min: 1 Combat") - same line count.
   4. SET NAMES (Skyy, on Smithing > Foraging Armor "FORAGING F2 SET (FORAGING, LV 15-23)": "why is it called foraging F2 set? just call it maple
      set"): every Smithing set card / page heading = GearSmith.setName - THE RULE for every family: the words all the set's pieces' names start
      with, the slot noun dropped, then the kind words Bark / Angler and any tier code dropped ("Maple Bark Helm" ... -> "Maple Set (Foraging,
@@ -46,10 +47,14 @@ NOTE = '''0.3.44 (2026-10-23) = TIER TAG ON TOP + SMITHING SET PAGES (round gear
      skill row at the highest band start + every material "Name: N (you have H)"; no coins - neither path takes coins).
      CLICK: the craft guard (token, pace, profile), then the summed cost + skill are checked FIRST - anything short = nothing moves, the red
      row is the answer. Then one upPiece (the Anvil's own tier-up: keeps rarity, check, inventory then bags, its own atomic take + refund,
-     Requip take-out) per piece whose tier below the player owns - never two of one piece; pieces without one are skipped and listed. Craft
+     Requip take-out) per piece whose tier below the player owns AND passes the per-piece checks upPiece makes (GearHubOpen.plan / canUp:
+     GearUp.check on those pieces - unidentified, a stack, a Set piece off the ladder, the skill gate, blockWhy; review fix) - never two of
+     one piece; the others are skipped and listed with their reason ("Skipped: Maple Bark Cuirass (Identify that item first ...)") and are not
+     in the shown total. Craft
      every missing piece: locked / level-gated pieces are skipped (craftAll's rule), the rest's summed materials checked first.
-     NOT all-or-nothing ACROSS pieces after the check: if the engine refuses piece 3 mid-way, pieces 1-2 stay upgraded (each paid, nothing lost
-     or doubled) and the rest stop (GearHubOpen.upSet). A cross-piece undo would need a reverse tier-up - left for a full round.
+     NOT all-or-nothing ACROSS pieces after the check: a piece upPiece still refuses (nothing moved for it) is noted and the rest carry on
+     (GearHubOpen.upSet collects the reasons; each piece paid on its own, nothing lost or doubled). A cross-piece undo would need a reverse
+     tier-up - left for a full round.
   SAVED DATA: none. The tooltip sig hashes every line, so each stack re-renders ONCE after the update. No command / system / class / row.
   ROLLBACK to 0.3.43: safe alone (tooltips move the tag back down on the next re-render; the Smithing page goes back to the old headings).
 '''
@@ -193,10 +198,11 @@ P.rep('''  txt.add(nameText(id, d));
   lines(id, d, owner, txt, col);
   java.util.ArrayList out = new java.util.ArrayList();
   String tg0 = topTag(id, @PKG@.GearData.slotOf(id), descText(id));          // 0.3.44
+  boolean tgAt = false;
   for (int i = 0; i < txt.size(); i++) {
     String t = ((String) txt.get(i)).replace(@PKG@.GearSigX.SEP, "");          // 0.3.43: a multi-colour line's joints
     if (t.length() == 0 || FLAVOR.equals(t) || REFORGE_HINT.equals(t)) continue;
-    if (tg0 != null && out.size() == 1 && t.equals(tg0)) { out.set(0, (String) out.get(0) + " - " + tg0); tg0 = null; continue; }          // 0.3.44
+    if (tg0 != null && out.size() == 1 && t.equals(tg0)) { tgAt = true; continue; }          // 0.3.44: line 0 = the bare name (Auctions / Wardrobe / Exploration read it); the tag joins line 1
 ''')
 
 # ################################################################################################ 0.3.44 items 2-4: the Smithing set pages
@@ -319,25 +325,29 @@ public static String setName(String key, String[] outs, int c) {
 # GearUp.cost(below, piece), have = inventory + bags (GearUp.have + bagHave, the tier-up's own count), the skill row = the highest band start
 # (GearArmLv's gate skill, GearGate.have). Craft set: every missing piece with a recipe the player may craft (allowed + GearRoll.blockWhy =
 # craftAll's own skip rule; skipped pieces are listed, never counted), have = the craft's own count (haveC). No coins: neither the Smithing craft nor the tier-up takes coins.
-# the upgrade-set targets + their SUMMED tier-up cost: Object[] { String[] targets, LinkedHashMap id -> Long, String[] skipped } (pure over
-# the owned id set; GearUp.cost = the Server Setup ladder rows)
+# the upgrade-set targets + their SUMMED tier-up cost: Object[] { String[] targets, LinkedHashMap id -> Long, String[] skipped, String[] why }
+# (pure over the owned id set + why = piece -> the reason upPiece would refuse it (GearHubOpen.plan: GearUp.check on the player's pieces of
+# the tier below - unidentified, a stack, a Set piece off the ladder, the skill gate, blockWhy); GearUp.cost = the Server Setup ladder rows)
 M(gsm, r"""
-public static Object[] upTotal(String[] outs, java.util.HashSet own) {
+public static Object[] upTotal(String[] outs, java.util.HashSet own, java.util.HashMap why) {
   java.util.LinkedHashMap need = new java.util.LinkedHashMap();
   java.util.ArrayList tg = new java.util.ArrayList();
   java.util.ArrayList skip = new java.util.ArrayList();
+  java.util.ArrayList ws = new java.util.ArrayList();
   for (int i = 0; outs != null && i < outs.length; i++) {
     String p = prevOf(outs[i]);
-    if (p == null || own == null || !own.contains(p)) { skip.add(outs[i]); continue; }
+    if (p == null || own == null || !own.contains(p)) { skip.add(outs[i]); ws.add(p == null ? "not made from another piece" : "you have no " + @PKG@.Gear.itemName(p)); continue; }
+    Object w = why == null ? null : why.get(outs[i]);
+    if (w instanceof String) { skip.add(outs[i]); ws.add((String) w); continue; }
     Object[] co = null;
     try { co = @PKG@.GearUp.cost(p, outs[i]); } catch (Throwable t) { co = null; }
     if (co != null && co[0] != null && co[1] != null) @PKG@.GearReq.addI(need, (String[]) co[0], (int[]) co[1]);
     tg.add(outs[i]);
   }
-  return new Object[] { (String[]) tg.toArray(new String[0]), need, (String[]) skip.toArray(new String[0]) };
+  return new Object[] { (String[]) tg.toArray(new String[0]), need, (String[]) skip.toArray(new String[0]), (String[]) ws.toArray(new String[0]) };
 }""")
 M(gsm, r"""
-public static Object[] setCost(java.util.UUID u, @INV@ inv, Object[] g, java.util.HashMap hc) {
+public static Object[] setCost(java.util.UUID u, @INV@ inv, Object[] g, java.util.HashMap hc, java.util.HashMap why) {
   String[] outs = (String[]) g[1];
   String[] rids = (String[]) g[2];
   boolean up = tierUp(g);
@@ -346,20 +356,22 @@ public static Object[] setCost(java.util.UUID u, @INV@ inv, Object[] g, java.uti
   java.util.HashMap hv = new java.util.HashMap();
   java.util.ArrayList tg = new java.util.ArrayList();
   java.util.ArrayList skip = new java.util.ArrayList();
+  java.util.ArrayList sw = new java.util.ArrayList();
   java.util.ArrayList rows = new java.util.ArrayList();
   int lvNeed = 0;
   String sk = null;
   java.util.HashSet al = null;
   if (!up) al = allowed(u);
   Object[] ut = null;
-  if (up) ut = upTotal(outs, own);
+  if (up) ut = upTotal(outs, own, why);
   java.util.HashSet upT = new java.util.HashSet();
   if (ut != null) {
     need = (java.util.LinkedHashMap) ut[1];
     String[] t0 = (String[]) ut[0];
     for (int i = 0; i < t0.length; i++) upT.add(t0[i]);
     String[] s0 = (String[]) ut[2];
-    for (int i = 0; i < s0.length; i++) skip.add(s0[i]);
+    String[] w0 = (String[]) ut[3];
+    for (int i = 0; i < s0.length; i++) { skip.add(s0[i]); sw.add(w0[i]); }
   }
   for (int i = 0; i < outs.length; i++) {
     if (up) {
@@ -367,7 +379,8 @@ public static Object[] setCost(java.util.UUID u, @INV@ inv, Object[] g, java.uti
       if (sk == null) sk = @PKG@.GearArmLv.skillOf(outs[i]);
     } else {
       if (rids[i] == null || own.contains(outs[i])) continue;
-      if ((al != null && !al.contains(rids[i])) || @PKG@.GearRoll.blockWhy(outs[i], u) != null) { skip.add(outs[i]); continue; }          // locked / level too low: skipped (craftAll's rule)
+      String bw0 = al != null && !al.contains(rids[i]) ? "locked" : @PKG@.GearRoll.blockWhy(outs[i], u);
+      if (bw0 != null) { skip.add(outs[i]); sw.add(bw0); continue; }          // locked / level too low: skipped (craftAll's rule)
       Object[] row = byRid(rids[i]);
       Object[] h = haveC(hc, u, inv, rids[i], row == null ? null : (@CRR@) row[2]);
       String[] ids = (String[]) h[1];
@@ -391,7 +404,23 @@ public static Object[] setCost(java.util.UUID u, @INV@ inv, Object[] g, java.uti
     else if (!id.startsWith("#") && !id.startsWith("res:") && inv != null) h = (long) (@PKG@.GearUp.have(inv, id) + @PKG@.GearUp.bagHave(u, id));
     @PKG@.GearReq.matRow(rows, matName(id), n, h);
   }
-  return new Object[] { Boolean.valueOf(up), (String[]) tg.toArray(new String[0]), rows, (String[]) skip.toArray(new String[0]) };
+  return new Object[] { Boolean.valueOf(up), (String[]) tg.toArray(new String[0]), rows, (String[]) skip.toArray(new String[0]), (String[]) sw.toArray(new String[0]) };
+}""")
+M(gsm, "public static Object[] setCost(java.util.UUID u, @INV@ inv, Object[] g, java.util.HashMap hc) { return setCost(u, inv, g, hc, null); }")
+# the page's plan: setCost + the per-piece checks - its body becomes GearHubOpen.plan (set below, once that class has its methods)
+M(gsm, "public static Object[] plan(java.util.UUID u, @INV@ inv, Object[] g, java.util.HashMap hc) { return setCost(u, inv, g, hc, null); }")
+# "Skipped: Maple Bark Cuirass (Identify that item first.), ..." ("" = none)
+M(gsm, r"""
+public static String skipText(Object[] sc) {
+  if (sc == null || sc.length < 5) return "";
+  String[] sk = (String[]) sc[3];
+  String[] sw = (String[]) sc[4];
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < sk.length && i < sw.length; i++) {
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(@PKG@.Gear.itemName(sk[i])).append(" (").append(sw[i]).append(")");
+  }
+  return sb.length() == 0 ? "" : "Skipped: " + sb;
 }""")
 # one tier-up row's requirement rows (item 3: "Foraging 15" green / red, "Maple Log: 170 (you have 42)" green / red)
 M(gsm, r"""
@@ -455,8 +484,10 @@ P.rep('''  if (@PKG@.GearSmith.tierUp(g)) {          // 0.3.15: each piece has i
     @PKG@.GearUi.on(b, ev, @BT@.Activating, "#SkyyGBtnAll", @EVD@.of("a", "craftall:" + this.token));
   }''', '''  if (@PKG@.GearSmith.isSet(c)) {          // 0.3.44: EVERY armor set page - "Upgrade the full set" (tier-up sets) / "Craft every missing piece" + the total
     boolean up9 = @PKG@.GearSmith.tierUp(g);
-    Object[] sc9 = @PKG@.GearSmith.setCost(u, inv, g, this.hc);
+    Object[] sc9 = @PKG@.GearSmith.plan(u, inv, g, this.hc);
     java.util.ArrayList cr9 = (java.util.ArrayList) sc9[2];
+    String sk9 = @PKG@.GearSmith.skipText(sc9);
+    if (sk9.length() > 0 && ((String[]) sc9[1]).length > 0) @PKG@.GearReq.add(cr9, sk9, -1);          // review fix: what the button leaves out, and why
     if (((String[]) sc9[1]).length == 0) @PKG@.GearReq.add(cr9, up9 ? "Nothing to upgrade: you have no piece of the tier below" : "You already have every piece", -1);
     reqLine(b, "#SkyyGPRight", "#SkyyGPCost", cr9, 568);
     boolean on9 = up9 ? @PKG@.GearCfg.UP_ON : this.al != null;
@@ -469,9 +500,9 @@ P.rep('''        Object[] ra = @PKG@.GearSmith.craftAll(inv, u, this.playerRef.g
         if (sh8 != null) { this.info = "-Not enough for every missing piece - nothing was crafted: " + sh8; rebuild(); return; }
         Object[] ra = @PKG@.GearSmith.craftAll(inv, u, this.playerRef.getUsername(), rids, outs, to);''')
 # ---- GearHubOpen.upSet: the full-set tier-up, one piece after another through upPiece (each piece = the Anvil's own atomic tier-up)
-P.rep('''ghvis.addInterface(pool.get("java.util.function.Function"))''', '''# 0.3.44: the full-set Upgrade (the caller checked the SUMMED cost + skill first: GearSmith.setCost). One upPiece per target (never two of
-# one piece), in page order; the first refusal stops the rest (the pieces before it stay upgraded and paid - each tier-up is its own
-# atomic Anvil transaction with its own refund). SEAM = the harness's stand-in for upPiece (null in game). Object[] { Integer done, String text }
+P.rep('''ghvis.addInterface(pool.get("java.util.function.Function"))''', '''# 0.3.44: the full-set Upgrade (the caller checked the SUMMED cost + skill first: GearHubOpen.plan). One upPiece per target (never two of
+# one piece), in page order; a refused piece (nothing moved for it) is noted and the rest carry on (review fix) - each tier-up is its own
+# atomic Anvil transaction with its own refund. SEAM = the harness's stand-in for upPiece (null in game). Object[] { Integer done, String text }
 F(ghop, "public static volatile java.util.function.Function SEAM = null;")
 M(ghop, r"""
 public static Object[] upSet(@INV@ inv, java.util.UUID u, @PR@ pr, String[] tg) {
@@ -488,12 +519,61 @@ public static Object[] upSet(@INV@ inv, java.util.UUID u, @PR@ pr, String[] tg) 
       got.append(s.substring(1));
       continue;
     }
-    stop = s.substring(1);
-    break;
+    stop = (stop == null ? "" : stop + "; ") + @PKG@.Gear.itemName(tg[i]) + ": " + s.substring(1);
   }
-  if (n == 0) return new Object[] { Integer.valueOf(0), stop == null ? "Nothing to upgrade." : stop };
-  return new Object[] { Integer.valueOf(n), "Upgraded " + n + ": " + got + (stop != null ? " - then stopped: " + stop : "") };
+  if (n == 0) return new Object[] { Integer.valueOf(0), stop == null ? "Nothing to upgrade." : "Nothing upgraded - " + stop };
+  return new Object[] { Integer.valueOf(n), "Upgraded " + n + ": " + got + (stop != null ? " - not upgraded: " + stop : "") };
 }""")
+# review fix: the per-piece checks upPiece makes (GearUp.check: unidentified, a stack, a Set piece off the ladder, the skill gate, blockWhy) on
+# the player's pieces of the tier below (inventory rows, then Requip) - null = one can tier up (or none is owned: upTotal lists that), else
+# the first reason. The cost is NOT checked per piece here (the summed row does that).
+M(ghop, r"""
+public static String canUpOf(java.util.ArrayList st, java.util.UUID u) {
+  String w0 = null;
+  for (int i = 0; st != null && i < st.size(); i++) {
+    Object[] c = null;
+    try { c = @PKG@.GearUp.check((@IS@) st.get(i), u); } catch (Throwable t) { c = null; }
+    if (c != null && c[0] == null) return null;
+    if (w0 == null) w0 = c == null ? "The item moved - click Refresh." : (String) c[0];
+  }
+  return w0;
+}""")
+M(ghop, r"""
+public static String canUp(@INV@ inv, java.util.UUID u, String p) {
+  if (inv == null || p == null) return null;
+  java.util.ArrayList st = new java.util.ArrayList();
+  java.util.ArrayList rs = @PKG@.GearUp.rows(inv);
+  for (int i = 0; i < rs.size(); i++) {
+    int[] a = (int[]) rs.get(i);
+    @IS@ x = @PKG@.GearStamp.at(inv, a[0], a[1]);
+    if (x != null && !x.isEmpty() && p.equals(x.getItemId())) st.add(x);
+  }
+  java.util.ArrayList rq = null;
+  try { rq = @PKG@.ReforgePage.rqRows(u, 1); } catch (Throwable t1) { rq = null; }
+  for (int i = 0; rq != null && i < rq.size(); i++) {
+    Object[] e = (Object[]) rq.get(i);
+    if (!p.equals(e[1])) continue;
+    @IS@ v = new @IS@(p, 1);
+    if (e[2] instanceof @BD@) v = v.withMetadata(@PKG@.GearDefs.DOC_KEY, (@BV@) e[2]);
+    st.add(v);
+  }
+  if (st.isEmpty()) return null;
+  return canUpOf(st, u);
+}""")
+M(ghop, r"""
+public static Object[] plan(java.util.UUID u, @INV@ inv, Object[] g, java.util.HashMap hc) {
+  if (g == null || inv == null || !@PKG@.GearSmith.tierUp(g)) return @PKG@.GearSmith.setCost(u, inv, g, hc, null);
+  String[] outs = (String[]) g[1];
+  java.util.HashMap why = new java.util.HashMap();
+  for (int i = 0; i < outs.length; i++) {
+    String p = @PKG@.GearSmith.prevOf(outs[i]);
+    if (p == null) continue;
+    String w = canUp(inv, u, p);
+    if (w != null) why.put(outs[i], w);
+  }
+  return @PKG@.GearSmith.setCost(u, inv, g, hc, why);
+}""")
+gsm.getDeclaredMethod("plan").setBody(J(r"""{ return @PKG@.GearHubOpen.plan($1, $2, $3, $4); }"""))
 ghvis.addInterface(pool.get("java.util.function.Function"))''')
 P.rep('''# ---- the set page's Upgrade click (tup:<row>:<token>)''', '''# 0.3.44: the set page's "Upgrade the full set" click (upall:<token>): the craft guard, the SUMMED cost + skill checked first (short = nothing moves)
 M(spg, r"""
@@ -508,19 +588,16 @@ public boolean upAllClick(@REF@ ref, @ST@ st, String a) {
   try { p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType()); } catch (Throwable t2) { p = null; }
   @INV@ inv = p == null ? null : p.getInventory();
   if (inv == null) { this.info = "-Your inventory cannot be read right now - nothing changed."; rebuild(); return true; }
-  Object[] sc = @PKG@.GearSmith.setCost(u, inv, this.grp, null);
+  Object[] sc = @PKG@.GearHubOpen.plan(u, inv, this.grp, null);
   String[] tg = (String[]) sc[1];
   String sh = @PKG@.GearReq.firstShort((java.util.ArrayList) sc[2]);
-  String[] sk = (String[]) sc[3];
-  if (tg.length == 0) this.info = "-Nothing to upgrade: you have no piece of the tier below.";
+  String skt = @PKG@.GearSmith.skipText(sc);
+  if (tg.length == 0) this.info = "-Nothing to upgrade" + (skt.length() > 0 ? " - " + skt : ": you have no piece of the tier below.");
   else if (sh != null) this.info = "-Not enough to upgrade the full set - nothing was used: " + sh;
   else {
     Object[] r = @PKG@.GearHubOpen.upSet(inv, u, this.playerRef, tg);
     StringBuilder sb = new StringBuilder((((Integer) r[0]).intValue() > 0 ? "+" : "-") + (String) r[1]);
-    if (sk.length > 0) {
-      sb.append(" - skipped (no piece of the tier below): ");
-      for (int i = 0; i < sk.length; i++) { if (i > 0) sb.append(", "); sb.append(@PKG@.Gear.itemName(sk[i])); }
-    }
+    if (skt.length() > 0) sb.append(" - ").append(skt);
     this.info = sb.toString();
   }
   rebuild();
@@ -529,6 +606,20 @@ public boolean upAllClick(@REF@ ref, @ST@ st, String a) {
 # ---- the set page's Upgrade click (tup:<row>:<token>)''')
 P.rep('''  if (!a.startsWith("tup:")) return false;''', '''  if (a.startsWith("upall:")) return upAllClick(ref, st, a);          // 0.3.44
   if (!a.startsWith("tup:")) return false;''')
+
+P.rep('''  String[] a = new String[out.size()];
+  for (int i = 0; i < a.length; i++) a[i] = (String) out.get(i);
+  return a;
+}""")
+# one line of the modifiers''', '''  if (tgAt) {          // 0.3.44 review fix: the tag joins line 1, never the name line
+    if (out.size() > 1) out.set(1, tg0 + " - " + (String) out.get(1));
+    else out.add(tg0);
+  }
+  String[] a = new String[out.size()];
+  for (int i = 0; i < a.length; i++) a[i] = (String) out.get(i);
+  return a;
+}""")
+# one line of the modifiers''')
 
 assert P.s.count("registerCommand(") == REG0 and P.s.count("registerSystem(") == SYS0 and P.s.count("mk(\"") == CLS0, "0.3.44: no class / command / system"
 _i = P.s.index

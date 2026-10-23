@@ -12,12 +12,12 @@ Phases (fresh child processes / JVMs, tools/harness_kit.py):
               tag_for, the rest without it); markup keeps <color> spans; topTag for a T1 cloth chest, a metal weapon, a tool, a lang-tagged own
               tool, a weapon without a metal word (= tools/tier_tags.py combat_tag on its band start) and untiered items (no tag); then
               GearView.lines - THE tooltip text - for those items: the tag is line 0 (bold label colour), exactly once, the old flavour tag gone,
-              every line <= 70 characters; unidentified pieces too; plain() joins the tag to the name line (same line count)
+              every line <= 70 characters; unidentified pieces too; plain() keeps line 0 the bare name, the tag leads line 1 (same line count)
               SMITHING (items 4-6): setWords on EVERY set's real piece names (this jar's lang + the vanilla lang, read only): Maple / Oak / Beech /
               Wheat / Copper / Lead, no name of 60+ carries a tier code, every gathering set unique in its family; noCodes; the colour rows
               (skill met / short / unknown, material enough / short / unknown, GearReq colours, firstShort); upTotal = the summed per-piece
-              tier-up cost with the missing piece skipped; upSet through its SEAM: all four once in order, a forced failure on piece 3 stops
-              (piece 4 never tried), the first refused = nothing
+              tier-up cost with the missing piece skipped; canUpOf refuses an unidentified piece + a stack of 2 (GearUp.check), upTotal skips them
+              in the middle of the set with their reasons and leaves them out of the total; upSet through its SEAM carries on past refusals
   AA engine-access audit
 NOT COVERED (UNVERIFIED in game): the real hover look (the client draws "Slot: Chest" above our first description line), the Cloth / Light
 weight word (the bare JVM has no item sound sets, so the Woolen Cuirass reads Heavy there - the tag = "T1 Crude " + GearView.WT_NAME[weightOf]),
@@ -47,10 +47,10 @@ PKG = "com.skyy.gear."
 ADDED = []
 EXPECT = {
     "GearView": ["+f TAG_RX", "+m bandTag", "+m descRest", "+m descTag", "+m descText", "+m markup", "+m topTag", "~<clinit>", "~m descMsg", "~m lines", "~m plain"],
-    "GearSmith": ["+f CODE_RX", "+f KIND_WORDS", "+m firstWord", "+m isCode", "+m kindWord", "+m noCodes", "+m pieceRows", "+m setCost", "+m setName", "+m setWords",
-                  "+m upTotal", "~<clinit>", "~m groupName", "~m groups"],
+    "GearSmith": ["+f CODE_RX", "+f KIND_WORDS", "+m firstWord", "+m isCode", "+m kindWord", "+m noCodes", "+m pieceRows", "+m plan", "+m setCost", "+m setCost",
+                  "+m setName", "+m setWords", "+m skipText", "+m upTotal", "~<clinit>", "~m groupName", "~m groups"],          # setCost x2 (4 / 5 args)
     "GearReq": ["+m addI", "+m addL", "+m firstShort", "+m has", "+m matRow", "+m sk", "+m skRow"],
-    "GearHubOpen": ["+f SEAM", "+m upSet", "~<clinit>"],
+    "GearHubOpen": ["+f SEAM", "+m canUp", "+m canUpOf", "+m plan", "+m upSet", "~<clinit>"],
     "SmithPage": ["+m reqLine", "+m tierRow", "+m upAllClick", "-m tierRow", "~m card", "~m pieceRow", "~m piecesArea", "~m skyHde", "~m tupClick"],          # tierRow(.., inv)
     "SkyyGearPlugin": ["~m setup"],
     "CfgFn": ["~m opExport"], "CfgRows": ["~m header"], "CfgRows2": ["~<clinit>"], "GearCfg": ["~m defaultsText"],          # the version in the file header
@@ -83,7 +83,7 @@ def run_static(out, jar, scratch, home):
 
 def run_exec(out, jar, scratch, home):
     import jpype
-    from jpype import JClass, JString, JArray, JImplements, JOverride, JInt
+    from jpype import JClass, JString, JArray, JImplements, JOverride, JInt, JObject, JBoolean
     K = HK.Child(out)
     HK.jvm([jar, B.SERVER_JAR, B.JAVASSIST], verify=True)
     JClass("java.lang.System").getProperties().put("skyy.bridge", JClass("java.util.concurrent.ConcurrentHashMap")())
@@ -176,12 +176,22 @@ def run_exec(out, jar, scratch, home):
     except Exception as ex:
         K.check(False, "X lines(Tool_Feedbag) ran: %s" % str(ex)[:200])
 
-    # ---- plain(): the tag joins the name line, same count as without it
+    # ---- plain(): line 0 = the BARE name (Auctions gearName / stackName, Wardrobe twinKey, Exploration loot cards read it); the tag joins line 1
     pl = [str(x) for x in GV.plain(JString("Weapon_Sword_Iron"), doc("rare", 10), None)]
     K.notes.append("X plain(Weapon_Sword_Iron): %s" % pl)
-    K.check(pl[0].endswith(" - T2 Iron") and sum(1 for x in pl if "T2 Iron" in x) == 1, "X plain(): the name line carries the tag once: %r" % pl[0])
+    K.eq(pl[0], str(GV.nameText(JString("Weapon_Sword_Iron"), doc("rare", 10))), "X plain(): line 0 is the bare item name")
+    K.check(pl[1].startswith("T2 Iron - ") and sum(1 for x in pl if "T2 Iron" in x) == 1, "X plain(): the tag leads line 1, once: %r" % pl[1])
     pc = [str(x) for x in GV.plain(JString(CH), doc("rare", 1), None)]
-    K.check(pc[0].endswith(" - " + tt(CH, slot(CH))) and sum(1 for x in pc if "T1 Crude" in x) == 1, "X plain(cloth chest): %r" % pc[0])
+    K.check(pc[0] == str(GV.nameText(JString(CH), doc("rare", 1))) and pc[1].startswith(tt(CH, slot(CH)) + " - ") and sum(1 for x in pc if "T1 Crude" in x) == 1, "X plain(cloth chest): %r" % pc[:2])
+    pu = [str(x) for x in GV.plain(JString("Tool_Feedbag"), doc("rare", 1), None)]
+    K.check(not [x for x in pu if re.match(r"T\d+ ", x)], "X plain(an untiered tool): no tag %s" % pu[:3])
+    # the same number of lines as without the tier line: the lines() text minus blanks / flavour / reforge hint (the Ability fold aside)
+    txt0, col0 = AL(), AL()
+    GV.lines(JString("Tool_Pickaxe_Iron"), doc("rare", 10), None, txt0, col0)
+    raw = [str(txt0.get(k)) for k in range(txt0.size())]
+    kept = [x for x in raw if x and x != FLAV and x != str(GV.REFORGE_HINT)]
+    pp = [str(x) for x in GV.plain(JString("Tool_Pickaxe_Iron"), doc("rare", 10), None)]
+    K.eq(len(pp), 1 + len(kept) - 1, "X plain(Iron pickaxe): line count = name + its lines, the tag line folded into line 1 (%d)" % len(pp))
 
     # ================================================================ items 4-6: the Smithing set pages
     S, Req, HO, Up = P("GearSmith"), P("GearReq"), P("GearHubOpen"), P("GearUp")
@@ -237,7 +247,7 @@ def run_exec(out, jar, scratch, home):
     own = JClass("java.util.HashSet")()
     for x in SL[:3]:
         own.add("Armor_Foraging_Beech_" + x)
-    ut = S.upTotal(JA(f2), own)
+    ut = S.upTotal(JA(f2), own, None)
     tg = [str(x) for x in ut[0]]
     need = dict((str(k), int(v)) for k, v in ut[1].items())
     per = {}
@@ -248,7 +258,7 @@ def run_exec(out, jar, scratch, home):
     K.eq((tg, [str(x) for x in ut[2]]), (f2[:3], f2[3:]), "X upTotal: one target per owned tier-below piece, the missing one skipped")
     K.check(need == per and sum(need.values()) > 0, "X upTotal: the summed cost = the sum of each piece's tier-up cost %s" % need)
     K.notes.append("X Maple set total for 3 pieces: %s" % need)
-    K.eq(len(S.upTotal(JA(f2), JClass("java.util.HashSet")())[0]), 0, "X upTotal: nothing owned = no target")
+    K.eq(len(S.upTotal(JA(f2), JClass("java.util.HashSet")(), None)[0]), 0, "X upTotal: nothing owned = no target")
     # ---- 6. the full-set run (GearHubOpen.upSet through the SEAM): all done / a forced failure on piece 3 stops the rest
     calls = []
 
@@ -269,12 +279,74 @@ def run_exec(out, jar, scratch, home):
     calls[:] = []
     HO.SEAM = One(3)
     r = HO.upSet(None, None, None, JA(f2))
-    K.eq((int(r[0]), calls), (2, f2[:3]), "X upSet: a forced failure on piece 3 stops - piece 4 never tried, pieces 1-2 kept (each its own paid tier-up)")
-    K.check("then stopped: The inventory refused" in str(r[1]), "X ... the message names the stop: %s" % str(r[1])[:120])
+    K.eq((int(r[0]), calls), (3, f2), "X upSet: a refusal on piece 3 is noted and the rest carry on (piece 4 tried; each piece its own paid tier-up)")
+    K.check(" - not upgraded: " in str(r[1]) and "The inventory refused" in str(r[1]), "X ... the message collects the reason: %s" % str(r[1])[:160])
+    calls[:] = []
+
+    @JImplements("java.util.function.Function")
+    class Two(object):
+        @JOverride
+        def apply(self, o):
+            calls.append(str(o))
+            return JString("-no " + str(o)) if len(calls) in (2, 3) else JString("+" + str(o) + " (Rare, Lv 15)!")
+    HO.SEAM = Two()
+    r = HO.upSet(None, None, None, JA(f2))
+    K.eq((int(r[0]), calls), (2, f2), "X upSet: two refusals in the middle - all four tried, two done")
+    K.check(str(r[1]).count("no Armor_Foraging_F2_") == 2, "X ... both reasons listed: %s" % str(r[1])[:200])
     calls[:] = []
     HO.SEAM = One(1)
     r = HO.upSet(None, None, None, JA(f2))
-    K.eq((int(r[0]), str(r[1]), calls), (0, "The inventory refused the change - nothing was used.", f2[:1]), "X upSet: the first piece refused = nothing done")
+    K.eq((int(r[0]), calls), (3, f2), "X upSet: the first piece refused, the other three still done")
+    # ---- review fix 1: the per-piece checks BEFORE the total (an unidentified piece + a stack of 2 in the middle of the set)
+    IS = JClass("com.hypixel.hytale.server.core.inventory.ItemStack")
+    Unsafe = JClass("sun.misc.Unsafe")
+    fu = Unsafe.class_.getDeclaredField("theUnsafe")
+    fu.setAccessible(True)
+    un = fu.get(None)
+    fl = dict((str(f.getName()), f) for f in IS.class_.getDeclaredFields())
+
+    def stack(iid, gd, q=1):
+        s_ = un.allocateInstance(IS.class_)
+        md = BD()
+        if gd is not None:
+            md.put(str(Defs.DOC_KEY), gd)
+        for n_, v_ in (("itemId", JString(iid)), ("quantity", JInt(q)), ("metadata", md)):
+            fl[n_].setAccessible(True)
+            fl[n_].set(s_, v_)
+        return s_
+    def cu(*sts):
+        l = AL()
+        for x in sts:
+            l.add(x)
+        r_ = HO.canUpOf(l, None)
+        return None if r_ is None else str(r_)
+    w_unid = cu(stack("Armor_Foraging_Beech_Chest", doc("rare", 8, False)))
+    w_stk = cu(stack("Armor_Foraging_Beech_Hands", doc("rare", 8), 2))
+    K.check(w_unid is not None and w_unid.startswith("Identify that item first"), "X canUpOf: an unidentified piece is refused (GearUp.check): %r" % w_unid)
+    K.eq(w_stk, "That item is a stack of 2 - split it first.", "X canUpOf: a stack of 2 is refused (GearUp.check)")
+    K.eq(cu(stack("Armor_Foraging_Beech_Hands", doc("rare", 8), 2), stack("Armor_Foraging_Beech_Hands", doc("rare", 8, False))), w_stk, "X canUpOf: the first reason of several pieces")
+    K.check(cu() is None, "X canUpOf: no piece = none (upTotal lists it as not owned)")
+    own4 = JClass("java.util.HashSet")()
+    for x in SL:
+        own4.add("Armor_Foraging_Beech_" + x)
+    why = JClass("java.util.HashMap")()
+    why.put("Armor_Foraging_F2_Chest", w_unid)
+    why.put("Armor_Foraging_F2_Hands", w_stk)
+    ut2 = S.upTotal(JA(f2), own4, why)
+    need2 = dict((str(k), int(v)) for k, v in ut2[1].items())
+    per2 = {}
+    for x in ("Head", "Legs"):
+        c = Up.cost(JString("Armor_Foraging_Beech_" + x), JString("Armor_Foraging_F2_" + x))
+        for i in range(len(c[0])):
+            per2[str(c[0][i])] = per2.get(str(c[0][i]), 0) + int(c[1][i])
+    K.eq(([str(x) for x in ut2[0]], [str(x) for x in ut2[2]], [str(x) for x in ut2[3]]),
+         (["Armor_Foraging_F2_Head", "Armor_Foraging_F2_Legs"], ["Armor_Foraging_F2_Chest", "Armor_Foraging_F2_Hands"], [w_unid, w_stk]),
+         "X upTotal: the unidentified Chest + the stack of 2 Hands in the middle are skipped with their reasons; Head + Legs stay")
+    K.check(need2 == per2 and sum(need2.values()) > 0, "X ... the shown total counts only Head + Legs %s" % need2)
+    sc_ = JArray(JObject)([JBoolean(True), JA(["Armor_Foraging_F2_Head"]), AL(), ut2[2], ut2[3]])
+    stx = str(S.skipText(sc_))
+    K.check(stx.startswith("Skipped: ") and "Identify that item first" in stx and "stack of 2" in stx, "X skipText lists each skipped piece + reason: %s" % stx[:160])
+    K.eq(str(S.skipText(JArray(JObject)([JBoolean(True), JA([]), AL(), JA([]), JA([])]))), "", "X skipText: none = empty")
     HO.SEAM = None
     K.save()
 
