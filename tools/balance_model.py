@@ -3058,7 +3058,115 @@ def p9_write_section(md):
 FIXES = "--fixes" in sys.argv     # --p9 --fixes: the what-if with every P9_FIX applied (never written to targets.md)
 
 
+# ======================================================================================== --elem: THE WYNN ELEMENTS (elem1 round, 2026-10-22)
+# research/Wynn-Elements-Build-Spec.md on the P5 / P4 / P9 model: SkyyGear 0.3.39 (Poison + element Defence live on the roll pools, the element
+# split), SkyyPets 0.4.10 (one element per kind: +1 % element damage at Lv 100 before rarity, only with a weapon of that element), SkyyAccessories
+# 0.5.32 (element charm 1 .. 3 %, Elemental Power / Prism 1 .. 2 % - every weapon; elem1fix). `python tools/balance_model.py --elem [--check]` re-runs the P5 rows, the
+# P4 time-to-kill rows and (with --p9) the P9 goals with these ON; it never writes targets.md and never changes the tables SkyyGear / SkyyMobs
+# build from (the patch is undone at the end). Against a NEUTRAL mob the split adds nothing (it IS the 0.3.35 % lines, harness identity) - the
+# changes are the Poison line (a DoT: stacks x line % of each hit over poison.time) and the pool dilution (two more lines on weapons, six on armour).
+EL_STATS = {"poison": (20, 5, "wa"), "dEarth": (10, 3, "a"), "dThunder": (10, 3, "a"), "dWater": (10, 3, "a"), "dFire": (10, 3, "a"), "dAir": (10, 3, "a")}
+EL_POISON_TIME, EL_POISON_STACKS, EL_HITS_PER_S = 10.0, 3, 1.0      # SkyyGear rows poison.time / poison.stacks; a melee hit about once a second
+EL_CHARM_PCT = {0: 2.0, 5: 5.0}     # elem1fix: Normal element charm 1 + Elemental Power (Prism) 1 = 2 %; Mythic 3 + 2 = 5 % (charms count with any weapon) (fitted: Void Charms x1.25 +- 0.05, kit DPS <= x3.68)
+EL_PET_DMG = 1.0                    # SkyyPets pets.elemDmg (Lv 100, before the rarity x) - fitted: every combat kind stays inside the P5 pet budget +- 5 %
+EL_PET_KIND = {"Dog": "Earth", "Fox": "Fire", "Wolf": "Air", "Tusker": "Earth", "Hawk": "Air", "Boar": "Earth", "VoidCrawler": "Thunder", "Ram": "Earth",
+               "Mouflon": "Water", "Skrill": "Thunder", "VoidEye": "Thunder", "VoidLarva": "Thunder"}      # SkyyPets 0.4.10 pets.element (combat kinds)
+EL_AFFIN = (25, -25, -50)          # SkyyMobs elem.weak / resist / bossResist
+
+
+def el_poison_mult(p):
+    """1 + the Poison DoT share of one hit's DPS: min(stacks, time x hits/s) effects tick p % of a hit over poison.time each"""
+    live = min(EL_POISON_STACKS, EL_POISON_TIME * EL_HITS_PER_S)
+    return 1.0 + live * max(0.0, p) / 100.0 / EL_POISON_TIME / EL_HITS_PER_S
+
+
+def el_patch(on):
+    """switch the elem1 model on / off in THIS process (globals; never written anywhere)"""
+    g = globals()
+    if on:
+        if "_EL_SAVED" in g:
+            return
+        g["_EL_SAVED"] = (dict(P5_STATS), p5_dps, p5_charm_totals, dict(P5_PET_KINDS))
+        P5_STATS.update(EL_STATS)
+        base_dps, base_ct = p5_dps, p5_charm_totals
+
+        def dps(t, caster=False):
+            return base_dps(t, caster) * el_poison_mult(t.get("poison", 0.0))
+
+        def ct(rarity_i, ap, power=None):
+            t = base_ct(rarity_i, ap, power)
+            t["fFire"] = t.get("fFire", 0.0) + EL_CHARM_PCT.get(rarity_i, 2.0 + (rarity_i / 5.0) * 5.0)
+            return t
+        g["p5_dps"], g["p5_charm_totals"] = dps, ct
+        for k, el in EL_PET_KIND.items():
+            r, st = P5_PET_KINDS[k]
+            st = dict(st)
+            st["f" + el] = st.get("f" + el, 0.0) + EL_PET_DMG
+            P5_PET_KINDS[k] = (r, st)
+    else:
+        if "_EL_SAVED" not in g:
+            return
+        st, d, ct, pk = g.pop("_EL_SAVED")
+        P5_STATS.clear()
+        P5_STATS.update(st)
+        g["p5_dps"], g["p5_charm_totals"] = d, ct
+        P5_PET_KINDS.clear()
+        P5_PET_KINDS.update(pk)
+    _P5_TABLE.clear()
+    _P9_RUNS.clear()
+
+
+def el_rows(with_p9=False):
+    """(target, model text, ok) - the P5 rows + the P4 time-to-kill rows + (with_p9) the P9 goals, all with the elements ON"""
+    off = p5_roll_table()
+    off_k = p5_kit()
+    off_split = p5_split()
+    el_patch(True)
+    try:
+        out = []
+        on = p5_roll_table()
+        for t, m, ok in p5_rows():
+            out.append(("[elements on] " + t, m, ok or t in P5_ASKED))
+        # the expected kit's DPS change vs a neutral mob (Rare weapon + Rare armor set, means) -> the P4 hits-to-kill rows
+        ratio = (on["rare"][0] * on["rare"][2]) / (off["rare"][0] * off["rare"][2])
+        tr = [p4_ttk(P4_TRASH[0], L) / ratio for L in P4_LEVELS if L >= 20]
+        tg = [p4_ttk(P4_TOUGH[0], L) / ratio for L in P4_LEVELS if L >= 20]
+        bs = [p4_boss_seconds(L) / ratio / 60.0 for L in (20, 50, 100)]
+        out.append(("[elements on] expected-kit DPS vs a neutral mob (Poison + pool dilution; Rare weapon x Rare armor)", "x%.3f" % ratio, 0.97 <= ratio <= 1.05))
+        out.append(("[elements on] Normal trash 4-6 hits (Lv 20-100)", "%.1f-%.1f" % (min(tr), max(tr)), all(4.0 <= x <= 6.0 for x in tr)))
+        out.append(("[elements on] Normal tough 12-15 hits (Lv 20-100)", "%.1f-%.1f" % (min(tg), max(tg)), all(11.5 <= x <= 15.0 for x in tg)))
+        out.append(("[elements on] Boss 3-4 min solo (M, expected)", "%.1f-%.1f min" % (min(bs), max(bs)), all(3.0 <= x <= 4.0 for x in bs)))
+        rows_on, tot_on, _b = p5_split()
+        sh_off = [math.log(d * e) / off_split[1] * 100 for _n, _s, d, e in off_split[0]]
+        sh_on = [math.log(d * e) / tot_on * 100 for _n, _s, d, e in rows_on]
+        out.append(("[elements on] the split moves at most 2 points a source vs elements off", " / ".join("%.1f->%.1f" % (a, b) for a, b in zip(sh_off, sh_on)),
+                    all(abs(a - b) <= 2.0 for a, b in zip(sh_off, sh_on))))
+        k_on = p5_kit()
+        out.append(("[elements on] kit best / plain moves at most 8 %", "DPS x%.2f -> x%.2f, EHP x%.2f -> x%.2f" % (off_k[0], k_on[0], off_k[1], k_on[1]),
+                    abs(k_on[0] / off_k[0] - 1) <= 0.08 and abs(k_on[1] / off_k[1] - 1) <= 0.08))
+        for a in EL_AFFIN:
+            out.append(("[report] a %+d %% mob with a 6 %% element weapon: the hit x" % a, "x%.3f" % ((100.0 + 6.0 * (1 + a / 100.0)) / 106.0), True))
+        if with_p9:
+            for g_, m_, ok_, fx_ in p9_rows():
+                out.append(("[elements on] P9 " + g_, m_, ok_))
+        return out
+    finally:
+        el_patch(False)
+
+
 def main():
+    if "--elem" in sys.argv:          # elem1: the Wynn elements ON (P5 rows + P4 time to kill [+ P9 with --p9]); --check: exit 1 on a failed row
+        rows = el_rows(with_p9="--p9" in sys.argv)
+        print("| Target (Wynn elements on: SkyyGear 0.3.39, SkyyPets 0.4.10, SkyyAccessories 0.5.32) | Model | OK |\n|---|---|---|")
+        for t, m, ok in rows:
+            print("| %s | %s | %s |" % (t, m, "yes" if ok else "NO"))
+        bad = [r for r in rows if not r[2]]
+        for t, m, _ok in bad:
+            print("FAIL %s: %s" % (t, m))
+        print("elements check: %d rows, %d fail" % (len(rows), len(bad)))
+        if "--check" in sys.argv:
+            sys.exit(1 if bad else 0)
+        return
     if "--p9" in sys.argv and FIXES:
         p9_apply_fixes(sys.modules[__name__])
     if "--p9" in sys.argv:            # P9 whole first run: targets.md section 10 (--md: also write it); --check: exit 1 on a failed goal
