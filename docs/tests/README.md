@@ -351,3 +351,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Dragon D1 fighting + D6 boss eggs (DEPLOYED 2026-10-23, backup deploy-20261023-0618) | [2026-10](2026-10.md) |
 | Dragon riding + pet tooltips + Quirk's tools + freeze stopgap (DEPLOYED 2026-10-23, backup deploy-20261023-1017) | [2026-10](2026-10.md) |
 | Freeze fix + zoomed trees keep their place + no hotbar menu item (DEPLOYED 2026-10-23, backup deploy-20261023-1054) | [2026-10](2026-10.md) |
+| Gear harvester swing source (waits for Trees 0.5.2) (DEPLOYED 2026-10-23, backup deploy-20261023-1146) | [2026-10](2026-10.md) |
