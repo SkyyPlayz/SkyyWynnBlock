@@ -18,7 +18,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
 - RUNNING / READY (10-23 09:30): workflow dragond3 (Pets 0.4.13 riding); workflow zoomfix (kit 1.9 + Trees 0.5.1 + Rebirth 0.5.1, Skyy's zoom-jump
-  test); agent pet tooltip layout (research/Pet-Tooltip-Layout.md -> build in Pets 0.4.14 after D3). READY, waiting for the game to close: SkyyGear
+  test); agent pet tooltip layout (research/Pet-Tooltip-Layout.md -> build in Pets 0.4.14 after D3). QUEUED after zoomfix: SkyyTrees 0.5.2
+  Motherlode = 1 %/rank x3 jackpot, separate from Fortune + stale Plan text sweep (docs/answered/skills.md 10-23). READY, waiting for the game to close: SkyyGear
   0.3.41 (smoke then pin) + SkyySkills 0.4.63 (pinned). Game updated 10-23 08:22 (vanilla Legs hide Overpants) - smoke everything.
 
 ## WAITING ON SKYY
