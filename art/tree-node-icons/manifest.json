@@ -1,0 +1,1140 @@
+{
+ "what": "SkyWynn skill-tree node icons (one 64 x 64 item icon per Skill Trees 3 node) - DRAFT v1, not wired in yet",
+ "generator": "tools/art/make_tree_node_icons.py",
+ "deterministic": true,
+ "original_pixels": true,
+ "icon_rules": {
+  "size": [
+   64,
+   64
+  ],
+  "alpha": "hard (0 or 255)",
+  "outline": "1 px #120e1c tinted toward the touching part",
+  "light": "top left",
+  "no_pure_black_or_white": true,
+  "shown_at": "18 px in a 32 px disc (100 %), 27 px at 150 %"
+ },
+ "categories": {
+  "yield": {
+   "label": "YIELD / LOOT / COINS",
+   "accent": "#7ee08a",
+   "why": "style guide 15: a value that helps (green)"
+  },
+  "xp": {
+   "label": "SKILL XP",
+   "accent": "#e8c25a",
+   "why": "style guide 15: level / XP / progress (gold)"
+  },
+  "speed": {
+   "label": "SPEED",
+   "accent": "#86d8d0",
+   "why": "style guide 15: the Air element (white-teal) = movement / swing speed"
+  },
+  "health": {
+   "label": "HEALTH / SAFETY",
+   "accent": "#ff7a7a",
+   "why": "style guide 15: the red stat colour = Health / damage taken"
+  },
+  "damage": {
+   "label": "DAMAGE",
+   "accent": "#ff9a3c",
+   "why": "style guide 15: the Fire element (orange)"
+  },
+  "tool": {
+   "label": "TOOL / DURABILITY",
+   "accent": "#d6e4ee",
+   "why": "style guide 15: the stat-name soft white (gear stats)"
+  },
+  "pet": {
+   "label": "PETS",
+   "accent": "#d8a070",
+   "why": "the Beastmastery tree colour (SkyyTrees UI_DATA_COLORS)"
+  },
+  "ability": {
+   "label": "ABILITY / SENSE",
+   "accent": "#8fc8ff",
+   "why": "the Mining tree colour (SkyyTrees TCOLOR) = the tree's own actives"
+  }
+ },
+ "item_json": {
+  "path": "Server/Item/Items/Utility/<icon_id>.json",
+  "icon": "Icons/ItemsGenerated/<icon_id>.png",
+  "png_in_jar": "Common/Icons/ItemsGenerated/<icon_id>.png",
+  "see": "README.md section 3"
+ },
+ "trees": {
+  "Mining": {
+   "count": 44,
+   "sheet": "sheet-mining.png",
+   "nodes": [
+    {
+     "key": "Mining.b1.r1.free",
+     "saved_key": "",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 1,
+     "kind": "free",
+     "id": "r1.free",
+     "name": "Prospector's Eye",
+     "max": 0,
+     "effect": "Ore glints through walls within 8 blocks",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R1Free",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R1Free.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a wide-open eye over a stone wall whose blue ore glints through"
+    },
+    {
+     "key": "Mining.b1.r1a",
+     "saved_key": "Skill.Mining.b1.r1a",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 1,
+     "kind": "up",
+     "id": "r1a",
+     "name": "Quick Swing",
+     "max": 5,
+     "effect": "+2% mining speed/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R1a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R1a.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "an iron pickaxe mid-swing with teal swoosh arcs + speed lines"
+    },
+    {
+     "key": "Mining.b1.r1b",
+     "saved_key": "Skill.Mining.b1.r1b",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 1,
+     "kind": "up",
+     "id": "r1b",
+     "name": "Rich Seams",
+     "max": 3,
+     "effect": "+2.5 Mining Fortune per rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R1b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R1b.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a big ore chunk with blue ore spots + a green plus and sparkles (Mining Fortune)"
+    },
+    {
+     "key": "Mining.b1.r2.free",
+     "saved_key": "",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 2,
+     "kind": "free",
+     "id": "r2.free",
+     "name": "Vein Burst",
+     "max": 0,
+     "effect": "Active, breaks a connected ore vein of up to 6 blocks, 40s cd",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R2Free",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2Free.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "four ore cubes flying apart from a blue 8-point burst"
+    },
+    {
+     "key": "Mining.b1.r2a",
+     "saved_key": "Skill.Mining.b1.r2a",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 2,
+     "kind": "up",
+     "id": "r2a",
+     "name": "Wide Burst",
+     "max": 3,
+     "effect": "+1 vein size/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R2a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2a.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "an ore cube in a blue ring with four arrows pushing outward (bigger vein)"
+    },
+    {
+     "key": "Mining.b1.r2b",
+     "saved_key": "Skill.Mining.b1.r2b",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 2,
+     "kind": "up",
+     "id": "r2b",
+     "name": "Burst Recovery",
+     "max": 3,
+     "effect": "Burst Reach: Vein Burst breaks 1 more ore/rank (it has no cooldown)",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R2b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2b.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a blue burst + one more ore cube with a blue plus (Burst breaks 1 more ore)"
+    },
+    {
+     "key": "Mining.b1.r2c",
+     "saved_key": "Skill.Mining.b1.r2c",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 2,
+     "kind": "up",
+     "id": "r2c",
+     "name": "Chain Fortune",
+     "max": 2,
+     "effect": "+2% Mining XP/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R2c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2c.png",
+     "category": "xp",
+     "accent": "#e8c25a",
+     "shows": "three steel chain links into a gold XP orb + a gold up arrow"
+    },
+    {
+     "key": "Mining.b1.r3a",
+     "saved_key": "Skill.Mining.b1.r3a",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 3,
+     "kind": "up",
+     "id": "r3a",
+     "name": "Gem Eye",
+     "max": 3,
+     "effect": "+0.06% chance per block for a random gem/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R3a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R3a.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a big cut ruby, a small green-eyed eye + a green plus (gem chance)"
+    },
+    {
+     "key": "Mining.b1.r3b",
+     "saved_key": "Skill.Mining.b1.r3b",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 3,
+     "kind": "up",
+     "id": "r3b",
+     "name": "Smelter's Touch",
+     "max": 1,
+     "effect": "10% chance to auto-smelt ore",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R3b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R3b.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "an iron bar on a flame (auto-smelt), green sparkles"
+    },
+    {
+     "key": "Mining.b1.r3c",
+     "saved_key": "Skill.Mining.b1.r3c",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 3,
+     "kind": "up",
+     "id": "r3c",
+     "name": "Steady Pick",
+     "max": 4,
+     "effect": "+1.6% pickaxe swing speed/rank (1 Mining Speed level)",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R3c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R3c.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "an upright pickaxe over a steady teal rhythm line"
+    },
+    {
+     "key": "Mining.b1.r4a",
+     "saved_key": "Skill.Mining.b1.r4a",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 4,
+     "kind": "up",
+     "id": "r4a",
+     "name": "Motherlode",
+     "max": 3,
+     "effect": "1% chance/rank for a node to drop x3",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R4a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R4a.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "three gems (emerald, diamond, ruby) bursting from a gold jackpot star (x3)"
+    },
+    {
+     "key": "Mining.b1.r4b",
+     "saved_key": "Skill.Mining.b1.r4b",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 4,
+     "kind": "up",
+     "id": "r4b",
+     "name": "Vein Sense",
+     "max": 3,
+     "effect": "Prospector's Eye range +2 blocks/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R4b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R4b.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "an eye with blue range arcs either side, an ore cube below (more range)"
+    },
+    {
+     "key": "Mining.b1.r5a",
+     "saved_key": "Skill.Mining.b1.r5a",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 5,
+     "kind": "up",
+     "id": "r5a",
+     "name": "Seismic Pulse",
+     "max": 3,
+     "effect": "Burst also stuns nearby cave mobs for 1s/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R5a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R5a.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "cracked ground sending blue shock arcs up, two gold stun stars"
+    },
+    {
+     "key": "Mining.b1.r5b",
+     "saved_key": "Skill.Mining.b1.r5b",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 5,
+     "kind": "up",
+     "id": "r5b",
+     "name": "Overclock",
+     "max": 5,
+     "effect": "+2% mining XP/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R5b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R5b.png",
+     "category": "xp",
+     "accent": "#e8c25a",
+     "shows": "a steel cog with a gold up arrow in its hub, gold sparks (more XP)"
+    },
+    {
+     "key": "Mining.b1.r5c",
+     "saved_key": "Skill.Mining.b1.r5c",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 5,
+     "kind": "up",
+     "id": "r5c",
+     "name": "Bottomless Pockets",
+     "max": 2,
+     "effect": "+5 ore stack-size bonus/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R5c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R5c.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a gold-tied leather sack with ore chunks spilling on top + a green plus"
+    },
+    {
+     "key": "Mining.b1.r6",
+     "saved_key": "Skill.Mining.b1.r6",
+     "tree": "Mining",
+     "branch": "Vein Delver",
+     "row": 6,
+     "kind": "cap",
+     "id": "r6",
+     "name": "Heart of the Mountain",
+     "max": 1,
+     "effect": "Vein Burst has no cooldown for 8s after mining a rare node (gem or mythic ore).",
+     "icon_id": "Skyy_NodeIcon_Mining_B1R6",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R6.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a snow-capped stone mountain with a glowing blue crystal heart (capstone)"
+    },
+    {
+     "key": "Mining.b2.r1a",
+     "saved_key": "Skill.Mining.b2.r1a",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 1,
+     "kind": "up",
+     "id": "r1a",
+     "name": "Tool Mastery",
+     "max": 5,
+     "effect": "+2% mining speed per tool tier above Stone, per rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R1a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R1a.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "a gold pick on a copper / iron / gold podium (tool tiers) + speed lines"
+    },
+    {
+     "key": "Mining.b2.r1b",
+     "saved_key": "Skill.Mining.b2.r1b",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 1,
+     "kind": "up",
+     "id": "r1b",
+     "name": "Durable Grip",
+     "max": 3,
+     "effect": "-3% tool durability loss/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R1b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R1b.png",
+     "category": "tool",
+     "accent": "#d6e4ee",
+     "shows": "a leather-wrapped pick handle with a soft-white shield + tick (less wear)"
+    },
+    {
+     "key": "Mining.b2.r2.free",
+     "saved_key": "",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 2,
+     "kind": "free",
+     "id": "r2.free",
+     "name": "Stoneskin",
+     "max": 0,
+     "effect": "-10% fall damage",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R2Free",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R2Free.png",
+     "category": "health",
+     "accent": "#ff7a7a",
+     "shows": "a stone-plated boot landing on stone, red fall lines (less fall damage)"
+    },
+    {
+     "key": "Mining.b2.r2a",
+     "saved_key": "Skill.Mining.b2.r2a",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 2,
+     "kind": "up",
+     "id": "r2a",
+     "name": "Rockhide",
+     "max": 3,
+     "effect": "+2% max Health/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R2a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R2a.png",
+     "category": "health",
+     "accent": "#ff7a7a",
+     "shows": "a red heart half covered in stone plates (+ max Health)"
+    },
+    {
+     "key": "Mining.b2.r2b",
+     "saved_key": "Skill.Mining.b2.r2b",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 2,
+     "kind": "up",
+     "id": "r2b",
+     "name": "Echo Step",
+     "max": 2,
+     "effect": "+2% move speed/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R2b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R2b.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "a leather boot with two teal after-images behind it (move speed)"
+    },
+    {
+     "key": "Mining.b2.r3a",
+     "saved_key": "Skill.Mining.b2.r3a",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 3,
+     "kind": "up",
+     "id": "r3a",
+     "name": "Gear Resonance",
+     "max": 5,
+     "effect": "+1% mining speed per mining-tagged armor piece worn, per rank (max 4 pieces)",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R3a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R3a.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "a copper miner's helmet with its lamp, teal resonance arcs (per armor piece)"
+    },
+    {
+     "key": "Mining.b2.r3b",
+     "saved_key": "Skill.Mining.b2.r3b",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 3,
+     "kind": "up",
+     "id": "r3b",
+     "name": "Quick Repair",
+     "max": 3,
+     "effect": "kills and ore breaks restore 0.5 durability/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R3b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R3b.png",
+     "category": "tool",
+     "accent": "#d6e4ee",
+     "shows": "a hammer striking a pickaxe head, white repair spark + a turn arrow"
+    },
+    {
+     "key": "Mining.b2.r3c",
+     "saved_key": "Skill.Mining.b2.r3c",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 3,
+     "kind": "up",
+     "id": "r3c",
+     "name": "Emergency Pick",
+     "max": 1,
+     "effect": "at 10% durability, +25% speed",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R3c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R3c.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "a cracked pickaxe with a red warning badge (!) and teal speed lines"
+    },
+    {
+     "key": "Mining.b2.r4a",
+     "saved_key": "Skill.Mining.b2.r4a",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 4,
+     "kind": "up",
+     "id": "r4a",
+     "name": "Trinket Seams",
+     "max": 3,
+     "effect": "+2% ore yield per filled accessory slot, per rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R4a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R4a.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a gold emerald ring over an ore chunk + a green plus (per accessory)"
+    },
+    {
+     "key": "Mining.b2.r4b",
+     "saved_key": "Skill.Mining.b2.r4b",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 4,
+     "kind": "up",
+     "id": "r4b",
+     "name": "Hardened Edge",
+     "max": 3,
+     "effect": "+1.5% damage/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R4b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R4b.png",
+     "category": "damage",
+     "accent": "#ff9a3c",
+     "shows": "a sharpened pick point with a white edge glint, orange slash arcs"
+    },
+    {
+     "key": "Mining.b2.r5a",
+     "saved_key": "Skill.Mining.b2.r5a",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 5,
+     "kind": "up",
+     "id": "r5a",
+     "name": "Tool Tempering",
+     "max": 4,
+     "effect": "+1 effective tool tier for hardness checks every 2 ranks",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R5a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R5a.png",
+     "category": "tool",
+     "accent": "#d6e4ee",
+     "shows": "a glowing hot pickaxe head with steam puffs + a white up arrow (tool tier)"
+    },
+    {
+     "key": "Mining.b2.r5b",
+     "saved_key": "Skill.Mining.b2.r5b",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 5,
+     "kind": "up",
+     "id": "r5b",
+     "name": "Lucky Strike",
+     "max": 3,
+     "effect": "2% chance/rank to refund durability",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R5b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R5b.png",
+     "category": "tool",
+     "accent": "#d6e4ee",
+     "shows": "a four-leaf clover beside a pickaxe, white refund arc + spark"
+    },
+    {
+     "key": "Mining.b2.r5c",
+     "saved_key": "Skill.Mining.b2.r5c",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 5,
+     "kind": "up",
+     "id": "r5c",
+     "name": "Blast Hammer",
+     "max": 2,
+     "effect": "Vein Burst breaks 2 more ore/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R5c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R5c.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a heavy sledgehammer before a blue burst, ore cubes flying"
+    },
+    {
+     "key": "Mining.b2.r6",
+     "saved_key": "Skill.Mining.b2.r6",
+     "tree": "Mining",
+     "branch": "Forgehand",
+     "row": 6,
+     "kind": "cap",
+     "id": "r6",
+     "name": "Masterwork Pick",
+     "max": 1,
+     "effect": "+25% Breaking Power and +5 Mining Fortune on your pick, x2 on your own lifelong pick",
+     "icon_id": "Skyy_NodeIcon_Mining_B2R6",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R6.png",
+     "category": "tool",
+     "accent": "#d6e4ee",
+     "shows": "an ornate gold pickaxe with a diamond set in its head (capstone)"
+    },
+    {
+     "key": "Mining.b3.r1a",
+     "saved_key": "Skill.Mining.b3.r1a",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 1,
+     "kind": "up",
+     "id": "r1a",
+     "name": "Cave Sense",
+     "max": 3,
+     "effect": "+3% cave-mob loot/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R1a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R1a.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a cave bat over a loot sack and a coin + a green plus (cave-mob loot)"
+    },
+    {
+     "key": "Mining.b3.r1b",
+     "saved_key": "Skill.Mining.b3.r1b",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 1,
+     "kind": "up",
+     "id": "r1b",
+     "name": "Lantern Lore",
+     "max": 3,
+     "effect": "light radius +1 block/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R1b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R1b.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a miner's lantern with a flame inside and blue light rays all round"
+    },
+    {
+     "key": "Mining.b3.r2.free",
+     "saved_key": "",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 2,
+     "kind": "free",
+     "id": "r2.free",
+     "name": "Depth Charge",
+     "max": 0,
+     "effect": "Active, place a charge that clears a 3x3x3 area and drops all blocks, 60s cd",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R2Free",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R2Free.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a bundle of three red charge sticks with a lit fuse spark"
+    },
+    {
+     "key": "Mining.b3.r2a",
+     "saved_key": "Skill.Mining.b3.r2a",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 2,
+     "kind": "up",
+     "id": "r2a",
+     "name": "Bigger Bang",
+     "max": 3,
+     "effect": "+1 block radius per 2 ranks",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R2a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R2a.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a fiery explosion with four blue arrows pushing outward (bigger radius)"
+    },
+    {
+     "key": "Mining.b3.r2b",
+     "saved_key": "Skill.Mining.b3.r2b",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 2,
+     "kind": "up",
+     "id": "r2b",
+     "name": "Safe Fuse",
+     "max": 3,
+     "effect": "no self-damage at rank 3, -3s cd/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R2b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R2b.png",
+     "category": "health",
+     "accent": "#ff7a7a",
+     "shows": "charge sticks behind a steel shield with a red heart (no self-damage)"
+    },
+    {
+     "key": "Mining.b3.r3a",
+     "saved_key": "Skill.Mining.b3.r3a",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 3,
+     "kind": "up",
+     "id": "r3a",
+     "name": "Pet Digger",
+     "max": 5,
+     "effect": "+2% mining XP and +1% ore yield per equipped Mining pet level tier, per rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R3a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R3a.png",
+     "category": "pet",
+     "accent": "#d8a070",
+     "shows": "a big tan paw print beside a pickaxe and an ore chunk + a tan plus"
+    },
+    {
+     "key": "Mining.b3.r3b",
+     "saved_key": "Skill.Mining.b3.r3b",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 3,
+     "kind": "up",
+     "id": "r3b",
+     "name": "Deep Bounty",
+     "max": 3,
+     "effect": "2% chance/rank an ore also pays coins (your Mining level)",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R3b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R3b.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "an ore chunk with a big gold coin in front, green sparkles (ore pays coins)"
+    },
+    {
+     "key": "Mining.b3.r3c",
+     "saved_key": "Skill.Mining.b3.r3c",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 3,
+     "kind": "up",
+     "id": "r3c",
+     "name": "Cave Stalker",
+     "max": 2,
+     "effect": "see cave mobs through walls for 2s/rank after Burst",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R3c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R3c.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "an eye above a stone wall with a glowing blue bat seen through it"
+    },
+    {
+     "key": "Mining.b3.r4a",
+     "saved_key": "Skill.Mining.b3.r4a",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 4,
+     "kind": "up",
+     "id": "r4a",
+     "name": "Miner's Fortune",
+     "max": 3,
+     "effect": "+0.06% chance/rank per block for a random gem (adds to Gem Eye)",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R4a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R4a.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "an emerald popping out of an ore chunk + a green plus (gem chance)"
+    },
+    {
+     "key": "Mining.b3.r4b",
+     "saved_key": "Skill.Mining.b3.r4b",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 4,
+     "kind": "up",
+     "id": "r4b",
+     "name": "Geode Cracker",
+     "max": 2,
+     "effect": "geodes give +1 extra roll/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R4b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R4b.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a cracked stone geode full of purple crystals + a green plus"
+    },
+    {
+     "key": "Mining.b3.r4c",
+     "saved_key": "Skill.Mining.b3.r4c",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 4,
+     "kind": "up",
+     "id": "r4c",
+     "name": "Dust Sweep",
+     "max": 3,
+     "effect": "auto-pickup radius +2 blocks/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R4c",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R4c.png",
+     "category": "yield",
+     "accent": "#7ee08a",
+     "shows": "a red magnet pulling ore bits in along green pull lines (pickup radius)"
+    },
+    {
+     "key": "Mining.b3.r5a",
+     "saved_key": "Skill.Mining.b3.r5a",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 5,
+     "kind": "up",
+     "id": "r5a",
+     "name": "Pet Synergy",
+     "max": 3,
+     "effect": "Mining pet ability effects +4%/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R5a",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R5a.png",
+     "category": "pet",
+     "accent": "#d8a070",
+     "shows": "a tan paw on a tan star burst + a tan up arrow (pet abilities stronger)"
+    },
+    {
+     "key": "Mining.b3.r5b",
+     "saved_key": "Skill.Mining.b3.r5b",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 5,
+     "kind": "up",
+     "id": "r5b",
+     "name": "Abyss Walker",
+     "max": 3,
+     "effect": "+2% move speed/rank",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R5b",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R5b.png",
+     "category": "speed",
+     "accent": "#86d8d0",
+     "shows": "a boot striding over a dark violet abyss, teal speed lines"
+    },
+    {
+     "key": "Mining.b3.r6",
+     "saved_key": "Skill.Mining.b3.r6",
+     "tree": "Mining",
+     "branch": "Deepdweller",
+     "row": 6,
+     "kind": "cap",
+     "id": "r6",
+     "name": "Core Tap",
+     "max": 1,
+     "effect": "once per hour, mine a Deep Core that drops 3-5 rare gems and gives your Mining pet 500 XP.",
+     "icon_id": "Skyy_NodeIcon_Mining_B3R6",
+     "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R6.png",
+     "category": "ability",
+     "accent": "#8fc8ff",
+     "shows": "a glowing blue deep core in a dark shell, three gems flung out (capstone)"
+    }
+   ],
+   "files": [
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R1Free.png",
+     "bytes": 1079,
+     "sha256": "caedeba44af3adc104d2d0316eb32cfc52fde2266d7f93122ec6ffef77de21c9"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R1a.png",
+     "bytes": 665,
+     "sha256": "ef570cc33a61c2ed110b60569fa058cb2b79942bb48f4f10d424ff474304df78"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R1b.png",
+     "bytes": 884,
+     "sha256": "bbf06ee4bf70e66e9387b93e8bfd7554127e8c014859c312d808cfdddb09d010"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2Free.png",
+     "bytes": 1187,
+     "sha256": "e00b4d216268761a009b0c9ea9057c60873a4c28e3333e8be563f9923c5fe31a"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2a.png",
+     "bytes": 953,
+     "sha256": "3f0c02a34a33a6c6633a845062457170b0efd88e060c76ef9cee5c6e49ae913f"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2b.png",
+     "bytes": 948,
+     "sha256": "b9bbe37c623f04718603e19b93d38da5ad97c0701e66b99ab46dacd3e303da82"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R2c.png",
+     "bytes": 831,
+     "sha256": "8799e54fff7ccff3ad5a8d199a31076430e4dfe73e4fc7dde640c8adcdc7ad7e"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R3a.png",
+     "bytes": 949,
+     "sha256": "027ed2e56f8ae0bfdf7cb82196fe8f956f8e9fb7ce7448844dc4949dcdf0e591"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R3b.png",
+     "bytes": 627,
+     "sha256": "bbf3e4d7d3382037da86af32071177d90f83e304edf74b0a8729c191f45de6cc"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R3c.png",
+     "bytes": 700,
+     "sha256": "0e28c14f84d458fa3a2c8fcf0be458ddc46633f38657fd791364de468d907624"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R4a.png",
+     "bytes": 1307,
+     "sha256": "4266a4367587aaa2b96c96b4f9152fdd1d8cd0fae103cd549aa30f8891bcda5e"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R4b.png",
+     "bytes": 833,
+     "sha256": "95d95d17455a87cc8820bb6ecd9982d9f41f4edd1fed59a92ee4b4404875e020"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R5a.png",
+     "bytes": 828,
+     "sha256": "1ce7180ffcef9935b5b142379c85a0bf415c7259d7d875100a2e2082c7f5c1d6"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R5b.png",
+     "bytes": 871,
+     "sha256": "6e65585c8622157b107e68a175a6274359229da691d95855712c2af48999e615"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R5c.png",
+     "bytes": 921,
+     "sha256": "f1653dd11e07f9869681a865813558a8421d7a43a9ff6537e52880f95042ef56"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B1R6.png",
+     "bytes": 732,
+     "sha256": "5647c47d3430f926f725fd0af29dc280aff74ff035be2476cf86ef64c0b39af6"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R1a.png",
+     "bytes": 899,
+     "sha256": "c760a7bbb5059162ddc80ea3ac600546802d2d241caa77c8fee6ae10639aafd6"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R1b.png",
+     "bytes": 751,
+     "sha256": "21114abd4cfd11cfd20176fed523ae0951dddd9eb803895ad7e9c9397c467d43"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R2Free.png",
+     "bytes": 707,
+     "sha256": "5ab9a9946e9db3430d9bb3cb0766a7c603c5ac91c075b570a4f3d4c84bacf998"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R2a.png",
+     "bytes": 677,
+     "sha256": "3b45a7840c08c6434adb9f171a34e075991158b9f6869d8276157a9676d51309"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R2b.png",
+     "bytes": 551,
+     "sha256": "52b2611e153ba80ae8f925cfd0c30ac12d469c13f7c97fb60b8fb94bd21b24d5"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R3a.png",
+     "bytes": 894,
+     "sha256": "8a82eb15db81ada8ef107d49530e60c7a5659c1cf424578f052c495d0ff6c9ba"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R3b.png",
+     "bytes": 908,
+     "sha256": "a62ca405e19c32929c3ceaa7562532c6cf882ebb7e2e55ac9e8809b61b048975"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R3c.png",
+     "bytes": 804,
+     "sha256": "83e07eeb5011df80379a804b78078a8fec155b91e7a95ee87aae9cf1a18713e5"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R4a.png",
+     "bytes": 1073,
+     "sha256": "e4d612388f2ce8dc4b2b6cd46e2218d32422d2fc6935ae8085b6d7e416e313b9"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R4b.png",
+     "bytes": 680,
+     "sha256": "94109026a4a70c3921435b34d0a062767be38f12bfe3ee21a9104a227f276393"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R5a.png",
+     "bytes": 821,
+     "sha256": "49f49db60952248815c54dbb871256ab6e767f95f99e928b6cff07846163a14b"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R5b.png",
+     "bytes": 959,
+     "sha256": "e2ef980c1a4c782fa36e36ad976c5361f15260f2d131ecabf36765b607554d4e"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R5c.png",
+     "bytes": 1071,
+     "sha256": "f82e808578edd414a9fea78216d5573da03b7514b778fafc091ca42c0cf77f08"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B2R6.png",
+     "bytes": 767,
+     "sha256": "1dc45d1c76421484fd34e0579a484942b361dfdd532a829e07999a14085dd089"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R1a.png",
+     "bytes": 952,
+     "sha256": "00d8a51c4ce2e9aa8d4e68973a6b8c2d888655495a3d1d22ec69106dd3718d4d"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R1b.png",
+     "bytes": 941,
+     "sha256": "2782193b64aac01cbd3dc045460293830f67cc0b321d02fbc65cb2f15368949d"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R2Free.png",
+     "bytes": 633,
+     "sha256": "74269b06d899b39c1696044984a255afdd99cb9c775ecd5af2e17300c19fd7e8"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R2a.png",
+     "bytes": 945,
+     "sha256": "6b7ed58650897907a936e80228087658a0f558e18488fcb20e3c050925e57cec"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R2b.png",
+     "bytes": 678,
+     "sha256": "cddcac611c2b69d1037ce781868cd6d626f001eb3f4aedee3a32afe3774bbffc"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R3a.png",
+     "bytes": 1016,
+     "sha256": "f009e4affd75b061b34a9b0514d3ab2b9d211431398823ddbedbb24801d04472"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R3b.png",
+     "bytes": 934,
+     "sha256": "26dcaacade8151ee9fac1b16cfd5e0d2d647857661fca5c3f5cfde776897022c"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R3c.png",
+     "bytes": 1006,
+     "sha256": "18fec45a3e499447bc616ad14f2a639d74f5fa56ae0b17382da9c9fd3e332b20"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R4a.png",
+     "bytes": 969,
+     "sha256": "1044ccca93b361f11108622f7e938bebcca076ffc6978e79154141a462b7c9e8"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R4b.png",
+     "bytes": 995,
+     "sha256": "5dd4aa02140d018b3be4c6e44262a670e878ee65cfb1d845d3c2bced32c08540"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R4c.png",
+     "bytes": 925,
+     "sha256": "5a9a12a7fcf219dda975c8beec3fc80adae3ed2dfb025aa09d905060baf84cf8"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R5a.png",
+     "bytes": 1024,
+     "sha256": "946c828629e39ef93c2fae6b661f285dab4d0276c2ebc9a7cce6eb0cf5524b40"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R5b.png",
+     "bytes": 649,
+     "sha256": "15c5e284a351cd04d426d6024d3be536b0f22a55cc89323191fd2a9c7ddbade1"
+    },
+    {
+     "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mining_B3R6.png",
+     "bytes": 1039,
+     "sha256": "787dc717fb65e30d17a3933e81bf0ab8ffa99ef08604d08d70db2218b332bc65"
+    }
+   ]
+  }
+ },
+ "node_counts": {
+  "Warrior": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 37
+  },
+  "Berserker": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 38
+  },
+  "Spellblade": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 38
+  },
+  "Monk": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 38
+  },
+  "Assassin": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 41
+  },
+  "Archer": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 41
+  },
+  "Mage": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 44
+  },
+  "Priest": {
+   "kind": "class",
+   "branches": 3,
+   "nodes": 46
+  },
+  "Mining": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 44
+  },
+  "Foraging": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 42
+  },
+  "Combat": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 42
+  },
+  "Beastmastery": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 40
+  },
+  "Farming": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 40
+  },
+  "Cooking": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 40
+  },
+  "Alchemy": {
+   "kind": "skill",
+   "branches": 3,
+   "nodes": 40
+  },
+  "Fishing": {
+   "kind": "skill",
+   "branches": 2,
+   "nodes": 17
+  },
+  "Exploration": {
+   "kind": "skill",
+   "branches": 2,
+   "nodes": 18
+  },
+  "Acrobatics": {
+   "kind": "skill",
+   "branches": 2,
+   "nodes": 19
+  },
+  "Smithing": {
+   "kind": "skill",
+   "branches": 2,
+   "nodes": 19
+  }
+ }
+}
