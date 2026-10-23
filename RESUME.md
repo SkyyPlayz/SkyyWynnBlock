@@ -17,7 +17,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
-- RUNNING at reset: workflow `dragond1` = SkyyPets 0.4.11 -> 0.4.12 (dragon FIGHTING, D1) + SkyyMobs 0.1.17 -> 0.1.18 (dragon egg BOSS DROPS, D6).
+- RUNNING (10-23 09:20): an Opus builder agent finishing dragond1 (the workflow stopped at the reset, no verdict). Was: workflow `dragond1` = SkyyPets 0.4.11 -> 0.4.12 (dragon FIGHTING, D1) + SkyyMobs 0.1.17 -> 0.1.18 (dragon egg BOSS DROPS, D6).
   Its files show up untracked (SkyyPets/*_0.4.12.py, SkyyMobs/*_0.1.18.py, tools/pets_0_4_12_patch.py, tools/mobs_0_1_18_patch.py); it also edits
   tools/balance_model.py + tools/tier_tags.py + tools/test_tier_tags.py (uncommitted - those edits belong to it). Result journal:
   C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\9862d9d3-3ce5-4d92-aa84-cbb1612eb4b9\subagents\workflows\wf_c919b892-56f\journal.jsonl
