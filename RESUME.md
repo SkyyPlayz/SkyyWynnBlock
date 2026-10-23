@@ -21,9 +21,10 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   test); agent pet tooltip layout (research/Pet-Tooltip-Layout.md -> build in Pets 0.4.14 after D3). QUEUED after zoomfix: SkyyTrees 0.5.2
   Motherlode = 1 %/rank x3 jackpot, separate from Fortune + stale Plan text sweep + ROW GATES = total AND 3 points in the row
   above (grandfathered) + HARVEST SWING SPEED (Quick Scythe -> harvester swing; with Gear 0.3.42 harvester swing source)
-  (docs/answered/skills.md 10-23); + Mining node icons once Skyy approves art/tree-node-icons/sheet.png. THEN Trees 0.5.3 (+ Classes check): class-tree
-  modifier nodes cut to ~1 per ability, flat additive, never multiplying; rest -> real upgrades + AP refund; rename modifier-named passives. READY, waiting for the game to close: SkyyGear
-  0.3.41 (smoke then pin) + SkyySkills 0.4.63 (pinned). Game updated 10-23 08:22 (vanilla Legs hide Overpants) - smoke everything.
+  (docs/answered/skills.md 10-23); + Mining node icons once Skyy approves art/tree-node-icons/sheet.png. THEN the CLASS TREE REBUILD (research/Combat-Into-Class-Spec.md
+  + Skyy's 10-23 answers in docs/answered/classes.md: Combat tree folded into each class, 3 branches A1+alts / A2+alt / Weaponcraft, per-branch
+  gates + level floor, 1 point a level, modifiers unlock in the tree + level by use, one free respec) = R0 data + Trees 0.6.0 + Classes 0.1.47
+  + Skills 0.4.64 + Rebirth 0.5.2 together (replaces 0.5.3 / 0.5.4). Node icons: all 11 skill trees + 8 classes drawn (art/tree-node-icons/).
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
