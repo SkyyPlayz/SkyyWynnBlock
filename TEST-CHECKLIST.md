@@ -259,3 +259,4 @@ tests always come first.
 232. ALT key hint, crouch x2 folds tracker, /quests widget, Stats by source table
 233. Elements: coloured element numbers, mob element plates, pet elements, element Defence, Poison, element charms, Stats element charts, UT bands
 234. Elemental swords: real longsword damage + element numbers, Poison DoT, not craftable, Mythic drops per zone
+235. Dragon pet: hatch, one per profile, summon + stages, void return
