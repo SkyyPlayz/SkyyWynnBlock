@@ -115,6 +115,13 @@ assert P3_BASE[:5] == [275, 625, 1050, 1550, 1750] and P3_BASE[49] == 18700 and 
 assert sum(P3_BASE[:20]) == 58150 and sum(P3_BASE[:50]) == 406200 and sum(P3_BASE) == 2944700   # spec section 2 totals
 LEVELS_SCALE = 120          # A:197 "Middle: Lv 50 at ~33 h": levels.scale 120 % puts class Lv 50 at 33.1 h in this model (130 % = 35.9 h)
 P3_LEVELS = [int(math.floor(x * (LEVELS_SCALE / 100.0) + 0.5)) for x in P3_BASE]   # = SkyySkills scaledTo(base, 130): Math.round(x x 1.3)
+# P9 F4 (SkyySkills 0.4.62, Skyy 2026-10-22 popup "Apply all 3 (Recommended)"): the base list x1.5 for Lv 61-80 and x1.9 for Lv 81-100, then
+# levels.scale 120 % (SkyySkills SkillDefs.DEFAULT_PER / DEFAULT_RUN). P3_LEVELS stays the P3 list (older patches + harnesses assert it).
+P9_K4, P9_K5 = 1.5, 1.9
+P9_BASE = [int(round(x * (P9_K4 if 61 <= L <= 80 else (P9_K5 if L >= 81 else 1.0)))) for L, x in zip(range(1, 101), P3_BASE)]
+assert all(abs(b - x * (P9_K4 if 61 <= L <= 80 else (P9_K5 if L >= 81 else 1.0))) < 1e-9 for L, x, b in zip(range(1, 101), P3_BASE, P9_BASE)), "whole numbers"
+P9_LEVELS = [int(math.floor(x * (LEVELS_SCALE / 100.0) + 0.5)) for x in P9_BASE]   # = the 0.4.62 levels= default
+assert P9_LEVELS[:60] == P3_LEVELS[:60]
 BAND = [1, 8, 15, 20, 28, 35, 40, 48, 55, 60, 68, 75, 80, 88, 95, 100]     # tier T starts at BAND[T-1] (LB section 1, tier_tags LEVEL_BANDS)
 F_T = [f_lv(b) for b in BAND]                                            # F(T) = f(band start) - P3 section 3
 
@@ -137,21 +144,24 @@ def xp_t(base, t):
 ORE_BASE, LOG_BASE, CROP_BASE, DISH_BASE = 50, 33, 38, 800   # P3 3.1-3.3; 3.5: 800 x F(T) Cooking XP a dish after xpMultiplier 0.5
 ALCH_XP_P3 = {1: 1500, 2: 7400, 3: 18200, 4: 33900, 5: 54400}          # P3 3.6 alchemy.tierXp = 1,500 x f(zone start)
 FISH_P3, FISH_H = 60, 200          # P3 3.8: a common fish = 60 x f(own level), fish.xp.mult 6; GUESS 200 fish / h (focused Fishing ~ Foraging)
-CATCHUP = dict(on=True, free=5, per=0.10, max=1.0,                      # P3 section 4 (Q2 default: on, +10 % a level past 5 behind, <= +100 %)
+CATCHUP = dict(on=True, free=5, per=0.10, max=0.20 if "--p3" not in sys.argv else 1.0,   # P3 section 4 (+10 % a level past 5 behind, <= +100 %);
+#   SkyySkills 0.4.62 (P9 F3, Skyy "Apply all 3 (Recommended)"): catchup.max 100 -> 20 % (--p3: the P3 +100 %)
                skills=("Mining", "Foraging", "Farming", "Fishing", "Alchemy", "Smithing", "Cooking", "Acrobatics",
                        "Beastmastery"))                                 # P9 LIVE: SkyySkills 0.4.60+ catchup.skills has Beastmastery
 PAST_LIFE = [1.2, 1.45, 1.8, 2.25, 2.8]                                  # P3 section 5 rebirth.pastLifeXp (Q3 default) - kept for balance_rebirth --live
-PAST_LIFE_LIVE = [1.1, 1.35, 1.6, 2.0, 2.45, 2.15, 2.25, 2.4, 2.55, 2.7]   # P9 LIVE: SkyySkills 0.4.61 rebirth.pastLifeXp (skills:5560) = balance_rebirth PAST_LIFE_P8
+PAST_LIFE_LIVE = [1.1, 1.52, 2.05, 3.35, 4.92, 2.92, 3.08, 3.25, 3.44, 3.67]   # P9 LIVE: SkyySkills 0.4.62 rebirth.pastLifeXp (P9 F4) = balance_rebirth PAST_LIFE_P8
+PAST_LIFE_P8A = [1.1, 1.35, 1.6, 2.0, 2.45, 2.15, 2.25, 2.4, 2.55, 2.7]   # SkyySkills 0.4.59 - 0.4.61 rebirth.pastLifeXp (the P8a list)
 # ---- P9 LIVE corrections (2026-10-22, research/Balance-P9-Check.md "live vs model"): live numbers the P3 model did not have
-MINING_XP_X = 1.25        # SkyySkills 0.4.61 mining.xpMultiplier 1.25 (EVEN_MINE, skills:5249) - every mined block's Mining XP x1.25
-FELL_OTHER_PCT = 70.0     # SkyySkills 0.4.61 fell.otherLogsPercent 70 (skills:5249) - every felled log but the chopped one pays 70 %
+MINING_XP_X = 1.0         # SkyySkills 0.4.62 mining.xpMultiplier 1 (P9 F2; 0.4.43 - 0.4.61: 1.25) - every mined block's Mining XP x this
+FELL_OTHER_PCT = 100.0    # SkyySkills 0.4.62 fell.otherLogsPercent 100 (P9 F2; 0.4.43 - 0.4.61: 70) - every felled log but the chopped one pays this %
 LOGS_PER_TREE = 10        # GUESS logs a felled tree (Tree Feller is on from Lv 0: fell.enabled, no level gate)
 FELL_X = (1 + (LOGS_PER_TREE - 1) * FELL_OTHER_PCT / 100.0) / LOGS_PER_TREE   # = 0.73 of the table XP per log
 LIVE = "--p3" not in sys.argv     # --p3: the P3-era model (no P9 live corrections) for comparison
 BEFORE = "--before" in sys.argv     # the P1 view: today's live tables (0.4.56) instead of the P3 numbers
 NOW = "today" if BEFORE else "P3"   # the label of the model column
 if not BEFORE:
-    CURVES = dict((s, P3_LEVELS) for s in CURVES)                        # one curve for the class and every skill (levels.class.sameAsOthers)
+    CURVES = dict((s, P9_LEVELS if LIVE else P3_LEVELS) for s in CURVES)   # one curve for the class and every skill (levels.class.sameAsOthers);
+#   P9 LIVE: SkyySkills 0.4.62's list (Lv 61-80 x1.5, 81-100 x1.9); --p3: the P3 list
 
 # ---- the focused player (all GUESS until P3 measures them in game)
 SHARE = {"Class": 0.45, "Mining": 0.18, "Foraging": 0.15, "Farming": 0.10, "Cooking": 0.04, "Alchemy": 0.04,
@@ -2631,10 +2641,13 @@ P9_LOOT_CAP = LOOT_CAP       # loot.mob.capPerHour 20
 P9_MANA_STACK = {"Mage": (0.16 + 0.24 + 0.37, 0.10), "Priest": (0.24 + 0.37, 0.10), "Spellblade": (0.24 + 0.37, 0.0)}   # max pool + regen from
 #   the tree (Mage Mana Well 4 x 4 %, Attunement / Clarity +10 % regen), the Void Charm Intelligence line (Mythic +24 %), a Mythic Mana pet
 #   (Skrill / Void Eye / Void Larva 21 % x 1.75) - SkyyTrees 0.4.9 / SkyyAccessories 0.5.31 / SkyyPets 0.4.9 (P9 audit)
+# F5 (caster Mana) waits on Skyy's in-game feel test - Skyy 2026-10-22: "Feel-test first (Recommended)". While True, the --p9 half-stack Mana
+# row passes up to 40 s; set it False the day the feel-test answer is recorded (docs/answered/skills.md) so the row is strict again.
+F5_FEEL_TEST_PENDING = True
 P9_FORT_EXTRA = {"Mining": 0.0, "Foraging": 6.0, "Farming": 16.0}   # live tree Fortune OUTSIDE TREE_FORT_MAX 40 (Foraging FFortune 3 x 2, Farming
 #   AFortune 5 x 2 + AFortune II 3 x 2 - trees_v3_effects.py aliases, P9 audit)
 P9_IDLE = {"share": P6_TOTEM, "hours": P7_OFFLINE_H}   # SkyyShards 0.4.5: Totem I..V = 20..100 % of a farming hour, banked up to 72 h (Skyy's choice)
-P9_BEAST_X = [1.0]          # SkyySkills 0.4.61 beast.xpFactor (Beastmastery XP per pet XP)
+P9_BEAST_X = [1.5]          # SkyySkills 0.4.62 beast.xpFactor 1.5 (P9 F1; 0.4.60 - 0.4.61: 1) - Beastmastery XP per pet XP
 P9_PET_OVERFLOW = [False]    # live: a pet earns XP only from skills BELOW the cap (balance_rebirth BEAST "pet"); True = the F8 what-if
 P9_BANK = [(1_000_000, 0.02), (5_000_000, 0.01), (10_000_000, 0.005)]   # SkyyBank 0.1.x daily interest tiers (cap 10M) - not in the P7 totals
 
@@ -2921,8 +2934,13 @@ def p9_rows():
     out.append(("Zone 2 (class Lv 40) ~26 h, even player (+-15 %)", "%.1f h (fighter %.1f, gatherer %.1f)" % (ev["t40"], fi["t40"], ga["t40"]), 22.1 <= ev["t40"] <= 29.9, ""))
     out.append(("Class Lv 50 ~33 h, even player (+-10 %)", "%.1f h (fighter %.1f, gatherer %.1f)" % (ev["tcap"], fi["tcap"], ga["tcap"]), 29.7 <= ev["tcap"] <= 36.3, ""))
     hx = lambda x: ("%.1f" % x) if x < P9_HOURS else "never by %d" % P9_HOURS
-    out.append(("First rebirth 40-50 h (class + Mining / Foraging / Farming / Cooking / Alchemy / Beastmastery at the cap), even player", "%s h (fighter %s, gatherer %s)" % (hx(ev["done"]), hx(fi["done"]), hx(ga["done"])),
-                40.0 <= ev["done"] <= 50.0, "F6" if not 40.0 <= ev["done"] <= 50.0 else ""))
+    # F6 ACCEPTED - Skyy 2026-10-22 popup (docs/answered/skills.md): "~36 h is fine (Recommended)" = a first run done at ~36 h with even
+    # levelling is the goal now (the 40-50 h stays optional VP-overflow / UT / boss play). Still fails below 32 h or above 50 h.
+    _f6 = 40.0 <= ev["done"] <= 50.0
+    _f6ok = _f6 or 32.0 <= ev["done"] < 40.0
+    out.append(("First rebirth 40-50 h (class + Mining / Foraging / Farming / Cooking / Alchemy / Beastmastery at the cap), even player" + ("" if _f6 else " - ~36 h ACCEPTED (Skyy 2026-10-22: '~36 h is fine (Recommended)'; ok 32-50 h)"),
+                "%s h (fighter %s, gatherer %s)" % (hx(ev["done"]), hx(fi["done"]), hx(ga["done"])),
+                _f6ok, "" if _f6 else ("F6 accepted" if _f6ok else "F6")))
     lagv = []
     for hh in (10, 20, 30):
         L = ev["lag"][hh]
@@ -2965,8 +2983,15 @@ def p9_rows():
     half = dict((c, p9_mana(c, 0.5)) for c in P9_MANA_STACK)
     full = dict((c, p9_mana(c, 1.0)) for c in P9_MANA_STACK)
     hs = [x for v in half.values() for x in v]
-    out.append(("Casters dry 20-30 s with HALF the live Mana stack (tree + charm + pet; typical mid-game kit)", "; ".join("%s %s s" % (c[:2], "/".join(fmt(x) for x in v)) for c, v in half.items()),
-                all(x is not None and x <= 33 for x in hs), "F5" if not all(x is not None and x <= 33 for x in hs) else ""))
+    # F5 DEFERRED - Skyy 2026-10-22 popup (docs/answered/skills.md): "Feel-test first (Recommended)" = no Mana change until Skyy has felt
+    # the late-game bars in game; until then up to 40 s passes (the FULL-stack info row's bound). Above 40 s still fails.
+    # TODO (closes with Skyy's feel-test answer, recorded in docs/answered/skills.md): set F5_FEEL_TEST_PENDING = False then - from that
+    # moment this row fails again above 30 s (33 with noise) unless the answer itself accepts a number; never widen the 40 s bound.
+    _f5 = all(x is not None and x <= 33 for x in hs)
+    _f5ok = _f5 or (F5_FEEL_TEST_PENDING and all(x is not None and x <= 40.5 for x in hs))   # 40 s + float noise
+    out.append(("Casters dry 20-30 s with HALF the live Mana stack (tree + charm + pet; typical mid-game kit)" + ("" if _f5 else " - DEFERRED to Skyy's feel test (2026-10-22: 'Feel-test first (Recommended)'; ok <= 40 s until then)"),
+                "; ".join("%s %s s" % (c[:2], "/".join(fmt(x) for x in v)) for c, v in half.items()),
+                _f5ok, "" if _f5 else ("F5 feel test" if _f5ok else "F5")))
     fs = [x for v in full.values() for x in v]
     out.append(("  (info) dry time with the FULL live Mana stack (Lv 20 / 60 / 100)", "; ".join("%s %s s" % (c[:2], "/".join(fmt(x) for x in v)) for c, v in full.items()),
                 True, "F5" if not all(x is not None and x <= 40 for x in fs) else ""))

@@ -10,7 +10,8 @@ Run:  python tools/balance_rebirth.py --rebirth          the 2.4 table (P8 numbe
       python tools/balance_rebirth.py --tune 10          re-derive the past-life list (bisection, greedy player)
       --live (today's +200 % class clamp + the P3 list), --past <a,b,...>, --kept <x>, --ceil <x> (rebirth.xpMultMax), --md (markdown rows)
       --nobeast / --beastcap (P8d: Beastmastery never / always at its cap; default = levelled by a Mining pet's XP, see BEAST)
-SkyySkills 0.4.59 ships PAST_LIFE_P8 as rebirth.pastLifeXp (tools/skills_0_4_59_patch.py asserts the two are equal).
+SkyySkills 0.4.62 ships PAST_LIFE_P8 as rebirth.pastLifeXp (tools/skills_0_4_62_patch.py asserts the two are equal; 0.4.59 - 0.4.61 shipped
+PAST_LIFE_P8A, so tools/skills_0_4_59_patch.py no longer re-runs as it was).
 """
 import math
 import os
@@ -28,7 +29,9 @@ INSIGHT = ([12, 20, 32, 48, 72], [6, 8, 10, 12, 16])
 CLASS_ECHO = ([4, 6, 10, 16, 24], [4, 5, 7, 9, 11])
 SKILL_ECHO = ([4, 6, 10, 16, 24], [8, 11, 15, 20, 26])
 PAST_LIFE_LIVE = list(BM.PAST_LIFE)                                     # SkyySkills 0.4.57 / 0.4.58: 1.2,1.45,1.8,2.25,2.8
-PAST_LIFE_P8 = [1.1, 1.35, 1.6, 2.0, 2.45, 2.15, 2.25, 2.4, 2.55, 2.7]  # spec 2.3 = SkyySkills 0.4.59 rebirth.pastLifeXp
+PAST_LIFE_P8 = [1.1, 1.52, 2.05, 3.35, 4.92, 2.92, 3.08, 3.25, 3.44, 3.67]  # P9 F4 = SkyySkills 0.4.62 rebirth.pastLifeXp (dearer Lv 61-100: x1.5 / x1.9;
+#   research/Balance-P9-Check.md, Skyy 2026-10-22 "Apply all 3 (Recommended)"); the curves come from balance_model.CURVES (= the 0.4.62 list)
+PAST_LIFE_P8A = list(BM.PAST_LIFE_P8A)                                  # spec 2.3 = SkyySkills 0.4.59 - 0.4.61 (on the P3 list)
 CLASS_RB_MAX_LIVE, CLASS_RB_MAX = 2.0, 5.0                              # RbStat MAXPCT 200 (0.4.58) -> CLASSXP_MAX 500 (0.4.59)
 XP_BONUS_MAX = 5.0                                                      # SkillBonus.xpBonus clamp 0..5
 KEPT_PER_REBIRTH, KEPT_MAX = BM.KEPT_PER_REBIRTH, 0.30                  # GUESS (gear tiers / shards / pets kept)
