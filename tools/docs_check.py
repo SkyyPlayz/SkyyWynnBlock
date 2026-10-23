@@ -52,6 +52,7 @@ TEST_RE = re.compile(r"^Skyy\w+/(?:test|build)_skyy\w+_\d+(?:\.\d+)+\.py$")  # p
 PLANNED = {"tools/sacks_0_7_13_patch.py", "tools/skyyacctable.py", "tools/skyyacctable_test.py",  # research/Accessory-Table-Spec.md (paused)
            "tools/skyyench.py", "tools/skyywbtab.py",  # research/Gathering-Progression-Spec.md phase A
            "tools/skyyheads.py",  # research/UI-Queue-Spec.md R4 (player heads, planned)
+           "research/Class-Tree-v4-Table.md",  # research/Combat-Into-Class-Spec.md R0 output (planned)
            "tools/skills_0_4_6x_patch.py", "tools/trees_0_4_x_patch.py"}  # research/Balance-P7-Economy-Spec.md placeholders for "the next patch"
 LINK = re.compile(r"\]\(([^)\s]+)\)")  # a markdown link's target: always a path (or a URL / #anchor)
 
