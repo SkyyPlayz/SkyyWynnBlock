@@ -195,6 +195,36 @@ MERCHANT_MIN_X = 4.0          # a merchant row for a Bazaar-listed egg must be >
 COLLECTION_EGGS = {"III": "Common", "V": "Uncommon", "last": "Rare", "last_flagship": "Epic"}
 COLLECTION_FLAGSHIPS = ("Wheat", "OakLog", "Cobblestone", "BoneFragment")
 
+# ---------------------------------------------------------------------------------------------------------------- DRAGON EGGS (SkyyPets 0.4.11)
+# research/Dragon-Pet-Spec.md section 2 (+ docs/answered/pets.md 2026-10-18 DRAGON PET DESIGN: "hatches in the hatchery"). A dragon egg
+# hatches ONE fixed dragon kind (no roll 1) at a rarity from DRAGON_RARITY_W (roll 2, never below Rare). Dragon eggs are NOT in IDS /
+# ORDER / RECIPES / BAZAAR / MERCHANT_ROWS / COLLECTION_EGGS: never craftable, never fused, never from egg drops, never on the Bazaar
+# (the Auction House may list them - they are plain items). Ids are BUILD-TIME; Server Setup > Pets > Dragons (pets.dragon.eggs) may drop
+# or remap them. The two Nestkeeper eggs are Aures' own items (Dragon Nestkeeper, PACK.md): used BY ID at runtime only - their files are
+# never copied; holding one in your hand still hatches Aures' wild dragon (their feature, kept).
+# (egg item id, dragon kind, name, owner mod, admin word)
+DRAGON_EGGS = [
+    ("Dragon_Egg_Plain", "DragonPlain", "Plain Dragon Egg", "Nestkeeper", "plain"),
+    ("Dragon_Egg_Tundra", "DragonTundra", "Tundra Dragon Egg", "Nestkeeper", "tundra"),
+    ("Skyy_PetEgg_Dragon_Fire", "DragonFire", "Fire Dragon Egg", "SkyyPets", "fire"),
+    ("Skyy_PetEgg_Dragon_Thunder", "DragonStorm", "Storm Dragon Egg", "SkyyPets", "thunder"),
+    ("Skyy_PetEgg_Dragon_Air", "DragonSky", "Sky Dragon Egg", "SkyyPets", "air"),
+]
+DRAGON_EGG_IDS = [e[0] for e in DRAGON_EGGS]
+DRAGON_RARITY_W = (0, 0, 6000, 3000, 900, 100)     # C/U/R/E/L/M per 10,000: never below Rare, Mythic 1 % (spec 2, question 7 default)
+DRAGON_HATCH_SECONDS = 3600                        # 1 h (spec 2, question 7 default)
+
+
+def _dragon_checks():
+    assert len(DRAGON_EGG_IDS) == len(set(DRAGON_EGG_IDS)) == 5 and not set(DRAGON_EGG_IDS) & set(IDS)
+    assert all(parse_id(i) is None for i in DRAGON_EGG_IDS), "a dragon egg id must never parse as a category egg"
+    assert len(set(e[1] for e in DRAGON_EGGS)) == len(DRAGON_EGGS) and all(e[1].startswith("Dragon") for e in DRAGON_EGGS)
+    assert all(len(e[2]) <= 40 and e[3] in ("Nestkeeper", "SkyyPets") and e[4].isalpha() for e in DRAGON_EGGS)
+    assert sum(DRAGON_RARITY_W) == 10000 and DRAGON_RARITY_W[0] == 0 and DRAGON_RARITY_W[1] == 0
+
+
+_dragon_checks()
+
 
 # ---------------------------------------------------------------------------------------------------------------- self checks (import time)
 def _checks():
