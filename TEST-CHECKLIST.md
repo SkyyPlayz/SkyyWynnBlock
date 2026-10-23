@@ -257,3 +257,4 @@ tests always come first.
 230. P9 Skills defaults in Server Setup; Mining / Foraging / Beastmastery XP feel; round /rebirth Nexus page (11 arms, Learn, zoom)
 231. UI test tour: /skyprobe tour - 15 cases (heads, dialogue bar, tiles, key hints, vanilla feed, trail, zoom scroll)
 232. ALT key hint, crouch x2 folds tracker, /quests widget, Stats by source table
+233. Elements: coloured element numbers, mob element plates, pet elements, element Defence, Poison, element charms, Stats element charts, UT bands
