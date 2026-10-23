@@ -45,7 +45,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyKeyProbe | 0.2 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.18 | mob levels + difficulty; level curves + level gap (mob:fn:info); 0.7 port, 280 roles |
 | SkyyWorldGen | 0.7.9 | Zone 1 test island (/zone 1, admin); 0.7 port |
-| SkyyArmory | 0.1.45 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile); built from source on 0.7, TravTick gating |
+| SkyyArmory | 0.1.46 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile); built from source on 0.7, TravTick gating |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.
