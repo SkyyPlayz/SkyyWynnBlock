@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-23 05:00 MDT; Skyy is resetting the context - a fresh session starts here)
+# SkyWynn - RESUME HERE (updated 2026-10-23 06:20 MDT; Skyy is resetting the context - a fresh session starts here)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -11,27 +11,22 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
    (backup -> `smoke_test.py --allow-pack-api` -> `deploy_set.py --yes` -> `record_deploy.py` -> commit -> `tidy_local.py --yes`).
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
-## STATE (2026-10-23 05:00)
-- LIVE: everything up to TEST-CHECKLIST 235. Balance pass P1-P9 DONE (`python tools/balance_model.py --p9 --check` 35 / 0; caster Mana waits
+## STATE (2026-10-23 06:20)
+- LIVE: everything up to TEST-CHECKLIST 236 (dragon fighting D1 + boss dragon eggs D6 = Pets 0.4.12 + Mobs 0.1.18, 10-23 06:18). Balance pass P1-P9 DONE (`python tools/balance_model.py --p9 --check` 35 / 0; caster Mana waits
   for Skyy's feel test; first run ~36 h accepted). Radial tree pages (SkyyTrees 0.5.0) + radial Nexus (SkyyRebirth 0.5.0). Left Alt opens the
   Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
-- RUNNING (10-23 09:20): an Opus builder agent finishing dragond1 (the workflow stopped at the reset, no verdict). Was: workflow `dragond1` = SkyyPets 0.4.11 -> 0.4.12 (dragon FIGHTING, D1) + SkyyMobs 0.1.17 -> 0.1.18 (dragon egg BOSS DROPS, D6).
-  Its files show up untracked (SkyyPets/*_0.4.12.py, SkyyMobs/*_0.1.18.py, tools/pets_0_4_12_patch.py, tools/mobs_0_1_18_patch.py); it also edits
-  tools/balance_model.py + tools/tier_tags.py + tools/test_tier_tags.py (uncommitted - those edits belong to it). Result journal:
-  C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\9862d9d3-3ce5-4d92-aa84-cbb1612eb4b9\subagents\workflows\wf_c919b892-56f\journal.jsonl
-  (last 'check' result = VERDICT). READY -> pin + FLOOR note, smoke, deploy, record, commit. Not finished / no verdict -> re-run the round
-  from the SET pins (task: research/Dragon-Pet-Spec.md rounds D1 + D6, spec defaults taken).
+- RUNNING: nothing.
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
 - Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png (8 Home tiles) + research/cloud/page-emblems-art/sheet.png (4 page emblems).
 - joszza's 2nd answer (DungeonBosses + River Bridges; ask sent 10-22): paste word for word into docs/answered/world.md, then add to the pack.
-- Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST 215-235.
+- Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST 215-236.
 
 ## NEXT (in order; each its own round)
-1. Dragon D1 + D6 (running), then D3 riding + flying with the saddle, secret dragons, dragon egg icon art.
+1. Dragon D3 riding + flying with the saddle, secret dragons, dragon egg icon art.
 2. After the probe tour (research/UI-Queue-Spec.md): R1b feed cards -> vanilla pickup feed; R2 zoom scroll fix (Trees / Rebirth); R3 SkyyQuests
    PARTICLE TRAIL (Skyy: "Particle trail instead") + objective HUD text + bottom dialogue bar; R4 player heads (PlayerSkin, runtime render,
    hair); R5 Menu picture tiles phase 1 (+ phase 2 = 31 hub tabs) + page emblems into SkyyTrees.

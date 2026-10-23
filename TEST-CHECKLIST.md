@@ -260,3 +260,4 @@ tests always come first.
 233. Elements: coloured element numbers, mob element plates, pet elements, element Defence, Poison, element charms, Stats element charts, UT bands
 234. Elemental swords: real longsword damage + element numbers, Poison DoT, not craftable, Mythic drops per zone
 235. Dragon pet: hatch, one per profile, summon + stages, void return
+236. Dragon fights + boss dragon eggs: bites, Defend / Follow, DOWN, egg drop + Mythic cap
