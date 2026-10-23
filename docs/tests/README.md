@@ -355,3 +355,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Weapon Ability 1 in every tooltip + Mythic / UT charge rates (DEPLOYED 2026-10-23, backup deploy-20261023-1217) | [2026-10](2026-10.md) |
 | Trees: Motherlode jackpot, row gates, harvest swing, node icons (DEPLOYED 2026-10-23, backup deploy-20261023-1253) | [2026-10](2026-10.md) |
 | Weapon signatures: Whirling Staff, Flurry, Kunai Fan, Page Storm (DEPLOYED 2026-10-23, backup deploy-20261023-1329) | [2026-10](2026-10.md) |
+| Class tree rebuild + base weapon abilities + summon slot at Beastmastery 10 (DEPLOYED 2026-10-23, backup deploy-20261023-1747) | [2026-10](2026-10.md) |
