@@ -180,3 +180,7 @@ section 6 when it reviews the results.
 - 2026-10-23: Fishing rework survey (4 mods, all learn) -> research/cloud/Fishing-Rework-Survey.md
 - 2026-10-23: UT design draft 12 armor sets + 32 weapons -> research/cloud/UT-Design-Draft.md
 - 2026-10-23: Powders spec draft (5 tiers x 5 elements, sockets, build split) -> research/cloud/Powders-Spec-Draft.md
+- 2026-10-23: Secret dragons D5b build spec (Void / Blood / Light / Crystal, ids, stats on the pet budget, egg sources, harness) -> research/cloud/Secret-Dragons-Spec.md
+- 2026-10-23: Wardrobe coin prices spec (cosmetic sink on the coin curve: extra loadout slots, look change) -> research/cloud/Wardrobe-Coin-Prices.md
+- 2026-10-23: Balance targets refresh notes (which targets.md sections are pre-P9, run order) -> research/cloud/Targets-Refresh-Notes.md
+- 2026-10-23: GlymeraSigns ask draft (message Skyy sends) -> research/cloud/GlymeraSigns-Ask.md
