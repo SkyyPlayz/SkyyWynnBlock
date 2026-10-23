@@ -20,7 +20,9 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
 - RUNNING (10-23 10:55): workflow trees052 (Trees 0.5.2: Motherlode x3, row gates, harvest swing, Plan sweep, all node icons) ; Gear 0.3.42 (harvester swing source) LIVE 10-23 (TEST 240), its
-  rows unlock when Trees 0.5.2 deploys; workflow sig1 (Gear 0.3.43 + Armory 0.1.44: Ability 1 tooltips, Mythic 40-60 %, UT per item, pack meters). Weapon signatures spec done (research/Weapon-Signatures-Spec.md + Skyy's
+  rows unlock when Trees 0.5.2 deploys; sig1 LIVE (Gear 0.3.43 + Armory 0.1.44, TEST 241). NEXT signature rounds: sig2 (4 locked
+  signatures never built: Whirling Staff, Flurry, Kunai Fan, Page Storm), sig3 (UT quirks + a new signature for every Mythic), sig4 (base
+  signature for every family with none) - research/Weapon-Signatures-Spec.md + gear.md 10-23. Weapon signatures spec done (research/Weapon-Signatures-Spec.md + Skyy's
   10-23 answers in gear.md) -> builds sig1-sig4 after Gear 0.3.42. Tell joszza: retry-loop message in docs/log 10-23 10:20. QUEUED after zoomfix: SkyyTrees 0.5.2
   Motherlode = 1 %/rank x3 jackpot, separate from Fortune + stale Plan text sweep + ROW GATES = total AND 3 points in the row
   above (grandfathered) + HARVEST SWING SPEED (Quick Scythe -> harvester swing; with Gear 0.3.42 harvester swing source)

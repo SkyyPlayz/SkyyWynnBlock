@@ -31,6 +31,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-23, sig1): SkyyGear 0.3.43 + SkyyArmory 0.1.44 pin together (Ability 1 tooltip block, Mythic signature charge 40-60 % by tier, UT per-item sig.ut rows, runtime meters for the dead-meter pack Mythics). Gear 0.3.43 needs 0.3.42 (built on it). Before rolling Gear back to 0.3.42 switch sig.packMeter OFF for one session (a player saved holding a pack Mythic keeps a +8 / +27 meter max). No saved data, no migration; Armory 0.1.44 alone is harmless.
 # FLOOR (2026-10-23, gear042): SkyyGear 0.3.42 (lifelong Breaking Speed on hoe / sickle / Harvester; bridge gear:swing:harvest:<uuid>) - no new floor, no saved data, no migration, no row. Rolls back alone to 0.3.41 (hoe / sickle swing points show as free there). Harvest rows stay unbuyable until SkyyTrees lists swing.harvest (0.5.2).
 # FLOOR (2026-10-23, menu046): SkyyMenu 0.3.46 (no hotbar menu item: menu.giveItem default OFF via a one-time migration with Undo; old Skyy_Menu stacks taken once per player) rolls back alone to 0.3.45 (it reads giveItem=false too). To bring the item back: Undo menu.giveItem in Server Setup -> Changes. Taken items are not given back.
 # FLOOR (2026-10-23, zoomfix R2): SkyyTrees 0.5.1 + SkyyRebirth 0.5.1 (kit 1.9 keep-mode node maps) - no new floor, no saved data, no migration; one new Server Setup row each (trees.ui.keepScroll / rebirth.ui.keepScroll, ON; a missing line = ON). They roll back alone: 0.5.0 = every zoomed click redraws again (the row line is ignored).
@@ -46,7 +47,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.35"), ("SkyySacks", "0.8.28"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.32"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.42"), ("SkyySkills", "0.4.63"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.43"), ("SkyySkills", "0.4.63"),
     ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.46"), ("SkyyMenu", "0.3.46"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.5.1"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -144,7 +145,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.43"),
+    ("SkyyArmory", "0.1.44"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll

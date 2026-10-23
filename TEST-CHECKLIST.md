@@ -265,3 +265,4 @@ tests always come first.
 238. Dragon riding (fly / glide), pet tooltips by type, dragon icons, Quirk's Multitool / Harvester, Flame longsword, StructureV2 freeze stopgap
 239. Zone 2 freeze fix (StructureV2 back on), zoomed Trees / Nexus keep their place, no hotbar menu item
 240. Gear 0.3.42 harvester Breaking Speed row (buyable after Trees 0.5.2)
+241. Ability 1 block on every weapon, Mythic 40-60 % faster charge, UT per-item charge rows, pack Mythic meters fixed
