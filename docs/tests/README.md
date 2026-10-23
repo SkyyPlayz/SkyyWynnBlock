@@ -343,3 +343,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Smithing shows the real lock reason, backpack recipes unlocked, farming textures fixed, pack prep (boss ranks, money -> coins, no guns) + P7 part 2 (level-up coins, respec, exploration + shard coins) (DEPLOYED 2026-10-22, backup deploy-20261022-1240) | [2026-10](2026-10.md) |
 | Round skill-tree pages (radial maps, zoom 100 / 150 / 200 %) (DEPLOYED 2026-10-22, backup deploy-20261022-1743) | [2026-10](2026-10.md) |
 | Balance P9 fixes (Beastmastery x1.5, Mining / logs leftovers gone, catch-up 20 %, late levels slower) + round Rebirth Nexus page (DEPLOYED 2026-10-22, backup deploy-20261022-1908) | [2026-10](2026-10.md) |
+| UI test tour SkyyUiProbe 0.8 (/skyprobe tour, 15 cases, op only) (DEPLOYED 2026-10-22, backup deploy-20261022-2114) | [2026-10](2026-10.md) |
