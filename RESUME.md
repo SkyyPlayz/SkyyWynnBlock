@@ -12,7 +12,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## STATE (2026-10-23 06:20)
-- LIVE: everything up to TEST-CHECKLIST 236 (dragon fighting D1 + boss dragon eggs D6 = Pets 0.4.12 + Mobs 0.1.18, 10-23 06:18). Balance pass P1-P9 DONE (`python tools/balance_model.py --p9 --check` 35 / 0; caster Mana waits
+- LIVE: everything up to TEST-CHECKLIST 237 (joszza DungeonBosses + River Bridges in the pack, 10-23 08:31) (dragon fighting D1 + boss dragon eggs D6 = Pets 0.4.12 + Mobs 0.1.18, 10-23 06:18). Balance pass P1-P9 DONE (`python tools/balance_model.py --p9 --check` 35 / 0; caster Mana waits
   for Skyy's feel test; first run ~36 h accepted). Radial tree pages (SkyyTrees 0.5.0) + radial Nexus (SkyyRebirth 0.5.0). Left Alt opens the
   Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
@@ -25,7 +25,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
 - Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png (8 Home tiles) + research/cloud/page-emblems-art/sheet.png (4 page emblems).
-- joszza's 2nd answer (DungeonBosses + River Bridges; ask sent 10-22): paste word for word into docs/answered/world.md, then add to the pack.
+- Tell joszza: River Bridges' guard role needs MajorDungeons' Mb_Bandit group (fails to load without it).
 - Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST 215-236.
 
 ## NEXT (in order; each its own round)

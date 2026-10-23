@@ -261,3 +261,4 @@ tests always come first.
 234. Elemental swords: real longsword damage + element numbers, Poison DoT, not craftable, Mythic drops per zone
 235. Dragon pet: hatch, one per profile, summon + stages, void return
 236. Dragon fights + boss dragon eggs: bites, Defend / Follow, DOWN, egg drop + Mythic cap
+237. joszza pack: DungeonBosses (Bandit Boss on boss islands, Astral Voidcaller via Astral Sigil, Ice Magus at the frozen tower; levelled by our ranks, Structure Money -> coins) + River Bridges (bridges over rivers in NEW chunks; its archer guard does not load - joszza bug, needs MajorDungeons' Mb_Bandit group)
