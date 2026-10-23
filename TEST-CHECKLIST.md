@@ -266,3 +266,4 @@ tests always come first.
 239. Zone 2 freeze fix (StructureV2 back on), zoomed Trees / Nexus keep their place, no hotbar menu item
 240. Gear 0.3.42 harvester Breaking Speed row (buyable after Trees 0.5.2)
 241. Ability 1 block on every weapon, Mythic 40-60 % faster charge, UT per-item charge rows, pack Mythic meters fixed
+242. Motherlode x3 jackpot, 3 points in the row above, harvester swing (tree + tool), every node's own icon, Plan texts fixed

@@ -4750,3 +4750,140 @@ def _p7b_apply():
 
 _p7b_apply()
 check()
+
+
+# ---------------------------------------------------------------------------------------------------- SKYYTREES 0.5.2 (2026-10-23): Motherlode, Quick
+# Scythe and the Plan text sweep. Skyy (docs/answered/skills.md 2026-10-23): "Make Motherlode distinct: 1% chance per rank (3 ranks) for an ore to
+# drop x3 (its original plan), clearly labelled as a jackpot roll separate from Fortune. Fix the stale Plan text too." + "since crops already break
+# in 1 hit, we need a swing speed upgrade in the tree, and on the tool." P052_TEXT = the upgrade texts (the page's "Plan:" line) that now say what
+# the upgrade really does; P052_TEXT_OLD = every text it replaces (asserted - a later edit cannot slip past). Applied ONLY by the builds that call
+# p052_apply() (SkyyTrees 0.5.2+), so an older build script imports the table it was made with.
+P052_TEXT = {
+    "Mining.b1.r4a": "Jackpot: 1% chance/rank an ore drops x3 - its own roll, separate from Fortune",
+    "Farming.b1.r1b": "+1% harvester swing speed on crops/rank (the full % on the Harvester, a little less on slower sickles; not hoes)",
+}
+P052_TEXT_OLD = {
+    "Mining.b1.r4a": "1% chance/rank for a node to drop x3",
+    "Farming.b1.r1b": "+1% move speed/rank (crops already break in one hit)",
+}
+# THE PLAN TEXT SWEEP (SkyyTrees 0.5.2 builder, 2026-10-23): every live skill-tree upgrade whose text named a different effect or number than
+# what it does now (its 0.3 node alias's own line, or its trees_v3_effects.py row) - the new text = the real effect a rank
+P052_SWEEP = {
+    'Mining.b1.r1a': '+1.6% pickaxe swing speed/rank (1 Mining Speed level)',
+    'Mining.b1.r2a': 'Vein Burst breaks 1 more touching ore/rank',
+    'Mining.b1.r3b': '10% chance an ore also gives its smelted bar',
+    'Mining.b2.r1a': '+2% Mining Breaking Power/rank per tier of the pickaxe you hold (at most 7 tiers)',
+    'Mining.b2.r3a': '+1% Mining Breaking Power/rank per Mining armor piece you wear (max 4 pieces)',
+    'Mining.b2.r4a': '+1 Mining Fortune/rank per counting accessory (max 5)',
+    'Mining.b3.r3a': "+2% Mining XP and +1 Mining Fortune/rank, x your Mining pet's rarity bonus",
+    'Mining.b3.r5a': '+4% Mining pet stats/rank',
+    'Foraging.b1.r1a': '+2% hatchet swing speed on wood/rank',
+    'Foraging.b1.r2a': '+5% chance/rank per log for a sapling of that wood',
+    'Foraging.b1.r2c': 'Tree Feller breaks more logs beside it: 2 at rank 1, 5 at rank 2',
+    'Foraging.b1.r3a': '+3% chance/rank per log for 1 Tree Sap',
+    'Foraging.b1.r3b': '+1% hatchet swing speed on wood/rank',
+    'Foraging.b2.r4a': "+2% Foraging XP and +1 Foraging Fortune/rank, x your Foraging pet's rarity bonus",
+    'Foraging.b3.r1b': '+2% Foraging Breaking Power/rank per tier of the hatchet you hold (at most 7 tiers)',
+    'Foraging.b3.r3a': '+0.75 Foraging Fortune/rank per Foraging armor piece you wear (max 4 pieces)',
+    'Foraging.b3.r4a': '+1 Foraging Fortune/rank per counting accessory (max 5)',
+    'Combat.b2.r4a': '+0.5% max Health/rank per counting accessory (max 5)',
+    'Combat.b3.r3a': "+2% Combat XP and +1% damage/rank, x your Combat pet's rarity bonus",
+    'Farming.b1.r1a': '+2% double-drop chance/rank on ripe crops',
+    'Farming.b1.r5b': '+0.7 Farming Fortune/rank per tier of the hoe or Harvester you hold (at most 7 tiers)',
+    'Farming.b1.r6': '15% chance a crop drops two more times',
+    'Farming.b2.r3a': "+2% Farming XP and +1 Farming Fortune/rank, x your Farming pet's rarity bonus",
+    'Farming.b3.r1a': '+3% extra-drop chance/rank on health, mana and stamina crops',
+    'Farming.b3.r3c': '+1.25 Farming Fortune/rank per Farming armor piece you wear (max 4 pieces)',
+    'Farming.b3.r4b': '+4% chance/rank per crop for 1 of its seeds',
+    'Fishing.b1.r1a': '-3% wait for a bite/rank',
+    'Fishing.b1.r3a': '-2% wait for a bite/rank',
+    'Alchemy.b2.r3a': "+2% Alchemy XP/rank, x your Foraging pet's rarity bonus",
+    'Smithing.b1.r1b': '+10% Smelting Fortune/rank (extra bars when you smelt in /craft Furnace)',
+    'Smithing.b2.r3b': "+2% Smithing XP/rank, x your Mining pet's rarity bonus",
+    'Cooking.b1.r1a': '+2.4% chance/rank a dish comes out 1 Grade higher',
+    'Cooking.b1.r5b': '+2% chance/rank of +1 Grade on any dish',
+    'Cooking.b1.r6': '5% chance of +2 Grades on a dish',
+    'Cooking.b2.r1a': '+3% chance/rank of a double ingredient',
+    'Cooking.b2.r3a': '2% chance/rank to get back one ingredient',
+    'Cooking.b2.r3b': "+2% Cooking XP/rank, x your Farming pet's rarity bonus",
+    'Cooking.b2.r4a': '4% chance/rank of one extra dish of the same Grade',
+    'Cooking.b3.r1a': '2% chance/rank of one extra dish of the same Grade',
+    'Acrobatics.b1.r1b': '+0.04 blocks jump height/rank',
+    'Exploration.b1.r3b': '+2% chance/rank of an extra roll on a first-opened loot chest',
+}
+# fix round: P052_SWEEP_OLD also keeps the ORIGINAL design plans the sweep replaced (e.g. Farming.b1.r6 free replant, Cooking.b1.r6 double
+# effect) - they stay here as the record until they are built or moved to research/.
+P052_SWEEP_OLD = {
+    'Mining.b1.r1a': '+2% mining speed/rank',
+    'Mining.b1.r2a': '+1 vein size/rank',
+    'Mining.b1.r3b': '10% chance to auto-smelt ore',
+    'Mining.b2.r1a': '+2% mining speed per tool tier above Stone, per rank',
+    'Mining.b2.r3a': '+1% mining speed per mining-tagged armor piece worn, per rank (max 4 pieces)',
+    'Mining.b2.r4a': '+2% ore yield per filled accessory slot, per rank',
+    'Mining.b3.r3a': '+2% mining XP and +1% ore yield per equipped Mining pet level tier, per rank',
+    'Mining.b3.r5a': 'Mining pet ability effects +4%/rank',
+    'Foraging.b1.r1a': '+2% chopping speed/rank',
+    'Foraging.b1.r2a': '+10% saplings from felled trees/rank',
+    'Foraging.b1.r2c': 'works on trees up to +8 logs/rank',
+    'Foraging.b1.r3a': '+3% bark/resin drops/rank',
+    'Foraging.b1.r3b': '+1% chopping speed/rank',
+    'Foraging.b2.r4a': '+2% foraging XP and +1% yield per equipped Foraging pet tier, per rank',
+    'Foraging.b3.r1b': '+2% chopping speed per axe tier, per rank',
+    'Foraging.b3.r3a': '+1% foraging yield per forest-tagged armor piece, per rank',
+    'Foraging.b3.r4a': '+2% foraging fortune per filled accessory slot, per rank',
+    'Combat.b2.r4a': '+0.5% max health per filled accessory slot, per rank',
+    'Combat.b3.r3a': '+2% combat XP and +1% damage per equipped Combat pet tier, per rank',
+    'Farming.b1.r1a': '+2% crop yield/rank',
+    'Farming.b1.r5b': '+2% yield per hoe tier/rank',
+    'Farming.b1.r6': 'Sweep Harvest also grants a 25% chance of a free replant and doubles drops of golden crops.',
+    'Farming.b2.r3a': '+2% farming XP and +1% yield per equipped Farming pet tier, per rank',
+    'Farming.b3.r1a': '+3% herb yield/rank',
+    'Farming.b3.r3c': '+2% yield per farming-tagged armor piece/rank',
+    'Farming.b3.r4b': '+4% seed refund/rank',
+    'Fishing.b1.r1a': '+3% bite speed/rank',
+    'Fishing.b1.r3a': '+2% bite speed/rank',
+    'Alchemy.b2.r3a': '+2% alchemy XP and +1% rare herb chance per equipped Foraging pet tier, per rank',
+    'Smithing.b1.r1b': '+3% chance to save materials/rank',
+    'Smithing.b2.r3b': '+2% smithing XP per equipped Mining pet tier/rank',
+    'Cooking.b1.r1a': '+3% food buff strength/rank',
+    'Cooking.b1.r5b': '+2% food rarity chance/rank',
+    'Cooking.b1.r6': 'one chosen recipe gives double effect and shares its buff with nearby allies.',
+    'Cooking.b2.r1a': '+3% ingredient yield/rank',
+    'Cooking.b2.r3a': '3% chance/rank to save an ingredient',
+    'Cooking.b2.r3b': '+1% cooking yield and +2% XP per equipped Farming pet tier, per rank',
+    'Cooking.b2.r4a': '+4% batch size/rank',
+    'Cooking.b3.r1a': '+1 serving per cook/rank',
+    'Acrobatics.b1.r1b': '+4% jump height/rank',
+    'Exploration.b1.r3b': '+2% chest loot quality/rank',
+}
+assert set(P052_SWEEP) == set(P052_SWEEP_OLD) and not set(P052_SWEEP) & set(P052_TEXT)
+P052_TEXT.update(P052_SWEEP)
+P052_TEXT_OLD.update(P052_SWEEP_OLD)
+P052_APPLIED = []
+
+
+def p052_apply():
+    """SkyyTrees 0.5.2: P052_TEXT over the table (once; asserted against P052_TEXT_OLD)"""
+    if P052_APPLIED:
+        return
+    seen = set()
+    for t in TREES:
+        if t["kind"] != "skill":
+            continue
+        for bn, b in enumerate(t["branches"]):
+            for r in b["rows"]:
+                fk = "%s.b%d.r%d.free" % (t["name"], bn + 1, r["r"])
+                if fk in P052_TEXT:
+                    assert r["free"] is not None and r["free"]["text"] == P052_TEXT_OLD[fk], ("0.5.2: the free perk text moved", fk, r["free"])
+                    r["free"]["text"] = P052_TEXT[fk]
+                    seen.add(fk)
+                for u in r["ups"]:
+                    k = "%s.b%d.%s" % (t["name"], bn + 1, u["id"])
+                    if k in P052_TEXT:
+                        assert u["text"] == P052_TEXT_OLD[k], ("0.5.2: the text moved", k, u["text"])
+                        u["text"] = P052_TEXT[k]
+                        seen.add(k)
+    assert seen == set(P052_TEXT) == set(P052_TEXT_OLD), sorted(set(P052_TEXT) ^ seen)
+    assert all("~" not in v and "\n" not in v and all(32 <= ord(c) < 127 for c in v) for v in P052_TEXT.values())
+    P052_APPLIED.append(1)
+    check()
