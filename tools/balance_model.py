@@ -7,6 +7,8 @@
     python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
     python tools/balance_model.py --p9       P9 whole first run (player types, the 1-hour rule, zone hours, rebirths, every Skyy goal, stacking) -> targets.md
                                              section 10 with --md; --p9 --check exits 1 on a failed goal (research/Balance-P9-Check.md); --p3 = no P9 LIVE corrections
+    python tools/balance_model.py --p10      P10 class tree rebuild (Combat into Class, SkyyTrees 0.6.0): points a level, reach, per-branch capstones,
+                                             the class-tree damage share vs the old tree, the Combat part's budgets (--p10 --check: exit 1 on a failed row)
     python tools/balance_model.py --econ     P7 economy (coin curve, Bazaar prices by tier, costs on the curve, loop routes) -> targets.md section 9
                                              (--econ --check: exit 1 unless the gathering skills are within 0.85-1.15 of each other and on G
                                              in every zone, every tier step >= 1.2x, and all 17 loop routes lose money)
@@ -3211,6 +3213,9 @@ def el_rows(with_p9=False):
 
 
 def main():
+    if "--p10" in sys.argv:           # P10 class tree rebuild (SkyyTrees 0.6.0): points, reach, the four sources; --check: exit 1 on a failed row
+        p10_main()
+        return
     if "--elem" in sys.argv:          # elem1: the Wynn elements ON (P5 rows + P4 time to kill [+ P9 with --p9]); --check: exit 1 on a failed row
         rows = el_rows(with_p9="--p9" in sys.argv)
         print("| Target (Wynn elements on: SkyyGear 0.3.39, SkyyPets 0.4.10, SkyyAccessories 0.5.32) | Model | OK |\n|---|---|---|")
@@ -3301,6 +3306,115 @@ def main():
                     f"{fmt(at_level(simulate_today()[0], CAP1)[0])} h in this model); the rest of the 40-50 h run = skills catch up, "
                     "gear / UT / bosses, overflow XP for Void Particles.\n" + p4_md() + "\n" + p5_md() + "\n" + p6_md() + "\n")
         print("\nwrote research/balance/targets.md")
+
+
+# ======================================================================================================================================
+# P10 (2026-10-23, research/Combat-Into-Class-Spec.md section 7; SkyyTrees 0.6.0): THE CLASS TREE REBUILD - Combat folded into the class.
+# `python tools/balance_model.py --p10` prints the table (--check: exit 1 on a failed row). Reads tools/trees_v3_data.py (v4_apply) and
+# tools/trees_v3_effects.py - never writes anything. Skyy (docs/answered/classes.md 2026-10-23) Q1: "1 per level" -> 1 point a class level
+# (+ Head Start x2: the class tree replaces the class + Combat trees); the four power sources must still hold although only ~60 % of the
+# combined tree is reachable at the class cap.
+P10_LEVELS = (50, 100)                 # the first run's cap, the rebirth cap
+P10_AP_PER_LEVEL = 1                   # Skyy Q1
+P10_SHARE_LO, P10_SHARE_HI = 0.80, 1.10   # an even build's class-tree damage / damage-taken share vs owning the whole old class tree
+P10_DMG = ("dmgLowHp", "dmgMelee", "dmgWeapon", "dmgBow", "dmgFar", "dmgBehind", "dmgElite", "dmgMarked", "dmgDebuff", "spellPow", "fistsDmg")
+P10_DR = ("drMelee", "drRanged", "drMagic", "drStill", "drRooted", "drShieldUp")
+
+
+def p10_rows():
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trees_v3_data as V3D
+    import trees_v3_effects as V3E
+    import copy
+    old = dict((t["name"], copy.deepcopy(t)) for t in V3D.TREES if t["kind"] == "class")
+    V3D.v4_apply()
+    rows = []
+
+    def sums(t, codes):
+        s = 0.0
+        for b in t["branches"]:
+            for r in b["rows"]:
+                for u in r["ups"]:
+                    h = u.get("hook")
+                    if h and h[0] == "fx":
+                        s += sum(v * u["max"] for c, v in h[1] if c in codes)
+        return s
+    for t in V3D.TREES:
+        if t["kind"] != "class":
+            continue
+        cn = t["name"]
+        ranks = sum(u["max"] for b in t["branches"] for r in b["rows"] for u in r["ups"])
+        oldr = sum(u["max"] for b in old[cn]["branches"] for r in b["rows"] for u in r["ups"])
+        reach = [min(1.0, P10_AP_PER_LEVEL * L / float(ranks)) for L in P10_LEVELS]
+        rows.append(("%s: points 1 a class level -> %d / %d of %d ranks at Lv %d / %d" % (cn, P10_AP_PER_LEVEL * P10_LEVELS[0], P10_AP_PER_LEVEL * P10_LEVELS[1], ranks, P10_LEVELS[0], P10_LEVELS[1]),
+                     "%.0f %% / %.0f %% of the tree (old: class %d ranks + Combat 70 live, each with its own points)" % (100 * reach[0], 100 * reach[1], oldr),
+                     0.4 <= reach[1] <= 0.75))
+        for bi, b in enumerate(t["branches"]):
+            br = sum(u["max"] for r in b["rows"][:5] for u in r["ups"])
+            cap_lv = max(V3D.GATE_STEP * 5, V3D.GATE_STEP * 5)     # 25 points in the branch + class level 25 (the floor)
+            rows.append(("%s B%d %s: capstone reachable (rows 1-5 hold >= 25 ranks, every row opens)" % (cn, bi + 1, b["name"]),
+                         "%d ranks below the capstone; capstone at Lv %d with a focused build" % (br, cap_lv + 1), br >= 25))
+        for nm, codes, cap in (("damage", P10_DMG, 40.0), ("damage taken", P10_DR, 35.0)):
+            o = sums(old[cn], codes)
+            n = sums(t, codes)
+            even = n * reach[1]
+            ok = (o == 0 and n == 0) or (o > 0 and P10_SHARE_LO <= even / o <= P10_SHARE_HI)
+            rows.append(("%s class-tree %s share at Lv 100 (even build, x%g raise) vs the whole old tree" % (cn, nm, V3D.V4_STAT_X),
+                         "old %.1f %%, new full %.1f %% x %.0f %% owned = %.1f %% (%.0f %% of old; SkyyClasses caps the sum at %.0f)" % (
+                             o, n, 100 * reach[1], even, (100 * even / o) if o else 100, cap), ok))
+    # fix round 2 (critic: the re-check never looked at Lv 50 nor at the Combat part): the first-run cap and the Weaponcraft (Combat part)
+    # share of an EVEN build vs before (old: the Combat skill's own 1 point a Combat level on its 70 live ranks, beside the class points).
+    # The Combat part's numbers are applied by SkyyGear / SkyyMobs / SkyyPets / SkyyAccessories (+ SkyyClasses / SkyyTrees / SkyySkills rows
+    # already near their caps) - raising them is a round of those mods, so these rows are OPEN (shown, not failed) until Skyy decides.
+    sh = []
+    for t in V3D.TREES:
+        if t["kind"] != "class":
+            continue
+        ranks = sum(u["max"] for b in t["branches"] for r in b["rows"] for u in r["ups"])
+        r50 = min(1.0, P10_AP_PER_LEVEL * P10_LEVELS[0] / float(ranks))
+        r100 = min(1.0, P10_AP_PER_LEVEL * P10_LEVELS[1] / float(ranks))
+        sh.append((t["name"], r50, r100, r50 / min(1.0, P10_LEVELS[0] / 70.0), r100 / min(1.0, P10_LEVELS[1] / 70.0)))
+    rows.append(("Class tree reach at the first-run cap (Lv %d, even build)" % P10_LEVELS[0],
+                 "; ".join("%s %.0f %%" % (c, 100 * a) for c, a, _b, _x, _y in sh), True))
+    rows.append(("OPEN (Skyy / a SkyyGear-Mobs-Pets-Accessories round): Weaponcraft (Combat part) share of an even build vs the old Combat skill",
+                 "Lv %d: %.0f-%.0f %% of before; Lv %d: %.0f-%.0f %% of before (1 point a class level now buys class + Combat ranks; the Combat rows' "
+                 "per-rank numbers are unchanged)" % (P10_LEVELS[0], 100 * min(x[3] for x in sh), 100 * max(x[3] for x in sh),
+                                                      P10_LEVELS[1], 100 * min(x[4] for x in sh), 100 * max(x[4] for x in sh)), True))
+    # the Combat part's budgets carried into Weaponcraft (spec 7): Health 10 %, XP 30 %, move 10 %; new power inside the caps
+    hp = V3E.tree_hp("Combat")
+    xp = V3E.tree_xp("Combat")
+    mv = V3E.tree_move("Combat")
+    rows.append(("Weaponcraft (the Combat part): max Health <= 10 % (Toughness + Accessory Plates)", "%.1f %%" % (100 * hp), hp <= V3E.TREE_HP_MAX + 1e-9))
+    rows.append(("Weaponcraft: class XP <= 30 % (Pet Fang + Battle Insight)", "%.1f %%" % (100 * xp), xp <= V3E.TREE_XP_MAX + 1e-9))
+    rows.append(("Weaponcraft: move speed <= 10 % (Momentum)", "%.1f %%" % mv, mv <= V3E.TREE_MOVE_MAX + 1e-9))
+    low = sum(V3E.vmax(e) for e in V3E.EFFECTS if e[0] == "Combat" and e[4] == "dmgLow")
+    allc = sum(V3E.vmax(e) for e in V3E.EFFECTS if e[0] == "Combat" and e[4] in ("dmg", "dmgLow", "dmgBoss") and e[3] == "SkyyClasses")
+    th = sum(V3E.vmax(e) for e in V3E.EFFECTS if e[4] == "thorns")
+    rows.append(("Weaponcraft: Finisher + Edge of the Legend (vs low Health) inside dmgCap 40", "%.0f %%" % low, low <= 40.0))
+    rows.append(("Weaponcraft: the SkyyClasses hit-bonus rows (Combat Focus, Finisher, Trophy Hunter, Edge) together inside dmgCap 40",
+                 "%.0f %% at most on one hit (SkyyClasses caps the class-tree sum at 40 anyway)" % allc, allc <= 40.0 + 1e-9))
+    rows.append(("Weaponcraft: Reprisal (melee damage dealt back) a small row of its own", "%.0f %% of a melee hit taken at rank 3" % th, th <= 15.0))
+    lh = sum(V3E.vmax(e) for e in V3E.EFFECTS if e[4] == "lowHeal")
+    rows.append(("Weaponcraft: Second Wind heals (no max Health): once a fight below 20 %", "%.0f %% of max Health at rank 3" % lh, lh <= 20.0))
+    rows.append(("Combat part: 70 live ranks kept + 3 wired (Rally, Reprisal, Second Wind) + Edge of the Legend = 80",
+                 "%d" % sum(u["max"] for r in V3D.tree("Warrior")["branches"][2]["rows"] for u in r["ups"] if u.get("combat")),
+                 sum(u["max"] for r in V3D.tree("Warrior")["branches"][2]["rows"] for u in r["ups"] if u.get("combat")) == 80))
+    return rows
+
+
+def p10_main():
+    rows = p10_rows()
+    print("| P10 class tree rebuild (SkyyTrees 0.6.0) | Model | OK |\n|---|---|---|")
+    for g, m, ok in rows:
+        print("| %s | %s | %s |" % (g, m, "yes" if ok else "NO"))
+    bad = [r for r in rows if not r[2]]
+    for g, m, _ok in bad:
+        print("FAIL %s: %s" % (g, m))
+    print("P10 class tree check: %d rows, %d fail, %d open (waiting on Skyy / other mods)" % (len(rows), len(bad), sum(1 for r in rows if r[0].startswith("OPEN"))))
+    if "--check" in sys.argv:
+        sys.exit(1 if bad else 0)
 
 
 if __name__ == "__main__":

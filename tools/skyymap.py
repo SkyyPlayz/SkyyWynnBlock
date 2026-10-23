@@ -33,6 +33,14 @@ import sys
 import zlib
 
 MAP_VERSION = "1.0"
+# 1.1 (2026-10-23, SkyyTrees 0.6.0 class tree rebuild; research/Class-Tree-Clarity-Spec.md 2 + 4): a row's free node marked "ability" is
+# an ABILITY node (ABIL_FRAC x the node size, its own rounded-square pictures <C>Ability / <C>AbilityPicked / AbilityOther / AbilityLocked),
+# a row may hold a second free node ("free2": the two A1-alts of one selection gate) joined to the first by an "or" edge (a dashed gold
+# line in the base picture, never lit, no gold picture). Every 1.0 layout is unchanged (MAP_VERSION stays "1.0": pinned builds assert it).
+MAP_ABIL_VERSION = "1.1"
+ABIL_FRAC = 1.3                         # an ability node = 1.3 x the node size (40 px discs -> 52 px; 32 -> 42)
+ABIL_MIN = 48                           # fix round (critic C2): never smaller than 48 px (the spec's 52 -> 48 floor)
+OR_GAP = 36                             # fix round (critic C1): px between the two A1-alts of an OR pair (room for the OR pill)
 NODE_SIZES = (44, 40, 36, 32, 30, 28)   # the largest that fits wins (whole page: start at 32; the class page: 40 or 44)
 GAP = 6                                 # min px between two discs (and disc vs hub / emblem / banner)
 MARGIN = 4                              # every box stays this far inside the canvas
@@ -61,9 +69,12 @@ def rgb(h):
 
 # ======================================================================================================== 1. LAYOUT
 def items_of(row):
-    """one row of one branch, left to right along its ellipse: the upgrades with the free diamond in the middle"""
+    """one row of one branch, left to right along its ellipse: the upgrades with the free diamond in the middle (1.1: + the row's second
+    free node "free2" right after the first - the OR pair of a selection gate)"""
     ups = [("up", u["id"]) for u in row["ups"]]
     fr = [("free", "free")] if row.get("free") else []
+    if row.get("free") and row.get("free2"):
+        fr.append(("free", "free2"))
     h = len(ups) // 2
     return ups[:h] + fr + ups[h:]
 
@@ -86,7 +97,7 @@ def relax(nodes, cx, cy, rounds=200):
             for i in range(len(ring)):
                 for j in range(i + 1, len(ring)):
                     p, q = ring[i], ring[j]
-                    want = (p["size"] + q["size"]) / 2.0 + GAP + 0.5
+                    want = (p["size"] + q["size"]) / 2.0 + (OR_GAP if p.get("orp") and p.get("orp") == q.get("orp") else GAP) + 0.5
                     d = math.hypot(p["x"] - q["x"], p["y"] - q["y"])
                     if d < want:
                         da = (want - d) / math.hypot(p["ax"] * math.cos(p["a"]), p["ay"] * math.sin(p["a"])) / 2.0
@@ -97,6 +108,21 @@ def relax(nodes, cx, cy, rounds=200):
                         for n in (p, q):
                             n["x"], n["y"] = cx + n["ax"] * math.sin(n["a"]), cy - n["ay"] * math.cos(n["a"])
                         moved = True
+        abl = [n for n in nodes if n.get("abil")]   # fix round (critic C2): two ability squares on neighbouring rings - the outer one steps aside
+        for i in range(len(abl)):
+            for j in range(i + 1, len(abl)):
+                p, q = abl[i], abl[j]
+                if p["ay"] == q["ay"]:
+                    continue
+                if q["ay"] < p["ay"]:
+                    p, q = q, p
+                want = (p["size"] + q["size"]) / 2.0 + GAP + 0.5
+                d = math.hypot(p["x"] - q["x"], p["y"] - q["y"])
+                if d < want:
+                    da = (want - d) / math.hypot(q["ax"] * math.cos(q["a"]), q["ay"] * math.sin(q["a"]))
+                    q["a"] += da if q["a"] >= p["a"] else -da
+                    q["x"], q["y"] = cx + q["ax"] * math.sin(q["a"]), cy - q["ay"] * math.cos(q["a"])
+                    moved = True
         if not moved:
             return
 
@@ -146,11 +172,17 @@ def radial_layout(groups, W=840, H=774, node=32, ring0=0.46, s=40.0, start=None,
                 for j, (kind, uid) in enumerate(its):
                     a = bc + (j - (len(its) - 1) / 2.0) * da
                     nid = (key, bi, ri, uid)
+                    fd = row.get(uid) if kind == "free" else None
+                    isab = bool(fd and fd.get("ability"))   # 1.1: an ability node (bigger, its own pictures)
                     out["nodes"].append(dict(id=nid, kind=kind, a=a, ax=ax, ay=ay, col=col, cap=bool(row.get("cap")),
-                                             size=node if kind == "up" else int(node * FREE_FRAC),
-                                             x=cx + ax * math.sin(a), y=cy - ay * math.cos(a)))
-                    if kind == "free":
+                                             size=node if kind == "up" else (max(int(round(node * ABIL_FRAC)), ABIL_MIN) if isab else int(node * FREE_FRAC)),
+                                             x=cx + ax * math.sin(a), y=cy - ay * math.cos(a), abil=isab))
+                    if kind == "free" and row.get("free2"):   # fix round: the OR pair (relax keeps OR_GAP between them)
+                        out["nodes"][-1]["orp"] = (key, bi, ri)
+                    if kind == "free" and uid == "free":
                         out["junctions"][-1].update(x=out["nodes"][-1]["x"], y=out["nodes"][-1]["y"], node=nid)
+                    elif kind == "free":
+                        out["edges"].append(((key, bi, ri, "free"), nid, "or", ri))   # 1.1: the OR pair (never lit)
                     else:
                         out["edges"].append((junc, nid, "spoke", ri))
                 prev = junc
@@ -184,7 +216,7 @@ def place(raw, banners=True, banner_offset=0.0):
     W, H, emb, hub = raw["W"], raw["H"], raw["emb"], raw["hub"]
     lay = dict(W=W, H=H, node=raw["node"], emb=emb, hub=hub, edges=list(raw["edges"]), nodes=[], hubs=[], junctions=[], banners=[])
     for n in raw["nodes"]:
-        m = dict((k, v) for k, v in n.items() if k in ("id", "kind", "size", "col", "cap"))
+        m = dict((k, v) for k, v in n.items() if k in ("id", "kind", "size", "col", "cap", "abil", "orp"))
         m["l"], m["t"] = int(round(n["x"] - n["size"] / 2.0)), int(round(n["y"] - n["size"] / 2.0))
         m["cx"], m["cy"] = m["l"] + n["size"] / 2.0, m["t"] + n["size"] / 2.0
         lay["nodes"].append(m)
@@ -285,6 +317,8 @@ def check(lay, want_ids=None, what="map"):
             g = math.hypot(p["cx"] - q["cx"], p["cy"] - q["cy"]) - (p["size"] + q["size"]) / 2.0
             if g < GAP - 0.01:
                 fail("discs %s / %s only %.2f px apart (>= %d)" % (p["id"], q["id"], g, GAP))
+            if p.get("orp") and p.get("orp") == q.get("orp") and g < OR_GAP - 1.01:   # fix round: the OR pill's room (its size does not zoom)
+                fail("the OR pair %s / %s only %.2f px apart (>= %d)" % (p["id"], q["id"], g, OR_GAP))
             mg = min(mg, g)
             sq, oq = hit_of(q)
             gx = max(q["l"] + oq - (p["l"] + op + sp), p["l"] + op - (q["l"] + oq + sq))
@@ -394,10 +428,11 @@ def scaled(lay, z, what="map"):
 
 
 def edge_boxes(lay):
-    """{edge index: (left, top, w, h)} of every drawn edge (its dots + 4 px), canvas px - the gold picture's element box"""
+    """{edge index: (left, top, w, h)} of every drawn edge (its dots + 4 px), canvas px - the gold picture's element box (1.1: an "or"
+    edge has none - it is drawn once in the base picture and never lit)"""
     out = {}
     for k, dots in enumerate(lay["edge_dots"]):
-        if not dots:
+        if not dots or lay["edges"][k][2] == "or":
             continue
         xs, ys = [d[0] for d in dots], [d[1] for d in dots]
         l, t = int(math.floor(min(xs))) - 4, int(math.floor(min(ys))) - 4
@@ -583,16 +618,93 @@ def emblem_picture(size_px=192):
 
 
 def base_picture(lay):
-    """the whole canvas @2x: every edge as grey dotted line + a 10 px (@2x) diamond on every junction no node sits on"""
+    """the whole canvas @2x: every edge as grey dotted line + a 10 px (@2x) diamond on every junction no node sits on (1.1: an "or" edge =
+    gold dashes, every second pair of dots)"""
     pic = Pic(2 * lay["W"], 2 * lay["H"])
     lc = rgb(ART["line"])
-    for dots in lay["edge_dots"]:
-        for x, y in dots:
-            disc(pic, 2 * x, 2 * y, DOT_R_BASE, lc, 0.6)
+    gc = rgb(ART["gold"])
+    for k, dots in enumerate(lay["edge_dots"]):
+        orl = lay["edges"][k][2] == "or"
+        for i, (x, y) in enumerate(dots):
+            if orl:
+                if (i // 2) % 2 == 0:
+                    disc(pic, 2 * x, 2 * y, DOT_R_GOLD, gc, 0.95)
+            else:
+                disc(pic, 2 * x, 2 * y, DOT_R_BASE, lc, 0.6)
     for j in lay["junctions"]:
         if "node" not in j:
             x, y = 2 * j["x"], 2 * j["y"]
             poly(pic, [(x, y - 10), (x + 10, y), (x, y + 10), (x - 10, y)], lc, 0.75, ss=3)
+    return pic
+
+
+# fix round 2 (critic: the ABILITY label fitted on few nodes at 100 %): the tag is baked into the square's own bottom band - every ability node
+# says it at every zoom, no layout room, no kit change. A 5 x 7 pixel font (our own), only the letters the tags use.
+TAG_GLYPHS = {
+    "A": (".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"),
+    "B": ("####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."),
+    "E": ("####", "#...", "#...", "###.", "#...", "#...", "####"),
+    "I": ("###", ".#.", ".#.", ".#.", ".#.", ".#.", "###"),
+    "L": ("#...", "#...", "#...", "#...", "#...", "#...", "####"),
+    "N": ("#...#", "##..#", "#.#.#", "#..##", "#...#", "#...#", "#...#"),
+    "S": (".####", "#....", "#....", ".###.", "....#", "....#", "####."),
+    "T": ("#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."),
+    "U": ("#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."),
+    "Y": ("#...#", "#...#", ".#.#.", "..#..", "..#..", "..#..", "..#.."),
+    " ": ("..", "..", "..", "..", "..", "..", ".."),
+}
+ABIL_TAGS = {"own": "ABILITY", "locked": "ABILITY", "picked": "IN USE", "other": "ALT"}   # the A1-alt in use / the other A1-alt
+
+
+def tag_cols(text):
+    """the width of a tag in font columns (1 column between letters)"""
+    return sum(len(TAG_GLYPHS[ch][0]) for ch in text) + max(0, len(text) - 1)
+
+
+def draw_tag(pic, text, cx, cy, sc, c):
+    """a tag centred on (cx, cy), sc px a font pixel"""
+    x = cx - tag_cols(text) * sc / 2.0
+    y0 = cy - 7 * sc / 2.0
+    for ch in text:
+        g = TAG_GLYPHS[ch]
+        for ry, row in enumerate(g):
+            for rx, bit in enumerate(row):
+                if bit == "#":
+                    poly(pic, [(x + rx * sc, y0 + ry * sc), (x + (rx + 1) * sc, y0 + ry * sc), (x + (rx + 1) * sc, y0 + (ry + 1) * sc), (x + rx * sc, y0 + (ry + 1) * sc)], c, 1.0, ss=3)
+        x += (len(g[0]) + 1) * sc
+
+
+def ability_picture(size_px, col, state):
+    """1.1: an ABILITY node (research/Class-Tree-Clarity-Spec.md 2.1): a rounded square frame - "own" (the class colour frame), "picked" (the
+    A1-alt in use: the frame + a gold corner tick), "other" (the A1-alt not picked: a grey frame, the icon still drawn), "locked" (grey
+    frame + padlock badge); the ability's icon sits on top (an ItemIcon), so the middle stays a dark plate. Fix round 2: the frame's bottom
+    band carries a baked tag (ABIL_TAGS: ABILITY / IN USE / ALT) at every zoom."""
+    k = size_px / 64.0
+    pic = Pic(size_px, size_px)
+    disc_c, lock_c, gold = rgb(ART["disc"]), rgb(ART["lock"]), rgb(ART["gold"])
+    lit = bool(col) and state in ("own", "picked")                  # the class colour frame (else grey)
+    fc = rgb(col) if lit else rgb(ART["ringLocked"])
+
+    def rrect(x0, y0, x1, y1, r, c, a):
+        pts = []
+        for cx_, cy_, a0 in ((x1 - r, y0 + r, -90), (x1 - r, y1 - r, 0), (x0 + r, y1 - r, 90), (x0 + r, y0 + r, 180)):
+            for st in range(7):
+                an = math.radians(a0 + st * 15)
+                pts.append((cx_ + r * math.cos(an), cy_ + r * math.sin(an)))
+        poly(pic, pts, c, a, ss=2)
+    rrect(2 * k, 2 * k, 62 * k, 62 * k, 8 * k, fc, 1.0)
+    rrect(7 * k, 7 * k, 57 * k, 49 * k, 6 * k, disc_c, 0.96)      # fix round 2: the plate ends at 49 - the frame's bottom band carries the tag
+    tag = ABIL_TAGS[state]
+    sc = min(50.0 / tag_cols(tag), 1.4) * k                        # at most 50 of the 64 px wide, 9.8 px high (the icon sits at 14..50)
+    draw_tag(pic, tag, 32 * k, 55.6 * k, sc, disc_c if lit else rgb(ART["white"]))   # dark on the class colour, light on grey
+    if state == "picked":                                          # gold corner tick, top right
+        disc(pic, 52 * k, 12 * k, 9 * k, disc_c, 1.0)
+        disc(pic, 52 * k, 12 * k, 7 * k, gold, 1.0)
+        poly(pic, [(47.5 * k, 12 * k), (50 * k, 15.5 * k), (56.5 * k, 8.5 * k), (55 * k, 7.5 * k), (50 * k, 13 * k), (49 * k, 11 * k)], disc_c, 1.0, ss=3)
+    if state == "locked":                                          # padlock badge, top right (fix round 2: the bottom band holds the tag)
+        disc(pic, 52 * k, 12 * k, 9.5 * k, disc_c, 1.0)
+        ring(pic, 52 * k, 8 * k, 2.6 * k, 4.6 * k, lock_c, 1.0)
+        poly(pic, [(46.5 * k, 9 * k), (57.5 * k, 9 * k), (57.5 * k, 18 * k), (46.5 * k, 18 * k)], lock_c, 1.0, ss=2)
     return pic
 
 
@@ -614,7 +726,7 @@ def colour_name(col):
     return "C" + col[1:].lower()
 
 
-def node_pictures(colours, maxes):
+def node_pictures(colours, maxes, ability=False):
     """{name: Pic} of every disc state the maps need (64 px = a 32 px disc @2x; the client scales it to the node size):
     shared Locked / Soon / Open / Ready / CapLocked / CapSoon / CapOpen / CapReady / FreeLocked; per colour (colour_name) <C>L<k><m> (k of m
     learnt), <C>Max<m>, <C>CapMax, <C>Free (an open diamond). maxes = the rank maxima in use (1..9)."""
@@ -632,6 +744,12 @@ def node_pictures(colours, maxes):
             out["%sMax%d" % (cn, m)] = node_picture(64, "max", col, (m, m))
         out["%sCapMax" % cn] = node_picture(64, "max", col, (1, 1), cap=True)
         out["%sFree" % cn] = diamond_picture(44, col, True)
+        if ability:   # 1.1: the ability node pictures
+            out["%sAbility" % cn] = ability_picture(64, col, "own")
+            out["%sAbilityPicked" % cn] = ability_picture(64, col, "picked")
+    if ability:
+        out["AbilityOther"] = ability_picture(64, None, "other")
+        out["AbilityLocked"] = ability_picture(64, None, "locked")
     for n in out:
         if "_" in n:
             raise MapError("skyymap: picture name with an underscore: %s" % n)
@@ -642,6 +760,8 @@ def state_name(kind, col, cap, rank, mx, state):
     """the picture name of one node: kind up / free; state = TreeV3.ustate (0 locked, 1 ready, 2 owned, 3 max, 4 soon, 5 open, no
     point) for an upgrade, 1 = open / 0 = locked for a free diamond. The Java side mirrors this (TreeMap.tex)."""
     cn = colour_name(col)
+    if kind == "ability":   # 1.1: state 0 locked, 1 yours, 2 the A1-alt in use, 3 the A1-alt not in use
+        return {1: cn + "Ability", 2: cn + "AbilityPicked", 3: "AbilityOther"}.get(state, "AbilityLocked")
     if kind == "free":
         return (cn + "Free") if state else "FreeLocked"
     if rank >= mx:
@@ -674,7 +794,9 @@ def preview_picture(lay, states=None, cols=None):
     for n in lay["nodes"]:
         r = n["size"] / 2.0
         c = rgb(n["col"])
-        if n["kind"] == "free":
+        if n.get("abil"):   # 1.1: an ability node = a square in the tree colour
+            poly(pic, [(n["cx"] - r, n["cy"] - r), (n["cx"] + r, n["cy"] - r), (n["cx"] + r, n["cy"] + r), (n["cx"] - r, n["cy"] + r)], c, 1.0, ss=2)
+        elif n["kind"] == "free":
             poly(pic, [(n["cx"], n["cy"] - r), (n["cx"] + r, n["cy"]), (n["cx"], n["cy"] + r), (n["cx"] - r, n["cy"])], c, 1.0, ss=2)
         else:
             disc(pic, n["cx"], n["cy"], r, rgb(ART["disc"]), 1.0)
@@ -687,19 +809,21 @@ if __name__ == "__main__" and "--preview" in sys.argv:
     sys.path.insert(0, HERE)
     import trees_v3_data as TD
     import skyyui as SUI
+    if "--v4" in sys.argv:   # 1.1: the 0.6.0 class trees (and the Adventure page without Combat)
+        TD.v4_apply()
     out_dir = os.path.abspath(sys.argv[sys.argv.index("--dir") + 1]) if "--dir" in sys.argv else os.path.join(HERE, "dev", "scratch", "skyymap")
     if not os.path.realpath(out_dir).startswith(os.path.realpath(os.path.join(HERE, "dev", "scratch")) + os.sep):
         raise SystemExit("--dir: only under tools/dev/scratch/")
     os.makedirs(out_dir, exist_ok=True)
     pages = [("Gathering", ["Mining", "Foraging", "Farming", "Fishing"]), ("Crafting", ["Smithing", "Cooking", "Alchemy"]),
-             ("Adventure", ["Combat", "Acrobatics", "Exploration", "Beastmastery"])]
+             ("Adventure", (["Acrobatics", "Exploration", "Beastmastery"] if "--v4" in sys.argv else ["Combat", "Acrobatics", "Exploration", "Beastmastery"]))]
     for name, trees in pages:
         lay = fit_page([(t, SUI.TREE_COLOR[t], TD.tree(t)["branches"]) for t in trees], sizes=(32, 30, 28), what=name)
         open(os.path.join(out_dir, name + ".png"), "wb").write(png(preview_picture(lay)))
         print("%s: %d nodes at %d px, min gap %.2f, params %s" % (name, lay["info"]["nodes"], lay["node"], lay["info"]["min_gap"], lay["params"]))
     for cn in ("Archer", "Warrior", "Mage", "Berserker", "Priest", "Assassin", "Monk", "Spellblade"):
         t = TD.tree(cn)
-        lay = fit_page([("B%d" % i, SUI.TREE_COLOR["Class"], [b]) for i, b in enumerate(t["branches"])], sizes=(36, 32),
+        lay = fit_page([("B%d" % i, SUI.TREE_COLOR["Class"], [b]) for i, b in enumerate(t["branches"])], sizes=(36, 32, 30, 28),
                        ring0s=(0.38, 0.34, 0.42), spacing=(16, 12, 8), starts=(0,), banner_offset=60.0, what=cn)
         open(os.path.join(out_dir, "Class" + cn + ".png"), "wb").write(png(preview_picture(lay)))
         print("%s: %d nodes at %d px, min gap %.2f, params %s" % (cn, lay["info"]["nodes"], lay["node"], lay["info"]["min_gap"], lay["params"]))

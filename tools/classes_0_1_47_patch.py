@@ -1,0 +1,419 @@
+"""Derive SkyyClasses/build_skyyclasses_0.1.47.py from the GENERATED SkyyClasses 0.1.46 (build_skyyclasses_0.1.46.py = the tools/deploy_set.py
+SET pin; the EDITED lineage: Skyy's hand-edited 0.1.6 (commit ab75b6c) -> classes_0_1_7_patch.py -> ... -> classes_0_1_46_patch.py -> 0.1.46).
+Never re-run an older patch, never edit a generated script - edit this patch. Every anchor is asserted once; at the end every change is
+undone on a copy and compared with 0.1.46 (tools/soundpass_gen.Patch). Line endings kept.
+Run:  python tools/classes_0_1_47_patch.py   then   python SkyyClasses/build_skyyclasses_0.1.47.py   (never --deploy)
+      then  python SkyyClasses/test_skyyclasses_0.1.47.py
+"""
+import os, sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import soundpass_gen as G
+
+NOTE = '''0.1.47 (2026-10-23) = COMBAT INTO CLASS, the SkyyClasses part (research/Combat-Into-Class-Spec.md R2 + research/Class-Tree-Clarity-Spec.md 4 /
+  5.3; deploys + rolls back TOGETHER with SkyyTrees 0.6.0, SkyySkills 0.4.64, SkyyRebirth 0.5.2). Skyy (docs/answered/classes.md 2026-10-23):
+  "but i do like how you had to unlock the modifiers for each ability, instead if them being tied to the ability's level." (popup "Unlock in
+  tree, level by use") + "since you only get 2 ability slots, put the A1 and both the A1 alt in one for the trees with a selection gate. so you
+  unlock both alts at the same time, then have to pick which one you want." + popup Q2 "Ability 2 key = branch 1 (A1 or the picked A1-alt),
+  Ability 3 key = branch 2 (A2 / A2-alt), each with its crouch version" -> "Yes (Recommended)" + "our alternatives on the second ability are
+  either or, how do you actually pick one or the other? these all need to be clear in the tree".
+  1. MODIFIERS UNLOCK IN THE TREE (mods.treeUnlock, ON): with SkyyTrees 0.6.0's list ("v4") a modifier is usable only when its unlock node is
+     owned (m.<Ability>.<Mod>=1 - bought, or kept free by the fold); a tree rank never adds levels any more - the level comes from use
+     (mods.steps). OFF (or an older tree) = the 0.1.46 rule (ability level).
+  2. FIXED KEYS (Q2): with a v4 tree the 4 rows are fixed - Ability 2 = A1, Crouch + Ability 2 = the picked A1-alt, Ability 3 = A2, Crouch +
+     Ability 3 = the A2-alt; class:fn:abilDo "place" answers why. The pick picks which alt is on Crouch + Ability 2.
+  3. THE PICK (Clarity 4): class:fn:abilDo "alt" <A|B> = switch the Ability 1 alt (both must be owned: one row of the tree opens both);
+     out of combat only, abil.altSwitch.wait (10 s) between switches, the new alt starts on its full cooldown (abil.altSwitch.cooldown ON).
+     NEW BRIDGE class:fn:altPick (UUID -> "A" / "B"; null = no class / no alt) - SkyyTrees draws the alt in use.
+  4. WEAPONCRAFT ROWS (tools/trees_v3_effects.py): Reprisal (thorns: 3 % of a melee hit taken dealt back to the attacker a rank, at most the
+     class-tree damage cap), Second Wind (lowHeal: once a fight - a fight ends 15 s after your last hit taken - a hit that drops you below
+     20 % Health heals 5 % of max Health a rank first), Edge of the Legend (+10 % vs enemies below 30 % Health, with Finisher, inside dmgCap).
+  5. ONE-TIME UPDATE abil.fold (PROJECT-RULES 4, the AbilMig3 machinery: a verified History copy history/fold/<pkey>.properties first, then
+     one write onto the very lines it was worked out from, fold-changes.log with the Undo, the marker abil.fold=done, one chat line): once
+     SkyyTrees has folded the profile (tree:fn:abil "fold"), every modifier keeps the level its old tree ranks + uses gave (o.<Ab>.<Mod>=<ranks>:
+     the use count is raised to that level's step, never lowered); a hand-arranged key order is kept + logged (fix round 2, PROJECT-RULES 4 -
+     the v4 tree uses the fixed keys anyway; a rollback gets the player's own order back).
+  6. Texts: a locked modifier says "unlock it in the class tree (1 point)"; the /cast page alt card points to the tree's PICK; the DOES
+     texts fit the tree's ability panel (5 lines of 14 px in 424 px, checked at build time).
+  SAVED DATA: abilities/<pkey>.properties gain abil.fold=done (+ raised m.<Ability>.<Mod> uses) once; p1 p2 a1 a2 are never rewritten by the fold.
+  ROLLBACK to 0.1.46: with SkyyTrees 0.5.2 (the set floor); the raised uses stay (harmless: levels capped at 5), the key rows are the player's own.
+'''
+
+P = G.Patch(os.path.join(ROOT, "SkyyClasses", "build_skyyclasses_0.1.46.py"), os.path.join(ROOT, "SkyyClasses", "build_skyyclasses_0.1.47.py"))
+if "--out" in sys.argv:
+    P.dst = os.path.abspath(sys.argv[sys.argv.index("--out") + 1])
+assert P.has('VERSION = "0.1.46"') and P.has("DotFn") and not P.has("AbilFold"), "not the generated SkyyClasses 0.1.46 script"
+REG0, SYS0, CLS0 = P.s.count("registerCommand("), P.s.count("registerSystem("), P.s.count("makeClass(")
+
+P.rep('''"""SkyyClasses 0.1.46 - build script (javassist via jpype). GENERATED by tools/classes_0_1_46_patch.py from the generated 0.1.45 (the
+EDITED lineage: Skyy's edited 0.1.6 -> classes_0_1_7_patch.py -> ... -> classes_0_1_46_patch.py) - edit the patch, not this file.
+''', '''"""SkyyClasses 0.1.47 - build script (javassist via jpype). GENERATED by tools/classes_0_1_47_patch.py from the generated 0.1.46 (the
+EDITED lineage: Skyy's edited 0.1.6 -> classes_0_1_7_patch.py -> ... -> classes_0_1_47_patch.py) - edit the patch, not this file.
+''' + NOTE + '''0.1.46 (the base, everything below is still true unless 0.1.47 above says otherwise):
+''')
+P.rep('VERSION = "0.1.46"', 'VERSION = "0.1.47"')
+
+# ---- the data: one modifier list (tools/trees_v3_data.py CLASS_MODS draws the unlock nodes), the new fight rows, the reader list
+P.rep('''import trees_v3_data as V3D
+V3D.check()''', '''import trees_v3_data as V3D
+V3D.check()
+assert dict((_a, list(_m)) for _a, _m in V3D.CLASS_MODS.items()) == dict((_a, list(_m)) for _a, _m in AB_MODS.items()), "0.1.47: tools/trees_v3_data.py CLASS_MODS = AB_MODS (the tree draws one unlock node per modifier)"''')
+P.rep('''assert TREE_READS.count("Skill.") == 6 and "Skill.Combat.b1.r1.free" in TREE_READS and "Skill.Mining.b2.r4b" in TREE_READS''',
+      '''assert TREE_READS.count("Skill.") == 9 and "Skill.Combat.b1.r1.free" in TREE_READS and "Skill.Mining.b2.r4b" in TREE_READS and "Skill.Combat.b2.r3b" in TREE_READS   # 0.1.47: + Reprisal, Second Wind, Edge of the Legend''')
+P.rep('''_SKC = ["dmg", "dmgLow", "dmgBoss", "drAll", "kbRes"]''', '''_SKC = ["dmg", "dmgLow", "dmgBoss", "drAll", "kbRes", "thorns", "lowHeal"]   # 0.1.47: + Reprisal, Second Wind (vals [6], [7])''')
+P.rep('''  double[] v = new double[6];''', '''  double[] v = new double[8];   // 0.1.47: + thorns, lowHeal''')
+P.rep('''  if (u == null) return new double[6];''', '''  if (u == null) return new double[8];''')
+P.rep('''assert len(CFG_ROWS_P8B) == 12''', '''assert len(CFG_ROWS_P8B) == 18   # 0.1.47: + Reprisal, Second Wind, Edge of the Legend''')
+# ---- the Server Setup rows (Abilities): the tree unlock switch, the alt switch rule (Clarity 7)
+P.rep('''_r("mods.steps", "MOD_STEPS", "text", "10,30,60,100", "", "40", "", "abill", "Modifier level steps (uses)",
+   "Uses while equipped for modifier Lv 2, 3, 4, 5. Doubled = twice as fast.")''', '''_r("mods.steps", "MOD_STEPS", "text", "10,30,60,100", "", "40", "", "abill", "Modifier level steps (uses)",
+   "Uses while equipped for modifier Lv 2, 3, 4, 5. Doubled = twice as fast.")
+# 0.1.47 (Combat into Class; docs/answered/classes.md 2026-10-23 "Unlock in tree, level by use" + Clarity spec 7)
+_r("mods.treeUnlock", "MODS_TREE", "bool", True, "", "", "", "abill", "Modifiers unlock in the class tree",
+   "ON: a modifier needs its 1-point node in the class tree, then levels by use. OFF: by ability level.")
+_r("abil.altSwitch.wait", "ALT_WAIT", "int", 10, "0", "600", "s", "abill", "Ability 1 alt switch wait",
+   "Seconds before a player can switch their Ability 1 alt again (0 = no wait).")
+_r("abil.altSwitch.cooldown", "ALT_CD", "bool", True, "", "", "", "abill", "New alt starts on cooldown",
+   "A freshly picked Ability 1 alt starts on its full cooldown.")''')
+# ---- the DOES texts fit the tree's ability panel (Clarity 5.3: "Unlocks <name>: <does>" in 5 lines of 14 px in 424 px)
+P.rep('''print("0.1.30 DOES: %d abilities, longest %d characters (%s)" % (len(DOES_DEF), max(len(v) for v in DOES_DEF.values()), max(DOES_DEF, key=lambda a: len(DOES_DEF[a]))))''',
+      '''print("0.1.30 DOES: %d abilities, longest %d characters (%s)" % (len(DOES_DEF), max(len(v) for v in DOES_DEF.values()), max(DOES_DEF, key=lambda a: len(DOES_DEF[a]))))
+_ABN = dict((a[0], a[1]) for a in ABILS)
+for _aid, _tx in DOES_DEF.items():   # 0.1.47 (Clarity 5.3): SkyyTrees 0.6.0's ability panel box
+    assert SUI.text_lines("Unlocks " + _ABN[_aid] + ": " + _tx, 424, 14) <= 5, "0.1.47: %s does not fit the tree's ability panel: %s" % (_aid, _tx)''')
+
+# ---- 1. MODIFIERS UNLOCK IN THE TREE (a v4 tree list): only the unlock node; the level from use
+P.rep('''  if (@PKG@.AbilModDefs.treeRank(csv, @PKG@.AbilDefs.IDS[ai], @PKG@.AbilModDefs.at(ai, k)) >= 1) return true;   // 0.1.42: a class tree rank unlocks it
+  if (!@PKG@.AbilCfg.LEVELS) return true;   // fix round: ability levels off = no level to reach - every modifier is open''',
+      '''  if (@PKG@.AbilModDefs.treeRank(csv, @PKG@.AbilDefs.IDS[ai], @PKG@.AbilModDefs.at(ai, k)) >= 1) return true;   // 0.1.42: a class tree rank unlocks it
+  if (treeUnlock(csv)) return false;   // 0.1.47: modifiers unlock in the class tree only (SkyyTrees 0.6.0's list; mods.treeUnlock)
+  if (!@PKG@.AbilCfg.LEVELS) return true;   // fix round: ability levels off = no level to reach - every modifier is open''')
+P.rep('''r"""
+public static boolean modOk(String csv, int ai, int k, int lvl) {''', '''r"""
+public static boolean treeUnlock(String csv) {
+  return @PKG@.AbilCfg.MODS_TREE && @PKG@.AbilCfg.TREE_GATE && csv != null && @PKG@.AbilModDefs.csvHas(csv, "v4");
+}
+""",
+r"""
+public static String lockText(String csv, int ai, int pos, int l) {
+  if (ai < 0) return "That modifier is locked.";
+  String nm = @PKG@.AbilDefs.NAMES[ai];
+  String mn = pos < 0 ? "That modifier" : @PKG@.AbilModDefs.MNAME[@PKG@.AbilModDefs.at(ai, pos)];
+  if (treeUnlock(csv)) return mn + " of " + nm + " is locked - unlock it in your class tree (1 point, in " + nm + "'s branch), then it levels by use.";   // 0.1.47
+  return mn + " unlocks at " + nm + " Lv " + @PKG@.AbilModDefs.unlockAt(pos) + " (Lv " + l + " now) - use " + nm + " to level it.";
+}
+""",
+r"""
+public static boolean modOk(String csv, int ai, int k, int lvl) {''')
+P.rep('''  int l = mlvl(p, id, mi);
+  int r = @PKG@.AbilModDefs.treeRank(csv, id, mi);
+  if (r <= 0) return l;''', '''  int l = mlvl(p, id, mi);
+  int r = @PKG@.AbilModDefs.treeRank(csv, id, mi);
+  if (r <= 0) return l;
+  if (treeUnlock(csv)) return l < 1 ? 1 : l;   // 0.1.47: the tree node only unlocks it - the level comes from use''')
+P.rep('''    String now = un ? modText(ai, mi, ml, cnt > 0 ? cnt : 1) : "unlocks at " + @PKG@.AbilDefs.NAMES[ai] + " Lv " + at;   // 0.1.30''',
+      '''    String now = un ? modText(ai, mi, ml, cnt > 0 ? cnt : 1) : (treeUnlock(csv) ? "unlock it in the class tree (1 point)" : "unlocks at " + @PKG@.AbilDefs.NAMES[ai] + " Lv " + at);   // 0.1.30; 0.1.47: in the tree''')
+P.rep('''      return "-" + @PKG@.AbilModDefs.MNAME[mi] + " unlocks at " + nm + " Lv " + at + " (Lv " + l + " now) - use " + nm + " to level it.";''',
+      '''      return "-" + lockText(csv, ai, pos, l);   // 0.1.47: in the class tree (a v4 tree), else by ability level''')
+P.rep('''  if (!modOk(csv, ai, pos, l)) return "-" + @PKG@.AbilModDefs.MNAME[mi] + " unlocks at " + nm + " Lv " + @PKG@.AbilModDefs.unlockAt(pos) + " (Lv " + l + " now) - use " + nm + " to level it.";   // 0.1.30''',
+      '''  if (!modOk(csv, ai, pos, l)) return "-" + lockText(csv, ai, pos, l);   // 0.1.30; 0.1.47: in the class tree''')
+
+# ---- 2. FIXED KEYS: a profile whose tree list says v4 casts from the fixed rows (Ability 2 = A1, Crouch + 2 = the picked alt, Ability 3 =
+# A2, Crouch + 3 = the A2-alt)
+P.rep('''# a stored loadout is used only when it is exactly a re-ordering of this class's 4 owned slots (else the defaults - another class's file,''',
+      '''# 0.1.47 THE FIXED KEYS of a v4 class tree: p1 = A1 (Ability 2), p2 = A2 (Ability 3), a1 = the picked A1-alt (Crouch + Ability 2), a2 = the
+# A2-alt (Crouch + Ability 3) - Skyy Q2 "Ability 2 key = branch 1 ... Ability 3 key = branch 2 ... each with its crouch version"
+M(abdefs, r"""
+public static String[] fixedOrder(int ci, String pick) {
+  int[] tiers = new int[] { 0, 1, pickTierC(ci, pick), 2 };
+  String[] r = new String[4];
+  for (int i = 0; i < 4; i++) {
+    int a = of(ci, tiers[i]);
+    r[i] = a < 0 ? "" : IDS[a];
+  }
+  return r;
+}""")
+# a stored loadout is used only when it is exactly a re-ordering of this class's 4 owned slots (else the defaults - another class's file,''')
+P.rep('''public static String[] slots(String k, int ci) {
+  java.util.Properties p = load(k);
+  String pk = pick(k);''', '''public static String[] slots(String k, int ci) {
+  java.util.Properties p = load(k);
+  String pk = pick(k);
+  if (k != null && V4K.containsKey(k)) return @PKG@.AbilDefs.fixedOrder(ci, pk);   // 0.1.47: a v4 class tree = the fixed keys''')
+P.rep('''abst = pool.makeClass(PKG + ".AbilStore")
+absave = pool.makeClass(PKG + ".AbilSave")
+F(abst, "public static java.nio.file.Path DIR;")''', '''abst = pool.makeClass(PKG + ".AbilStore")
+absave = pool.makeClass(PKG + ".AbilSave")
+F(abst, "public static java.nio.file.Path DIR;")
+# 0.1.47: V4K = the profiles whose class tree list (tree:fn:abil) says "v4" (SkyyTrees 0.6.0: fixed keys); ALTSW = the last Ability 1 alt
+# switch per profile (memory only - a restart forgets it, fine)
+F(abst, "public static final java.util.concurrent.ConcurrentHashMap V4K = new java.util.concurrent.ConcurrentHashMap();")
+F(abst, "public static final java.util.concurrent.ConcurrentHashMap ALTSW = new java.util.concurrent.ConcurrentHashMap();")''')
+P.rep('''    if (csv != null) syncPick(k, @PKG@.ClassStore.classIndex(u), csv);   // 0.1.26: the A1-alt pick follows the tree (A4a / A4b)''',
+      '''    if (csv != null) syncPick(k, @PKG@.ClassStore.classIndex(u), csv);   // 0.1.26: the A1-alt pick follows the tree (A4a / A4b)
+    if (csv != null && k != null) { if (@PKG@.AbilModDefs.csvHas(csv, "v4")) @PKG@.AbilStore.V4K.put(k, Boolean.TRUE); else @PKG@.AbilStore.V4K.remove(k); }   // 0.1.47: the fixed keys''')
+# ---- 3. THE PICK: class:fn:abilDo "alt" <A|B>; "place" under fixed keys answers why
+P.rep('''  } else if (x.equals("place")) {
+    int row = -1;''', '''  } else if (x.equals("alt")) {
+    r = altSwitch(u, a, csv);   // 0.1.47: the Ability 1 alt pick (Clarity 4: out of combat, a wait between switches, the new one on cooldown)
+  } else if (x.equals("place") && @PKG@.AbilStore.V4K.containsKey(@PKG@.ClassCfg.pkey(u))) {
+    r = "-Your keys come from your class tree now: Ability 2 = your first branch's ability (Crouch + Ability 2 = the Ability 1 alt you picked), Ability 3 = your second branch's (Crouch + Ability 3 = its alt).";   // 0.1.47
+  } else if (x.equals("place")) {
+    int row = -1;''')
+P.rep('''for _src in ABIL_LATE:
+    M(abil, _late_stub(_src))''', '''# 0.1.47 THE PICK (research/Class-Tree-Clarity-Spec.md 4.2 / 4.4): switch the Ability 1 alt - both alts owned (one class tree row opens
+# both), out of combat, abil.altSwitch.wait seconds between two switches, the new alt starts on its full cooldown (abil.altSwitch.cooldown)
+ABIL_LATE += [
+r"""
+public static String altSwitch(java.util.UUID u, String want, String csv) {
+  int ci = @PKG@.ClassStore.classIndex(u);
+  if (u == null || ci < 0 || !@PKG@.AbilDefs.classHas(ci)) return "-Your class has no abilities yet.";
+  int pa = @PKG@.AbilDefs.of(ci, 3);
+  int pb = @PKG@.AbilDefs.of(ci, 4);
+  if (pa < 0 || pb < 0) return "-" + @PKG@.ClassDefs.NAMES[ci] + "s have one Ability 1 alt" + (pa >= 0 ? ": " + @PKG@.AbilDefs.NAMES[pa] : "") + ".";
+  String w = want != null && want.trim().equalsIgnoreCase("B") ? "B" : "A";
+  int na = w.equals("B") ? pb : pa;
+  if (csv != null && @PKG@.AbilCfg.TREE_GATE && (!lineOn(csv, pa) || !lineOn(csv, pb))) return "-Both Ability 1 alts come with row 2 of your first class tree branch - open it first, then pick one.";
+  if (combatMs(u) > 0L) return "-Leave combat first - you can switch your Ability 1 alt only out of combat.";
+  String k = @PKG@.ClassCfg.pkey(u);
+  if (w.equals(@PKG@.AbilStore.pick(k))) return "-" + @PKG@.AbilDefs.NAMES[na] + " is already your Ability 1 alt.";
+  long now = System.currentTimeMillis();
+  long wait = (long) @PKG@.AbilCfg.ALT_WAIT * 1000L;
+  Object lo = @PKG@.AbilStore.ALTSW.get(k);
+  if (wait > 0L && lo instanceof Long) {
+    long last = ((Long) lo).longValue();
+    if (now >= last && now - last < wait) return "-Wait " + ((wait - (now - last) + 999L) / 1000L) + " s before switching your Ability 1 alt again.";
+  }
+  String r = setPick(k, ci, w);
+  if (r == null || !r.startsWith("Your Ability 1 alt is now")) return "-" + r;
+  @PKG@.AbilStore.ALTSW.put(k, Long.valueOf(now));
+  if (@PKG@.AbilStore.ALTSW.size() > 4096) @PKG@.AbilStore.ALTSW.clear();
+  boolean cdOn = @PKG@.AbilCfg.ALT_CD;
+  if (cdOn) { long cd = @PKG@.AbilDefs.cdMs(na, 0); if (cd > 0L) @PKG@.AbilStore.arm(k, @PKG@.AbilDefs.IDS[na], now, cd); }
+  mirrorSoon(u);
+  return "+Your Ability 1 alt is now " + @PKG@.AbilDefs.NAMES[na] + " (Crouch + Ability 2)" + (cdOn ? " - it starts on its cooldown." : ".");
+}
+""",
+]
+for _src in ABIL_LATE:
+    M(abil, _late_stub(_src))''')
+P.rep('''      if (@PKG@.Abil.treeOwnsPick(u)) { this.info = "Your Ability 1 alt is the A4 node you buy in your class tree (/tree class) - a class respec lets you pick the other one."; rebuild(); return; }   // 0.1.26''',
+      '''      if (@PKG@.Abil.treeOwnsPick(u)) { this.info = "Your Ability 1 alt is picked on its node in /tree class (click it, then Pick)."; rebuild(); return; }   // 0.1.26; 0.1.47''')
+P.rep('''      if (@PKG@.Abil.treeOwnsPick(u)) { this.info = "Your Ability 1 alt is the A4 node you buy in your class tree (/tree class)."; rebuild(); return; }''',
+      '''      if (@PKG@.Abil.treeOwnsPick(u)) { this.info = "Your Ability 1 alt is picked on its node in /tree class (click it, then Pick)."; rebuild(); return; }   // 0.1.47''')
+P.rep('''      this.info = @PKG@.Abil.setPick(k, ci, @PKG@.AbilStore.pick(k).equals("B") ? "A" : "B");''',
+      '''      { String ar = @PKG@.Abil.altSwitch(u, @PKG@.AbilStore.pick(k).equals("B") ? "A" : "B", @PKG@.Abil.treeCsv(u)); this.info = (ar.startsWith("+") || ar.startsWith("-")) ? ar.substring(1) : ar; }   // 0.1.47: the same rule as the tree's PICK''')
+
+# ---- 4. WEAPONCRAFT: Reprisal (thorns) + Second Wind (lowHeal) in the incoming-hit hook (UpSk rows; before every shield, after the cut)
+P.rep('''MU(r"""
+public static String inc(@ST@ st, @CB@ buf, @REF@ r, @DMG@ d, long now) {''', '''F(upfx, "public static final java.util.concurrent.ConcurrentHashMap SWIND = new java.util.concurrent.ConcurrentHashMap();")   # 0.1.47: Second Wind { fired at, last hit taken } a player
+F(upfx, "public static final long SWIND_GAP = 15000L;")   # 0.1.47: a fight ends 15 s after the last hit taken (then Second Wind is ready again)
+F(upfx, "public static volatile long THORNS = 0L;")
+F(upfx, "public static volatile long SECONDW = 0L;")
+# 0.1.47 SECOND WIND (Weaponcraft, Skill.Combat.b2.r3c): once a fight, a hit that would leave you below 20 % Health (and alive) heals pct %
+# of max Health first; a fight = hits taken less than SWIND_GAP apart
+MU(r"""
+public static String secondWind(@CB@ buf, @REF@ r, java.util.UUID u, double amt, double pct, long now) {
+  Object o = SWIND.get(u);
+  long[] s = o instanceof long[] ? (long[]) o : new long[] { 0L, 0L };
+  boolean fresh = now - s[1] > SWIND_GAP;
+  s[1] = now;
+  if (fresh) s[0] = 0L;
+  if (SWIND.size() > 4096) SWIND.clear();
+  SWIND.put(u, s);
+  if (s[0] > 0L) return null;
+  @ESM@ m = @PKG@.Abil.map(buf, r);
+  double h = @PKG@.Abil.cur(m, @DST@.getHealth());
+  double mx = @PKG@.Abil.max(m, @DST@.getHealth());
+  if (!(mx > 0.0) || !(h > 0.0)) return null;
+  double after = h - amt;
+  if (after <= 0.0 || after >= mx * 0.2) return null;
+  s[0] = now;
+  heal(buf, r, pct);
+  SECONDW = SECONDW + 1L;
+  @PR@ pr = @PKG@.Abil.prOf(u);
+  if (pr != null) @PKG@.Abil.say(pr, "Second Wind: +" + @PKG@.AbilMath.fmt(pct) + "% of your Health (once a fight).");
+  return " secondwind";
+}""")
+MU(r"""
+public static String inc(@ST@ st, @CB@ buf, @REF@ r, @DMG@ d, long now) {''')
+P.rep('''    if (@PKG@.UpSk.ON && ent) {   // 0.1.45 P8b: Iron Will - less knockback from this hit
+      double kr = @PKG@.UpSk.vals(u)[5];
+      if (kr > 0.0 && @PKG@.UpSk.kbOn(d.getIfPresentMetaObject(@DMG@.KNOCKBACK_COMPONENT), kr)) out = out + " kb" + @PKG@.AbilMath.fmt(kr);
+    }''', '''    if (@PKG@.UpSk.ON && ent) {   // 0.1.45 P8b: Iron Will - less knockback from this hit
+      double kr = @PKG@.UpSk.vals(u)[5];
+      if (kr > 0.0 && @PKG@.UpSk.kbOn(d.getIfPresentMetaObject(@DMG@.KNOCKBACK_COMPONENT), kr)) out = out + " kb" + @PKG@.AbilMath.fmt(kr);
+    }
+    if (@PKG@.UpSk.ON && ent && !proj && att != null && d.getAmount() > 0.0f) {   // 0.1.47 REPRISAL: a share of the melee hit back at the attacker
+      double th = @PKG@.UpSk.vals(u)[6];
+      if (th > 0.0 && @PKG@.Abil.enemy(buf, att, r)) {
+        if (th > DMG_CAP) th = DMG_CAP;
+        @PKG@.Abil.hit(buf, att, r, u, (double) d.getAmount() * th / 100.0, "UpThorns");
+        THORNS = THORNS + 1L;
+        out = out + " thorns" + @PKG@.AbilMath.fmt(th);
+      }
+    }
+    if (@PKG@.UpSk.ON && d.getAmount() > 0.0f) {   // 0.1.47 SECOND WIND
+      double lh = @PKG@.UpSk.vals(u)[7];
+      if (lh > 0.0) { String sw = secondWind(buf, r, u, (double) d.getAmount(), lh, now); if (sw != null) out = out + sw; }
+    }''')
+# ---- the bridge class:fn:altPick (SkyyTrees draws the alt in use) + 5. THE ONE-TIME FOLD UPDATE abil.fold (the AbilMig3 machinery)
+P.rep('''# ================= ClassTick (0.1.3): profile epoch check every 2 s -> republish class:<uuid> (contract rule 3). No SkyyProfiles = no-op =================''',
+      '''# ================= 0.1.47 AbilAltFn: class:fn:altPick (UUID -> "A" / "B"; null = no class / a class with one alt / not loaded) =================
+abaltf = pool.makeClass(PKG + ".AbilAltFn")
+abaltf.addInterface(pool.get("java.util.function.Function"))
+C(abaltf, "public AbilAltFn() { }")
+M(abaltf, r"""
+public Object apply(Object o) {
+  try {
+    if (!(o instanceof java.util.UUID)) return null;
+    java.util.UUID u = (java.util.UUID) o;
+    int ci = @PKG@.ClassStore.classIndex(u);
+    if (ci < 0 || @PKG@.AbilDefs.of(ci, 3) < 0 || @PKG@.AbilDefs.of(ci, 4) < 0) return null;
+    String k = @PKG@.ClassCfg.pkey(u);
+    if (k == null || @PKG@.AbilStore.DIR == null) return null;
+    return @PKG@.AbilStore.pick(k);
+  } catch (Throwable t) { return null; }
+}""")
+# ================= 0.1.47 AbilFold: THE ONE-TIME CLASS TREE FOLD of an ability file (research/Combat-Into-Class-Spec.md 4.2, PROJECT-RULES 4) =========
+# Once SkyyTrees 0.6.0 has folded the profile (its tree:fn:abil list holds "v4" + "fold"): every modifier keeps the level its old tree ranks +
+# uses gave - o.<Ability>.<Mod>=<old ranks> (of EVERY class tree since fix round 2) -> the level min(cap, max(1, use level) + ranks - 1) -> the use
+# count raised to that level's step (never lowered; only onto the very lines read: AbilStore.setIf); a hand-arranged key order is kept + logged. A verified History
+# copy first (history/fold/<pkey>.properties), one fold-changes.log line (the Undo), the marker abil.fold=done, one chat line.
+abfold = pool.makeClass(PKG + ".AbilFold")
+F(abfold, "public static final java.util.concurrent.ConcurrentHashMap SEEN = new java.util.concurrent.ConcurrentHashMap();")
+F(abfold, "public static volatile long RAISED = 0L;")
+F(abfold, "public static volatile long FILES = 0L;")
+F(abfold, "public static volatile String LAST = \\"\\";")
+M(abfold, r"""
+public static void logLine(String k, String text) {
+  try {
+    java.nio.file.Path dir = @PKG@.AbilStore.DIR;
+    if (dir == null) return;
+    java.nio.file.Path f = dir.getParent().resolve("fold-changes.log");
+    String line = java.time.LocalDateTime.now().toString() + "\\t" + k + "\\tfold\\t" + text.replace('\\t', ' ').replace('\\n', ' ')
+      + "\\tUndo: stop the server, copy history/fold/" + k + ".properties over abilities/" + k + ".properties (the marker abil.fold goes with it)\\n";
+    synchronized (@PKG@.AbilSave.HLOCK) {
+      java.nio.file.Files.write(f, line.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+    }
+  } catch (Throwable t) { @PKG@.ClassCfg.warnLimited("the class tree fold could not write fold-changes.log: " + t); }
+}""")
+# the uses a modifier needs for level `lv` (Lv 1 = 0; Lv 2-5 = mods.steps; above = the rebirth steps)
+M(abfold, r"""
+public static long usesFor(int lv) {
+  int[] st = @PKG@.AbilModDefs.steps();
+  if (lv <= 1) return 0L;
+  if (lv - 2 < st.length) return (long) st[lv - 2];
+  return @PKG@.AbilModDefs.stepX(lv - st.length - 1);
+}""")
+# one profile: "" = nothing to do (done before / nothing there), null = not now (no v4 / fold list yet, unreadable, History failed - tried
+# again), else the chat text. Pure on the ability file + the tree list (the harness runs it with a given list).
+M(abfold, r"""
+public static String apply(String k, int ci, String csv) {
+  if (k == null || @PKG@.AbilStore.DIR == null) return null;
+  java.util.Properties p = @PKG@.AbilStore.load(k);
+  if (@PKG@.AbilStore.FAILAT.get(k) != null) return null;
+  if ("done".equals(String.valueOf(p.getProperty("abil.fold")).trim())) return "";
+  if (csv == null || !@PKG@.AbilModDefs.csvHas(csv, "v4") || !@PKG@.AbilModDefs.csvHas(csv, "fold")) return null;
+  java.util.ArrayList ks = new java.util.ArrayList();
+  java.util.ArrayList vs = new java.util.ArrayList();
+  StringBuilder said = new StringBuilder();
+  int n = 0;
+  String[] parts = csv.split(",");
+  for (int i = 0; i < parts.length; i++) {
+    String t = parts[i].trim();
+    if (!t.startsWith("o.")) continue;
+    int e = t.indexOf('=');
+    if (e < 0) continue;
+    String key = t.substring(2, e);
+    int dot = key.lastIndexOf('.');
+    if (dot <= 0) continue;
+    String id = key.substring(0, dot);
+    int ai = @PKG@.AbilDefs.find(id);
+    int mi = @PKG@.AbilModDefs.find(key.substring(dot + 1));
+    if (ai < 0 || mi < 0 || @PKG@.AbilModDefs.pos(ai, mi) < 0) continue;
+    int r = 0;
+    try { r = Integer.parseInt(t.substring(e + 1).trim()); } catch (Throwable x) { r = 0; }
+    if (r <= 0) continue;
+    String aid = @PKG@.AbilDefs.IDS[ai];
+    String mk = "m." + aid + "." + @PKG@.AbilModDefs.MID[mi];
+    long uses = @PKG@.Abil.numOf(p, mk);
+    int l = @PKG@.Abil.mlvl(p, aid, mi);
+    int cap = @PKG@.Abil.modCap(p, aid, mi);
+    int want = (l < 1 ? 1 : l) + r - 1;
+    if (want > cap) want = cap;
+    if (want > 5 && want > l) want = l > 5 ? l : 5;   // the old tree reached Lv 5 at most (Balance P4 T7)
+    if (want <= l) continue;
+    long need = usesFor(want);
+    if (need <= uses) continue;
+    ks.add(mk);
+    vs.add(String.valueOf(need));
+    n++;
+    said.append(said.length() > 0 ? ", " : "").append(@PKG@.AbilModDefs.MNAME[mi]).append(" of ").append(@PKG@.AbilDefs.NAMES[ai]).append(" Lv ").append(want);
+  }
+  String keys = "";
+  if (ci >= 0 && p.getProperty("p1") != null) {   // fix round 2 (PROJECT-RULES 4): a hand-arranged key order is KEPT + logged, never rewritten - a v4 tree uses the fixed keys anyway (AbilStore.slots), a rollback to 0.1.46 gets the player's own order back
+    String[] fx = @PKG@.AbilDefs.fixedOrder(ci, @PKG@.AbilStore.pick(k));
+    String[] cur = new String[] { p.getProperty("p1"), p.getProperty("p2"), p.getProperty("a1"), p.getProperty("a2") };
+    boolean diff = false;
+    for (int j = 0; j < 4; j++) if (!fx[j].equals(cur[j] == null ? "" : cur[j].trim())) diff = true;
+    if (diff) keys = "the stored key order kept as arranged (" + cur[0] + "," + cur[1] + "," + cur[2] + "," + cur[3] + "; the fixed keys apply while the v4 tree runs)";
+  }
+  if (!@PKG@.AbilSave.histCopyIn(k, "fold")) return null;   // a verified History copy first, or nothing changes
+  ks.add("abil.fold");
+  vs.add("done");
+  String[] ka = new String[ks.size()];
+  String[] va = new String[vs.size()];
+  for (int i = 0; i < ka.length; i++) { ka[i] = (String) ks.get(i); va[i] = (String) vs.get(i); }
+  if (!@PKG@.AbilStore.setIf(k, p, ka, va)) return null;   // only onto the very lines it was worked out from (a change meanwhile = again in 2 s)
+  @PKG@.AbilStore.saveSoon(k);
+  RAISED = RAISED + (long) n;
+  FILES = FILES + 1L;
+  String sum = (n == 0 ? "no modifier level to keep" : n + " modifier level(s) kept: " + said.toString()) + (keys.length() > 0 ? "; " + keys : "");
+  LAST = k + ": " + sum;
+  logLine(k, sum);
+  @PKG@.ClassCfg.info("class tree fold (0.1.47) for " + k + ": " + sum + " [abil.fold=done; the old file: history/fold/" + k + ".properties; fold-changes.log]");
+  return "Class tree update: modifiers now unlock in your class tree (1 point each) and level by use" + (n > 0 ? " - your levels stay (" + said.toString() + ")" : "")
+    + ". Keys: Ability 2 = your first branch's ability, Crouch + Ability 2 = the Ability 1 alt you pick, Ability 3 = your second branch's, Crouch + Ability 3 = its alt.";
+}""")
+M(abfold, r"""
+public static int consider(@PR@ pr) {
+  java.util.UUID u = pr.getUuid();
+  if (u == null) return -1;
+  String k = @PKG@.ClassCfg.pkey(u);
+  if (k == null || SEEN.containsKey(k)) return -1;
+  if (@PKG@.Kit.busy(u)) return -1;
+  String r = apply(k, @PKG@.ClassStore.classIndex(u), @PKG@.Abil.treeCsv(u));
+  if (r == null) return -1;
+  SEEN.put(k, Boolean.TRUE);
+  if (r.length() == 0) return 0;
+  @PKG@.Abil.send(pr, r, "#ffc800");
+  return 1;
+}""")
+M(abfold, r"""
+public static void tick() {
+  java.util.Iterator it = @UNI@.get().getPlayers().iterator();
+  while (it.hasNext()) {
+    @PR@ pr = (@PR@) it.next();
+    if (pr == null || !pr.isValid()) continue;
+    try { consider(pr); } catch (Throwable t) { @PKG@.ClassCfg.warnLimited("the class tree fold failed: " + t); }
+  }
+}""")
+# ================= ClassTick (0.1.3): profile epoch check every 2 s -> republish class:<uuid> (contract rule 3). No SkyyProfiles = no-op =================''')
+P.rep('''  try { @PKG@.AbilMig3.tick(); } catch (Throwable t5) { if (FAILS < 5) { FAILS++; @PKG@.ClassCfg.warn("ability slot check tick failed: " + t5); } }   // 0.1.30''',
+      '''  try { @PKG@.AbilMig3.tick(); } catch (Throwable t5) { if (FAILS < 5) { FAILS++; @PKG@.ClassCfg.warn("ability slot check tick failed: " + t5); } }   // 0.1.30
+  try { @PKG@.AbilFold.tick(); } catch (Throwable t6) { if (FAILS < 5) { FAILS++; @PKG@.ClassCfg.warn("class tree fold tick failed: " + t6); } }   // 0.1.47''')
+P.rep('''  b.put("classes:fn:dot", new @PKG@.DotFn());                // 0.1.46 (elem1): SkyyGear's Poison line through the one DoT engine''',
+      '''  b.put("classes:fn:dot", new @PKG@.DotFn());                // 0.1.46 (elem1): SkyyGear's Poison line through the one DoT engine
+  b.put("class:fn:altPick", new @PKG@.AbilAltFn());          // 0.1.47: the Ability 1 alt in use ("A" / "B") - SkyyTrees 0.6.0 draws it''')
+P.rep('''  try { @PKG@.ClassCfg.bridge().remove("classes:fn:dot"); } catch (Throwable t) { }         // 0.1.46''',
+      '''  try { @PKG@.ClassCfg.bridge().remove("classes:fn:dot"); } catch (Throwable t) { }         // 0.1.46
+  try { @PKG@.ClassCfg.bridge().remove("class:fn:altPick"); } catch (Throwable t) { }       // 0.1.47''')
+P.rep('''          upsk):                         # 0.1.45: + UpSk, the skill-tree fight rows (Balance P8b)''',
+      '''          upsk,                          # 0.1.45: + UpSk, the skill-tree fight rows (Balance P8b)
+          abaltf, abfold):               # 0.1.47: + class:fn:altPick, the one-time class tree fold''')
+
+assert P.s.count("registerCommand(") == REG0 and P.s.count("registerSystem(") == SYS0
+assert P.s.count("makeClass(") == CLS0 + 2, "0.1.47: two new classes (AbilAltFn, AbilFold)"
+P.finish()

@@ -4475,6 +4475,8 @@ def check():
     assert len(TREES) == 19 and len(set(names)) == 19
     assert sum(1 for t in TREES if t["kind"] == "class") == 8 and sum(1 for t in TREES if t["kind"] == "skill") == 11
     for t in TREES:
+        if t.get("v4"):   # 0.6.0: a rebuilt class tree has its own rules (v4_check below)
+            continue
         nb, nr = (2, 4) if t["light"] else (3, 6)
         assert (t["name"] in LIGHT) == t["light"] and len(t["branches"]) == nb, t["name"]
         for b in t["branches"]:
@@ -4516,6 +4518,8 @@ def check():
     assert not [c for c in FX_OWNER if c not in used], [c for c in FX_OWNER if c not in used]
     _mr = mod_ranks()   # Balance P4 T7: no (ability, modifier) over MOD_CAP ranks in the class trees
     assert all(v <= MOD_CAP for v in _mr.values()), sorted((k, v) for k, v in _mr.items() if v > MOD_CAP)
+    if globals().get("V4_APPLIED"):   # 0.6.0: the rebuilt class trees (defined at the end of this file)
+        v4_check()
     return True
 
 
@@ -4887,3 +4891,696 @@ def p052_apply():
     assert all("~" not in v and "\n" not in v and all(32 <= ord(c) < 127 for c in v) for v in P052_TEXT.values())
     P052_APPLIED.append(1)
     check()
+
+
+
+# ===================================================================================================================================
+# 0.6.0 (2026-10-23) COMBAT INTO CLASS - THE CLASS TREE REBUILD (round R0 of research/Combat-Into-Class-Spec.md section 9, with
+# research/Class-Tree-Clarity-Spec.md items 1-4). Skyy's words (docs/answered/classes.md 2026-10-23, word for word):
+#   "Fold the Combat skill into the class: class level is your combat level, move the Combat tree's useful upgrades into the class trees,
+#    and retire the separate Combat skill (keep XP / no one loses progress)."
+#   "fold classes and combat into 1. that way you get a lot more upgrade options for the class"
+#   CLASS TREE LAYOUT: "keep the 3 trees, but since you only get 2 ability slots, put the A1 and both the A1 alt in one for the trees with a
+#    selection gate. so you unlock both alts at the same time, then have to pick which one you want. put A2 and A2 alt in another tree, and
+#    have the 3rd tree be more directly combat oriented. ... and of the class, have the row lockers be per tree, not all trees."
+#   MODIFIERS UNLOCK IN THE TREE: "but i do like how you had to unlock the modifiers for each ability, instead if them being tied to the
+#    ability's level." (popup -> "Unlock in tree, level by use")
+#   COMBAT-INTO-CLASS ANSWERS: Q1 "1 per level" (not 2), Q2 Ability 2 key = branch 1 / Ability 3 key = branch 2 (+ crouch), Q4 per-branch
+#    gates 5 branch points a row + 3 in the row above + a class-level floor, Q10 one free class-tree respec; Q3 / Q5-Q9 = the spec defaults.
+# Two parts:
+#   1. C060 (at import, every build): the Combat tree's four never-wired nodes the fold wires for the first time (Rally, Reprisal, Second
+#      Wind, Edge of the Legend - their numbers per spec 3.2) + Combat Insight's new name Battle Insight. tools/trees_v3_effects.py has their
+#      applier rows (SkyyClasses thorns / lowHeal / dmgLow, SkyySkills hpregen). Keys unchanged.
+#   2. v4_apply() (ONLY the builds that draw the new layout call it - SkyyTrees 0.6.0, the --p10 balance check, the table writer): every
+#      class tree becomes 3 branches - B1 the A1 line (A1 free at row 1; BOTH A1-alts free at row 2 = the selection gate, the player picks
+#      one), B2 the A2 line (A2 free at row 2, the A2-alt free at row 5), B3 "Weaponcraft" (the folded Combat tree + the class's own weapon /
+#      defence passives; free passives at rows 1 / 2 / 5). Every modifier is a 1-point unlock node in its ability's branch (it then levels
+#      by use in SkyyClasses). EVERY node keeps the saved key it has today (up["key"]): moved class nodes keep Class.<C>.b<old n>.<old id>,
+#      the Combat nodes keep Skill.Combat.b<n>.<id> (the same 23 keys in all 8 class trees = one profile's ranks, whatever its class),
+#      new modifier nodes get Class.<C>.m.<Ability>.<Modifier>. The Combat tree stays in TREES (marked "folded": SkyyTrees 0.6.0 draws it
+#      nowhere) so every applier's trees_v3_effects lookup keeps working. Ids (up["id"]) are the node's NEW place (r<row><a-f>; unique per
+#      branch, used by the map); the icon key (up["ikey"]) is the place it had (the approved icons carry over by key).
+#   The table for Skyy: python tools/trees_v3_data.py --v4md (writes research/Class-Tree-v4-Table.md).
+C060_COMBAT = {   # key -> (old (name, max, text), new (name, max, text)) - asserted against the table, applied once at import
+    "Combat.b2.r4b": (("Rally", 3, "+3% regen out of combat/rank"), ("Rally", 3, "+3% Health regen out of combat per rank")),
+    "Combat.b2.r3b": (("Reprisal", 3, "+5% thorns damage/rank"), ("Reprisal", 3, "3% of the melee damage you take is dealt back to the attacker per rank")),
+    "Combat.b2.r3c": (("Second Wind", 1, "once per fight, heal 15% at 20% health"),
+                      ("Second Wind", 3, "once a fight, a hit that drops you below 20% Health heals you 5% of max Health per rank")),
+    "Combat.b1.r6": (("Edge of the Legend", 1, "Flurry resets on kill, and its strikes always crit against bleeding targets."),
+                     ("Edge of the Legend", 1, "+10% damage to enemies below 30% Health")),
+    "Combat.b3.r5b": (("Combat Insight", 5, "+2% combat XP/rank"), ("Battle Insight", 5, "+2% class XP/rank")),
+}
+C060_APPLIED = []
+
+
+def _c060_apply():
+    seen = set()
+    t = tree("Combat")
+    for bn, b in enumerate(t["branches"]):
+        for r in b["rows"]:
+            for u in r["ups"]:
+                k = "Combat.b%d.%s" % (bn + 1, u["id"])
+                if k not in C060_COMBAT:
+                    continue
+                o, n = C060_COMBAT[k]
+                assert (u["name"], u["max"], u["text"]) == o and u["hook"] is None, ("C060: the Combat node moved", k, u)
+                u["name"], u["max"], u["text"] = n
+                seen.add(k)
+    assert seen == set(C060_COMBAT), sorted(set(C060_COMBAT) - seen)
+    C060_APPLIED.append(1)
+
+
+_c060_apply()
+
+# ---- the v4 tables ------------------------------------------------------------------------------------------------------------------
+V4_APPLIED = []
+V4_MIN = 30                    # an ability branch gets class passives until it holds this many ranks (its capstone needs 25)
+V4_ROW_MAX = 6                 # up to 6 upgrades a row in a class branch (spec 3: "Rows may hold up to 6 ups in class branches")
+V4_W_NAME = "Weaponcraft"      # branch 3's name in every class
+V4_W_THEME = "weapons, defence, loot"
+# SkyyClasses AB_MODS (the modifiers of every ability, in unlock order) - SkyyTrees 0.6.0 asserts it equals its C_ABILS modifier lists,
+# SkyyClasses 0.1.47 asserts it equals its own AB_MODS: one copy here so the tree can draw one unlock node per modifier
+CLASS_MODS = {
+    "Meteor": ["Power", "Radius", "Split", "Lingering", "Echo"], "ManaBarrier": ["Power", "Duration", "Ward", "Follow", "Knockback"],
+    "FrostNova": ["Power", "Radius", "Duration", "Slow"], "Starfall": ["Power", "Radius", "Duration", "Echo"],
+    "ArcaneBeam": ["Power", "Duration", "Slow", "Pierce"], "SacredHeal": ["Power", "Radius", "Duration", "Efficiency", "Echo"],
+    "ShieldBubble": ["Power", "Radius", "Duration", "Follow", "Echo"], "GuardianSpirit": ["Power", "Radius", "Efficiency", "Ward"],
+    "Sanctuary": ["Power", "Radius", "Duration", "Follow"], "MartyrsGrace": ["Power", "Chain", "Efficiency", "Ward", "Echo"],
+    "FlowingForm": ["Duration", "Radius", "Efficiency", "Power"], "PalmStrike": ["Knockback", "Ricochet", "Slow", "Power", "Echo"],
+    "CycloneKick": ["Radius", "Knockback", "Slow", "Haste"], "HundredFists": ["Power", "Radius", "Echo", "Efficiency"],
+    "StillWater": ["Duration", "Power", "Knockback", "Ward", "Echo"], "CloakFirstStrike": ["Duration", "Efficiency", "Power", "Haste"],
+    "Toxin": ["Radius", "Duration", "Echo", "Chain"], "GodKiller": ["Power", "Duration", "Efficiency", "Haste", "Echo"],
+    "VanishingAct": ["Radius", "Duration", "Slow", "Efficiency"],
+    "RallyingGuard": ["Duration", "Radius", "Power", "Echo"], "ShieldShockwave": ["Radius", "Knockback", "Echo", "Power"],
+    "IronChain": ["Pull", "Chain", "Slow", "Power"], "Challenge": ["Duration", "Power", "Chain", "Ward"],
+    "GuardiansOath": ["Duration", "Power", "Radius", "Ward"], "Enrage": ["Duration", "Radius", "Power", "Leech"],
+    "Whirlwind": ["Duration", "Radius", "Pull", "Leech", "Echo"], "Earthsplitter": ["Power", "Split", "Slow", "Knockback"],
+    "BloodFrenzy": ["Duration", "Floor", "Power", "Leech", "Haste"], "WarlordsBanner": ["Radius", "Duration", "Power", "Ward", "Echo"],
+    "PinningShot": ["Pierce", "Split", "Duration", "Power"], "RapidFire": ["Ricochet", "Pierce", "Duration", "Slow", "Seeker"],
+    "ExplosiveArrow": ["Radius", "Split", "Knockback", "Echo"], "ArrowRain": ["Radius", "Duration", "Lingering", "Power", "Echo"],
+    "HuntersNet": ["Radius", "Duration", "Pull", "Split"], "ArcaneBreach": ["Radius", "Duration", "Power", "Chain"],
+    "ElementalImbue": ["Duration", "Power", "Efficiency", "Chain"], "Sunder": ["Duration", "Power", "Chain", "Echo"],
+    "RiftCleave": ["Duration", "Radius", "Slow", "Power", "Echo"], "ShatteringArc": ["Power", "Radius", "Knockback", "Leech", "Echo"],
+}
+MOD_WORDS = ("Power", "Radius", "Duration", "Efficiency", "Split", "Pierce", "Chain", "Lingering", "Slow", "Knockback", "Follow", "Ward",
+             "Echo", "Ricochet", "Haste", "Pull", "Leech", "Floor", "Seeker")
+LINE_BRANCH = {"A1": 0, "A4a": 0, "A4b": 0, "A2": 1, "A3": 1}     # the ability line -> its new branch (B1 / B2)
+LINE_ROW = {"A1": 1, "A4a": 2, "A4b": 2, "A2": 2, "A3": 5}         # ... and the row it comes free with (today's levels: Lv 1 / 5 / 5 / 5 / 20)
+LINE_ORDER = ("A1", "A4a", "A4b", "A2", "A3")
+# a class fx code that names no ability parameter -> the ability it belongs to ("M" = every ability / Mana: the smaller of B1 / B2;
+# "W" = a weapon / defence / move passive: Weaponcraft). Codes not listed go to Weaponcraft; a.<Ability>.<p> names its ability.
+V4_CODE = {
+    "xAegis": "Challenge", "xRumble": "ShieldShockwave", "xWarden": "IronChain", "wardBoost": "M",
+    "bannerMove": "WarlordsBanner", "bannerLeech": "WarlordsBanner", "xCrimson": "BloodFrenzy", "xDomain": "WarlordsBanner", "xFury": "Whirlwind",
+    "debuffWeak": "M", "spreadDebuff": "M", "imbueSlow": "ElementalImbue", "imbueHeal": "ElementalImbue",
+    "xRiftmaw": "RiftCleave", "xFracture": "Sunder", "xCascade": "W",
+    "fistsDmg": "HundredFists", "flowMove": "FlowingForm", "comboStam": "FlowingForm", "comboCap": "FlowingForm", "flowWard": "FlowingForm",
+    "stanceSlow": "StillWater", "deflectBack": "StillWater", "xUntouch": "FlowingForm", "xPalms": "PalmStrike", "xNoMind": "StillWater",
+    "fsKillCd": "CloakFirstStrike", "moveCloak": "CloakFirstStrike", "vanishEcho": "VanishingAct", "cloakBlind": "CloakFirstStrike",
+    "vanishHit": "VanishingAct", "killCloak": "CloakFirstStrike", "bigHitBuff": "CloakFirstStrike", "poisonWeak": "Toxin",
+    "poisonKillStam": "Toxin", "contagion": "Toxin", "xGhost": "CloakFirstStrike", "xDeicide": "GodKiller", "xLotus": "Toxin",
+    "cloneSplit": "W", "cloneDur": "W", "cloneMirror": "W", "clonePull": "W",
+    "pinVuln": "PinningShot", "pinBounce": "PinningShot", "bowCdRapid": "RapidFire", "netVuln": "HuntersNet", "netSlow": "HuntersNet",
+    "rainPull": "ArrowRain", "xDeadEye": "RapidFire", "xSpider": "HuntersNet", "xFirestorm": "ExplosiveArrow",
+    "starFollow": "Starfall", "starCd": "Starfall", "meteorMove": "Meteor", "beamKillMana": "ArcaneBeam", "chanMove": "ArcaneBeam",
+    "barrierMreg": "ManaBarrier", "barrierSlow": "ManaBarrier", "xCataclysm": "Meteor", "xPrism": "ArcaneBeam", "xGlacial": "FrostNova",
+    "spellPow": "M", "cdAll": "M", "comboSpell": "M", "mana": "M", "overflow": "M", "mreg": "M", "rangeAll": "M",
+    "healReach": "SacredHeal", "healFollow": "SacredHeal", "triage": "SacredHeal", "overheal": "SacredHeal", "healMove": "SacredHeal",
+    "drShieldUp": "ShieldBubble", "bubbleKb": "ShieldBubble", "bubbleDr": "ShieldBubble", "bubbleHold": "ShieldBubble",
+    "spiritDr": "GuardianSpirit", "spiritReach": "GuardianSpirit", "sanctWeak": "Sanctuary", "zoneMove": "Sanctuary",
+    "sanctChain": "Sanctuary", "sanctMreg": "Sanctuary", "sanctWard": "Sanctuary", "sanctDmg": "Sanctuary",
+    "xMiracle": "SacredHeal", "xVigil": "GuardianSpirit", "xHolyLand": "Sanctuary",
+}
+V4_WEAPON = ("dmgWeapon", "dmgMelee", "dmgBow", "dmgFar")   # weapon-damage codes: a few ranks stay in B1 / B2 (Skyy: "the A1 and A2 trees
+#                                                           still have some upgrades to increase weapon damage")
+# MODIFIER-NAMED PASSIVES RENAMED (docs/answered/classes.md 2026-10-23 popup "Rename them so they never look like modifiers?" -> "Yes,
+# rename (Recommended)"): every fx upgrade whose name is a modifier's name (72) + the 4 names that would show twice in one class tree
+V4_RENAME = {
+    "Warrior.b1.r3a": "Heavy Blows", "Warrior.b1.r4a": "Shield Bash", "Warrior.b1.r4b": "Mending Guard", "Warrior.b2.r3a": "Daze",
+    "Warrior.b2.r3b": "Arc Wave", "Warrior.b2.r4a": "Long Stun", "Warrior.b3.r1a": "Shield Allies", "Warrior.b3.r3b": "Draining Links",
+    "Warrior.b3.r4b": "Warden's Aegis", "Warrior.b3.r5b": "Binding Grip",
+    "Berserker.b1.r3a": "Rending Rhythm", "Berserker.b2.r3a": "War March", "Berserker.b3.r1a": "Cleaving Blows", "Berserker.b3.r1b": "Brute Force",
+    "Berserker.b3.r2b": "Lashing Spin", "Berserker.b3.r3a": "Fierce Spin", "Berserker.b3.r3b": "Dizzying Spin", "Berserker.b3.r4a": "Bleeding Edge",
+    "Berserker.b3.r5b": "Earthblood",
+    "Spellblade.b1.r2b": "Arcing Rift", "Spellblade.b1.r4b": "Lean Rifts", "Spellblade.b1.r5a": "Rift Push", "Spellblade.b2.r2b": "Lasting Arc",
+    "Spellblade.b2.r3a": "Sapping Mark", "Spellblade.b2.r4a": "Contagious Mark", "Spellblade.b2.r4b": "Long Fractures", "Spellblade.b3.r3b": "Wide Arc",
+    "Spellblade.b3.r4a": "Frost Edge", "Spellblade.b3.r4b": "Vital Edge", "Spellblade.b3.r5a": "Resonant Arc", "Spellblade.b3.r1a": "Momentum Strikes",
+    "Monk.b1.r1a": "Swift Feet", "Monk.b1.r2a": "Iron Knuckles", "Monk.b1.r5b": "Fluid Stride", "Monk.b2.r4a": "Stunning Palm",
+    "Monk.b2.r5a": "Steady Breath", "Monk.b3.r1a": "Calm Shell", "Monk.b3.r1b": "Heavy Hands", "Monk.b3.r3a": "Quiet Mind",
+    "Monk.b3.r3b": "Return Volley", "Monk.b1.r1b": "Deep Breath",
+    "Assassin.b1.r4a": "Double Smoke", "Assassin.b2.r1a": "Keen Blades", "Assassin.b2.r2a": "Many Shadows", "Assassin.b2.r2b": "Lasting Shades",
+    "Assassin.b2.r3a": "Bouncing Kunai", "Assassin.b2.r4a": "Shadow Snare", "Assassin.b3.r1a": "Thick Fumes", "Assassin.b3.r2a": "Potent Venom",
+    "Assassin.b3.r3a": "Numbing Venom", "Assassin.b3.r5a": "Cheap Brew", "Assassin.b3.r4c": "Venom Rush",
+    "Archer.b1.r3b": "Skipping Pin", "Archer.b1.r4a": "Heavy Volley", "Archer.b2.r1a": "Hobbling Shots", "Archer.b2.r3a": "Driving Shots",
+    "Archer.b2.r4a": "Clinging Mesh", "Archer.b3.r1a": "Splinter Shots", "Archer.b3.r3c": "Skipping Rain", "Archer.b3.r4b": "Downdraft",
+    "Mage.b1.r2a": "More Stars", "Mage.b1.r2b": "Homing Stars", "Mage.b1.r4a": "Shockfall", "Mage.b2.r4a": "Forked Beam",
+    "Mage.b2.r5a": "Beam Resonance", "Mage.b3.r4a": "Frost Barrier",
+    "Priest.b1.r1b": "Far Mercy", "Priest.b1.r4a": "Seek the Hurt", "Priest.b2.r1a": "Stronger Shields", "Priest.b2.r3a": "Light Bubble",
+    "Priest.b2.r5a": "Spirit's Shelter", "Priest.b2.r5c": "Spirit's Reach", "Priest.b3.r4a": "Shared Grace", "Priest.b3.r4c": "Parting Ward",
+    "Priest.b3.r5a": "Humble Ground",
+}
+# the Combat part of Weaponcraft (spec 3.2): rows 1-5 = (old Combat branch, id); the capstone; the dropped "coming soon" nodes (never
+# buildable: the three Combat abilities + their upgrades, Salvage, Treasure Sense, the capstones Unbreakable / Master Looter)
+COMBAT_PART = [[(1, "r1a"), (2, "r1a"), (3, "r1a"), (3, "r1b")],
+               [(1, "r1b"), (2, "r1b"), (1, "r3b"), (2, "r4b")],
+               [(1, "r3a"), (2, "r3a"), (3, "r3a"), (3, "r3b"), (2, "r3b")],
+               [(1, "r4a"), (1, "r4b"), (2, "r4a"), (3, "r4a")],
+               [(1, "r5a"), (1, "r5b"), (3, "r5a"), (3, "r5b"), (2, "r3c")]]
+COMBAT_CAP = (1, "r6")
+COMBAT_FREE = (1, 1)            # Combat Focus = Combat b1 row 1's free perk (key Skill.Combat.b1.r1.free, SkyyClasses applies it)
+COMBAT_DROP = ["Combat.b1.r2.free", "Combat.b1.r2a", "Combat.b1.r2b", "Combat.b1.r2c", "Combat.b1.r3c", "Combat.b1.r5c",
+               "Combat.b2.r2.free", "Combat.b2.r2a", "Combat.b2.r2b", "Combat.b2.r5a", "Combat.b2.r5b", "Combat.b2.r6",
+               "Combat.b3.r2.free", "Combat.b3.r2a", "Combat.b3.r2b", "Combat.b3.r3c", "Combat.b3.r4b", "Combat.b3.r6"]
+# the FREE class passives of Weaponcraft rows 2 and 5 (spec 3: "the class's passive free nodes ... a small class passive picked by the
+# builder from the class's own passives, at 0 cost"): (name, fx code, value, text, the icon key it reuses = a node of the same effect);
+# the Assassin's row 2 = its Shadow Clone (Cloak / Vanishing Act leave a clone - today's free passive of Executioner row 2)
+V4_FREE_PASSIVE = {
+    "Warrior": (("Hardy", "drMelee", 2.0, "-2% melee damage taken (always on)", "Warrior.b1.r1a"),
+                ("Stalwart", "hp", 3.0, "+3% max Health (always on)", "Warrior.b1.r1b")),
+    "Berserker": (("Bloodied", "dmgLowHp", 3.0, "+3% damage while below 60% Health (always on)", "Berserker.b1.r1b"),
+                  ("Brutal", "dmgMelee", 3.0, "+3% melee damage (always on)", "Berserker.b3.r1b")),
+    "Spellblade": (("Battle Rhythm", "momChance", 6.0, "melee hits grant 1 Momentum at a 6% chance (always on)", "Spellblade.b3.r1a"),
+                   ("Arcane Ward", "debuffWeak", 2.0, "Breached or Weakened enemies deal 2% less damage to you (always on)", "Spellblade.b2.r3a")),
+    "Monk": (("Light Step", "move", 2.0, "+2% movement speed (always on)", "Monk.b1.r1a"),
+             ("Still Mind", "stanceSlow", 4.0, "enemies you hit during Still Water are 4% slower for 2s (always on)", "Monk.b3.r1b")),
+    "Assassin": (None,
+                 ("Killer Instinct", "dmgBehind", 3.0, "hits from behind deal +3% damage (always on)", "Assassin.b1.r3b")),
+    "Archer": (("Keen Eye", "dmgBow", 2.0, "+2% bow damage (always on)", "Archer.b1.r2b"),
+               ("Fleet Ranger", "move", 2.0, "+2% movement speed (always on)", "Archer.b1.r5a")),
+    "Mage": (("Spell Ward", "drMagic", 2.0, "take 2% less damage from projectiles and magic (always on)", "Mage.b3.r1b"),
+             ("Deep Focus", "mana", 4.0, "+4% max Mana (always on)", "Mage.b2.r1a")),
+    "Priest": (("Blessed Wand", "dmgWeapon", 2.0, "your wand bolts deal +2% damage (always on)", "Priest.b3.r1b"),
+               ("Vigor", "hp", 3.0, "+3% max Health (always on)", "Priest.b2.r4b")),
+}
+# hand placements the rules get wrong: key -> (new branch 0-2, preferred row)
+V4_PLACE = {}
+# FOUR POWER SOURCES (PROJECT-RULES 4; Skyy Q1 "1 per level": "about half the combined tree by max level; the build must re-check the
+# four-power-sources balance - tree stats are no longer all reachable, so per-rank values may need raising"): the per-rank numbers of the
+# class trees' DAMAGE upgrades (damage %, damage taken %) are raised by V4_STAT_X (rounded to halves): with 100 points of ~150-180 ranks a
+# player owns ~60 % of the tree at the class cap, so x1.5 brings the class tree's share of their damage / damage taken back to ~90 % of
+# what Lv 100 owned when the whole old class tree was bought. Those sums stay inside SkyyClasses' class-tree caps (dmgCap 40 / drCap 35),
+# so a player who stacks one kind still stops where everyone stopped before. Pools and pacing are NOT raised (max Health / Mana / Stamina,
+# regen, move speed: the P4 Mana budget, the Health and move budgets hold them). The Combat part's rows are applied by OTHER mods (SkyyGear /
+# SkyyAccessories / SkyyPets / SkyyMobs) with their own numbers - unchanged (their own Server Setup rows). Checked by balance_model.py --p10.
+V4_STAT_CODES = ("drMelee", "drRanged", "drMagic", "drStill", "drRooted", "drShieldUp", "dmgLowHp", "dmgMelee", "dmgWeapon", "dmgBow", "dmgFar",
+                 "dmgBehind", "dmgElite", "dmgMarked", "dmgDebuff", "spellPow", "fistsDmg")
+V4_STAT_X = 1.5
+
+
+_V4_LINE = dict((ab, ln) for _c in CLASS_LINES.values() for ln, ab in _c.items())
+
+
+def _v4_ab_of_code(c):
+    if c.startswith("a."):
+        return c.split(".")[1]
+    return V4_CODE.get(c, "W")
+
+
+def _v4_target(u):
+    """an old class upgrade -> ("ab", ability) / "M" / "W" (its new branch: the ability's line, the Mana side, Weaponcraft)"""
+    h = u["hook"]
+    if h[0] == "mod":
+        return ("ab", h[1])
+    tg = [_v4_ab_of_code(c) for c, _v in h[1]]
+    abs_ = [x for x in tg if x not in ("M", "W")]
+    if abs_ and len(set(LINE_BRANCH[_V4_LINE[x]] for x in abs_)) > 1:   # it names abilities of BOTH ability branches: the smaller one
+        return "M"
+    for x in tg:
+        if x not in ("M", "W"):
+            return ("ab", x)
+    return "M" if "M" in tg else "W"
+
+
+def v4_mod_text(abname, mod):
+    return "Unlocks the %s modifier for %s: put it in one of its 2 modifier slots - it levels up as you use %s" % (mod, abname, abname)
+
+
+def _v4_class(t, combat):
+    cn = t["name"]
+    lines = CLASS_LINES[cn]
+    line_of = dict((ab, ln) for ln, ab in lines.items())
+    abname = {}
+    frees = {}                      # line -> the old free dict + its icon key
+    shadow = None
+    for bn, b in enumerate(t["branches"]):
+        for r in b["rows"]:
+            f = r["free"]
+            if f and f["hook"] and f["hook"][0] == "abil":
+                abname[f["hook"][2]] = f["name"]
+                frees[f["hook"][1]] = dict(f, ikey="%s.b%d.r%d.free" % (cn, bn + 1, r["r"]))
+            if f and f["hook"] and f["hook"][0] == "fx":
+                assert cn == "Assassin" and f["hook"][1] == "ShadowClone", (cn, f)
+                shadow = dict(f, ikey="%s.b%d.r%d.free" % (cn, bn + 1, r["r"]))
+    assert sorted(frees) == sorted(lines), (cn, sorted(frees))
+    # 1. every old upgrade -> a node (or a dropped duplicate modifier node)
+    nodes, mods_seen, dropped = [], {}, []
+    for bn, b in enumerate(t["branches"]):
+        for r in b["rows"]:
+            for u in r["ups"]:
+                k = "Class.%s.b%d.%s" % (cn, bn + 1, u["id"])
+                ik = "%s.b%d.%s" % (cn, bn + 1, u["id"])
+                n = dict(u, key=k, ikey=ik, oldrow=r["r"], cap=bool(r["cap"]), tg=_v4_target(u))
+                if u["hook"][0] == "mod":
+                    pair = (u["hook"][1], u["hook"][2])
+                    if pair in mods_seen:
+                        dropped.append(dict(key=k, ab=pair[0], mod=pair[1], max=u["max"], name=u["name"]))
+                        continue
+                    n.update(name="%s: %s" % (abname[pair[0]], pair[1]), max=1, text=v4_mod_text(abname[pair[0]], pair[1]),
+                             mod=pair, oldmax=u["max"])
+                    mods_seen[pair] = n
+                elif ik in V4_RENAME:
+                    n["name"] = V4_RENAME[ik]
+                nodes.append(n)
+    # 2. the modifiers no node had yet: new unlock nodes Class.<C>.m.<Ability>.<Modifier>
+    for ln in LINE_ORDER:
+        ab = lines.get(ln)
+        if not ab:
+            continue
+        for m in CLASS_MODS[ab]:
+            if (ab, m) in mods_seen:
+                continue
+            n = dict(id="m", name="%s: %s" % (abname[ab], m), max=1, cost=RANK_COST, text=v4_mod_text(abname[ab], m),
+                     hook=("mod", ab, m), key="Class.%s.m.%s.%s" % (cn, ab, m), ikey=None, oldrow=LINE_ROW[ln], cap=False, tg=("ab", ab),
+                     mod=(ab, m), oldmax=0, new=True)
+            mods_seen[(ab, m)] = n
+            nodes.append(n)
+    # 3. the branch of every node: an ability's node -> its line's branch; Mana / every-ability -> the smaller of B1 / B2; up to two
+    #    weapon-damage nodes stay with the abilities (smaller branch first); Weaponcraft takes the class's other passives into the
+    #    places its Combat rows leave free (weapon damage first), the rest go back to the ability branch they came from (or the smaller)
+    br = [[], [], []]
+    rank = [0, 0, 0]
+    home = {}
+    for bn, b in enumerate(t["branches"]):
+        for r in b["rows"]:
+            ab = r["free"]["hook"][1] if (r["free"] and r["free"]["hook"] and r["free"]["hook"][0] == "abil") else None
+            if ab in ("A1", "A2"):
+                home[bn] = LINE_BRANCH[ab]
+
+    def put(n, b_):
+        n["nb"] = b_
+        br[b_].append(n)
+        rank[b_] += n["max"]
+
+    def smaller():
+        return 0 if rank[0] <= rank[1] else 1
+    for n in nodes:
+        if n["key"] in V4_PLACE:
+            put(n, V4_PLACE[n["key"]][0])
+            n["oldrow"] = V4_PLACE[n["key"]][1]
+        elif n["tg"] not in ("M", "W"):
+            ab = n["tg"][1]
+            assert ab in line_of, (cn, n["key"], ab)
+            put(n, LINE_BRANCH[line_of[ab]])
+    for n in nodes:
+        if "nb" not in n and n["tg"] == "M":
+            put(n, smaller())
+    ws = [n for n in nodes if "nb" not in n]
+    wpn = [n for n in ws if not n["cap"] and any(c in V4_WEAPON for c, _v in n["hook"][1])]
+    first = None
+    for n in wpn[:2]:
+        b_ = smaller() if first is None else 1 - first
+        put(n, b_)
+        first = b_ if first is None else first
+    wcap = [n for n in ws if n["cap"] and "nb" not in n]
+    for n in wcap:
+        put(n, 2)
+    combat_rows = [len(row) for row in COMBAT_PART]
+    if not wcap:
+        combat_rows_cap = combat_rows
+    else:
+        combat_rows_cap = combat_rows[:4] + [combat_rows[4] + 1]   # Edge of the Legend becomes a row-5 node
+    slots = [V4_ROW_MAX - x for x in combat_rows_cap]
+    rest = [n for n in ws if "nb" not in n]
+    rest.sort(key=lambda n: (0 if any(c in V4_WEAPON for c, _v in n["hook"][1]) else 1, n["oldrow"]))
+    for n in rest:   # the ability branches first get enough ranks for their own capstone (V4_MIN), then Weaponcraft's free places
+        s_ = smaller()
+        if rank[s_] < V4_MIN:
+            put(n, s_)
+        elif sum(slots) > 0:
+            p = min(5, max(1, n["oldrow"]))
+            opts = sorted([i for i in range(5) if slots[i] > 0], key=lambda i: (abs(i + 1 - p), i))
+            slots[opts[0]] -= 1
+            n["wrow"] = opts[0] + 1
+            put(n, 2)
+        else:
+            put(n, s_)
+
+    # 4. capstones: one a branch (the line order A1, A4a, A4b, A2, A3 decides); a second one becomes a 1-rank row-5 node
+    def cap_rank(n):
+        if n["tg"] in ("M", "W"):
+            return 9
+        return LINE_ORDER.index(line_of[n["tg"][1]])
+    for b_ in range(2):
+        caps = sorted([n for n in br[b_] if n["cap"]], key=cap_rank)
+        for j, n in enumerate(caps):
+            if j > 0:
+                n["cap"] = False
+                n["oldrow"] = 5
+    # 5. Weaponcraft: the Combat part (+ Edge of the Legend as its capstone unless the class has a weapon capstone) + the class passives
+    comb = []
+    for ri, row in enumerate(COMBAT_PART):
+        for cb, cid in row:
+            u = [x for rr in combat["branches"][cb - 1]["rows"] for x in rr["ups"] if x["id"] == cid][0]
+            comb.append(dict(u, key="Skill.Combat.b%d.%s" % (cb, cid), ikey="Combat.b%d.%s" % (cb, cid), oldrow=ri + 1, wrow=ri + 1, cap=False,
+                             tg="W", combat=True, nb=2))
+    cu = [x for rr in combat["branches"][COMBAT_CAP[0] - 1]["rows"] for x in rr["ups"] if x["id"] == COMBAT_CAP[1]][0]
+    comb.append(dict(cu, key="Skill.Combat.b%d.%s" % COMBAT_CAP, ikey="Combat.b%d.%s" % COMBAT_CAP, oldrow=5 if wcap else 6,
+                     wrow=5 if wcap else 6, cap=not wcap, tg="W", combat=True, nb=2))
+    br[2] = comb + br[2]
+    for n in wcap:
+        n["wrow"] = 6
+
+    # 6. rows of B1 / B2: the nodes in order (preferred row = the old row, a modifier never above its ability's row), spread over rows
+    #    1-5 (at most V4_ROW_MAX a row, the A2-alt's modifiers on its row 5), the capstone row 6; then every row holds >= 3 ranks and
+    #    rows 1..n >= 5 n ranks (per-branch gates: the next row can open) - a row short of that takes the next row's biggest node
+    def floor_of(n):
+        return LINE_ROW[line_of[n["mod"][0]]] if n.get("mod") else 1
+    out_br = []
+    for b_ in range(3):
+        rows = dict((i, []) for i in range(1, 7))
+        if b_ == 2:
+            for n in br[2]:
+                rows[n["wrow"]].append(n)
+        else:
+            body = [n for n in br[b_] if not n["cap"]]
+            for n in br[b_]:
+                if n["cap"]:
+                    rows[6].append(n)
+            fixed5 = [n for n in body if floor_of(n) >= 5]
+            for n in fixed5:
+                rows[5].append(n)
+            queue = sorted([n for n in body if floor_of(n) < 5], key=lambda n: (max(n["oldrow"], floor_of(n)), n["oldrow"], n.get("mod") is None))
+            room = [V4_ROW_MAX] * 4 + [V4_ROW_MAX - len(fixed5)]
+            assert len(queue) <= sum(room), (cn, b_, "branch too big", len(queue), sum(room))
+            N = len(queue)
+            quota = [N // 5 + (1 if i < N % 5 else 0) for i in range(5)]
+            for i in range(5):   # a quota over a row's room goes to the next rows
+                if quota[i] > room[i]:
+                    over = quota[i] - room[i]
+                    quota[i] = room[i]
+                    for j in list(range(i + 1, 5)) + list(range(i - 1, -1, -1)):
+                        add = min(over, room[j] - quota[j])
+                        quota[j] += add
+                        over -= add
+            for i in range(1, 6):
+                taken, j = 0, 0
+                while taken < quota[i - 1] and j < len(queue):
+                    if floor_of(queue[j]) <= i:
+                        rows[i].append(queue.pop(j))
+                        taken += 1
+                    else:
+                        j += 1
+            for n in list(queue):   # what a floor kept back: the highest row with room at or above its floor
+                for i in range(5, floor_of(n) - 1, -1):
+                    if len(rows[i]) < V4_ROW_MAX:
+                        rows[i].append(n)
+                        queue.remove(n)
+                        break
+            assert not queue, (cn, b_, "nodes left over", [x["key"] for x in queue])
+
+            def rk_(i):
+                return sum(x["max"] for x in rows[i])
+
+            def bad():
+                for i in range(1, 6):
+                    if rk_(i) < 3 or sum(rk_(j) for j in range(1, i + 1)) < GATE_STEP * i:
+                        return i
+                return 0
+            def score():
+                i = bad()
+                short = sum(max(0, 3 - rk_(k)) + max(0, GATE_STEP * k - sum(rk_(j) for j in range(1, k + 1))) for k in range(1, 6))
+                return (99 if not i else i, -short)
+            for _pass in range(300):
+                if not bad():
+                    break
+                cur = score()
+                best = None
+                for i in range(1, 6):   # every move (into a row with room) and every swap that keeps both floors: the best by score()
+                    for j in range(1, 6):
+                        if j == i:
+                            continue
+                        for bnode in list(rows[j]):
+                            if floor_of(bnode) > i:
+                                continue
+                            for anode in list(rows[i]) + [None]:
+                                if anode is None and (len(rows[i]) >= V4_ROW_MAX or len(rows[j]) <= 1):
+                                    continue
+                                if anode is not None and (floor_of(anode) > j or anode["max"] == bnode["max"]):
+                                    continue
+                                rows[j].remove(bnode)
+                                rows[i].append(bnode)
+                                if anode is not None:
+                                    rows[i].remove(anode)
+                                    rows[j].append(anode)
+                                sc = score()
+                                if anode is not None:
+                                    rows[j].remove(anode)
+                                    rows[i].append(anode)
+                                rows[i].remove(bnode)
+                                rows[j].append(bnode)
+                                if sc > cur and (best is None or sc > best[0]):
+                                    best = (sc, i, j, anode, bnode)
+                if best is None:
+                    break
+                _sc, i, j, anode, bnode = best
+                rows[j].remove(bnode)
+                rows[i].append(bnode)
+                if anode is not None:
+                    rows[i].remove(anode)
+                    rows[j].append(anode)
+            assert not bad(), (cn, b_, "rows cannot open", [[(x["name"], x["max"]) for x in rows[k]] for k in range(1, 6)])
+        assert len(rows[6]) == 1, (cn, b_, [x["key"] for x in rows[6]])
+        nb = dict(name=None, theme=None, line=("A1", "A2", "W")[b_], rows=[])
+        for i in range(1, 7):
+            ups = rows[i]
+            fx_ = [x for x in ups if not x.get("mod")]
+            md_ = [x for x in ups if x.get("mod")]
+            h = len(fx_) // 2
+            ordered = fx_[:h] + md_ + fx_[h:]
+            outu = []
+            for j, x in enumerate(ordered):
+                y = dict((k2, v2) for k2, v2 in x.items() if k2 not in ("tg", "oldrow", "wrow", "nb", "cap", "new", "combat", "oldmax", "mod"))
+                y["id"] = "r6" if i == 6 else "r%d%s" % (i, "abcdef"[j])
+                y["cost"] = CAP_COST if i == 6 else RANK_COST
+                if i == 6:
+                    y["max"] = 1
+                if x.get("combat"):
+                    y["combat"] = True
+                if x.get("mod"):
+                    y["modnode"] = True
+                    y["oldmax"] = x.get("oldmax", 0)
+                y["from"] = x["key"]
+                outu.append(y)
+            nb["rows"].append(dict(r=i, gate=GATE_STEP * (i - 1), cap=(i == 6), free=None, ups=outu))
+        out_br.append(nb)
+
+    # 7. the free nodes: abilities (B1 r1 A1, r2 A4a + A4b; B2 r2 A2, r5 A3), Weaponcraft r1 Combat Focus + r2 / r5 class passives
+    def abfree(ln):
+        f = frees[ln]
+        return dict(name=f["name"], text=f["text"], hook=f["hook"], ikey=f["ikey"], ability=True)
+    out_br[0]["rows"][0]["free"] = abfree("A1")
+    out_br[0]["rows"][1]["free"] = abfree("A4a")
+    if "A4b" in lines:
+        out_br[0]["rows"][1]["free2"] = abfree("A4b")
+    out_br[1]["rows"][1]["free"] = abfree("A2")
+    out_br[1]["rows"][4]["free"] = abfree("A3")
+    cf = combat["branches"][COMBAT_FREE[0] - 1]["rows"][COMBAT_FREE[1] - 1]["free"]
+    out_br[2]["rows"][0]["free"] = dict(name=cf["name"], text=cf["text"], hook=None, ikey="Combat.b1.r1.free", key="Skill.Combat.b1.r1.free")
+    p2, p5 = V4_FREE_PASSIVE[cn]
+    if p2 is None:
+        out_br[2]["rows"][1]["free"] = dict(name=shadow["name"], text=shadow["text"], hook=shadow["hook"], ikey=shadow["ikey"], v=1.0)
+    else:
+        out_br[2]["rows"][1]["free"] = dict(name=p2[0], text=p2[3], hook=("fx", p2[1]), ikey=p2[4], v=p2[2])
+    out_br[2]["rows"][4]["free"] = dict(name=p5[0], text=p5[3], hook=("fx", p5[1]), ikey=p5[4], v=p5[2])
+
+    # 8. names: B1 / B2 = the old branch that held A1 / A2, B3 = Weaponcraft
+    def bname(ln):
+        for b in t["branches"]:
+            for r in b["rows"]:
+                if r["free"] and r["free"]["hook"] and r["free"]["hook"][0] == "abil" and r["free"]["hook"][1] == ln:
+                    return b["name"], b["theme"]
+    out_br[0]["name"], out_br[0]["theme"] = bname("A1")
+    out_br[1]["name"], out_br[1]["theme"] = bname("A2")
+    if out_br[1]["name"] == out_br[0]["name"]:   # A1 and A2 sat in one old branch (Archer Huntmaster): B2 takes the A2-alt's branch name
+        out_br[1]["name"], out_br[1]["theme"] = bname("A3")
+    assert out_br[1]["name"] != out_br[0]["name"] and V4_W_NAME not in (out_br[0]["name"], out_br[1]["name"]), cn
+    out_br[2]["name"], out_br[2]["theme"] = V4_W_NAME, V4_W_THEME
+    return out_br, dropped
+
+
+V4_DROPPED = {}       # class -> [{key, ab, mod, max, name}] the second modifier node of one (ability, modifier) (its ranks: refunded)
+V4_OLD_MODKEYS = {}   # class -> [(saved key, ability, modifier)] EVERY old modifier-level node (the fold's "modifier levels kept" input)
+V4_OLD = {}           # class -> the old (0.5.2) tree, kept for the table / the fold's old gates (deep copy)
+V4_SCALED = []        # (key, code, old per rank, new per rank) - the four-sources raise
+
+
+def _v4_scale(u):
+    """V4_STAT_X on the stat codes of an fx upgrade (the text follows; a code whose number is not in the text exactly once stays)"""
+    h = u.get("hook")
+    if not h or h[0] != "fx":
+        return
+    new = []
+    txt = u["text"]
+    for c, v in h[1]:
+        if c in V4_STAT_CODES and c not in FX_RANKED:
+            nv = round(v * V4_STAT_X * 2) / 2.0
+            old_s = "%g" % v
+            hit = [suf for suf in ("%", " ") if txt.count(old_s + suf) == 1]
+            if hit and nv != v:
+                txt = txt.replace(old_s + hit[0], ("%g" % nv) + hit[0])
+                V4_SCALED.append((u["key"], c, v, nv))
+                new.append((c, nv))
+                continue
+        new.append((c, v))
+    u["hook"] = ("fx", tuple(new))
+    u["text"] = txt
+
+
+def v4_apply():
+    """THE CLASS TREE REBUILD (once; only builds that draw the 0.6.0 layout call it). Returns True."""
+    if V4_APPLIED:
+        return True
+    import copy
+    combat = tree("Combat")
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        V4_OLD[t["name"]] = copy.deepcopy(t)
+        V4_OLD_MODKEYS[t["name"]] = [("Class.%s.b%d.%s" % (t["name"], bn + 1, u["id"]), u["hook"][1], u["hook"][2])
+                                     for bn, b in enumerate(t["branches"]) for r in b["rows"] for u in r["ups"] if u["hook"][0] == "mod"]
+        nb, dropped = _v4_class(t, combat)
+        t["branches"] = nb
+        t["v4"] = True
+        V4_DROPPED[t["name"]] = dropped
+        for b in nb:
+            for r in b["rows"]:
+                for u in r["ups"]:
+                    if not u.get("combat"):
+                        _v4_scale(u)
+    combat["folded"] = True
+    V4_APPLIED.append(1)
+    check()
+    return True
+
+
+def v4_check():
+    """the v4 rules (check() runs them once v4_apply ran)"""
+    assert tree("Combat").get("folded")
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        cn = t["name"]
+        assert t.get("v4") and len(t["branches"]) == 3 and [b["line"] for b in t["branches"]] == ["A1", "A2", "W"], cn
+        keys, unames, lines = set(), set(), []
+        for b in t["branches"]:
+            assert len(b["rows"]) == 6 and [r["r"] for r in b["rows"]] == list(range(1, 7)), (cn, b["name"])
+            ids = set()
+            cum = 0
+            for r in b["rows"]:
+                assert r["gate"] == GATE_STEP * (r["r"] - 1) and r["cap"] == (r["r"] == 6)
+                assert 1 <= len(r["ups"]) <= V4_ROW_MAX, (cn, b["name"], r["r"], len(r["ups"]))
+                assert not r["cap"] or (len(r["ups"]) == 1 and r["ups"][0]["max"] == 1 and r["ups"][0]["cost"] == CAP_COST), (cn, b["name"])
+                rk = sum(u["max"] for u in r["ups"])
+                if r["r"] <= 5:   # reachability (per-branch gates): row n >= 3 ranks (the row-above rule) and rows 1..n >= 5 n
+                    cum += rk
+                    assert rk >= 3 and cum >= GATE_STEP * r["r"], ("v4: a branch row cannot open the next", cn, b["name"], r["r"], rk, cum)
+                for u in r["ups"]:
+                    assert u["id"] not in ids and 1 <= u["max"] <= 5 and u["cost"] == (CAP_COST if r["cap"] else RANK_COST), (cn, u)
+                    ids.add(u["id"])
+                    assert u["key"] not in keys, ("v4: a saved key twice in one tree", cn, u["key"])
+                    keys.add(u["key"])
+                    assert u["name"] not in unames, ("v4: a node name twice in one class tree", cn, u["name"])
+                    unames.add(u["name"])
+                    h = u["hook"]
+                    if u.get("combat"):
+                        assert h is None and u["key"].startswith("Skill.Combat.b"), u
+                    else:
+                        assert h is not None and h[0] in ("mod", "fx") and u["key"].startswith("Class.%s." % cn), u
+                    if h and h[0] == "mod":
+                        assert u["max"] == 1 and u.get("modnode") and h[2] in CLASS_MODS[h[1]], u
+                    assert ("now" in u) == bool(fx_codes(u)), u["name"]
+                    assert u["name"] not in MOD_WORDS, ("v4: a passive still named like a modifier", cn, u["name"])
+                    assert all(ord(ch) < 128 for ch in u["name"] + u["text"] + u.get("now", "")), u["name"]
+                for fk in ("free", "free2"):
+                    f = r.get(fk)
+                    if f and f["hook"] and f["hook"][0] == "abil":
+                        lines.append(f["hook"][1])
+        assert sorted(lines) == sorted(CLASS_LINES[cn]), (cn, lines)
+        b1 = t["branches"][0]["rows"]
+        assert b1[0]["free"]["hook"][1] == "A1" and b1[1]["free"]["hook"][1] == "A4a"
+        assert ("A4b" in CLASS_LINES[cn]) == bool(b1[1].get("free2")) and (not b1[1].get("free2") or b1[1]["free2"]["hook"][1] == "A4b")
+        assert t["branches"][1]["rows"][1]["free"]["hook"][1] == "A2" and t["branches"][1]["rows"][4]["free"]["hook"][1] == "A3"
+        w = t["branches"][2]["rows"]
+        assert w[0]["free"]["key"] == "Skill.Combat.b1.r1.free" and w[1]["free"]["hook"][0] == "fx" and w[4]["free"]["hook"][0] == "fx"
+        mods = sorted(u["hook"][1:] for b in t["branches"] for r in b["rows"] for u in r["ups"] if u["hook"] and u["hook"][0] == "mod")
+        want = sorted((ab, m) for ln, ab in CLASS_LINES[cn].items() for m in CLASS_MODS[ab])
+        assert mods == want, ("v4: one unlock node per modifier", cn, sorted(set(want) ^ set(mods)))
+        comb = sorted(u["key"] for r in w for u in r["ups"] if u.get("combat"))
+        assert len(comb) == 23 and len(set(comb)) == 23, (cn, comb)
+        for b in t["branches"]:   # a modifier node never sits above its ability's row
+            for r in b["rows"]:
+                for u in r["ups"]:
+                    if u.get("modnode"):
+                        ln = [x for x, ab in CLASS_LINES[cn].items() if ab == u["hook"][1]][0]
+                        assert r["r"] >= LINE_ROW[ln] and b["line"] == ("A1" if LINE_BRANCH[ln] == 0 else "A2"), (cn, u["name"], r["r"])
+    return True
+
+
+def v4_stats():
+    """per class: branches [(name, nodes, ranks)], all ranks, modifier unlock nodes (spec 2.1 table)"""
+    out = {}
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        bs = [(b["name"], sum(len(r["ups"]) for r in b["rows"]), sum(u["max"] for r in b["rows"] for u in r["ups"])) for b in t["branches"]]
+        out[t["name"]] = dict(branches=bs, ranks=sum(x[2] for x in bs),
+                              mods=sum(1 for b in t["branches"] for r in b["rows"] for u in r["ups"] if u["hook"] and u["hook"][0] == "mod"))
+    return out
+
+
+def v4_md():
+    """research/Class-Tree-v4-Table.md (spec section 3: "the builder makes the table ... for Skyy to read")"""
+    v4_apply()
+    out = ["# Class trees v4 - every node's new place (generated: python tools/trees_v3_data.py --v4md; do not edit by hand)", "",
+           "Made by round R0 of `research/Combat-Into-Class-Spec.md` (SkyyTrees 0.6.0). Where answers go: Skyy's changes to a placement ->",
+           "`docs/answered/classes.md`; the data -> `tools/trees_v3_data.py` (V4_PLACE / V4_RENAME / V4_FREE_PASSIVE). Every node keeps its",
+           "saved key (column Key); 1 point a class level; a row of a branch opens at 5 points spent IN THAT BRANCH per row + 3 in the row",
+           "above + class level 5 per row. Modifiers: 1 point unlocks one for its ability, then it levels by use.", ""]
+    st = v4_stats()
+    out += ["| Class | Branch 1 | Branch 2 | Branch 3 | Ranks | Modifier unlocks | Share of the tree at Lv 100 (100 points) |", "|---|---|---|---|---|---|---|"]
+    for cn in sorted(st):
+        s = st[cn]
+        out.append("| %s | %s | %s | %s | %d | %d | %d %% |" % (cn, "%s %d nodes / %d ranks" % s["branches"][0], "%s %d nodes / %d ranks" % s["branches"][1],
+                                                            "%s %d nodes / %d ranks" % s["branches"][2], s["ranks"], s["mods"], round(100.0 * 100 / s["ranks"])))
+    out.append("")
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        out += ["## %s" % t["name"], ""]
+        for bi, b in enumerate(t["branches"]):
+            out += ["### Branch %d - %s (%s)" % (bi + 1, b["name"], b["theme"]), "", "| Row | Node | Ranks | Key | Was | What it does |", "|---|---|---|---|---|---|"]
+            for r in b["rows"]:
+                for fk in ("free", "free2"):
+                    f = r.get(fk)
+                    if f:
+                        kind = "ABILITY (free)" if f.get("ability") else "free passive"
+                        out.append("| %d | **%s** | %s | - | %s | %s |" % (r["r"], f["name"], kind, f.get("ikey") or "-", f["text"].replace("|", "/")))
+                for u in r["ups"]:
+                    was = u["from"].split(".", 1)[1] if u["from"] != u["key"] or True else ""
+                    out.append("| %d | %s | %d | `%s` | %s | %s |" % (r["r"], u["name"], u["max"], u["key"], "new" if ".m." in u["key"] else was, u["text"].replace("|", "/")))
+            out.append("")
+        if V4_DROPPED[t["name"]]:
+            out.append("Second modifier nodes folded into the one unlock node (their ranks are refunded; the modifier level they gave is kept by its use count): " +
+                       ", ".join("`%s` (%s %s, %d ranks)" % (d["key"], d["ab"], d["mod"], d["max"]) for d in V4_DROPPED[t["name"]]))
+            out.append("")
+    out += ["## Combat parts dropped (never buildable: coming soon, no applier)", "", ", ".join("`%s`" % k for k in COMBAT_DROP), "",
+            "## Per-rank numbers raised (four power sources, x%g)" % V4_STAT_X, "",
+            ", ".join("`%s` %s %g -> %g" % s for s in V4_SCALED), ""]
+    return "\n".join(out)
+
+
+if __name__ == "__main__" and "--v4md" in __import__("sys").argv:
+    import os as _os
+    _p = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "research", "Class-Tree-v4-Table.md")
+    open(_p, "w", newline="\n").write(v4_md())
+    print("wrote", _p)

@@ -186,6 +186,13 @@ EFFECTS = [
     # x1.2 x 1.15 at max = +3.8 % of that hour - inside the "other 6 %" budget's slack.
     ("Exploration", 1, "r1a", "SkyyExploration", "lg.coins", 0.04, None, 0),        # Wanderer: +4 % Loot Bag + supply drop coins a rank (20 % at 5)
     ("Exploration", 1, "r3a", "SkyyExploration", "lg.coin2", 0.05, None, 0),        # Cartographer: +5 % a rank a claim holds a second coin find (15 % at 3)
+    # ---------------- 0.6.0 COMBAT INTO CLASS (research/Combat-Into-Class-Spec.md 3.2; SkyyTrees 0.6.0 + SkyyClasses 0.1.47 + SkyySkills
+    # 0.4.64): the Combat tree's four never-wired nodes, now in every class's Weaponcraft branch (keys unchanged; trees_v3_data C060_COMBAT).
+    # Reprisal + Edge of the Legend add to damage INSIDE SkyyClasses' class-tree damage cap; Second Wind / Rally are healing (no max Health).
+    ("Combat", 2, "r3b", "SkyyClasses", "thorns", 3.0, None, 0),                    # Reprisal: 3 % of the melee damage taken dealt back a rank
+    ("Combat", 2, "r3c", "SkyyClasses", "lowHeal", 5.0, None, 0),                   # Second Wind: once a fight, below 20 % Health heal 5 % of max a rank
+    ("Combat", 1, "r6", "SkyyClasses", "dmgLow", 10.0, None, 0),                    # Edge of the Legend (capstone): +10 % vs enemies below 30 % Health
+    ("Combat", 2, "r4b", "SkyySkills", "hpregen", 3.0, None, 0),                    # Rally: +3 % out-of-combat Health regen a rank (SkyySkills HpRegen)
 ]
 
 # R3c FIRST-PASS NUMBERS (builder 2026-10-20; Skyy "if you have any doubt, do research to get good data to base your default on" + the four power
@@ -350,7 +357,7 @@ def ckey(e):
     return "tree.%s.b%d.%s.%s" % (e[0], e[1], e[2], e[4].split(".")[0])
 
 
-_EW = {"hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance",
+_EW = {"thorns": "Thorns", "lowHeal": "Heal", "hpregen": "Regen", "hp": "Health", "hpp": "Health", "dd": "Fortune", "xp": "XP", "bp": "Power", "dmg": "Damage", "cc": "Crit", "cd": "Crit Dmg", "petsyn": "Boost", "class": "XP", "cook": "Chance",
        "spd": "Speed", "stam": "Stamina",
        # P8b
        "vein": "Ore", "feller": "Logs", "fall": "Fall", "gem": "Gems", "coins": "Coins", "extra": "Extra", "dmgLow": "Damage", "dmgBoss": "Damage",
@@ -405,6 +412,9 @@ def describe(e):
                                                                      "petsyn.foraging": "Foraging pet stats", "petsyn.green": "Farming and Foraging pet stats",
                                                                      "petsyn.rare": "stats of Rare or better pets", "petsyn.all": "stats of every pet",
                                                                      "hatch": "Hatchery slot",
+                                                                     # 0.6.0 (Combat into Class: Reprisal, Second Wind, Rally)
+                                                                     "thorns": "melee damage dealt back", "lowHeal": "max Health healed once a fight below 20 %",
+                                                                     "hpregen": "out-of-combat Health regen",
                                                                      # P8d (SkyyTrees' own Acrobatics rows)
                                                                      "dodge.acrobatics": "dodge push",
                                                                      # P7b (SkyyExploration's Loot Bag / supply drop coins)
@@ -672,6 +682,8 @@ def check():
     _own = ("spd", "fall", "hpp", "stam", "vein", "feller", "gem.mining", "coins.mining", "extra.foraging", "dodge.acrobatics")
     assert not [e for e in EFFECTS if e[3] == "SkyyTrees" and not (e[4] in _own or e[4].startswith(("xp.", "dd.")))], "P8d: an own effect TreeSk does not apply"
     assert not [e for e in EFFECTS if e[4] in ("dmgLow", "dmgBoss", "drAll", "kbRes") and e[3] != "SkyyClasses"], "P8b: SkyyClasses' fight rows"
+    assert not [e for e in EFFECTS if e[4] in ("thorns", "lowHeal") and e[3] != "SkyyClasses"], "0.6.0: Reprisal / Second Wind are SkyyClasses'"
+    assert [(e[0], e[2]) for e in EFFECTS if e[4] == "hpregen"] == [("Combat", "r4b")] and all(e[3] == "SkyySkills" for e in EFFECTS if e[4] == "hpregen"), "0.6.0: Rally"
     assert not [e for e in EFFECTS if e[4] in ("drop", "coins", "rare", "bossRoll", "dbl") and e[3] != "SkyyMobs"], "P8b: SkyyMobs' loot rows"
     # P7b: SkyyExploration applies only its two coin rows (the Exploration tree, never XP: Skyy's no-boost rule)
     assert [(e[0], e[4]) for e in EFFECTS if e[3] == "SkyyExploration"] == [("Exploration", "lg.coins"), ("Exploration", "lg.coin2")], "P7b: SkyyExploration's rows"

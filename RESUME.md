@@ -20,8 +20,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
 - LIVE 10-23 12:40: Trees 0.5.2 (TEST 242). sig2 LIVE (Armory 0.1.45, TEST 243). RUNNING: workflow sig4 (Armory 0.1.46 [+ Gear 0.3.44]: base signature for every
-  family) + workflow cls060
-  (CLASS TREE REBUILD: R0 data + Trees 0.6.0 + Classes 0.1.47 + Skills 0.4.64 + Rebirth 0.5.2, deploy together).
+  family) + cls060 READY + PINNED (Trees 0.6.0 + Classes 0.1.47 + Skills 0.4.64 + Rebirth 0.5.2)
+  and sig4 PINNED (Armory 0.1.46) - DEPLOY them as soon as no HytaleServer runs (builders' probe servers). Follow-up: Weaponcraft numbers x1.5.
   QUEUED Armory: Spellblade great shield = shield-bash attack + 30-block steerable charge (classes.md 10-23); then sig3 UT quirks + sig5
   Mythic signatures (research/UT-Mythic-Signatures.md; Mythics REPLACE vanilla moves; long-term every vanilla move class-fitted). PRICE TOOLTIPS
   (research/Price-Tooltips-Spec.md, spec defaults taken): R0 probe SkyyUiProbe 0.9 (running) -> R1 Auctions 0.1.16 -> R2 Bazaar 0.2.2 -> R3 Gear ; Gear 0.3.42 (harvester swing source) LIVE 10-23 (TEST 240), its

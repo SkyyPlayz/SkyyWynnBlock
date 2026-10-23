@@ -166,6 +166,45 @@ for p in (SM.hub_picture("#8fc8ff"), SM.halo_picture(), SM.emblem_picture()):
     check(SM.png_size(d)[0] % 2 == 0 and A.png_decode(d).w == p.w, "hub / halo / emblem pictures decode, even sizes")
 prev = SM.preview_picture(LAYS["Gathering"])
 check((prev.w, prev.h) == (840, 774), "preview_picture draws a whole page")
+# ---------------------------------------------------------------------------------------------------- 1.1 ABILITY NODES + THE OR PAIR
+# (round cls060, research/Class-Tree-Clarity-Spec.md items 1 + 3: the class trees v4 - tools/trees_v3_data.py v4_apply)
+TD.v4_apply()
+V4PIN = {"Warrior": dict(node=30, ring0=0.38, s=50.0, start=0.0, banner_offset=60.0),   # SkyyTrees 0.6.0's TM_PIN (fix round: 48 px squares)
+         "Mage": dict(node=36, ring0=0.38, s=56.0, start=-5.0, banner_offset=60.0), "Assassin": dict(node=36, ring0=0.38, s=50.0, start=-10.0, banner_offset=60.0)}
+check(SM.MAP_ABIL_VERSION == "1.1" and SM.MAP_VERSION == "1.0", "1.1: MAP_ABIL_VERSION 1.1 (the 1.0 skill page layouts unchanged)")
+row2 = [r for r in TD.tree("Warrior")["branches"][0]["rows"] if r.get("free2")][0]
+its = SM.items_of(row2)
+check([k for k, i in its].count("free") == 2 and its.index(("free", "free2")) == its.index(("free", "free")) + 1, "1.1: items_of puts free2 right after the free node (the OR pair)")
+for cn in ("Warrior", "Mage", "Assassin"):
+    g = [("B%d" % i, "#e0b060", [b]) for i, b in enumerate(TD.tree(cn)["branches"])]
+    lay = SM.build(g, want_ids=SM.want_of(g), what=cn + " v4", **V4PIN[cn])
+    ab = [n for n in lay["nodes"] if n.get("abil")]
+    asz = max(int(round(V4PIN[cn]["node"] * SM.ABIL_FRAC)), SM.ABIL_MIN)
+    check(len(ab) >= 4 and asz >= 48 and all(n["size"] == asz for n in ab), "1.1 %s: %d ability nodes, %d px (1.3 x the node, at least ABIL_MIN 48)" % (cn, len(ab), asz))
+    orp = [n for n in lay["nodes"] if n.get("orp")]
+    if orp:
+        gp = math.hypot(orp[0]["cx"] - orp[1]["cx"], orp[0]["cy"] - orp[1]["cy"]) - (orp[0]["size"] + orp[1]["size"]) / 2.0
+        check(len(orp) == 2 and gp >= SM.OR_GAP - 1.01, "1.1 fix round %s: the two A1-alts %.1f px apart (>= OR_GAP %d: room for the OR pill)" % (cn, gp, SM.OR_GAP))
+    ors = [e for e in lay["edges"] if e[2] == "or"]
+    n2 = sum(1 for b in TD.tree(cn)["branches"] for r in b["rows"] if r.get("free2"))
+    check(len(ors) == n2 and lay["info"]["min_gap"] >= SM.GAP, "1.1 %s: %d OR edge(s) = the rows with two A1-alts, the layout check passes (gap %.1f)" % (cn, len(ors), lay["info"]["min_gap"]))
+    bx = SM.edge_boxes(lay)
+    check(all(lay["edges"][k][2] != "or" for k in bx), "1.1 %s: an OR edge has no gold picture (never lit)" % cn)
+pa = SM.node_pictures(["#e0b060"], [1, 3, 5], ability=True)
+cn = SM.colour_name("#e0b060")
+check(all(n in pa for n in (cn + "Ability", cn + "AbilityPicked", "AbilityOther", "AbilityLocked")), "1.1: node_pictures(ability=True) adds the 4 ability pictures")
+check("AbilityLocked" not in SM.node_pictures(["#e0b060"], [1, 3, 5]), "1.1: ability pictures only when asked (the skill pages unchanged)")
+check(len(set(SM.png(pa[n]) for n in (cn + "Ability", cn + "AbilityPicked", "AbilityOther", "AbilityLocked"))) == 4 and SM.png_size(SM.png(pa["AbilityLocked"])) == (64, 64),
+      "1.1: the 4 ability states are 4 different 64 px pictures")
+check(SM.png(SM.ability_picture(64, "#e0b060", "picked")) == SM.png(pa[cn + "AbilityPicked"]), "1.1: ability pictures deterministic")
+# fix round 2: the baked tag (every ability node says ABILITY / IN USE / ALT at every zoom)
+check(sorted(SM.ABIL_TAGS) == ["locked", "other", "own", "picked"] and all(ch in SM.TAG_GLYPHS for t in SM.ABIL_TAGS.values() for ch in t)
+      and all(min(50.0 / SM.tag_cols(t), 1.4) * SM.tag_cols(t) <= 50.0 for t in SM.ABIL_TAGS.values()), "fix round 2: every tag has its glyphs and fits 50 of 64 px")
+_bp = SM.ability_picture(64, "#e0b060", "own")
+_band = sum(1 for y in range(51, 61) for x in range(8, 56) if _bp.px[(y * 64 + x) * 4:(y * 64 + x) * 4 + 3] == bytearray(SM.rgb(SM.ART["disc"])))
+check(_band > 40, "fix round 2: the ABILITY tag is drawn in the bottom band (%d dark pixels)" % _band)
+for st, want in ((0, "AbilityLocked"), (1, cn + "Ability"), (2, cn + "AbilityPicked"), (3, "AbilityOther")):
+    check(SM.state_name("ability", "#e0b060", False, 0, 0, st) == want, "1.1: state_name ability %d = %s" % (st, want))
 print("skyymap %s self-test: %d ok, %d fail" % (SM.MAP_VERSION, OKS[0], len(FAILS)))
 for f in FAILS:
     print("FAIL:", f)
