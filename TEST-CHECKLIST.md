@@ -268,4 +268,3 @@ tests always come first.
 241. Ability 1 block on every weapon, Mythic 40-60 % faster charge, UT per-item charge rows, pack Mythic meters fixed
 242. Motherlode x3 jackpot, 3 points in the row above, harvester swing (tree + tool), every node's own icon, Plan texts fixed
 243. Bo Whirling Staff, wraps / gauntlets Flurry, kunai Kunai Fan, spellbook Page Storm (Ability 1)
-244. Ability 1 for axe / club / spear / longsword / great shield / staff / soul cage
