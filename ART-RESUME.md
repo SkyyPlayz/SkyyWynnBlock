@@ -44,7 +44,7 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ### FARMING ARMOR - DONE (Quirk made all 15; Skyy 2026-10-18: "looking good! send all of them to Cobb to send to my builder")
 Files: `..\SkyWynn-PRIVATE-art\farming-armor\<Crop>\` (vanilla-derived = private, read at build time only, never in git; overview
-`all-15-overview.png`, task note `TASK-farming-armor.md`). Wired into SkyyGear since 0.3.29 (docs/log 2026-10-18 12:00). Open fix (next Gear
+`all-15-overview.png`, task note TASK-farming-armor (.md, private folder)). Wired into SkyyGear since 0.3.29 (docs/log 2026-10-18 12:00). Open fix (next Gear
 round, docs/log 2026-10-22 10:00): pad each texture to a multiple of 32 at build time (client WARN x28). The table below is history.
 Next art item = the Queue below (chibi pets, mystery bags, town props) - ask Skyy which.
 

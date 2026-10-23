@@ -27,8 +27,6 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
 - Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png (8 Home tiles) + research/cloud/page-emblems-art/sheet.png (4 page emblems).
-- Quirk (Skyy's Grok art bot) is down: if not back, Claude makes Quirk's 4 tool models (needs Blockbench open with the MCP plugin; fix notes:
-  R-Attachment root, handle at origin, head along Z, ~0.75x vanilla size, Lumen gem corner texels). Skyy to answer.
 - joszza's 2nd answer (DungeonBosses + River Bridges; ask sent 10-22): paste word for word into docs/answered/world.md, then add to the pack.
 - Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST 215-235.
 
@@ -37,7 +35,9 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 2. After the probe tour (research/UI-Queue-Spec.md): R1b feed cards -> vanilla pickup feed; R2 zoom scroll fix (Trees / Rebirth); R3 SkyyQuests
    PARTICLE TRAIL (Skyy: "Particle trail instead") + objective HUD text + bottom dialogue bar; R4 player heads (PlayerSkin, runtime render,
    hair); R5 Menu picture tiles phase 1 (+ phase 2 = 31 hub tabs) + page emblems into SkyyTrees.
-3. Next Gear round: pad Farming armor textures to a multiple of 32 (client WARN x28, log 10-22 10:00); GearCfg.class not byte-reproducible (8 bytes); vanilla Weapon_Longsword_Flame flat-hit bug; `python tools/pack_drops.py --md`.
+3. Next Gear round: ship Quirk's FIXED Multitool + Harvester (Titanium + Lumen; delivered 10-18 in
+   ..\SkyWynn-PRIVATE-art\metal-art\Tools-PRIVATE\z5-held-tools-fixed\<Base>_<Tool>.*; Gear 0.3.26-0.3.40 still read the rejected originals
+   in Tools-PRIVATE\<Base>\ -> G26 check fails -> 0.3.25 look); pad Farming armor textures to a multiple of 32 (client WARN x28, log 10-22 10:00); GearCfg.class not byte-reproducible (8 bytes); vanilla Weapon_Longsword_Flame flat-hit bug; `python tools/pack_drops.py --md`.
 4. Later list: zone gathering spots (research/Zone-Gathering-Spec.md; crop islands 100 / 300 / 800), UT design (12 armor sets + 32 weapons),
    Powders spec, fishing rework, SkyyZones Z3 / Z4 (needs live probes), authors to ask (research/Structure-Mods-Survey.md).
 5. Small TODOs: fold the 8 abil.costPerLevel.<Class> rows into one table row once the Classes kit has table rows; Skills DRY / CAST maps keyed
