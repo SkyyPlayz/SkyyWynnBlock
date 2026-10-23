@@ -254,3 +254,4 @@ tests always come first.
 227. Bronze lock says Copper/Iron V; backpacks craftable; level-up coins on the curve; respec cost; Wanderer/Cartographer coins
 228. PACK: StructureV2 + Souls like Bosses ON - explore NEW land for camps / towers / ships / boss islands (no traveling merchant); Structure Money turns into coins; Souls bosses show a level + boss rank; no guns drop (they turn into a crossbow / arrows)
 229. Radial tree pages: /tree maps, page switching, Learn / respec, zoom + scroll, Class Loadout, never stuck Loading
+230. P9 Skills defaults in Server Setup; Mining / Foraging / Beastmastery XP feel; round /rebirth Nexus page (11 arms, Learn, zoom)
