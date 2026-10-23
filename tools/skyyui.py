@@ -7143,7 +7143,12 @@ def node_map(prefix, canvas, lay, tex, node_tex, node_icon, hub_tex, hub_icon, b
         ho = (s - hsz) // 2
         halo = (map_pic(prefix + "Sel", int(round(n["cx"] - hz / 2.0)), int(round(n["cy"] - hz / 2.0)), hz, hz, tex(halo_tex))
                 if halo_tex else "")
-        m.nodes.append(dict(id=nid, pre=pre, suf=suf, sample=name, icon=icon, hit=map_hit(nid + "B", ho, ho, hsz), halo=halo))
+        m.nodes.append(dict(id=nid, pre=pre, suf=suf, sample=name, icon=icon, hit=map_hit(nid + "B", ho, ho, hsz), halo=halo,
+                            # kit 1.9 (keep_text): the node's own geometry (unused by text() / markups(): their output is unchanged)
+                            k_l=n["l"], k_t=n["t"], k_s=s, k_dir=path[:len(path) - len(name) - 4], k_ic=ic,
+                            k_isz=int(round(s * MAP_ICON_FRAC)) if ic else 0, k_hsz=hsz, k_ho=ho,
+                            k_halo=(int(round(n["cx"] - hz / 2.0)), int(round(n["cy"] - hz / 2.0)), hz, hz)))
+    m.k_halo_tex = tex(halo_tex) if halo_tex else None    # kit 1.9: the halo picture (keep_text)
     for _p, mk in m.markups(sel=0 if m.nodes else None):
         check_markup(mk, prefix=prefix)
     return m
@@ -7293,5 +7298,438 @@ def java_node_map_methods(types=None):
             s = s.replace("@%s@" % k, v)
         if re.search(r"@[A-Z]+@", s):
             raise ValueError("java_node_map_methods: unfilled placeholder in %s" % s[:80])
+        out.append(s)
+    return out
+
+
+
+# ================================================================= 2026-10-23 KIT 1.9: NODE MAPS THAT KEEP THE VIEW (additive)
+# research/UI-Queue-Spec.md section 9 (round R2) + Skyy's test (2026-10-23): "skill tree works well until you zoom in. when zoomed in
+# clicking any skill jumps the screen to the top left corner, so you loose where you were." Every click was a full rebuild() and the client
+# builds the 2-axis scroll box again at offset 0,0 (there is no scroll-offset property: the server can only avoid destroying it).
+# KEEP MODE: the map is drawn so that a click can be answered with ONE sendUpdate that never rebuilds the scroll box:
+#  - every gold edge is drawn (an unlit one hidden: Visible false) and shown / hidden by .Visible;
+#  - the cyan halo is always drawn (hidden without a selection) and MOVED by one b.setObject(#<halo>.Anchor) (probe M5 - proven on the
+#    SkyyHud minimap, not yet on a page);
+#  - a node = its state picture #<n> (Group Background), then pre-placed HIDDEN pictures #<n>V<j> of the states a click can reach (the mod
+#    names them, mapAlloc fits them into the page's element budget), then its icon and its click square - all SIBLINGS in the canvas at
+#    absolute places (so a picture can be hidden without hiding the icon / the click square); a state change = .Visible false on the
+#    shown picture + .Visible true on the pre-placed one (the safest swap; no AssetImage). A change with no pre-placed picture -> the
+#    mod rebuilds (mapUpdK answers false and sends nothing).
+# Page data: NodeMap.keep_text() (K / H lines; the 1.8 text() output is unchanged), drawn by mapDrawK, updated by mapUpdK (java_node_map_
+# keep_methods). Panel parts whose colour / style changes on a click become pre-placed VARIANTS in a fixed holder (keep_holder): the
+# click shows one by .Visible. KIT_VERSION / KIT_HUB_VERSION / KIT_PAGE_VERSION / KIT_MAP_VERSION unchanged (pinned SET scripts assert
+# them); this level is KIT_KEEP_VERSION. Every builder above builds the same markup as before. Test: python tools/test_skyyui_keep.py.
+# UNVERIFIED in game (probe M8a / M5 not run): that a page sendUpdate keeps the scroll offset, the halo Anchor move on a page, and whether
+# a hidden element keeps its layout space (the variants sit in a holder without LayoutMode, so it does not matter).
+KIT_KEEP_VERSION = "1.9"
+MAP_KEEP_TYPES = {"ANC": "com.hypixel.hytale.server.core.ui.Anchor", "VAL": "com.hypixel.hytale.server.core.ui.Value"}
+
+
+def _keep_fields(*fs):
+    for f in fs:
+        if "\t" in f or "\n" in f or "\r" in f or has_j(f):
+            raise ValueError("keep page data: a tab / newline / J() inside a field: %r" % f[:80])
+    return "\t".join(fs)
+
+
+def keep_hide(markup):
+    """the markup of an element with Visible: false right after its opening brace (what mapDrawK does to an unlit edge)"""
+    i = markup.index("{ ")
+    return markup[:i + 2] + "Visible: false; " + markup[i + 2:]
+
+
+def node_map_keep_text(m):
+    """The KEEP page data of a NodeMap (node_map(...) of kit 1.8, unchanged): one line per item, tab separated -
+    A <parent> <markup> | S <selector.Text> <text>   (as text())
+    E <k> <markup>        every drawn gold edge (mapDrawK hides an unlit one: Visible false)
+    H <halo id> <halo picture path>
+    K <k> <pre> <suf> <altPre> <altMid> <icon or -> <hit> <hl,ht,hw,hh> <#hit id>
+      state picture = pre + name + suf; pre-placed picture j = altPre + j + altMid + name + suf; icon / hit at absolute canvas places."""
+    if not m.nodes or "k_l" not in m.nodes[0]:
+        raise ValueError("node_map_keep_text: a kit 1.9 NodeMap (node_map of this kit) with nodes")
+    lines = []
+    for p, mk in m.static:
+        lines.append(_keep_fields("A", p, mk))
+    for sel_, txt in m.sets:
+        lines.append(_keep_fields("S", sel_, txt))
+    for k in sorted(m.edges):
+        mk = m.edges[k]
+        if not mk.startswith("Group #") or "{ " not in mk:
+            raise ValueError("node_map_keep_text: edge %d markup %s" % (k, mk[:60]))
+        lines.append(_keep_fields("E", str(k), mk))
+    halo_id = m.prefix + "Sel"
+    if m.k_halo_tex:
+        lines.append(_keep_fields("H", halo_id, m.k_halo_tex))
+    for k, n in enumerate(m.nodes):
+        l, t, s = n["k_l"], n["k_t"], n["k_s"]
+        anc = "Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); " % (l, t, s, s)
+        pre = 'Group #%s { %sBackground: "%s' % (n["id"], anc, n["k_dir"])
+        suf = '.png"; }'
+        alt_pre, alt_mid = "Group #%sV" % n["id"], ' { %sVisible: false; Background: "%s' % (anc, n["k_dir"])
+        icon = "-"
+        if n["k_ic"]:
+            isz = n["k_isz"]
+            icon = item_icon(n["id"] + "I", n["k_ic"], size=isz, anchor={"left": l + (s - isz) // 2, "top": t + (s - isz) // 2})
+        hit = map_hit(n["id"] + "B", l + n["k_ho"], t + n["k_ho"], n["k_hsz"])
+        lines.append(_keep_fields("K", str(k), pre, suf, alt_pre, alt_mid, icon, hit, "%d,%d,%d,%d" % tuple(n["k_halo"]),
+                                  "#" + n["id"] + "B"))
+        for mk in (pre + n["sample"] + suf, alt_pre + "0" + alt_mid + n["sample"] + suf, hit) + ((icon,) if icon != "-" else ()):
+            check_markup(mk, prefix=m.prefix)
+    if m.k_halo_tex:
+        hl, ht, hw, hh = m.nodes[0]["k_halo"]
+        for vis in ("", "Visible: false; "):
+            check_markup('Group #%s { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); %sBackground: "%s"; }'
+                         % (halo_id, hl, ht, hw, hh, vis, m.k_halo_tex), prefix=m.prefix)
+    for k in sorted(m.edges):
+        check_markup(keep_hide(m.edges[k]), prefix=m.prefix)
+    return "\n".join(lines) + "\n"
+
+
+def node_map_keep_elements(m, alts=0):
+    """elements of the keep map (every edge drawn, the halo, every node with its icon + click square) + `alts` pre-placed pictures"""
+    n = sum(_strip_quoted(render(mk)).count("{") for _p, mk in m.static) + len(m.edges) + (1 if m.k_halo_tex else 0)
+    for nd in m.nodes:
+        n += 2 + (1 if nd["k_ic"] else 0)
+    return n + alts
+
+
+def node_map_keep_markups(m, lit=None, sel=None, tex=None, alts=None):
+    """every (parent, markup) the keep map draws (the Python mirror of mapDrawK: previews, checks, tests). lit = edge indexes lit
+    (None = all), sel = the selected node, tex = picture name per node (default: each node's sample), alts = pre-placed names per node"""
+    cv = "#" + m.canvas
+    out = [(p, mk) for p, mk in m.static]
+    for k in sorted(m.edges):
+        out.append((cv, m.edges[k] if (lit is None or k in lit) else keep_hide(m.edges[k])))
+    hs = sel is not None and 0 <= sel < len(m.nodes)
+    if m.k_halo_tex and m.nodes:
+        hl, ht, hw, hh = m.nodes[sel if hs else 0]["k_halo"]
+        out.append((cv, 'Group #%sSel { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); %sBackground: "%s"; }'
+                    % (m.prefix, hl, ht, hw, hh, "" if hs else "Visible: false; ", m.k_halo_tex)))
+    for k, n in enumerate(m.nodes):
+        l, t, s = n["k_l"], n["k_t"], n["k_s"]
+        anc = "Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); " % (l, t, s, s)
+        name = (tex[k] if tex else None) or n["sample"]
+        out.append((cv, 'Group #%s { %sBackground: "%s%s.png"; }' % (n["id"], anc, n["k_dir"], name)))
+        seen = [name]
+        j = 0
+        for a in ((alts[k] if alts else None) or []):
+            if a in seen:
+                continue
+            seen.append(a)
+            out.append((cv, 'Group #%sV%d { %sVisible: false; Background: "%s%s.png"; }' % (n["id"], j, anc, n["k_dir"], a)))
+            j += 1
+        if n["k_ic"]:
+            isz = n["k_isz"]
+            out.append((cv, item_icon(n["id"] + "I", n["k_ic"], size=isz, anchor={"left": l + (s - isz) // 2, "top": t + (s - isz) // 2})))
+        out.append((cv, map_hit(n["id"] + "B", l + n["k_ho"], t + n["k_ho"], n["k_hsz"])))
+    return out
+
+
+NodeMap.keep_text = node_map_keep_text
+NodeMap.keep_elements = node_map_keep_elements
+NodeMap.keep_markups = node_map_keep_markups
+
+
+def keep_holder(ident, w, h, variants, anchor=None):
+    """kit 1.9: a fixed w x h holder (a Group WITHOUT LayoutMode, the map canvas way: each child sits by its own Anchor) for runtime
+    VARIANTS of one panel part (a label in another colour, a button in another style): (holder markup, [(parent, variant markup)]) -
+    each variant anchored Left 0 / Top 0 by the caller, with its own id. The page shows one with java_show(ids, index) - in the build
+    and in a keep update alike (.Visible only: a hidden variant never moves its neighbours, whatever the client does with the layout
+    space of a hidden element)."""
+    check_id(ident)
+    kids, seen = [], set()
+    for mk in variants:
+        m_ = re.match(r"\A[A-Za-z]+ #([A-Za-z0-9]+) \{", render(mk))
+        if not m_ or m_.group(1) in seen:
+            raise ValueError("keep_holder %s: every variant needs its own id: %s" % (ident, mk[:60]))
+        seen.add(m_.group(1))
+        kids.append(("#" + ident, mk))
+    return group(ident, None, w=w, h=h, anchor=anchor), kids
+
+
+def java_show(ids, index_expr, b="b"):
+    """kit 1.9: b.set("#<id>.Visible", (index) == i) for each variant id (exactly one shows; an index out of range shows none)"""
+    out = []
+    for i, ident in enumerate(ids):
+        check_id(ident)
+        out.append('%s.set("#%s.Visible", (%s) == %d);' % (b, ident, index_expr, i))
+    return "\n".join(out)
+
+
+def keep_at0(mk, w=None):
+    """kit 1.9: the markup with Left 0 / Top 0 (+ a Width when w is given and none is set) added to its Anchor (a variant / view inside a
+    holder without LayoutMode, keep_holder)"""
+    i = mk.index("Anchor: (")
+    j = mk.index(")", i)
+    return mk[:j] + (", Width: %d" % w if w is not None and "Width:" not in mk[i:j] else "") + ", Left: 0, Top: 0" + mk[j:]
+
+
+def java_bind(sel, act):
+    """kit 1.9: the Activating binding of #<sel> sending {"a": act} (@BT@ / @EVD@ = the builder's type placeholders)"""
+    return 'ev.addEventBinding(@BT@.Activating, "#%s", @EVD@.of("a", "%s"));' % (sel, act)
+
+
+def java_tset(ident, expr):
+    """kit 1.9: b.set("#<ident>.Text", <Java expression>)"""
+    return 'b.set("#%s.Text", %s);' % (ident, expr)
+
+
+class KeepApp(object):
+    """kit 1.9: the keep page builders' append collector: app(parent, markup, show=True) records the markup (.marks, starting from
+    marks) and, when shown, the preview part (.pv); answers the java_append line"""
+
+    def __init__(self, marks=()):
+        self.marks = list(marks)
+        self.pv = []
+
+    def __call__(self, parent, markup, show=True):
+        self.marks.append(markup)
+        if show:
+            self.pv.append(("#" + parent if not parent.startswith("#") else parent, markup))
+        return java_append(parent, markup)
+
+
+def keep_alloc(cand, budget):
+    """the Python mirror of mapAlloc (tests / build-time element checks): pre-placed pictures per node, one depth level at a time"""
+    cnt = [0] * len(cand)
+    left, depth, more = max(0, budget), 0, True
+    while more and left > 0:
+        more = False
+        for k, c in enumerate(cand):
+            if left <= 0:
+                break
+            if c is not None and depth < len(c):
+                cnt[k] = depth + 1
+                left -= 1
+                more = True
+        depth += 1
+    return [list(c[:cnt[k]]) if c else [] for k, c in enumerate(cand)]
+
+
+# the Java of keep mode (install it in the class that holds the 1.8 node map methods, AFTER them; CtNewMethod.make each, in this order).
+# STATE (one Object[] per drawn page, mapKeepNew(nodes, edges)): 0 String[] the state picture drawn per node, 1 Object[] its pre-placed
+# pictures (String[] per node), 2 int[] the picture shown (-1 = the state picture, j = pre-placed j), 3 boolean[] each edge shown lit,
+# 4 int[1] the selected node shown (-1 none), 5 int[4 n] the halo box per node, 6 String[] node ids, 7 String[1] the halo id, 8 String[]
+# edge ids. mapUpdK answers false (and adds NOTHING to b) when a node needs a picture that is not pre-placed: the caller rebuilds.
+NODE_MAP_KEEP_JAVA = (
+    r"""
+public static Object[] mapKeepNew(int n, int ne) {
+  int a = n < 0 ? 0 : n;
+  int e = ne < 0 ? 0 : ne;
+  return new Object[] { new String[a], new Object[a], new int[a], new boolean[e], new int[] { -1 }, new int[4 * a], new String[a], new String[1], new String[e] };
+}""",
+    r"""
+public static String[] mapCand(String base, String[] list) {
+  if (list == null) return new String[0];
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < list.length; i++) {
+    String s = list[i];
+    if (s == null || s.length() == 0 || s.equals(base) || out.contains(s)) continue;
+    out.add(s);
+  }
+  return (String[]) out.toArray(new String[0]);
+}""",
+    r"""
+public static Object[] mapAlloc(Object[] cand, int budget) {
+  int n = cand == null ? 0 : cand.length;
+  int[] cnt = new int[n];
+  int left = budget < 0 ? 0 : budget;
+  int depth = 0;
+  boolean more = true;
+  while (more && left > 0) {
+    more = false;
+    for (int k = 0; k < n && left > 0; k++) {
+      String[] c = (String[]) cand[k];
+      if (c != null && depth < c.length) { cnt[k] = depth + 1; left = left - 1; more = true; }
+    }
+    depth = depth + 1;
+  }
+  Object[] out = new Object[n];
+  for (int k = 0; k < n; k++) {
+    String[] c = (String[]) cand[k];
+    String[] a = new String[cnt[k]];
+    if (cnt[k] > 0) System.arraycopy(c, 0, a, 0, cnt[k]);
+    out[k] = a;
+  }
+  return out;
+}""",
+    r"""
+public static String mapHide(String mk) {
+  int i = mk.indexOf("{ ");
+  return i < 0 ? mk : mk.substring(0, i + 2) + "Visible: false; " + mk.substring(i + 2);
+}""",
+    r"""
+public static String mapIdOf(String mk) {
+  int i = mk.indexOf('#');
+  if (i < 0) return null;
+  int j = mk.indexOf(' ', i);
+  return j < 0 ? null : mk.substring(i + 1, j);
+}""",
+    r"""
+public static @ANC@ mapAnchor(int l, int t, int w, int h) {
+  @ANC@ a = new @ANC@();
+  a.setLeft(@VAL@.of(Integer.valueOf(l)));
+  a.setTop(@VAL@.of(Integer.valueOf(t)));
+  a.setWidth(@VAL@.of(Integer.valueOf(w)));
+  a.setHeight(@VAL@.of(Integer.valueOf(h)));
+  return a;
+}""",
+    r"""
+public static int mapSel(int sel, String[] nid) {
+  return (sel >= 0 && sel < nid.length && nid[sel] != null) ? sel : -1;
+}""",
+    r"""
+public static int mapDrawK(@UCB@ b, @UEB@ ev, String[] l, String cv, boolean[] lit, String[] tex, Object[] alts, int sel, String evp, Object[] st) {
+  if (l == null || st == null) return 0;
+  String[] base = (String[]) st[0];
+  Object[] sa = (Object[]) st[1];
+  int[] vis = (int[]) st[2];
+  boolean[] sl = (boolean[]) st[3];
+  int[] ss = (int[]) st[4];
+  int[] hb = (int[]) st[5];
+  String[] nid = (String[]) st[6];
+  String[] hid = (String[]) st[7];
+  String[] eid = (String[]) st[8];
+  int n = base.length;
+  int els = 0;
+  String htex = null;
+  for (int i = 0; i < l.length; i++) {
+    String s = l[i];
+    if (s.length() < 3) continue;
+    char k = s.charAt(0);
+    String[] f = s.split("\t", -1);
+    if (k == 'K') {
+      if (f.length < 10) continue;
+      int q = -1;
+      try { q = Integer.parseInt(f[1]); } catch (Throwable x) { q = -1; }
+      if (q < 0 || q >= n) continue;
+      String[] h = f[8].split(",");
+      if (h.length == 4) {
+        for (int j = 0; j < 4; j++) { try { hb[4 * q + j] = Integer.parseInt(h[j].trim()); } catch (Throwable x) { hb[4 * q + j] = 0; } }
+      }
+      nid[q] = f[9].length() > 3 ? f[9].substring(1, f[9].length() - 1) : null;
+    } else if (k == 'A' && f.length >= 3) {
+      b.appendInline(f[1].length() == 0 ? cv : f[1], f[2]);
+      els = els + mapCount(f[2]);
+    } else if (k == 'S' && f.length >= 3) {
+      b.set(f[1], f[2]);
+    } else if (k == 'E' && f.length >= 3) {
+      int e = -1;
+      try { e = Integer.parseInt(f[1]); } catch (Throwable x) { e = -1; }
+      if (e >= 0 && e < sl.length) {
+        boolean on = lit != null && e < lit.length && lit[e];
+        b.appendInline(cv, on ? f[2] : mapHide(f[2]));
+        sl[e] = on;
+        eid[e] = mapIdOf(f[2]);
+        els = els + 1;
+      }
+    } else if (k == 'H' && f.length >= 3) {
+      hid[0] = f[1];
+      htex = f[2];
+    }
+  }
+  ss[0] = mapSel(sel, nid);
+  boolean hs = ss[0] >= 0;
+  if (htex != null && n > 0) {
+    int h0 = hs ? sel : 0;
+    b.appendInline(cv, "Group #" + hid[0] + " { Anchor: (Left: " + hb[4 * h0] + ", Top: " + hb[4 * h0 + 1] + ", Width: " + hb[4 * h0 + 2] + ", Height: " + hb[4 * h0 + 3] + "); " + (hs ? "" : "Visible: false; ") + "Background: \"" + htex + "\"; }");
+    els = els + 1;
+  }
+  for (int i = 0; i < l.length; i++) {
+    if (l[i].length() < 3 || l[i].charAt(0) != 'K') continue;
+    String[] f = l[i].split("\t", -1);
+    if (f.length < 10 || f[9].length() < 3) continue;
+    int k2 = -1;
+    try { k2 = Integer.parseInt(f[1]); } catch (Throwable x) { k2 = -1; }
+    if (k2 < 0 || k2 >= n) continue;
+    String t = (tex != null && k2 < tex.length && tex[k2] != null) ? tex[k2] : "Locked";
+    base[k2] = t;
+    vis[k2] = -1;
+    b.appendInline(cv, f[2] + t + f[3]);
+    els = els + 1;
+    String[] a = (alts != null && k2 < alts.length && alts[k2] != null) ? mapCand(t, (String[]) alts[k2]) : new String[0];
+    for (int j = 0; j < a.length; j++) { b.appendInline(cv, f[4] + j + f[5] + a[j] + f[3]); els = els + 1; }
+    sa[k2] = a;
+    if (!f[6].equals("-")) { b.appendInline(cv, f[6]); els = els + 1; }
+    b.appendInline(cv, f[7]);
+    els = els + 1;
+    ev.addEventBinding(@BT@.Activating, f[9], @EVD@.of("a", evp + k2));
+  }
+  return els;
+}""",
+    r"""
+public static int mapFind(Object[] st, int k, String want) {
+  String[] base = (String[]) st[0];
+  if (want.equals(base[k])) return -1;
+  String[] a = (String[]) ((Object[]) st[1])[k];
+  for (int j = 0; j < a.length; j++) if (want.equals(a[j])) return j;
+  return -2;
+}""",
+    r"""
+public static int mapMissing(Object[] st, String[] tex) {
+  if (st == null) return 0;
+  String[] base = (String[]) st[0];
+  int bad = 0;
+  for (int k = 0; k < base.length; k++) {
+    if (base[k] == null || tex == null || k >= tex.length || tex[k] == null) continue;
+    if (mapFind(st, k, tex[k]) == -2) bad = bad + 1;
+  }
+  return bad;
+}""",
+    r"""
+public static boolean mapUpdK(@UCB@ b, Object[] st, String[] tex, boolean[] lit, int sel) {
+  if (st == null || mapMissing(st, tex) > 0) return false;
+  String[] base = (String[]) st[0];
+  int[] vis = (int[]) st[2];
+  boolean[] sl = (boolean[]) st[3];
+  int[] ss = (int[]) st[4];
+  int[] hb = (int[]) st[5];
+  String[] nid = (String[]) st[6];
+  String[] hid = (String[]) st[7];
+  String[] eid = (String[]) st[8];
+  for (int k = 0; k < base.length; k++) {
+    if (base[k] == null || nid[k] == null || tex == null || k >= tex.length || tex[k] == null) continue;
+    int to = mapFind(st, k, tex[k]);
+    if (to == vis[k]) continue;
+    b.set("#" + nid[k] + (vis[k] < 0 ? "" : "V" + vis[k]) + ".Visible", false);
+    b.set("#" + nid[k] + (to < 0 ? "" : "V" + to) + ".Visible", true);
+    vis[k] = to;
+  }
+  for (int e = 0; e < sl.length; e++) {
+    if (eid[e] == null) continue;
+    boolean on = lit != null && e < lit.length && lit[e];
+    if (on == sl[e]) continue;
+    b.set("#" + eid[e] + ".Visible", on);
+    sl[e] = on;
+  }
+  int s2 = mapSel(sel, nid);
+  if (hid[0] != null && s2 != ss[0]) {
+    if (s2 >= 0) {
+      b.setObject("#" + hid[0] + ".Anchor", mapAnchor(hb[4 * s2], hb[4 * s2 + 1], hb[4 * s2 + 2], hb[4 * s2 + 3]));
+      b.set("#" + hid[0] + ".Visible", true);
+    } else {
+      b.set("#" + hid[0] + ".Visible", false);
+    }
+    ss[0] = s2;
+  }
+  return true;
+}""",
+)
+
+
+def java_node_map_keep_methods(types=None):
+    """NODE_MAP_KEEP_JAVA with the engine types filled in (HUB_TYPES + MAP_KEEP_TYPES; types= overrides): [method source, ...] in
+    compile order. Needs the 1.8 methods (java_node_map_methods: mapCount) in the same class first."""
+    require_verified()
+    rep = dict(HUB_TYPES, **MAP_KEEP_TYPES)
+    rep.update(types or {})
+    out = []
+    for src in NODE_MAP_KEEP_JAVA:
+        s = src.strip()
+        for k, v in rep.items():
+            s = s.replace("@%s@" % k, v)
+        if re.search(r"@[A-Z]+@", s):
+            raise ValueError("java_node_map_keep_methods: unfilled placeholder in %s" % s[:80])
         out.append(s)
     return out
