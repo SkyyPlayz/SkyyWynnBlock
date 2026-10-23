@@ -262,3 +262,4 @@ tests always come first.
 235. Dragon pet: hatch, one per profile, summon + stages, void return
 236. Dragon fights + boss dragon eggs: bites, Defend / Follow, DOWN, egg drop + Mythic cap
 237. joszza pack: DungeonBosses (Bandit Boss on boss islands, Astral Voidcaller via Astral Sigil, Ice Magus at the frozen tower; levelled by our ranks, Structure Money -> coins) + River Bridges (bridges over rivers in NEW chunks; its archer guard does not load - joszza bug, needs MajorDungeons' Mb_Bandit group)
+238. Dragon riding (fly / glide), pet tooltips by type, dragon icons, Quirk's Multitool / Harvester, Flame longsword, StructureV2 freeze stopgap

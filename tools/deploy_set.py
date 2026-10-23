@@ -31,6 +31,9 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-23, pets0414): SkyyPets 0.4.14 (pet tooltip by type + Class label, Skyy-reviewed dragon icons) - no saved data, no migration, no new row; rolls back alone to 0.4.13 (old tooltip, recoloured dragon icons).
+# FLOOR (2026-10-23, dragon D3 ride + fly): SkyyPets 0.4.13 - no new floor, no saved data, no migration (18 new Server Setup rows: Pets > Dragons ride / rideLevel / saddleItem / ride.mode / ride.preset / fly.speed / fly.climb / ride.blockedWorlds / voidY / 5 seats; Pets in the world > Ride mount pets + 3 seats; a missing line = the default) + 3 movement configs in the jar (Skyy_Dragon_Glide_Slow / Skyy_Dragon_Glide / Skyy_Dragon_Glide_Fast). Rolls back alone: 0.4.12 = no riding (the rows are ignored). The 0.4.11 floor stands (never below 0.4.11 once a dragon or dragon egg exists).
+# FLOOR (2026-10-23, gear041): SkyyGear 0.3.41 - no new floor, no saved data, no migration, no new row. Rolls back alone to 0.3.40 (Multitools / Harvesters show the 0.3.25 look again, the vanilla Flame longsword hits flat again).
 # FLOOR (2026-10-23, skills063): SkyySkills 0.4.63 rolls back alone (memory-only leave cleanup of ClassStat DRY / CAST / LAST + SkillMsg.LAST; no saved data, no settings, no migration) - roll back = just the 0.4.62 jar.
 # FLOOR (2026-10-23, dragon D1 + D6 dragond1): SkyyPets 0.4.12 + SkyyMobs 0.1.18 - no new floor, no saved data, no migration (9 new Server Setup > Pets > Dragons rows, 2 new Mobs > Ranks rows; a missing line = the default). They roll back alone: Pets 0.4.11 = summoned dragons stop fighting (its role is Invulnerable again; the 0.4.11 floor stands - never below 0.4.11 once a dragon or dragon egg exists); Mobs 0.1.17 = bosses stop dropping dragon eggs (eggs already dropped stay SkyyPets items). Mobs 0.1.18 caps the egg chance at SkyyGear's live loot.boss.mythic (config:fn:SkyyGear get; Gear absent = 12 %).
 # FLOOR (2026-10-23, dragon pet D0): NEVER roll SkyyPets below 0.4.11 once a dragon pet or a Skyy_PetEgg_Dragon_* item exists (unknown kind / items to older jars); take dragon eggs out of the Hatchery before any rollback; the jar ships the Skyy_Pet_Dragon role - switch pets off for one session before removing the jar (0.2 removal rule).
@@ -39,7 +42,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.35"), ("SkyySacks", "0.8.28"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.32"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.40"), ("SkyySkills", "0.4.63"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.41"), ("SkyySkills", "0.4.63"),
     ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.46"), ("SkyyMenu", "0.3.45"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.5.0"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -98,7 +101,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.12"),
+    ("SkyyPets", "0.4.14"),
     ("SkyyWardrobe", "0.2.10"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -278,6 +281,7 @@ def tune_structurev2(world):
     cfg = os.path.join(d_, "settings.json")
     mark = os.path.join(d_, ".skywynn-merchant-off")
     if os.path.exists(mark):
+        _sv2_worldgen_stopgap(d_, cfg, world)
         return
     if not os.path.isfile(cfg):
         os.makedirs(d_, exist_ok=True)
@@ -292,6 +296,29 @@ def tune_structurev2(world):
             os.replace(tmp, cfg)
             print("StructureV2: traveling merchant switched off for world %s" % world)
     open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-22: StructureV2 merchant.enabled set false once (Skyy / joszza). Delete this file to let the deploy do it again.\n")
+    _sv2_worldgen_stopgap(d_, cfg, world)
+
+
+def _sv2_worldgen_stopgap(d_, cfg, world):
+    """2026-10-23 STOPGAP (Skyy's freeze: "i stopped being able to break anything, it wouldn't let me go to creative"): StructureV2 0.1.7
+    spins forever on the world thread when ChunkGenerator.getUniquePrefabs throws (the vanilla UniquePrefabCache entry expired after 300 s;
+    the worldgen resource only exists on ChunkWorker threads) - it froze skywynn_zones2 (4.6 GB log). structures.worldgenEnabled true ->
+    false ONCE per world (run-once marker, a copy of the file first, only that token changes) = no NEW StructureV2 structures anywhere
+    until SkyyWorldGen 0.7.9 makes getUniquePrefabs safe; then delete the marker and set it back (or /sv2 admin)."""
+    import re, shutil
+    mark = os.path.join(d_, ".skywynn-worldgen-off-stopgap")
+    if os.path.exists(mark) or not os.path.isfile(cfg):
+        return
+    raw = open(cfg, "rb").read()
+    new, n = re.subn(rb'("worldgenEnabled"\s*:\s*)true', rb'\1false', raw, count=1)
+    if n:
+        shutil.copyfile(cfg, cfg + ".before-worldgen-off")
+        tmp = cfg + ".tmp"
+        open(tmp, "wb").write(new)
+        os.replace(tmp, cfg)
+        print("StructureV2: structure worldgen switched OFF for world %s (stopgap for the zones2 freeze)" % world)
+    open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-23: StructureV2 structures.worldgenEnabled set false once (zones2 freeze stopgap). "
+                                            "Copy: settings.json.before-worldgen-off. Delete this file after SkyyWorldGen 0.7.9 and set it back.\n")
 
 
 def tune_perfect_parries(world):

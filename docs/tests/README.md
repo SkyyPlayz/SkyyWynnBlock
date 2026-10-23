@@ -349,3 +349,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Elemental swords (Flame / Ice / Poison / Gravity) as Spellblade Mythic boss drops (DEPLOYED 2026-10-23, backup deploy-20261023-0259) | [2026-10](2026-10.md) |
 | Dragon pet (first part): 5 dragon kinds, eggs + Hatchery, stages + growth, summon slot (no fighting / riding yet) (DEPLOYED 2026-10-23, backup deploy-20261023-0430) | [2026-10](2026-10.md) |
 | Dragon D1 fighting + D6 boss eggs (DEPLOYED 2026-10-23, backup deploy-20261023-0618) | [2026-10](2026-10.md) |
+| Dragon riding + pet tooltips + Quirk's tools + freeze stopgap (DEPLOYED 2026-10-23, backup deploy-20261023-1017) | [2026-10](2026-10.md) |
