@@ -117,7 +117,7 @@ plain move names; the UT-28 ones carry their zone lore word.
 
 | # | Item (id, owner) | Class / family | Ability 1 | Kind | What changes | sig.ut | Downside | Tooltip line | Path |
 |---|---|---|---|---|---|---|---|---|---|
-| 13 | The Azure Arc (`Weapon_Longsword_UT_AzureArc`) | Spellblade longsword | **Azure Crescent** | F | instead of Meridian Cut (2.5 hits in a 160-degree arc, reach 5): one Air wave 10 blocks ahead, 3 wide, 1.6 hits to every enemy it passes (Spellblade.md option "Crescent Wave") | 0 | close crowd: less than Meridian Cut | An Air wave 10 blocks ahead, through every foe: 1.6 hits each. | R (sig4 longsword root) + line pick + Air part |
+| 13 | The Azure Arc (`Weapon_Longsword_UT_AzureArc`) | Spellblade longsword | **Azure Crescent** | F | instead of Meridian Cut (2.5 hits in a 160-degree arc, reach 5): one Air wave 10 blocks ahead, 3 wide, 1.6 hits to every enemy it passes (research/classes/Spellblade.md option "Crescent Wave") | 0 | close crowd: less than Meridian Cut | An Air wave 10 blocks ahead, through every foe: 1.6 hits each. | R (sig4 longsword root) + line pick + Air part |
 
 ### 4.3 Zone 2 - Howling Sands
 
