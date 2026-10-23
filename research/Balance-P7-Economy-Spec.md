@@ -75,8 +75,8 @@ picks. UNVERIFIED = needs the game. W = checked on the web, K = my knowledge, no
 | Diablo / WoW gold (K) | rewards and costs scale exponentially with level so a reward never becomes trivial | level-up / collection coins on the curve, not linear in level |
 
 Survey (PROJECT-RULES 2): nothing new is added - P7 tunes our own systems. Reference already recorded: research/cloud/Economy-Audit.md (faucets /
-sinks / loops audit; C4 Enchanted Blocks at 0.99 of the loop line), research/cloud/Tab-Economy.md (The Tab endgame sink design), research/Bazaar-
-Order-Book-Spec.md (0.2.0 live).
+sinks / loops audit; C4 Enchanted Blocks at 0.99 of the loop line), research/cloud/Tab-Economy.md (The Tab endgame sink design),
+research/Bazaar-Order-Book-Spec.md (0.2.0 live).
 
 ---
 

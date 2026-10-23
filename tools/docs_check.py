@@ -45,11 +45,14 @@ CITES = [("(OPEN-QUESTIONS.md:50-57)", '(docs/answered/gear.md "REQUEST 2026-10-
           "docs/answered/gear.md (SkyyGear material levels) + docs/answered/mobs.md (mob level request), docs/log/2026-09.md (raids / shards "
           "note 2026-09-30)")]
 # paths inside the game's Assets.zip (cited by specs, never repo files) and planned outputs named by specs added after BASE
-ASSET_DIRS = ("Server/", "Common/")
+ASSET_DIRS = ("Server/", "Common/", "GameplayConfigs/", "NPC/", "Tier2/",  # game Assets.zip folders cited by pack checks
+              "mods/")  # world data: <world>/mods/<Mod>/... (written by the game / deploy, never a repo file)
 PATCH_RE = re.compile(r"^tools/\w+_\d+(?:_\d+)+_patch\.py$")  # a spec naming the patch script a future build will write
 TEST_RE = re.compile(r"^Skyy\w+/(?:test|build)_skyy\w+_\d+(?:\.\d+)+\.py$")  # planned harness / build of a future version
 PLANNED = {"tools/sacks_0_7_13_patch.py", "tools/skyyacctable.py", "tools/skyyacctable_test.py",  # research/Accessory-Table-Spec.md (paused)
-           "tools/skyyench.py", "tools/skyywbtab.py"}  # research/Gathering-Progression-Spec.md phase A
+           "tools/skyyench.py", "tools/skyywbtab.py",  # research/Gathering-Progression-Spec.md phase A
+           "tools/skyyheads.py",  # research/UI-Queue-Spec.md R4 (player heads, planned)
+           "tools/skills_0_4_6x_patch.py", "tools/trees_0_4_x_patch.py"}  # research/Balance-P7-Economy-Spec.md placeholders for "the next patch"
 LINK = re.compile(r"\]\(([^)\s]+)\)")  # a markdown link's target: always a path (or a URL / #anchor)
 
 
