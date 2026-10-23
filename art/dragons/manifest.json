@@ -1,0 +1,141 @@
+{
+  "item": "Dragons - 6 dragon pet icons + 4 dragon egg icons (round D4, research/Dragon-Pet-Spec.md sections 8 + 9)",
+  "status": "DRAFT - waiting for Skyy's review, NOT committed, NOT wired in",
+  "generator": [
+    "tools/art/make_dragon_icons.py"
+  ],
+  "deterministic": true,
+  "original": "own pixels from code; no vanilla / Dragon Nestkeeper / reference file read, copied, traced or recoloured",
+  "files": [
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetIcon_DragonPlain.png",
+      "bytes": 4320,
+      "sha256": "28bb443f57fecd3dd0e08fa142595c37be7d3346cf32eb80962bc6d30e1158c0",
+      "what": "dragon pet icon 64x64 RGBA",
+      "item_id": "Skyy_PetIcon_DragonPlain",
+      "kind": "DragonPlain",
+      "name": "Plain Dragon",
+      "element": "Earth",
+      "element_colour": "#7ed957",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetIcon_DragonTundra.png",
+      "bytes": 5217,
+      "sha256": "d204ae96ec4ac2bca8f29e7f18ae0cd0f754eee1e4f89b1ffd3720fca86656f5",
+      "what": "dragon pet icon 64x64 RGBA",
+      "item_id": "Skyy_PetIcon_DragonTundra",
+      "kind": "DragonTundra",
+      "name": "Tundra Dragon",
+      "element": "Water",
+      "element_colour": "#4aa8ff",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetIcon_DragonFire.png",
+      "bytes": 4709,
+      "sha256": "a40655a95d222c07deb0bfd38f4889f48a1715731c44873f5452a9016ed25b0f",
+      "what": "dragon pet icon 64x64 RGBA",
+      "item_id": "Skyy_PetIcon_DragonFire",
+      "kind": "DragonFire",
+      "name": "Fire Dragon",
+      "element": "Fire",
+      "element_colour": "#ff8a2a",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetIcon_DragonStorm.png",
+      "bytes": 4910,
+      "sha256": "1f720ee26ca83eeb30a232e2bcede91300846b7b98d963a77ba9795e9f8f0249",
+      "what": "dragon pet icon 64x64 RGBA",
+      "item_id": "Skyy_PetIcon_DragonStorm",
+      "kind": "DragonStorm",
+      "name": "Storm Dragon",
+      "element": "Thunder",
+      "element_colour": "#ffd64d",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetIcon_DragonSky.png",
+      "bytes": 4745,
+      "sha256": "e317d098baac86490e8f52659b5603469e4c8a62d25cb803b9e99df03af94e14",
+      "what": "dragon pet icon 64x64 RGBA",
+      "item_id": "Skyy_PetIcon_DragonSky",
+      "kind": "DragonSky",
+      "name": "Sky Dragon",
+      "element": "Air",
+      "element_colour": "#bdf5ea",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetIcon_DragonVoid.png",
+      "bytes": 4856,
+      "sha256": "3f14609d450ab9545f903bedcca8f2128809cdaa272839bd8eda5c50a7b248a9",
+      "what": "dragon pet icon 64x64 RGBA",
+      "item_id": "Skyy_PetIcon_DragonVoid",
+      "kind": "DragonVoid",
+      "name": "Void Dragon",
+      "element": "Void",
+      "element_colour": "#b58cff",
+      "id_status": "new"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Dragon_Fire.png",
+      "bytes": 4914,
+      "sha256": "aa82b8b7df1271e1a8c8049fb92d2edd08432d7d25715896f43afc88ed08d967",
+      "what": "dragon egg icon 64x64 RGBA",
+      "item_id": "Skyy_PetEgg_Dragon_Fire",
+      "hatches": "DragonFire",
+      "name": "Fire Dragon Egg",
+      "element": "Fire",
+      "element_colour": "#ff8a2a",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Dragon_Thunder.png",
+      "bytes": 4951,
+      "sha256": "d53f9bb564a1f912c52e3001c3adeb1f98cb892c8ef88ced9d91f3808f7d39fe",
+      "what": "dragon egg icon 64x64 RGBA",
+      "item_id": "Skyy_PetEgg_Dragon_Thunder",
+      "hatches": "DragonStorm",
+      "name": "Storm Dragon Egg",
+      "element": "Thunder",
+      "element_colour": "#ffd64d",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Dragon_Air.png",
+      "bytes": 4934,
+      "sha256": "20bfdcaf620c5b843ec33890a0c14e4125abbcdcf20eedd0ea928005ca037c0e",
+      "what": "dragon egg icon 64x64 RGBA",
+      "item_id": "Skyy_PetEgg_Dragon_Air",
+      "hatches": "DragonSky",
+      "name": "Sky Dragon Egg",
+      "element": "Air",
+      "element_colour": "#bdf5ea",
+      "id_status": "existing"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Dragon_Void.png",
+      "bytes": 4873,
+      "sha256": "d0f1364682e19855c9447719f423c092353cefa37983f023e06099213259f7fa",
+      "what": "dragon egg icon 64x64 RGBA",
+      "item_id": "Skyy_PetEgg_Dragon_Void",
+      "hatches": "DragonVoid",
+      "name": "Void Dragon Egg",
+      "element": "Void",
+      "element_colour": "#b58cff",
+      "id_status": "new"
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 140895,
+      "sha256": "cbecaa87103c3779fc6cc9d2e0172f9c71746114ae40ee67a731b1da50ce5d90",
+      "what": "review sheet: all 10 icons at 2x + actual 64 / 32 px strip"
+    },
+    {
+      "path": "README.md",
+      "what": "hand-written notes: ids, look, wiring, UNVERIFIED, questions (not generated)"
+    }
+  ]
+}

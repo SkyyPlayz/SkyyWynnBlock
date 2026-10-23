@@ -48,14 +48,15 @@ The trial ended (Skyy 2026-10-19: "grokbot wont be working on the project. every
 
 <!-- 2026-10-20 local session: list topped up to 8 from RESUME.md 'AFTER THE RESET' + 'RUNNING NOW'. Each is a no-game-file draft: output in
 research/cloud/, start with the decisions followed, end with 'Questions for Skyy' (defaults) + 'For the local session'. -->
-- [ ] Balance P3 XP curves draft -> `research/cloud/Balance-P3-XP-Draft.md`. Read research/balance/targets.md, research/balance/xp.md + the tools/balance_model.py findings: Foraging / Cooking / Alchemy curves too slow, class XP too fast early, "past-life XP discount" idea (rebirth). Propose curves + a table vs targets. Defaults in Questions for Skyy.
-- [ ] P7 economy sink survey -> `research/cloud/Economy-Sinks-Survey.md`. List every coin sink and source now (research/Economy-Audit-1014.md, research/balance/economy.md), the gap to the targets, 5 candidate sinks (Tab, respec, bazaar tax, upgrades) with a default pick.
-- [ ] SkyyZones spec check -> `research/cloud/SkyyZones-Spec-Check.md`. Compare the protected areas + titles plan (RESUME 'Small queued rounds') with research/cloud/Zone-Regen-Spec.md; list gaps, overlaps, config keys (skyycfg contract), commands.
-- [ ] Wynn elements build spec review -> `research/cloud/Wynn-Elements-Review.md`. Review research/Wynn-Elements-Build-Spec.md against research/cloud/Element-System-Spec.md and the Balance goals; flag contradictions, missing numbers, build-order risks.
-- [ ] Dragon pet spec review -> `research/cloud/Dragon-Pet-Review.md`. Review research/Dragon-Pet-Spec.md against docs/answered/pets.md 2026-10-16 lines (Aures block) and research/cloud/Pet-Core-Spec.md; list what is still blocked on Aures / Skyy.
-- [ ] Zone gathering spots spec review -> `research/cloud/Zone-Gathering-Review.md`. Review research/Zone-Gathering-Spec.md against research/cloud/Ore-Regrow-Spec.md and Zone-5 every-crop rule (RESUME P6); list gaps + a test plan.
-- [ ] Fishing rework survey -> `research/cloud/Fishing-Rework-Survey.md`. Compare research/cloud/SkyyFishing-Spec-Draft.md and research/cloud/Fish-Species-Catalog.md with existing CurseForge fishing mods (licences UNVERIFIED if web is blocked); verdict pack / learn / build.
-- [ ] UT design draft (12 armor sets + 32 weapons) -> `research/cloud/UT-Design-Draft.md`. Start from research/UT-Lines-Draft.md, research/cloud/Untiered-Mythic-Spec.md, research/cloud/UT-First-Batch-Build.md; names, themes, tier-tag line, four-power-source role per set / weapon.
+<!-- 2026-10-23 local session: the 8 tasks above + a Powders spec DONE by 2 agents (research/cloud/LOG.md lines); new list below. Each = no-game-file draft, decisions first, Questions for Skyy (defaults) + For the local session. -->
+- [ ] SkyyZones 0.3 build spec (Z3 whole-tree fell + crops, Z3b scaffolding, Z4 gates / anti-AFK) -> `research/cloud/SkyyZones-0.3-Spec.md` from research/cloud/SkyyZones-Spec-Check.md + research/cloud/Zone-Gathering-Review.md (defaults taken).
+- [ ] Powders P1 build spec (items + sockets + Anvil tab, exact ids / rows / tier tags) -> `research/cloud/Powders-P1-Build.md` from research/cloud/Powders-Spec-Draft.md (defaults taken).
+- [ ] Fishing stage 2 build spec (Zone 2-3 species, tier 3-6 rods, numbers vs research/balance) -> `research/cloud/Fishing-Stage2-Build.md` from research/cloud/Fishing-Rework-Survey.md.
+- [ ] UT first 28 build sheet (ids, stats as bands -> balance_model inputs, drop sources) -> `research/cloud/UT-28-Build-Sheet.md` from research/cloud/UT-Design-Draft.md.
+- [ ] Secret dragons D5b spec (Void / Blood / Light / Crystal kinds + egg sources, rows) -> `research/cloud/Secret-Dragons-Spec.md` from research/cloud/Dragon-Pet-Review.md.
+- [ ] Wardrobe coin prices spec (cosmetic sink, Economy-Sinks-Survey default pick) -> `research/cloud/Wardrobe-Coin-Prices.md`.
+- [ ] Balance targets refresh notes: which research/balance/targets.md sections are pre-P9 and what the --p9 re-run must change -> `research/cloud/Targets-Refresh-Notes.md`.
+- [ ] GlymeraSigns ask draft (ARR, no modpack text; docs/answered/social.md 2026-10-23) -> `research/cloud/GlymeraSigns-Ask.md` (short message Skyy sends, like the joszza ask).
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
 out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
