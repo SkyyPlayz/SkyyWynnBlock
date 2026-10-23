@@ -37,7 +37,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 2. After the probe tour (research/UI-Queue-Spec.md): R1b feed cards -> vanilla pickup feed; R2 zoom scroll fix (Trees / Rebirth); R3 SkyyQuests
    PARTICLE TRAIL (Skyy: "Particle trail instead") + objective HUD text + bottom dialogue bar; R4 player heads (PlayerSkin, runtime render,
    hair); R5 Menu picture tiles phase 1 (+ phase 2 = 31 hub tabs) + page emblems into SkyyTrees.
-3. Next Gear round: GearCfg.class not byte-reproducible (8 bytes); vanilla Weapon_Longsword_Flame flat-hit bug; `python tools/pack_drops.py --md`.
+3. Next Gear round: pad Farming armor textures to a multiple of 32 (client WARN x28, log 10-22 10:00); GearCfg.class not byte-reproducible (8 bytes); vanilla Weapon_Longsword_Flame flat-hit bug; `python tools/pack_drops.py --md`.
 4. Later list: zone gathering spots (research/Zone-Gathering-Spec.md; crop islands 100 / 300 / 800), UT design (12 armor sets + 32 weapons),
    Powders spec, fishing rework, SkyyZones Z3 / Z4 (needs live probes), authors to ask (research/Structure-Mods-Survey.md).
 5. Small TODOs: fold the 8 abil.costPerLevel.<Class> rows into one table row once the Classes kit has table rows; Skills DRY / CAST maps keyed

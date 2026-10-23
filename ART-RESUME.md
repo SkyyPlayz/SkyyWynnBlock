@@ -42,7 +42,13 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### FARMING ARMOR - 15 crop sets (Quirk: a few design ideas per crop first, then build) - listed 2026-10-18
+### FARMING ARMOR - DONE (Quirk made all 15; Skyy 2026-10-18: "looking good! send all of them to Cobb to send to my builder")
+Files: `..\SkyWynn-PRIVATE-art\farming-armor\<Crop>\` (vanilla-derived = private, read at build time only, never in git; overview
+`all-15-overview.png`, task note `TASK-farming-armor.md`). Wired into SkyyGear since 0.3.29 (docs/log 2026-10-18 12:00). Open fix (next Gear
+round, docs/log 2026-10-22 10:00): pad each texture to a multiple of 32 at build time (client WARN x28). The table below is history.
+Next art item = the Queue below (chibi pets, mystery bags, town props) - ask Skyy which.
+
+#### (history) FARMING ARMOR - 15 crop sets - listed 2026-10-18
 Skyy 2026-10-18: "get a list of all 15 armor sets we need to make, in art-resume in the repo. along with all the crops they will be
 mottled after. (ill have quirk come up with a few design ideas for each, then we can have her make them.)" + "send those 7 designs with
 the list of the 15 we need." Why 15: Farming gets 15 tiers like Mining (docs/answered/gear.md 2026-10-18; research/Level-Bands-20-Spec.md section 6).
