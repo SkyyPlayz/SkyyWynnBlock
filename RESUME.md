@@ -19,7 +19,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
-- LIVE 10-23 12:40: Trees 0.5.2 (TEST 242). RUNNING: workflow sig2 (Armory 0.1.45: Whirling Staff / Flurry / Kunai Fan / Page Storm) + workflow cls060
+- LIVE 10-23 12:40: Trees 0.5.2 (TEST 242). sig2 LIVE (Armory 0.1.45, TEST 243). RUNNING: workflow cls060
   (CLASS TREE REBUILD: R0 data + Trees 0.6.0 + Classes 0.1.47 + Skills 0.4.64 + Rebirth 0.5.2, deploy together) ; Gear 0.3.42 (harvester swing source) LIVE 10-23 (TEST 240), its
   rows unlock when Trees 0.5.2 deploys; sig1 LIVE (Gear 0.3.43 + Armory 0.1.44, TEST 241). NEXT signature rounds: sig2 (4 locked
   signatures never built: Whirling Staff, Flurry, Kunai Fan, Page Storm), sig3 (UT quirks + a new signature for every Mythic), sig4 (base
