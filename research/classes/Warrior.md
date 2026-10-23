@@ -238,3 +238,21 @@ Ideas, Wynncraft-style - pick one.
 - 2026-10-07: SHELVED - a shield traversal (e.g. a shield charge / bash dash) only if we ever add a NEW shield weapon type (Skyy: "id only give the warriors shield traversal IF we make a new shield weapon type. but that sounds like a lot of work, so shelf it for now.").
 
 - 2026-10-04: file created from Skyy's locks (Warrior roles + Rallying Guard + Shield Shockwave LOCKED).
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟢 **Live** (vanilla)
+
+- **Sword = VORTEXSTRIKE:** spin slash around you, then a lunging stab forward. **Charge: 20 energy** - swing hit +1, thrust hit +3 (about 12-20 hits).
+
+- **Spear:** none today. 🔵 Proposed **Skewer Charge** - dash 6 blocks, the first enemy is carried and pinned (2 hits).
+
+- **Shield:** none (off-hand).
+
+- **UT / Mythic:** The Paperweight (UT) -> Vortexstrike, cheaper; Raptorfang / Magma Lance (UT) -> their family's, cheaper; Ghost Sword (The Armory, UT) has no Ability 1 (we may not change its files); our Mythic swords / spears -> a new signature each (ideas: Guardian Spin, Javelin Volley, Guarded Thrust).
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

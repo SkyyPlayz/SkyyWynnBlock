@@ -232,3 +232,21 @@ Ideas - pick one.
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 
 - 2026-10-04: file created; Pinning Shot + Mark combined, Rapid Fire / Explosive Arrow LOCKED (Skyy).
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟢 **Live** (vanilla)
+
+- **Shortbow = VOLLEY:** arms the bow - your next arrow fires as a 3-arrow spread. **Charge: 6 energy** - +1 per FULLY drawn arrow that hits.
+
+- **Crossbow = BIG ARROW:** arms one heavy bolt - the next shot hits about 4x harder. **Charge: 5 energy** - +1 for every 3rd bolt in a row on the same target (about 15 bolts).
+
+- **Developer bows:** Vampire **Supershot** (life steal), Bomb **Boomshot** (explodes), Pull **Pullshot** (pulls the target) = Mythic; Ricochet / Combat **Trishot** = UT. **Charge: 10 energy** - 0.5 to 3 per hit by how far you drew.
+
+- **UT / Mythic:** Short Notice / Bonewhistle / Stormvent (UT) and the dev bows -> same, cheaper; our Mythic bows -> a new signature each (ideas: Seeker Volley, Piercing Bolt, Split Bolt).
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

@@ -577,3 +577,19 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 - 2026-10-08: file created (cloud draft) from Skyy's 2026-10-08 lines 165 + 167: roles, overlap table, Momentum system, two-handed swords + Crescent Rush, great shield + Bulwark Charge, elements proposal (dependency), Arcane Breach / Rift Cleave / Shattering Arc / Elemental Imbue / Sunder with 4 shapes each, signatures, class tree (trunk + Tempest / Breaker / Vanguard), Server Setup rows, engine risks, 15 questions.
 - 2026-10-16 (Skyy): Crescent Rush is a pushing LUNGE, not a teleport - arc swing hits everything along the full lunge and carries the mobs forward with the Spellblade (frontline, momentum: never leave teammates exposed). docs/answered/classes.md 10-16.
 - 2026-10-16 (Skyy, play test): Arcane Breach is now a big horizontal slash that launches a crescent of light where you look - 6.5 blocks at 15 blocks/s (a bit faster than a shortbow quick shot), 8 wide, hits every enemy it passes once (1.4x weapon hit x the ability-level multiplier) + Breach + 2-block knockback, stops at walls; cooldown 5 s (SkyyClasses 0.1.32; docs/answered/classes.md 10-16). The 180-degree instant arc above is replaced.
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟠 **Missing** - longswords (vanilla + The Armory) and great shields have no signature today.
+
+- **Two-handed sword:** this file's pick **Meridian Cut** (section "Signature ideas" above) - waiting for Skyy (spec Q2).
+
+- **Great shield:** this file's pick **Iron Curtain** - waiting for Skyy.
+
+- **UT / Mythic:** The Azure Arc (UT) -> its family's, cheaper; Zweihander (The Armory, Mythic) has a Groundslam that can never charge (no meter) -> SkyyGear gives it a meter at runtime; the 4 Elemental swords (Mythic) have no Ability 1 (we may not change The Armory's files); the other options here (Crescent Wave, Rebound, Rally Point) = NEW signatures for our own UT / Mythic swords and shields.
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

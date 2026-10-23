@@ -264,3 +264,21 @@ Ideas - pick one.
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 
 - 2026-10-04: file created; Enrage (growing party + bigger self buff) and Whirlwind LOCKED (Skyy).
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟢 **Live** (vanilla)
+
+- **Battleaxe = WHIRLWIND:** spin again and again, hitting everything around you. **Charge: 9 energy** - swing +1, downstrike +2. (Same name as your class A2 Whirlwind - the class one is longer and heals.)
+
+- **Mace = GROUNDSLAM:** leap and slam: hits and knocks up everything where you land. **Charge: 8 energy** - swing +1, charged swing +2.
+
+- **Axe / club:** none today. 🔵 Proposed: axe **Cleave** (180-degree heavy chop, 3 hits), club **Skull Crack** (one heavy blow, 1 s stun).
+
+- **UT / Mythic:** Overtime / Primal Cleaver (UT) -> cheaper; Hepta Axe (The Armory, UT) and the Armory flails have no Ability 1; Lahat Chereb (Mythic) has a Groundslam that can never charge (no meter) -> SkyyGear gives it a meter at runtime, then 60 % cheaper; our own Mythics -> a new signature each (ideas: Tremor Slam, Execution Chop, Iron Whirl).
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

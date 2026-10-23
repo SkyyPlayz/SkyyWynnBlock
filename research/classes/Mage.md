@@ -255,3 +255,19 @@ Ideas - pick one. The Mage tree already has three lanes.
 
 - 2026-10-04: file created; staff Teleport + trail, spellbook Levitate, quick-shot range, Meteor + Mana Barrier LOCKED (Skyy).
 - 2026-10-16 (Skyy): the Mage TELEPORT reuses the effect / animation the longsword Crescent Rush showed while it teleported ("looks really cool"). docs/answered/classes.md 10-16.
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟠 **Mostly missing** - staffs and spellbooks have no signature today (only the vanilla Crystal Flame staff: **Fire Trap**, 10 energy, +1 per fire bolt hit).
+
+- **Spellbooks = PAGE STORM** (🟢 Locked 2026-10-08, not built yet - round sig2): a swirl of pages in a 5-block circle around you for 2 s, about 4 hits to everything inside. Charge from hits (~8-10).
+
+- **Staffs:** 🔵 Proposed **Arcane Overload** - your next 3 quick shots cost no Mana and hit 2x.
+
+- **UT / Mythic:** The Loophole (UT) -> NEW "Loophole Lance" (one beam through every enemy in a 24-block line); The Stormfossil (UT) -> NEW "Fossil Storm" (a Thunder lance); Sandscript Codex / Ashfall Grimoire (UT) -> Page Storm, cheaper; our Mythic staffs / books -> a new signature each (ideas: Chain Spark, Ember Rain, Frost Lance).
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

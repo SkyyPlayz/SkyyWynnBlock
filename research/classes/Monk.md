@@ -267,3 +267,19 @@ Ideas - pick one.
 - 2026-10-07: Palm Strike gains Echo (Skyy: "give monks palm strike echo too"); fist attacks, stunlock breakout, gauntlet speed (Skyy).
 
 - 2026-10-04: file created; Bo staff pole-vault + skipping bounds, fist Rising Strike + Plunge Punch, Flowing Form (Awe combo), Palm Strike - all LOCKED (Skyy).
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟠 **Missing** - Bo staffs and fist weapons have no signature today.
+
+- **Bo = WHIRLING STAFF** (🟢 Locked 2026-10-08, not built yet - round sig2): spin the staff overhead ~1.5 s, 3-4 hits on everything within 3 blocks, you can walk slowly.
+
+- **Wraps / gauntlets = FLURRY** (🟢 Locked 2026-10-08, not built yet): 6 very fast jabs at the nearest enemy in front, the last one knocks back (gauntlets heavier, +25 %, slower).
+
+- **UT / Mythic:** The Turnstile (UT) -> NEW "Revolving Door" (pull enemies in, then fling them out); Crushing Tail (UT) -> NEW "Tail Sweep"; Steppe Wind / Emberroot Wraps (UT) -> Flurry, cheaper; our Mythic Bo / fists -> a new signature each (idea: Iron Flurry). The Armory Fist has no Ability 1.
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

@@ -325,3 +325,21 @@ Ideas - pick one.
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 
 - 2026-10-04: file created; wand hop + healing orb, Soul Orb + Wings of Fate + ladder, Sacred Heal, Shield Bubble (+ Follow modifier), Cleanse = class-tree upgrade - all LOCKED (Skyy).
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟢 **Live** (wands, SkyyArmory 0.1.14; Wood / Rotten / Tribal wands SkyySkills 0.4.24)
+
+- **Wand = RICOCHET:** a magic bolt hits the enemy nearest your crosshair (up to 24 blocks, line of sight), then jumps every 0.15 s to the nearest enemy it has not hit (10 blocks), **up to 8 enemies**. First hit = 1.5x your charged shot, each bounce 10 % less. No enemy in your aim = the charge comes back.
+
+- **Charge: 20 energy** - a quick shot that hits **+1**, a charged shot that hits **+2** (about 10-20 shots). Tune it in Server Setup > Armory > "Wand + signature" (12 rows).
+
+- **Soul Orb / Soul Cages:** none yet. 🔵 Proposed: **Soul Release** - pop every Binding at once: each bound enemy takes its stored damage, allies near it heal 25 % of that.
+
+- **UT / Mythic:** The Second Opinion (UT) -> NEW "Second Opinion" (the ricochet also heals allies it bounces through); Hotspring Blessing (UT) -> NEW "Warm Spring" (heal puddle at each bounce); Cavewind (UT) -> same, cheaper; our Mythic wands / cages -> a new signature each.
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.

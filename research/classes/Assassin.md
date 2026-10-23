@@ -241,3 +241,19 @@ Ideas - pick one.
 - 2026-10-07: God Killer gains the Echo modifier (Skyy: "for the assassin, id give god killer the echo modification").
 
 - 2026-10-04: file created; daggers vanilla, kunai throw-teleport + return, Cloak + First Strike (crit cap 150%, triple crit), Toxin, God Killer - all LOCKED (Skyy).
+
+&nbsp;
+
+## 🎯 Weapon signature (Ability 1)
+
+🟢 **Live** (vanilla daggers)
+
+- **Daggers = RAZORSTRIKE:** lunge, slash, sweep - three fast cuts; from behind they backstab (x1.5). **Charge: 27 energy** - swing +1, stab +2, Pounce / Shadow Step hit +6.
+
+- **Kunai = KUNAI FAN** (🟢 Locked 2026-10-08, not built yet - round sig2): throw 5 kunai in a narrow fan, 0.8 hit each, a target hit by 3+ takes a bonus hit.
+
+- **UT / Mythic:** The Pocket Knife / Deepcave Shadow / Scarak Stinger (UT) -> cheaper; Dual Rune Blade (The Armory, Mythic) has a Razorstrike that can never charge (no meter) -> SkyyGear gives it a meter at runtime; our Mythics -> a new signature each (ideas: Shadow Razor, Venom Fan, Tethered Kunai).
+
+- 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
+
+- The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.
