@@ -546,9 +546,18 @@ SETS = [
          ids=["FireWhip", "ScorpianFlail"], note="their Lv 15 Club_Flail moveset; Berserker for now (flail class later) - Zone 1 Club Mythic"),
     dict(key="armory_ghost_sword", src="armory", name="Ghost Sword", kind="Weapon_Sword", weight="-", tier="iron", role="ut",
          ids=["GhostSword"], note="no recipe (scan); ItemLevel 20 in 1.23.0 = the Iron recolours' level, so Iron (checked 2026-10-17)"),
-    dict(key="armory_elemental", src="armory", name="Elemental longswords", kind="Weapon_Longsword", weight="-", tier="cobalt",
-         role="mythic", ids=["Weapon_Elemental_Flame", "Weapon_Elemental_Ice", "Weapon_Elemental_Poison", "Weapon_Elemental_Gravity"],
-         note="their Lv 35 Longsword moveset - Zone 3 Longsword Mythic (4 looks)"),
+    # 2026-10-23 (SkyyGear 0.3.40, Skyy 2026-10-18 Q9 "Yes, after elements ship"): the 4 Elemental swords = Spellblade Mythic boss specials, ONE per
+    # zone (the "one Mythic per zone x type" rule) at the zone of the boss research/Pack-Armor-Plan.md 3.3 b names for it: Poison = the
+    # Broodmother's Zone 2, Gravity = the Void Golem's Zone 3, Ice = Dragon_Frost's Zone 4, Flame = Dragon_Fire's Zone 5. SkyyGear 0.3.40 makes their
+    # swings weapon hits (level, rarity, lines) + their element (Flame Fire, Ice Water, Gravity Earth = SkyyClasses' elemOfItem; Poison the status).
+    dict(key="armory_elemental_poison", src="armory", name="Elemental Poison sword", kind="Weapon_Longsword", weight="-", tier="thorium",
+         role="mythic", ids=["Weapon_Elemental_Poison"], note="Spellblade, Poison status - Zone 2 Longsword Mythic (Broodmother's zone)"),
+    dict(key="armory_elemental_gravity", src="armory", name="Elemental Gravity sword", kind="Weapon_Longsword", weight="-", tier="cobalt",
+         role="mythic", ids=["Weapon_Elemental_Gravity"], note="Spellblade, Earth - Zone 3 Longsword Mythic (Void Golem's zone)"),
+    dict(key="armory_elemental_ice", src="armory", name="Elemental Ice sword", kind="Weapon_Longsword", weight="-", tier="adamantite",
+         role="mythic", ids=["Weapon_Elemental_Ice"], note="Spellblade, Water - Zone 4 Longsword Mythic (Dragon_Frost's zone)"),
+    dict(key="armory_elemental_flame", src="armory", name="Elemental Flame sword", kind="Weapon_Longsword", weight="-", tier="mithril",
+         role="mythic", ids=["Weapon_Elemental_Flame"], note="Spellblade, Fire - Zone 5 Longsword Mythic (Dragon_Fire's zone)"),
     dict(key="armory_runeblade", src="armory", name="Rune Blade", kind="Weapon_Club", weight="-", tier="adamantite", role="mythic",
          ids=["RuneBladeStage1"], note="stage 1 (club); stages 2 / 3 = an upgrade at our bench later (Pack-Armor-Plan 3.3 b)"),
     dict(key="armory_runeblade_up", src="armory", name="Rune Blade stages 2-3", kind="Weapon_Battleaxe", weight="-", tier="adamantite",
