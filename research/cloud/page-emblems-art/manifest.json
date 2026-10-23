@@ -1,0 +1,69 @@
+{
+ "files": [
+  {
+   "bytes": 15342,
+   "h": 96,
+   "path": "emblems/Adventure.png",
+   "sha256": "4cd37c785272372f1b00b8f8638db67e76f9f7d7cc79069fce715a0e565b3036",
+   "w": 96
+  },
+  {
+   "bytes": 39303,
+   "h": 192,
+   "path": "emblems/Adventure@2x.png",
+   "sha256": "bcd29828df0c01b8e00f2f8a3d924a6bc96d5c7be2a67867e7fa0b07cfa63278",
+   "w": 192
+  },
+  {
+   "bytes": 18533,
+   "h": 96,
+   "path": "emblems/Class.png",
+   "sha256": "17c10b2d53166d902af4ee0f3826a713187b3db701f60a33a86d42c79a187d78",
+   "w": 96
+  },
+  {
+   "bytes": 52402,
+   "h": 192,
+   "path": "emblems/Class@2x.png",
+   "sha256": "b47a039cd0085a65401bf9de73f41b19177266dacb9237233457af87f766083e",
+   "w": 192
+  },
+  {
+   "bytes": 13911,
+   "h": 96,
+   "path": "emblems/Crafting.png",
+   "sha256": "8048a7ea118cf64c3f24321bde4299d244c55923e37658ebe5b3e90f35004a65",
+   "w": 96
+  },
+  {
+   "bytes": 35969,
+   "h": 192,
+   "path": "emblems/Crafting@2x.png",
+   "sha256": "321b396bf73799a653542f36e209d248f08801d9f197d844f4efa945226778b8",
+   "w": 192
+  },
+  {
+   "bytes": 15491,
+   "h": 96,
+   "path": "emblems/Gathering.png",
+   "sha256": "d60cfdef98bbd14a303d3a1e3721cc3fb43cbba1b475273ebe60ce7f6f556314",
+   "w": 96
+  },
+  {
+   "bytes": 41093,
+   "h": 192,
+   "path": "emblems/Gathering@2x.png",
+   "sha256": "59a340553aae9744a41172fe2fb4dd1d49a09b9ac7437296f727f0295749ee44",
+   "w": 192
+  },
+  {
+   "bytes": 268078,
+   "h": 1080,
+   "path": "sheet.png",
+   "sha256": "54e377f636ad7be7f777887b7714d7ba362f6ecb12ce1559c235848623282d70",
+   "w": 1700
+  }
+ ],
+ "generator": "make_emblems.py",
+ "what": "SkyWynn radial page emblems (concept v1)"
+}

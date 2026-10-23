@@ -221,3 +221,5 @@ Before overwriting a sheet that Skyy has seen, rename the old PNG to `<name>-v1.
 |---|---|---|
 | 1 | Is this review order right, or do you want it by system (armor / weapons / fishing)? | as listed |
 | 2 | Should the never-reviewed v1 folders (fishing gear, fish, enchanted, classes) get the 2x-4x density pass too? | yes, same rule as the rest |
+- research/cloud/ui-tiles-art/ - SkyWynn Menu picture tiles, phase 1 (8 Home tiles, 232 @2x + 116), make_tiles.py (+ skyypaint.py / skyyitems.py), sheet.png - concept v1 2026-10-22, waiting for Skyy
+- research/cloud/page-emblems-art/ - radial page emblems (Gathering / Crafting / Adventure / Class, 192 @2x + 96), make_emblems.py, sheet.png - concept v1 2026-10-22, waiting for Skyy
