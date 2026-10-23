@@ -36,6 +36,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `research/Mana-Budget-2026-10-18.md`, `research/Wynn-Elements-Build-Spec.md`, `research/Zone-Gathering-Spec.md`, `research/Metals-Tools-Fortune-Spec.md` | newest balance + build specs (mana model; elements build; zone gathering; metal tools) | |
 | `research/Weapon-Signatures-Spec.md`, `research/UT-Mythic-Signatures.md`, `research/Combat-Into-Class-Spec.md`, `research/Class-Tree-Clarity-Spec.md` | weapon Ability 1 per family + UT quirks / Mythic signatures (rounds sig1-sig5); Combat folded into the class tree + tree clarity (round cls060) | |
 | `research/Zone-Reset-Spec.md` | `/zone <n> reset` (new seed per zone, live regenerate, tied data) + `/zone <n> reset undo` (last 3); round wg0710 | |
+| `research/Price-Tooltips-Spec.md` | live Bazaar / AH / NPC price lines in tooltips via per-player lang updates (rounds R0 probe - R4) | |
 | `research/classes/` | ONE FILE PER CLASS (Warrior, Archer, Mage, Priest, Berserker, Monk, Assassin) + `README.md` (rules + modifier pool); easy-read HTML pages in `research/classes/html/` | edit the `.md`; `python tools/class_pages.py` rebuilds the HTML |
 | `research/cloud/` | cloud sessions' specs + their log `research/cloud/LOG.md` | |
 | `Skyy<Mod>/` | `README.md` = what the mod does + where its versions / decisions / specs are (made by `tools/make_readmes.py`); one build script per mod version (`build_skyy<mod>_<ver>.py`, Java inside Python) + tests; jars are git-ignored | |

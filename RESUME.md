@@ -23,7 +23,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   family) + workflow cls060
   (CLASS TREE REBUILD: R0 data + Trees 0.6.0 + Classes 0.1.47 + Skills 0.4.64 + Rebirth 0.5.2, deploy together).
   QUEUED Armory: Spellblade great shield = shield-bash attack + 30-block steerable charge (classes.md 10-23); then sig3 UT quirks + sig5
-  Mythic signatures (research/UT-Mythic-Signatures.md; Mythics REPLACE vanilla moves; long-term every vanilla move class-fitted) ; Gear 0.3.42 (harvester swing source) LIVE 10-23 (TEST 240), its
+  Mythic signatures (research/UT-Mythic-Signatures.md; Mythics REPLACE vanilla moves; long-term every vanilla move class-fitted). PRICE TOOLTIPS
+  (research/Price-Tooltips-Spec.md, spec defaults taken): R0 probe SkyyUiProbe 0.9 (running) -> R1 Auctions 0.1.16 -> R2 Bazaar 0.2.2 -> R3 Gear ; Gear 0.3.42 (harvester swing source) LIVE 10-23 (TEST 240), its
   rows unlock when Trees 0.5.2 deploys; sig1 LIVE (Gear 0.3.43 + Armory 0.1.44, TEST 241). NEXT signature rounds: sig2 (4 locked
   signatures never built: Whirling Staff, Flurry, Kunai Fan, Page Storm), sig3 (UT quirks + a new signature for every Mythic), sig4 (base
   signature for every family with none) - research/Weapon-Signatures-Spec.md + gear.md 10-23. Weapon signatures spec done (research/Weapon-Signatures-Spec.md + Skyy's
