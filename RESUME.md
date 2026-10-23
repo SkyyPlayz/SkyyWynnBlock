@@ -17,7 +17,10 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
-- RUNNING: nothing.
+- RUNNING (10-23 06:35; Skyy: "work through the whole list" + "fan out and wrok in parallel"): workflow gear041 (Gear 0.3.41: Quirk's fixed
+  tools, farming textures pad to 32, GearCfg reproducible, vanilla Flame longsword flat hit); workflow dragond3 (Pets 0.4.13: D3 riding + flying);
+  agents: dragon + egg icon art (art/dragons/), lean Skills 0.4.63 (quit-player map leak), 2 cloud agents = the 8 CLOUD-RESUME drafts + Powders
+  spec (research/cloud/). Not finished at a reset -> re-run from the SET pins with the same task (log 10-23 06:35 line).
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
