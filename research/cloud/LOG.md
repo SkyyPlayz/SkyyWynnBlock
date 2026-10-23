@@ -184,3 +184,7 @@ section 6 when it reviews the results.
 - 2026-10-23: Wardrobe coin prices spec (cosmetic sink on the coin curve: extra loadout slots, look change) -> research/cloud/Wardrobe-Coin-Prices.md
 - 2026-10-23: Balance targets refresh notes (which targets.md sections are pre-P9, run order) -> research/cloud/Targets-Refresh-Notes.md
 - 2026-10-23: GlymeraSigns ask draft (message Skyy sends) -> research/cloud/GlymeraSigns-Ask.md
+- 2026-10-23 local agents: research/cloud/SkyyZones-0.3-Spec.md - SkyyZones 0.3.0 / 0.3.1 build spec (Z3 fell + crops + ores, Z3b scaffolding, Z4 gates / anti-AFK; island-wide gathering regions minus towns per Skyy 10-23).
+- 2026-10-23 local agents: research/cloud/Powders-P1-Build.md - Powders P1 build spec (25 powder items, sockets, Anvil Powders tab, Alchemy Bench recipes; SkyyGear + SkyySacks).
+- 2026-10-23 local agents: research/cloud/Fishing-Stage2-Build.md - Fishing stage 2 build spec (SkyyFishing 0.2.0: 17 Zone 2-3 species, rods T3-T6, 25 rows).
+- 2026-10-23 local agents: research/cloud/UT-28-Build-Sheet.md - UT first 28 build sheet (12 armor sets + 16 weapons, zone lore names per Skyy 10-23).
