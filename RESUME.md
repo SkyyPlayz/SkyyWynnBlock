@@ -21,7 +21,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   test); agent pet tooltip layout (research/Pet-Tooltip-Layout.md -> build in Pets 0.4.14 after D3). QUEUED after zoomfix: SkyyTrees 0.5.2
   Motherlode = 1 %/rank x3 jackpot, separate from Fortune + stale Plan text sweep + ROW GATES = total AND 3 points in the row
   above (grandfathered) + HARVEST SWING SPEED (Quick Scythe -> harvester swing; with Gear 0.3.42 harvester swing source)
-  (docs/answered/skills.md 10-23); + Mining node icons once Skyy approves art/tree-node-icons/sheet.png. READY, waiting for the game to close: SkyyGear
+  (docs/answered/skills.md 10-23); + Mining node icons once Skyy approves art/tree-node-icons/sheet.png. THEN Trees 0.5.3 (+ Classes check): class-tree
+  modifier nodes cut to ~1 per ability, flat additive, never multiplying; rest -> real upgrades + AP refund; rename modifier-named passives. READY, waiting for the game to close: SkyyGear
   0.3.41 (smoke then pin) + SkyySkills 0.4.63 (pinned). Game updated 10-23 08:22 (vanilla Legs hide Overpants) - smoke everything.
 
 ## WAITING ON SKYY
