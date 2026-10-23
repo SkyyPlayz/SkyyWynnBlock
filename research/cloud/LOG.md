@@ -171,3 +171,7 @@ section 6 when it reviews the results.
 - 2026-10-13: Nexus soul flame + 5 sigils (icons v2) -> research/cloud/icons-1013 (done; logged from CLOUD-RESUME.md 2026-10-20)
 - 2026-10-13: /rebirth page mockup -> research/cloud/rebirth-page-1013 (done; logged from CLOUD-RESUME.md 2026-10-20)
 - 2026-10-13: Shard menu mockup -> research/cloud/shard-menu-1013 (done; logged from CLOUD-RESUME.md 2026-10-20)
+- 2026-10-23: Balance P3 XP curves draft -> research/cloud/Balance-P3-XP-Draft.md (mostly obsolete: P3/P9 shipped; status table + one optional Alchemy tweak)
+- 2026-10-23: P7 economy sink survey -> research/cloud/Economy-Sinks-Survey.md (live sinks/sources, 5 unshipped candidate sinks, default pick)
+- 2026-10-23: SkyyZones spec check -> research/cloud/SkyyZones-Spec-Check.md (0.2.0 vs spec gaps, config keys, commands, Z3/Z4 next steps)
+- 2026-10-23: Wynn elements spec review -> research/cloud/Wynn-Elements-Review.md (spec vs shipped, 8 gaps, remaining build order)
