@@ -12,16 +12,16 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## STATE (2026-10-23 06:20)
-- LIVE: everything up to TEST-CHECKLIST 238 (dragon riding, pet tooltips, Quirk's tools, Skills leak fix, StructureV2 freeze STOPGAP
+- LIVE: everything up to TEST-CHECKLIST 239 (freeze fix WorldGen 0.7.9 + StructureV2 back on, zoom keep Trees / Rebirth 0.5.1,
+  no menu item Menu 0.3.46, 10-23 10:54); 238 (dragon riding, pet tooltips, Quirk's tools, Skills leak fix, StructureV2 freeze STOPGAP
   worldgenEnabled false, 10-23 10:17) (joszza DungeonBosses + River Bridges in the pack, 10-23 08:31) (dragon fighting D1 + boss dragon eggs D6 = Pets 0.4.12 + Mobs 0.1.18, 10-23 06:18). Balance pass P1-P9 DONE (`python tools/balance_model.py --p9 --check` 35 / 0; caster Mana waits
   for Skyy's feel test; first run ~36 h accepted). Radial tree pages (SkyyTrees 0.5.0) + radial Nexus (SkyyRebirth 0.5.0). Left Alt opens the
   Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
   0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
   Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
-- RUNNING: workflow zoomfix (kit 1.9 + Trees 0.5.1 + Rebirth 0.5.1). NEXT launched 10-23 10:20: SkyyWorldGen 0.7.9 (getUniquePrefabs safe ->
-  then undo the StructureV2 stopgap: delete mods/joszza_StructureV2/.skywynn-worldgen-off-stopgap + worldgenEnabled true), weapon signature
-  spec (Ability 1 in every weapon tooltip, UT / Mythic signatures), SkyyMenu: no hotbar menu item. Tell joszza: the retry-loop message in
-  docs/log 10-23. QUEUED after zoomfix: SkyyTrees 0.5.2
+- RUNNING (10-23 10:55): workflow trees052 (Trees 0.5.2: Motherlode x3, row gates, harvest swing, Plan sweep, all node icons) + agent
+  gear042 (Gear 0.3.42 harvester swing source) - deploy TOGETHER. Weapon signatures spec done (research/Weapon-Signatures-Spec.md + Skyy's
+  10-23 answers in gear.md) -> builds sig1-sig4 after Gear 0.3.42. Tell joszza: retry-loop message in docs/log 10-23 10:20. QUEUED after zoomfix: SkyyTrees 0.5.2
   Motherlode = 1 %/rank x3 jackpot, separate from Fortune + stale Plan text sweep + ROW GATES = total AND 3 points in the row
   above (grandfathered) + HARVEST SWING SPEED (Quick Scythe -> harvester swing; with Gear 0.3.42 harvester swing source)
   (docs/answered/skills.md 10-23); + Mining node icons once Skyy approves art/tree-node-icons/sheet.png. THEN the CLASS TREE REBUILD (research/Combat-Into-Class-Spec.md

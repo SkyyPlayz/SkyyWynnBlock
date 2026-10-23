@@ -263,3 +263,4 @@ tests always come first.
 236. Dragon fights + boss dragon eggs: bites, Defend / Follow, DOWN, egg drop + Mythic cap
 237. joszza pack: DungeonBosses (Bandit Boss on boss islands, Astral Voidcaller via Astral Sigil, Ice Magus at the frozen tower; levelled by our ranks, Structure Money -> coins) + River Bridges (bridges over rivers in NEW chunks; its archer guard does not load - joszza bug, needs MajorDungeons' Mb_Bandit group)
 238. Dragon riding (fly / glide), pet tooltips by type, dragon icons, Quirk's Multitool / Harvester, Flame longsword, StructureV2 freeze stopgap
+239. Zone 2 freeze fix (StructureV2 back on), zoomed Trees / Nexus keep their place, no hotbar menu item

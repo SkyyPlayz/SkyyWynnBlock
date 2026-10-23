@@ -19,18 +19,18 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyySkills | 0.4.63 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.32 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
 | SkyyClasses | 0.1.46 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
-| SkyyMenu | 0.3.45 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer |
+| SkyyMenu | 0.3.46 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer |
 | SkyyEssentials | 0.1.16 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.18 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.16 | Cooking dishes + food Grade; XP by craft difficulty |
-| SkyyTrees | 0.5.0 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
+| SkyyTrees | 0.5.1 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.3.3 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.13 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.9 | vault pages |
 | SkyyAuctions | 0.1.15 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
 | SkyyQuests | 0.4.3 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
-| SkyyRebirth | 0.5.0 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
+| SkyyRebirth | 0.5.1 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
 | SkyyZones | 0.2.0 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
 | SkyyShards | 0.4.5 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
@@ -44,7 +44,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyTownProbe | 0.2 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyKeyProbe | 0.2 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.18 | mob levels + difficulty; level curves + level gap (mob:fn:info); 0.7 port, 280 roles |
-| SkyyWorldGen | 0.7.8 | Zone 1 test island (/zone 1, admin); 0.7 port |
+| SkyyWorldGen | 0.7.9 | Zone 1 test island (/zone 1, admin); 0.7 port |
 | SkyyArmory | 0.1.43 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile); built from source on 0.7, TravTick gating |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 

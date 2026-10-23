@@ -31,6 +31,9 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-23, menu046): SkyyMenu 0.3.46 (no hotbar menu item: menu.giveItem default OFF via a one-time migration with Undo; old Skyy_Menu stacks taken once per player) rolls back alone to 0.3.45 (it reads giveItem=false too). To bring the item back: Undo menu.giveItem in Server Setup -> Changes. Taken items are not given back.
+# FLOOR (2026-10-23, zoomfix R2): SkyyTrees 0.5.1 + SkyyRebirth 0.5.1 (kit 1.9 keep-mode node maps) - no new floor, no saved data, no migration; one new Server Setup row each (trees.ui.keepScroll / rebirth.ui.keepScroll, ON; a missing line = ON). They roll back alone: 0.5.0 = every zoomed click redraws again (the row line is ignored).
+# FLOOR (2026-10-23, wg079): SkyyWorldGen 0.7.9 (getUniquePrefabs safe in WgZ2Gen / WgZoneGen / WgIsleGen - the StructureV2 freeze fix) - no saved data, no row. Rolls back alone to 0.7.8, BUT on 0.7.8 StructureV2 worldgen must be OFF again (structures.worldgenEnabled false in mods/joszza_StructureV2/settings.json) or the zones2 freeze returns; the deploy restores it to true once when 0.7.9 is pinned (.skywynn-worldgen-restored marker).
 # FLOOR (2026-10-23, pets0414): SkyyPets 0.4.14 (pet tooltip by type + Class label, Skyy-reviewed dragon icons) - no saved data, no migration, no new row; rolls back alone to 0.4.13 (old tooltip, recoloured dragon icons).
 # FLOOR (2026-10-23, dragon D3 ride + fly): SkyyPets 0.4.13 - no new floor, no saved data, no migration (18 new Server Setup rows: Pets > Dragons ride / rideLevel / saddleItem / ride.mode / ride.preset / fly.speed / fly.climb / ride.blockedWorlds / voidY / 5 seats; Pets in the world > Ride mount pets + 3 seats; a missing line = the default) + 3 movement configs in the jar (Skyy_Dragon_Glide_Slow / Skyy_Dragon_Glide / Skyy_Dragon_Glide_Fast). Rolls back alone: 0.4.12 = no riding (the rows are ignored). The 0.4.11 floor stands (never below 0.4.11 once a dragon or dragon egg exists).
 # FLOOR (2026-10-23, gear041): SkyyGear 0.3.41 - no new floor, no saved data, no migration, no new row. Rolls back alone to 0.3.40 (Multitools / Harvesters show the 0.3.25 look again, the vanilla Flame longsword hits flat again).
@@ -43,8 +46,8 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.35"), ("SkyySacks", "0.8.28"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.32"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.24"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.41"), ("SkyySkills", "0.4.63"),
-    ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.46"), ("SkyyMenu", "0.3.45"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.5.0"),
+    ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.46"), ("SkyyMenu", "0.3.46"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.5.1"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -91,7 +94,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.18"), ("SkyyWorldGen", "0.7.8"),
+    ("SkyyMobs", "0.1.18"), ("SkyyWorldGen", "0.7.9"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -107,7 +110,7 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.4.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.5.0"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyRebirth", "0.5.1"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyZones", "0.2.0"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
     ("SkyyShards", "0.4.5"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-20, Skill Trees 3): SkyyTrees 0.4.0 + SkyyClasses 0.1.42 + SkyySkills 0.4.55 + SkyyMenu 0.3.41 deploy TOGETHER. Once treesV3 ran on a player file never roll SkyyTrees below 0.4.0 (0.3.x reads a v=3 file as empty trees and its next save rewrites it as v=2, wiping ranks + grandfathered abilities; rolling forward re-runs the update but pays NO second Dust refund - history/treesv3/<pkey>.done; old file in history/treesv3/<pkey>.properties - restore by hand with the server stopped; refunded Dust coins are not taken back). SkyyClasses below 0.1.42 only together with SkyyTrees below 0.4.0.
@@ -307,6 +310,20 @@ def _sv2_worldgen_stopgap(d_, cfg, world):
     until SkyyWorldGen 0.7.9 makes getUniquePrefabs safe; then delete the marker and set it back (or /sv2 admin)."""
     import re, shutil
     mark = os.path.join(d_, ".skywynn-worldgen-off-stopgap")
+    wg = tuple(int(x) for x in dict(SET).get("SkyyWorldGen", "0").split("."))
+    if wg >= (0, 7, 9):
+        # SkyyWorldGen 0.7.9 makes getUniquePrefabs safe -> undo the stopgap ONCE (only if our stopgap set it; an admin's own false is kept)
+        done = os.path.join(d_, ".skywynn-worldgen-restored")
+        if os.path.exists(mark) and not os.path.exists(done) and os.path.isfile(cfg):
+            raw = open(cfg, "rb").read()
+            new, n = re.subn(rb'("worldgenEnabled"\s*:\s*)false', rb'\1true', raw, count=1)
+            if n:
+                tmp = cfg + ".tmp"
+                open(tmp, "wb").write(new)
+                os.replace(tmp, cfg)
+                print("StructureV2: structure worldgen back ON for world %s (SkyyWorldGen 0.7.9 fix live)" % world)
+            open(done, "w", encoding="utf-8").write("SkyWynn deploy: StructureV2 worldgenEnabled restored to true once SkyyWorldGen 0.7.9 was pinned.\n")
+        return
     if os.path.exists(mark) or not os.path.isfile(cfg):
         return
     raw = open(cfg, "rb").read()
