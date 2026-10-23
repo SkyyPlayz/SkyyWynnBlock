@@ -164,9 +164,12 @@ for t in EN.TABLE:
 
 # ---- rarity-tagged items: the 30 pet eggs (SkyyPets 0.4.0, tools/skyyeggs.py) - "Rare Egg - ..." first, no T-number
 import skyyeggs as EGG
-ok(TT.RARITY_NOUNS == ("Egg",) and TT.rarity_tag("Rare", "Egg") == "Rare Egg" and TT.rarity_tag("Mythic", "Egg") == "Mythic Egg", "rarity_tag")
-ok(TT.rarity_ids_for("SkyyPets") == sorted(EGG.IDS) and len(TT.RARITY_ROWS) == 30, "the 30 egg rows, owner SkyyPets")
-ok(all(r[2] == "egg" and r[3] == "SkyyPets" for r in TT.RARITY_ROWS.values()), "family egg")
+ok(TT.RARITY_NOUNS == ("Egg", "Dragon Egg") and TT.rarity_tag("Legendary", "Dragon Egg") == "Legendary Dragon Egg" and TT.rarity_tag("Rare", "Egg") == "Rare Egg" and TT.rarity_tag("Mythic", "Egg") == "Mythic Egg", "rarity_tag")
+ok(TT.rarity_ids_for("SkyyPets") == sorted(EGG.IDS) and len(TT.RARITY_ROWS) == 33, "the 30 egg rows + 3 dragon eggs, owner SkyyPets")
+ok(all(r[2] == "egg" and r[3] == "SkyyPets" for i, r in TT.RARITY_ROWS.items() if i in EGG.IDS), "family egg")
+_DE = sorted(e[0] for e in EGG.DRAGON_EGGS if e[3] == "SkyyPets")
+ok(TT.rarity_ids_for("SkyyPets", "dragonegg") == _DE and len(_DE) == 3 and all(TT.tag_for(i) == "Legendary Dragon Egg" and TT.tier(i) is None for i in _DE)
+   and all(TT.tag_for(e[0]) is None for e in EGG.DRAGON_EGGS if e[3] != "SkyyPets"), "SkyyPets 0.4.11: our 3 dragon eggs 'Legendary Dragon Egg', Aures' eggs untagged")
 for _c in EGG.CATEGORIES:
     for _r in EGG.RARITIES:
         _i = EGG.egg_id(_c, _r)

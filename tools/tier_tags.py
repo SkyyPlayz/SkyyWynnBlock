@@ -502,7 +502,7 @@ AR_IDS = frozenset(A1_WEAPONS + A2_WEAPONS)
 # the first phrase - "Rare Egg - Right-click to hatch ..." (a "T3 Egg" would read as Iron). Kept apart from ROWS (the metal ladder): tag_for()
 # answers both, families() / ids_in() / ids_for() stay the metal ladder's; rarity_ids_for(owner) lists these. Ids from tools/skyyeggs.py.
 RARITY_LADDER = ("Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic")
-RARITY_NOUNS = ("Egg",)
+RARITY_NOUNS = ("Egg", "Dragon Egg")          # SkyyPets 0.4.11: + our elemental dragon eggs ("Legendary Dragon Egg")
 RARITY_ROWS = {}     # id -> (rarity, noun, family, owner)
 
 
@@ -523,6 +523,11 @@ assert _EGG.RARITIES == RARITY_LADDER
 for _c in _EGG.CATEGORIES:
     for _r in _EGG.RARITIES:
         _add_rarity(_EGG.egg_id(_c, _r), _r, "Egg", "egg", "SkyyPets")
+# Dragon eggs (SkyyPets 0.4.11, research/Dragon-Pet-Spec.md 2): OUR three elemental dragon eggs are Legendary items -> "Legendary Dragon Egg - ..."
+# (family dragonegg). Aures' two Nestkeeper eggs are THEIR items (their lang, their text): never tagged by us.
+for _e in _EGG.DRAGON_EGGS:
+    if _e[3] == "SkyyPets":
+        _add_rarity(_e[0], "Legendary", "Dragon Egg", "dragonegg", "SkyyPets")
 
 
 def rarity_tag_for(item_id):
@@ -530,8 +535,9 @@ def rarity_tag_for(item_id):
     return None if r is None else rarity_tag(r[0], r[1])
 
 
-def rarity_ids_for(owner_mod):
-    return sorted(i for i, r in RARITY_ROWS.items() if r[3] == owner_mod)
+def rarity_ids_for(owner_mod, fam="egg"):
+    """the rarity-tagged ids of one mod and family (default "egg" = the 30 category eggs, as before 0.4.11; "dragonegg" = the dragon eggs)"""
+    return sorted(i for i, r in RARITY_ROWS.items() if r[3] == owner_mod and r[2] == fam)
 
 
 # ------------------------------------------------------------------------------------------------ lookups
