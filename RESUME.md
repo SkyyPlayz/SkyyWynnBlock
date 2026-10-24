@@ -20,8 +20,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - RUNNING (background, this session): workflow archi1 (Shards 0.4.8 + Islands 0.5.25 = starter archipelago R1+R2, research/Starter-Archipelago-Spec.md v2);
   agent wg0710 fixer (WorldGen 0.7.10 /zone <n> reset + undo: 3 review findings on FR4, real-server harness) -> then deploy WorldGen 0.7.10
   + Zones 0.2.1 + Exploration 0.3.4 + Zones 0.2.2 (shard ores regrow, READY) TOGETHER. Not finished at a reset -> rerun from the patches.
-- BLOCKER ON SKYY'S PC: two ZoneViewControl jars in UserData/Mods (1.1.1 + 1.1.2) -> server refuses to start; Skyy removes 1.1.1 (other
-  people's mods are read-only for us) - then update PACK.md to 1.1.2.
+- ZoneViewControl duplicate (1.1.1 + 1.1.2) fixed by Skyy 10-23 (1.1.1 removed).
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
