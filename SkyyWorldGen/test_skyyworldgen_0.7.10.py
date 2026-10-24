@@ -462,6 +462,23 @@ def run_files(out, jar, scratch, home):
     RA = J("WgRArrive")
     K.check(bool(RA.near(-1230.0, 980.0, RZ.RELOCAT.get(u5))) and not bool(RA.near(-1100.0, 962.0, RZ.RELOCAT.get(u5))) and bool(RA.near(0.0, 0.0, None)),
             "FR4 an arrival counts within 48 blocks of the spot (an entry without a spot: anywhere on the zone)")
+    # review fix: the arrival decisions - moved ONCE to the new landing (the entry ends), a second login near the spot is NOT moved
+    at5 = RZ.RELOCAT.get(u5)
+    LAND = "the zone's new landing"
+    K.check(int(RA.act(0, 0, -1225.0, 960.0, at5, False)) == 1 and not bool(RA.keeps(0, 0, -1225.0, 960.0, at5, False, LAND)),
+            "FR4 a listed arrival on the spot of an open zone = the new landing, and the entry ends")
+    K.check(int(RA.act(-1, 0, -1225.0, 960.0, None, False)) == 0, "FR4 ... a second login near the spot (no entry any more) is NOT moved")
+    K.check(int(RA.act(0, 0, -1225.0, 960.0, at5, True)) == 2 and bool(RA.keeps(0, 0, -1225.0, 960.0, at5, True, "island"))
+            and bool(RA.keeps(0, 0, -1225.0, 960.0, at5, False, "hub")), "FR4 sent off to the island / hub (closed zone, or no landing) keeps the entry")
+    K.check(int(RA.act(0, 0, -1100.0, 962.0, at5, False)) == 0 and not bool(RA.keeps(0, 0, -1100.0, 962.0, at5, False, None))
+            and not bool(RA.keeps(0, 1, -1225.0, 960.0, at5, False, None)), "FR4 a listed arrival away from the spot / on another zone: not moved, the entry ends")
+    RA.dropLater(u1)
+    for _i in range(40):
+        if RZ.RELOC.get(u1) is None:
+            break
+        time.sleep(0.1)
+    K.check(RZ.RELOC.get(u1) is None and u1 not in open(os.path.join(wg, "zone-resets", "relocate.properties"), encoding="latin-1").read(),
+            "FR4 dropLater removes the entry + saves the file off the calling thread")
     RZ.relocDrop(u5)
     K.check(RZ.RELOC.get(u5) is None and RZ.RELOCAT.get(u5) is None and u5 not in open(os.path.join(wg, "zone-resets", "relocate.properties"), encoding="latin-1").read(), "FR4 relocDrop removes one entry + saves")
     RZ.RELOC.clear()

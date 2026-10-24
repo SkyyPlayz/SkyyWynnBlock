@@ -10107,12 +10107,17 @@ public static double[] savedPos(String txt, byte[] zu) {
   } catch (Throwable t) { return null; }
 }""")
 M(rz, r"""
+public static boolean parses(String txt) {
+  if (txt == null) return false;
+  try { return @BDOC@.parse(txt) != null; } catch (Throwable t) { return false; }
+}""")
+M(rz, r"""
 public static boolean inEither(@PKG@.WgZ2Layout a, @PKG@.WgZ2Layout b, int k, double x, double z) {
   return inZone(a, k, x, z) || (b != null && inZone(b, k, x, z));
 }""")
 # put: zone k's old entries go first (this change decides them anew - after an undo the old land is back)
 M(rz, r"""
-public static int relocScan(@PKG@.WgZ2Layout a, @PKG@.WgZ2Layout b, int k, boolean put) {
+public static synchronized int relocScan(@PKG@.WgZ2Layout a, @PKG@.WgZ2Layout b, int k, boolean put) {
   int n = 0;
   try {
     java.util.HashMap got = new java.util.HashMap();
@@ -10136,7 +10141,12 @@ public static int relocScan(@PKG@.WgZ2Layout a, @PKG@.WgZ2Layout b, int k, boole
         try { id = java.util.UUID.fromString(nm.substring(0, nm.length() - 5)); } catch (Throwable t) { continue; }
         boolean on = false;
         if (u != null) { try { on = u.getPlayer(id) != null; } catch (Throwable t) { } }
-        double[] p = savedPos(readText(f), zu);
+        String tx = readText(f);
+        if (!parses(tx)) {     // review: a file the engine is writing right now -> one more read after a short wait
+          try { Thread.sleep(250L); } catch (Throwable t) { }
+          tx = readText(f);
+        }
+        double[] p = savedPos(tx, zu);
         if (p == null || (on && p[2] == 0.0)) continue;     // online on the zone world: the live step moves them (MOVEDAT)
         if (!inEither(a, b, k, p[0], p[1])) continue;
         got.put(id.toString(), new double[] { p[0], p[1] });
@@ -11003,7 +11013,7 @@ public static Object[] resetList(java.util.UUID who, String name) {
 # The entry stays while the player's LIVE return point (InstanceEntityConfig) is still on the spot, else it goes (any world's arrival)
 rarr.addInterface(pool.get("java.util.function.Consumer"))
 rarr.addInterface(pool.get("java.lang.Runnable"))
-for _f in ("@WLD@ w", "@REF@ r", "@PR@ pr", "int k"):
+for _f in ("@WLD@ w", "@REF@ r", "@PR@ pr", "int k", "String id"):
     F(rarr, "public %s;" % _f)
 F(rarr, "public static final java.util.concurrent.atomic.AtomicLong MOVED = new java.util.concurrent.atomic.AtomicLong();")
 C(rarr, "public WgRArrive() { }")
@@ -11030,6 +11040,29 @@ public static boolean rpOnSpot(@ST@ st, @REF@ r, java.util.UUID zid, double[] at
     return near(tf.getPosition().x, tf.getPosition().z, at);
   } catch (Throwable t) { return true; }
 }""")
+# what an arrival on the zone world does: 0 nothing, 1 the zone's new landing, 2 off to the island / hub (a closed zone)
+M(rarr, r"""
+public static int act(int k, int own, double x, double z, double[] at, boolean shut) {
+  boolean listed = k >= 0 && own == k && near(x, z, at);
+  if (listed && !shut) return 1;
+  if (listed || shut) return 2;
+  return 0;
+}""")
+# review fix: on the zone world the entry stays ONLY when a listed player was sent off (closed zone / no landing -> island / hub / default:
+# that trip makes the spot their return point again); a move to the landing, or an arrival away from the spot, ends it
+M(rarr, r"""
+public static boolean keeps(int k, int own, double x, double z, double[] at, boolean shut, String how) {
+  boolean listed = k >= 0 && own == k && near(x, z, at);
+  return k >= 0 && listed && (shut || !"the zone's new landing".equals(how));
+}""")
+# review fix: the list file is written off the world thread (a k = -2 task on the common pool)
+M(rarr, r"""
+public static void dropLater(String id) {
+  if (id == null || !@PKG@.WgRZ.RELOC.containsKey(id)) return;
+  @PKG@.WgRArrive a = new @PKG@.WgRArrive(null, null, null, 0 - 2);
+  a.id = id;
+  java.util.concurrent.ForkJoinPool.commonPool().execute(a);
+}""")
 M(rarr, r"""
 public void accept(Object ev) {
   try {
@@ -11055,6 +11088,7 @@ public void accept(Object ev) {
 M(rarr, r"""
 public void run() {
   try {
+    if (this.k == 0 - 2) { @PKG@.WgRZ.relocDrop(this.id); return; }
     if (this.w == null || !this.w.isAlive() || this.r == null || !this.r.isValid()) return;
     @ST@ st = this.r.getStore();
     if (st == null) return;
@@ -11065,7 +11099,7 @@ public void run() {
       // another world (an island ...): the entry goes once the live return point no longer leads to the spot
       @WLD@ zw = null;
       try { zw = @UNI@.get().getWorld(@PKG@.WgRZ.wname()); } catch (Throwable ex) { zw = null; }
-      if (zw != null && !rpOnSpot(st, this.r, zw.getWorldConfig().getUuid(), at)) @PKG@.WgRZ.relocDrop(id);
+      if (zw != null && !rpOnSpot(st, this.r, zw.getWorldConfig().getUuid(), at)) dropLater(id);
       return;
     }
     @PKG@.WgZ2Gen g = @PKG@.WgZ2Isles.genOf(this.w);
@@ -11076,10 +11110,11 @@ public void run() {
     if (L == null || t == null || t.getPosition() == null) return;
     @VEC@ v = t.getPosition();
     int own = @PKG@.WgZ2Isles.ownerOf(L, ((int) Math.floor(v.x)) >> 5, ((int) Math.floor(v.z)) >> 5);
-    boolean listed = this.k >= 0 && own == this.k && near(v.x, v.z, at);
     boolean shut = own >= 0 && @PKG@.WgRZ.closed(own);     // fix round 2: arrived (login, /home, /warp ...) on a closed zone
+    int a = act(this.k, own, v.x, v.z, at, shut);
+    boolean listed = this.k >= 0 && own == this.k && near(v.x, v.z, at);
     String how = null;
-    if (listed && !shut) {
+    if (a == 1) {
       @TRF@ lt = g.landingOf(s, this.k);
       if (lt != null) {
         @PKG@.WgCmds.tell(this.pr, "=[Zone] Zone " + (this.k + 1) + " was rebuilt on a new seed while you were away - you are moved to its new landing.");
@@ -11087,14 +11122,13 @@ public void run() {
         how = "the zone's new landing";
       }
     }
-    if (how == null && (listed || shut)) {
+    if (how == null && a != 0) {
       @PKG@.WgCmds.tell(this.pr, listed && !shut ? "=[Zone] Zone " + (this.k + 1) + " was rebuilt on a new seed while you were away - you are sent to your island (or the hub)."
                                                  : "=[Zone] Zone " + (own + 1) + " is closed (a zone reset; it opens after the restart) - you are sent to your island (or the hub).");
       how = @PKG@.WgRTask.sendOut(st, this.r, this.pr, this.w);
     }
-    // the entry stays while a later login could land on the spot again: sent off a closed zone (the island trip takes this spot as its
-    // return point) or the live return point is still there; else it goes
-    if (this.k >= 0 && !(listed && (shut || !"the zone's new landing".equals(how))) && !rpOnSpot(st, this.r, this.w.getWorldConfig().getUuid(), at)) @PKG@.WgRZ.relocDrop(id);
+    // the entry stays only when this trip makes the spot their return point again (sent off to the island / hub); else it goes
+    if (this.k >= 0 && !keeps(this.k, own, v.x, v.z, at, shut, how)) dropLater(id);
     if (how == null) return;
     MOVED.incrementAndGet();
     @PKG@.WgLog.info("zone reset: " + this.pr.getUsername() + (listed ? " arrived on their old spot of Zone " + (this.k + 1) + " (logged out there / an island return point) after its reset / undo" : " arrived on closed Zone " + (own + 1)) + " - sent to " + how);

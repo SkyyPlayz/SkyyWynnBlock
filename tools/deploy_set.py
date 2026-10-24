@@ -31,6 +31,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-23, wg0710 zone reset + zones022): SkyyWorldGen 0.7.10 + SkyyZones 0.2.2 (incl. 0.2.1) + SkyyExploration 0.3.4 pin, deploy and roll back TOGETHER. New saved data: per-zone seeds / layout files, reset backups (zones.resetKeep 3), relocate.properties, tidy.properties (WorldGen); Zones regrow journals for skyy-shard-* worlds; Exploration reset bridge. Rollback: first /zone <n> reset undo any reset you want kept as the old land, then run /zones restore all (wait for 0 waiting) before putting older jars back; older WorldGen ignores the seeds file (gen 0 = the world seed) so a reset zone would regenerate with old-seed chunks next to new ones - do NOT roll back after a reset without undoing it.
 # FLOOR (2026-10-23, trees061): SkyyTrees 0.6.1 (modifier nodes named "<Ability>: <Modifier> Modifier", display only) rolls back alone to 0.6.0; stays inside the cls060 together-set.
 # FLOOR (2026-10-23, ward011): SkyyWardrobe 0.2.11 (Requip pet portraits from SkyyPets kinds, Enter-to-search, rarity sort, 47 px rows) rolls back alone to 0.2.10; no saved data.
 # FLOOR (2026-10-23, shards047): SkyyShards 0.4.7 (tier up on the totem page, bench = craft + Make pole, totem pad 1 at the island centre with a one-time pillar fix, marker <kind>.i<slot>.centre=1) rolls back alone to 0.4.6 (it repaints the pillar and pad 1 beside it; nothing lost).
@@ -64,7 +65,7 @@ SET = [
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.3.3"),
+    ("SkyyExploration", "0.3.4"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.13"),
@@ -107,7 +108,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.18"), ("SkyyWorldGen", "0.7.9"),
+    ("SkyyMobs", "0.1.18"), ("SkyyWorldGen", "0.7.10"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -124,7 +125,7 @@ SET = [
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.4.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.5.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
-    ("SkyyZones", "0.2.0"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
+    ("SkyyZones", "0.2.2"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
     ("SkyyShards", "0.4.7"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-20, Skill Trees 3): SkyyTrees 0.4.0 + SkyyClasses 0.1.42 + SkyySkills 0.4.55 + SkyyMenu 0.3.41 deploy TOGETHER. Once treesV3 ran on a player file never roll SkyyTrees below 0.4.0 (0.3.x reads a v=3 file as empty trees and its next save rewrites it as v=2, wiping ranks + grandfathered abilities; rolling forward re-runs the update but pays NO second Dust refund - history/treesv3/<pkey>.done; old file in history/treesv3/<pkey>.properties - restore by hand with the server stopped; refunded Dust coins are not taken back). SkyyClasses below 0.1.42 only together with SkyyTrees below 0.4.0.
     # FLOOR (2026-10-20, per-profile chests): never roll SkyyExploration below 0.3.0 (or switch chests.perProfile off) once players opened world chests - shared containers stay empty and each profile's leftovers live only in Skyy_SkyyExploration/chestloot/ (keep it + _cleared/ as recovery).
