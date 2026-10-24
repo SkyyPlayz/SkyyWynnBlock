@@ -357,3 +357,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Weapon signatures: Whirling Staff, Flurry, Kunai Fan, Page Storm (DEPLOYED 2026-10-23, backup deploy-20261023-1329) | [2026-10](2026-10.md) |
 | Class tree rebuild + base weapon abilities + summon slot at Beastmastery 10 (DEPLOYED 2026-10-23, backup deploy-20261023-1747) | [2026-10](2026-10.md) |
 | Gear: tier tag on top, set names, colour-coded requirements, full-set button (DEPLOYED 2026-10-23, backup deploy-20261023-1750) | [2026-10](2026-10.md) |
+| Shards at level 20 + buying shard islands (DEPLOYED 2026-10-23, backup deploy-20261023-1833) | [2026-10](2026-10.md) |
