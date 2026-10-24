@@ -23,7 +23,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   research/Starter-Archipelago-Spec.md v2 (layout APPROVED, research/starter-archipelago-layout.png) + every Skyy answer in
   docs/answered/world.md 2026-10-23 (STARTER ISLAND REDESIGN ... ARCHIPELAGO LAYOUT APPROVED). It stopped in the BUILD step: untracked
   tools/shards_0_4_8_patch.py, tools/islands_0_5_25_patch.py, SkyyShards/*_0.4.8.py, SkyyIslands/*_0.5.25.py and the uncommitted
-  tools/balance_model.py edit (its --p11 cost check) are its unreviewed drafts. NEXT SESSION: re-launch Workflow skywynn-round tag archi1 with
+  tools/balance_model.py edit (its --p11 cost check) are its unreviewed drafts. RE-LAUNCHED 2026-10-24 (run wf_872e02c7-228, builder audits the drafts). If that run is gone: re-launch Workflow skywynn-round tag archi1 with
   the same task (mods / quotes in docs/log 10-23 20:00 line) - tell the builder these drafts exist (reuse or redo), recheck true.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
