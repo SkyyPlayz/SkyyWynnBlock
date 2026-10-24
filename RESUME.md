@@ -16,8 +16,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   tier tag on top, set names, full-set button), Armory 0.1.44-0.1.46 (sig1/sig2/sig4 weapon signatures), Trees 0.5.1-0.6.0 (zoom keep,
   Motherlode, row gates, node icons, CLASS TREE REBUILD: Combat folded into Weaponcraft), Classes 0.1.47, Skills 0.4.64, Rebirth 0.5.2,
   WorldGen 0.7.9 (StructureV2 freeze fix), Menu 0.3.46 (no hotbar item), Pets 0.4.16, Shards 0.4.7, joszza pack mods).
-- PINNED, NOT DEPLOYED (game open): Wardrobe 0.2.11, Trees 0.6.1, Menu 0.3.47, zone reset batch (WorldGen 0.7.10 + Zones 0.2.2 +
-  Exploration 0.3.4) - deploy all after a CLEAN smoke (check the smoke log shows these versions).
+- LIVE 10-23 20:15 (TEST-CHECKLIST 248): zone reset + undo, shard ores regrow, Requip pet portraits, Trees 0.6.1, Menu 0.3.47.
 - RUNNING (background, this session): workflow archi1 (Shards 0.4.8 + Islands 0.5.25 = starter archipelago R1+R2, research/Starter-Archipelago-Spec.md v2);
   (zone reset fixed + pinned, see above). Not finished at a reset -> rerun from the patches.
 - ZoneViewControl duplicate (1.1.1 + 1.1.2) fixed by Skyy 10-23 (1.1.1 removed).

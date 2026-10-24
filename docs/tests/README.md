@@ -359,3 +359,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Gear: tier tag on top, set names, colour-coded requirements, full-set button (DEPLOYED 2026-10-23, backup deploy-20261023-1750) | [2026-10](2026-10.md) |
 | Shards at level 20 + buying shard islands (DEPLOYED 2026-10-23, backup deploy-20261023-1833) | [2026-10](2026-10.md) |
 | Hatch reel fix + pet portraits, totem tier up on the pole + centre pad (DEPLOYED 2026-10-23, backup deploy-20261023-1942) | [2026-10](2026-10.md) |
+| Zone reset + undo, shard ores regrow, Requip pet portraits, modifier names, unspent points in Right now (DEPLOYED 2026-10-23, backup deploy-20261023-2015) | [2026-10](2026-10.md) |
