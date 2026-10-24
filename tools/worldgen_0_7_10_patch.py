@@ -59,6 +59,13 @@ Harness: python SkyyWorldGen/test_skyyworldgen_0.7.10.py [--keep] [--no-smoke]
  every row back. (5) texts: the undo plan says exploration finds of the new land go and the old land's come back (paid XP / coins stay);
  the reset asks for a restart (map fog + structure records clear then); confirm only refuses when the zone has FEWER stored chunks than
  at the plan; the 'no seed fits' text names zones.resetSlot (Zones 2-4 often need it raised - probe P1).
+ FR4 FIX (wg0710fix, 2026-10-23; the real-server probe found Skyy's own file NOT listed): a player who logs out on their island has
+ PlayerData.World = the island instance; a login while that island is unloaded lands on its instance return point (Components.Instance
+ .ReturnPoint, World = the zone world's UUID - the spot they left the zone from). The scan now lists those too (online or not) and the
+ players the live step sends off the zone (their island trip makes their spot the return point); each entry keeps its spot (zone,x,z).
+ An arrival within 48 blocks of the spot on an OPEN zone moves them to the zone's NEW landing (the island would make the spot their return
+ point again); a closed zone sends everyone to their island / the hub as before. An entry goes once the player's live return point
+ (InstanceEntityConfig) no longer leads to the spot; a reset / undo of the zone decides its entries anew.
  FIX ROUND 2 (second critics wg0710, 2026-10-23): (1) a reset / undo zone stays CLOSED until the restart that runs its tidy (WgRZ.HOLD from
  tidy.properties; /zone travel, the server spawn and WgRArrive - any arrival on it, login / home / warp - send people away): the tidy
  drops by position, so no new-land StructureV2 / boss / marker / fog record may exist before it runs; the reset's own landing pre-load
@@ -149,6 +156,12 @@ for _c, _m, _r, _a in [
     (T["CSND"], "sendMessage", "void", [T["MSG"]]), (T["UNI"], "getWorldsPath", "java.nio.file.Path", []),
     (T["BDOC"], "parse", T["BDOC"], [S_]), (T["BDOC"], "toJson", S_, ["org.bson.json.JsonWriterSettings"]),
     (_LL10, "size", "int", []), ("it.unimi.dsi.fastutil.ints.IntList", "getInt", "int", ["int"]),
+    # FR4 fix (wg0710fix): the live instance return point + the zone world's UUID
+    ("com.hypixel.hytale.builtin.instances.config.InstanceEntityConfig", "getComponentType", "com.hypixel.hytale.component.ComponentType", []),
+    ("com.hypixel.hytale.builtin.instances.config.InstanceEntityConfig", "getReturnPoint", "com.hypixel.hytale.builtin.instances.config.WorldReturnPoint", []),
+    ("com.hypixel.hytale.builtin.instances.config.WorldReturnPoint", "getWorld", "java.util.UUID", []),
+    ("com.hypixel.hytale.builtin.instances.config.WorldReturnPoint", "getReturnPoint", T["TRF"], []),
+    (T["WCFG"], "getUuid", "java.util.UUID", []), ("org.bson.BsonBinary", "getData", "byte[]", []), ("org.bson.BsonValue", "isBinary", "boolean", []),
 ]:
     probe_sig(_c, _m, _r, _a)
 for _c, _m in ((T["CSTO"], "SAVE_RESOURCE"), (T["RRSN"], "UNLOAD"), (T["CONS"], "INSTANCE")):
@@ -481,6 +494,9 @@ for _f in ("Object res", "String err", "boolean done"):
 # fix round: step 5 (tied drop) writes its rows into the backup folder itself (dir); a job that gave up waiting (abandon) leaves the
 # put-back to the task, so a slow drop never loses rows (fin / abandon are handed over under the task's monitor)
 F(rtk, "public java.nio.file.Path dir;")
+# FR4 fix (wg0710fix): players the live step sends off the zone -> uuid -> { x, z } where they stood (the island trip takes that spot as
+# its instance return point = a later login while the island is unloaded lands there); WgRZ.relocScan lists them
+F(rtk, "public static final java.util.concurrent.ConcurrentHashMap MOVEDAT = new java.util.concurrent.ConcurrentHashMap();")
 for _f in ("boolean fin", "boolean abandon"):
     F(rtk, "public volatile %s;" % _f)
 M(rtk, "public synchronized boolean giveUp() { if (this.fin) return true; this.abandon = true; return false; }")
@@ -972,6 +988,7 @@ public static int playersIn(@WLD@ w, @PKG@.WgZ2Layout L, int k, boolean send, St
     if (names.length() > 0) names.append(", ");
     names.append(pr.getUsername());
     if (send) {
+      if (pr.getUuid() != null) MOVEDAT.put(pr.getUuid().toString(), new double[] { p.x, p.z });
       @PKG@.WgCmds.tell(pr, "=[Zone] Zone " + (k + 1) + " is being rebuilt on a new seed - you are sent to your island (or the hub).");
       names.append(" -> ").append(sendOut(st, ref, pr, w));
     }
@@ -1791,29 +1808,50 @@ public static int reinsertMap(java.nio.file.Path dd, java.nio.file.Path recDir) 
   return tot;
 }""")
 # fix round (critic: offline players): players whose saved position (universe/players/<uuid>.json, PlayerData.World + Transform) is on the
-# reset zone and who are NOT online -> RELOC (zone-resets/relocate.properties); their next arrival there sends them to their island
+# reset zone and who are NOT online -> RELOC (zone-resets/relocate.properties); their next arrival on that spot moves them to safe ground
+# FR4 fix (wg0710fix, 2026-10-23): a player saved in ANOTHER world (an island / shard instance - Skyy's real file: World = their island)
+# whose instance return point (Components.Instance.ReturnPoint, World = the zone world's UUID) is on the zone is listed too, online or not:
+# a login while that instance is unloaded lands on the return point (InstancesPlugin.onPlayerConnect); so are the players the live step
+# sends off the zone (WgRTask.MOVEDAT - the island trip makes their spot the return point). RELOCAT = uuid -> { x, z } of that spot.
 F(rz, "public static final java.util.concurrent.ConcurrentHashMap RELOC = new java.util.concurrent.ConcurrentHashMap();")
+F(rz, "public static final java.util.concurrent.ConcurrentHashMap RELOCAT = new java.util.concurrent.ConcurrentHashMap();")
 M(rz, "public static java.nio.file.Path relocFile() { return root().resolve(\"relocate.properties\"); }")
 M(rz, r"""
 public static synchronized boolean relocSave() {
   java.util.Properties p = new java.util.Properties();
   java.util.Iterator it = RELOC.entrySet().iterator();
-  while (it.hasNext()) { java.util.Map.Entry e = (java.util.Map.Entry) it.next(); p.setProperty((String) e.getKey(), String.valueOf(((Integer) e.getValue()).intValue() + 1)); }
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    double[] a = (double[]) RELOCAT.get(e.getKey());
+    p.setProperty((String) e.getKey(), String.valueOf(((Integer) e.getValue()).intValue() + 1) + (a == null ? "" : "," + Math.round(a[0]) + "," + Math.round(a[1])));
+  }
   if (p.isEmpty()) { try { java.nio.file.Files.deleteIfExists(relocFile()); } catch (Throwable t) { } return true; }
-  return writeProps(relocFile(), p, "SkyyWorldGen zone reset - players offline on a reset zone (uuid = zone): their next login there sends them to their island (or the hub)");
+  return writeProps(relocFile(), p, "SkyyWorldGen zone reset - players whose next arrival may land on a reset zone (uuid = zone,x,z of that spot): an arrival there moves them to the zone's new landing");
 }""")
 M(rz, r"""
 public static int relocLoad() {
   RELOC.clear();
+  RELOCAT.clear();
   java.util.Properties p = readProps(relocFile());
   if (p == null) return 0;
   java.util.Iterator it = p.stringPropertyNames().iterator();
   while (it.hasNext()) {
     String u = (String) it.next();
-    int k = @PKG@.WgZSeed.num(p.getProperty(u, ""), 0) - 1;
-    if (k >= 0 && k < 5) RELOC.put(u, Integer.valueOf(k));
+    String[] v = p.getProperty(u, "").split(",");
+    int k = @PKG@.WgZSeed.num(v[0].trim(), 0) - 1;
+    if (k < 0 || k >= 5) continue;
+    RELOC.put(u, Integer.valueOf(k));
+    if (v.length >= 3) {
+      try { RELOCAT.put(u, new double[] { Double.parseDouble(v[1].trim()), Double.parseDouble(v[2].trim()) }); } catch (Throwable t) { }
+    }
   }
   return RELOC.size();
+}""")
+M(rz, r"""
+public static synchronized void relocDrop(String u) {
+  if (u == null || RELOC.remove(u) == null) return;
+  RELOCAT.remove(u);
+  relocSave();
 }""")
 M(rz, r"""
 public static @BDOC@ sub(@BDOC@ d, String key) {
@@ -1821,54 +1859,108 @@ public static @BDOC@ sub(@BDOC@ d, String key) {
   org.bson.BsonValue v = (org.bson.BsonValue) d.get(key);
   return v != null && v.isDocument() ? v.asDocument() : null;
 }""")
-# a saved player file -> { x, z } when its world is the zone world, else null
+# the zone world's UUID as its config.json stores it (BSON binary = the bytes a player file's return point holds)
 M(rz, r"""
-public static double[] savedPos(String txt) {
-  if (txt == null || txt.indexOf(wname()) < 0) return null;
+public static byte[] zoneUuid() {
+  try {
+    java.nio.file.Path wf = worldFolder();
+    String t = wf == null ? null : readText(wf.resolve("config.json"));
+    if (t == null) return null;
+    org.bson.BsonValue v = (org.bson.BsonValue) @BDOC@.parse(t).get("UUID");
+    if (v == null || !v.isBinary()) return null;
+    return v.asBinary().getData();
+  } catch (Throwable t) { return null; }
+}""")
+M(rz, r"""
+public static double[] xzOf(@BDOC@ pos) {
+  if (pos == null) return null;
+  double x = numOf(pos, "X");
+  double z = numOf(pos, "Z");
+  if (Double.isNaN(x) || Double.isNaN(z)) return null;
+  return new double[] { x, z };
+}""")
+# a saved player file -> { x, z, 0 } when its world is the zone world; { x, z, 1 } when it is another world whose instance return point is
+# on the zone world (zu = its UUID bytes); else null
+M(rz, r"""
+public static double[] savedPos(String txt, byte[] zu) {
+  if (txt == null || (txt.indexOf(wname()) < 0 && txt.indexOf("ReturnPoint") < 0)) return null;
   try {
     @BDOC@ c = sub(@BDOC@.parse(txt), "Components");
     @BDOC@ pd = sub(sub(c, "Player"), "PlayerData");
     if (pd == null) return null;
     org.bson.BsonValue wv = (org.bson.BsonValue) pd.get("World");
-    if (wv == null || !wv.isString() || !wname().equals(wv.asString().getValue())) return null;
-    @BDOC@ pos = sub(sub(c, "Transform"), "Position");
-    if (pos == null) return null;
-    double x = numOf(pos, "X");
-    double z = numOf(pos, "Z");
-    if (Double.isNaN(x) || Double.isNaN(z)) return null;
-    return new double[] { x, z };
+    if (wv == null || !wv.isString()) return null;
+    if (wname().equals(wv.asString().getValue())) {
+      double[] p = xzOf(sub(sub(c, "Transform"), "Position"));
+      if (p == null) return null;
+      return new double[] { p[0], p[1], 0.0 };
+    }
+    if (zu == null) return null;
+    @BDOC@ rp = sub(sub(c, "Instance"), "ReturnPoint");
+    if (rp == null) return null;
+    org.bson.BsonValue rw = (org.bson.BsonValue) rp.get("World");
+    if (rw == null || !rw.isBinary() || !java.util.Arrays.equals(rw.asBinary().getData(), zu)) return null;
+    double[] q = xzOf(sub(rp, "ReturnPoint"));
+    if (q == null) return null;
+    return new double[] { q[0], q[1], 1.0 };
   } catch (Throwable t) { return null; }
 }""")
+M(rz, r"""
+public static boolean inEither(@PKG@.WgZ2Layout a, @PKG@.WgZ2Layout b, int k, double x, double z) {
+  return inZone(a, k, x, z) || (b != null && inZone(b, k, x, z));
+}""")
+# put: zone k's old entries go first (this change decides them anew - after an undo the old land is back)
 M(rz, r"""
 public static int relocScan(@PKG@.WgZ2Layout a, @PKG@.WgZ2Layout b, int k, boolean put) {
   int n = 0;
   try {
+    java.util.HashMap got = new java.util.HashMap();
     java.nio.file.Path wf = worldFolder();
-    if (wf == null || wf.getParent() == null || wf.getParent().getParent() == null) return 0;
-    java.nio.file.Path pd = wf.getParent().getParent().resolve("players");
-    if (!java.nio.file.Files.isDirectory(pd, new java.nio.file.LinkOption[0])) return 0;
-    java.util.ArrayList fs = new java.util.ArrayList();
-    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(pd);
-    try {
-      java.util.Iterator it = ds.iterator();
-      while (it.hasNext()) fs.add(it.next());
-    } finally { ds.close(); }
-    @UNI@ u = null;
-    try { u = @UNI@.get(); } catch (Throwable t) { u = null; }
-    for (int i = 0; i < fs.size(); i++) {
-      java.nio.file.Path f = (java.nio.file.Path) fs.get(i);
-      String nm = f.getFileName().toString();
-      if (!nm.endsWith(".json")) continue;
-      java.util.UUID id = null;
-      try { id = java.util.UUID.fromString(nm.substring(0, nm.length() - 5)); } catch (Throwable t) { continue; }
-      if (u != null) { try { if (u.getPlayer(id) != null) continue; } catch (Throwable t) { } }
-      double[] p = savedPos(readText(f));
-      if (p == null) continue;
-      if (!inZone(a, k, p[0], p[1]) && (b == null || !inZone(b, k, p[0], p[1]))) continue;
-      n++;
-      if (put) RELOC.put(id.toString(), Integer.valueOf(k));
+    java.nio.file.Path pd = wf == null || wf.getParent() == null || wf.getParent().getParent() == null ? null : wf.getParent().getParent().resolve("players");
+    if (pd != null && java.nio.file.Files.isDirectory(pd, new java.nio.file.LinkOption[0])) {
+      java.util.ArrayList fs = new java.util.ArrayList();
+      java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(pd);
+      try {
+        java.util.Iterator it = ds.iterator();
+        while (it.hasNext()) fs.add(it.next());
+      } finally { ds.close(); }
+      @UNI@ u = null;
+      try { u = @UNI@.get(); } catch (Throwable t) { u = null; }
+      byte[] zu = zoneUuid();
+      for (int i = 0; i < fs.size(); i++) {
+        java.nio.file.Path f = (java.nio.file.Path) fs.get(i);
+        String nm = f.getFileName().toString();
+        if (!nm.endsWith(".json")) continue;
+        java.util.UUID id = null;
+        try { id = java.util.UUID.fromString(nm.substring(0, nm.length() - 5)); } catch (Throwable t) { continue; }
+        boolean on = false;
+        if (u != null) { try { on = u.getPlayer(id) != null; } catch (Throwable t) { } }
+        double[] p = savedPos(readText(f), zu);
+        if (p == null || (on && p[2] == 0.0)) continue;     // online on the zone world: the live step moves them (MOVEDAT)
+        if (!inEither(a, b, k, p[0], p[1])) continue;
+        got.put(id.toString(), new double[] { p[0], p[1] });
+      }
     }
-    if (put && n > 0) relocSave();
+    if (put) {
+      java.util.Iterator mi = @PKG@.WgRTask.MOVEDAT.entrySet().iterator();
+      while (mi.hasNext()) {
+        java.util.Map.Entry e = (java.util.Map.Entry) mi.next();
+        double[] q = (double[]) e.getValue();
+        if (inEither(a, b, k, q[0], q[1])) got.put(e.getKey(), q);
+      }
+      @PKG@.WgRTask.MOVEDAT.clear();
+    }
+    n = got.size();
+    if (!put) return n;
+    java.util.Iterator ot = new java.util.ArrayList(RELOC.keySet()).iterator();
+    while (ot.hasNext()) {
+      Object key = ot.next();
+      Object v = RELOC.get(key);
+      if (v != null && ((Integer) v).intValue() == k) { RELOC.remove(key); RELOCAT.remove(key); }
+    }
+    java.util.Iterator gt = got.entrySet().iterator();
+    while (gt.hasNext()) { java.util.Map.Entry e = (java.util.Map.Entry) gt.next(); RELOC.put(e.getKey(), Integer.valueOf(k)); RELOCAT.put(e.getKey(), e.getValue()); }
+    relocSave();
   } catch (Throwable t) { @PKG@.WgLog.warn("zone reset: the offline player scan failed: " + t); }
   return n;
 }""")
@@ -2075,7 +2167,7 @@ public static String boot(java.nio.file.Path dir, java.nio.file.Path mods) {
   try { c = tiedRetry(); } catch (Throwable t) { c = "rows retry failed: " + t; @PKG@.WgLog.error("zone reset: " + c); }     // fix round 2
   int rl = 0;
   try { rl = relocLoad(); } catch (Throwable t) { @PKG@.WgLog.warn("zone reset: " + relocFile() + " not readable: " + t); }
-  BOOT = a + "; " + b + (c.length() > 0 ? "; " + c : "") + (rl > 0 ? "; " + rl + " offline player(s) go to their island on their next login on a reset zone" : "");
+  BOOT = a + "; " + b + (c.length() > 0 ? "; " + c : "") + (rl > 0 ? "; " + rl + " player(s) listed (logged out / an island return point on a reset zone): arriving on that spot moves them to the new landing" : "");
   return BOOT;
 }""")
 M(rz, "public static String bootText() { return BOOT; }")
@@ -2257,7 +2349,7 @@ public void plan() throws Exception {
   String n = String.valueOf(this.k + 1);
   say("=[Zone] Zone " + n + " reset PLAN (nothing has changed yet): new land from seed generation " + out[0] + " (seed " + Z.seed + ", " + why[0] + ", " + ms + " ms): " + @PKG@.WgZ2Isles.zoneText(Z, this.k) + " - the island centre moves " + Math.round(mv) + " blocks; now " + @PKG@.WgZ2Isles.zoneText(cur, this.k) + ".");
   say("=  It removes " + mine.length + " stored chunks of Zone " + n + " (" + loaded + " loaded now) so every chunk generates new - a backup (about " + @PKG@.WgRZ.mb(estimate(all, mine)) + ") is kept for /zone " + n + " reset undo (backups kept: " + kept + " of " + Math.max(1, Math.min(5, @PKG@.WgCfg.RESET_KEEP)) + ").");
-  say("=  " + players + " player(s) on Zone " + n + " now go to their island (else /hub); " + offline + " player(s) who logged out on Zone " + n + " go there on their next login. " + (this.k == 0 ? "New landing " + land + " = the server spawn (/spawn, first join)." : "New landing " + land + "."));
+  say("=  " + players + " player(s) on Zone " + n + " now go to their island (else /hub); " + offline + " player(s) whose next login would land on Zone " + n + " (logged out there / an island return point there) are moved to the new landing when they arrive. " + (this.k == 0 ? "New landing " + land + " = the server spawn (/spawn, first join)." : "New landing " + land + "."));
   say("=  Lost on the new land: every build, mined block, placed chest and drop on Zone " + n + " (all in the backup). Exploration chunks / chests / zone finds there pay again (an undo takes the new land's finds away again, but XP / coins already paid stay). Kept: inventories, coins, XP, other zones.");
   say("=  Restart the server RIGHT AFTER the reset: Zone " + n + " stays closed until then (its map fog and the old land's structure / marker records are cleared at the start, before anyone plays there).");
   say("+[Zone] To do it: /zone " + n + " reset confirm (within 120 s).");
@@ -2434,9 +2526,9 @@ public void reset() throws Exception {
   @PKG@.WgRZ.RESETS.incrementAndGet();
   String sum = "Zone " + n + " reset to seed generation " + gen + " (seed " + Z.seed + ") by " + this.name + ": " + removed + " stored chunks backed up and removed" + (failedRm > 0 ? " (" + failedRm + " removals FAILED)" : "") + ", " + unloaded + " loaded ones unloaded, " + regen + " regenerated in place; regrow rows " + man.getProperty("tied.zones") + ", exploration rows " + man.getProperty("tied.explore") + "; new landing " + land + "; backup " + dn + " (" + keep + ")";
   @PKG@.WgRZ.LAST = sum;
-  @PKG@.WgLog.info("zone reset: " + sum + "; offline players listed for their island: " + offline + (this.k == 0 ? "; zones.spawnPoint: " + sres : ""));
+  @PKG@.WgLog.info("zone reset: " + sum + "; players listed for the new landing (logged out / island return point on the zone): " + offline + (this.k == 0 ? "; zones.spawnPoint: " + sres : ""));
   say("+[Zone] Zone " + n + " is new land (seed generation " + gen + "): " + removed + " chunks backed up and removed; new landing " + land + (this.k == 0 ? " = the server spawn" : "") + ". After the restart /zone " + n + " takes you there.");
-  say("=  Backup " + dn + " (" + keep + "). Undo: /zone " + n + " reset undo." + (offline > 0 ? " " + offline + " player(s) who logged out on Zone " + n + " go to their island on their next login." : ""));
+  say("=  Backup " + dn + " (" + keep + "). Undo: /zone " + n + " reset undo." + (offline > 0 ? " " + offline + " player(s) whose next login would land on Zone " + n + " are moved to its new landing when they arrive." : ""));
   say("+[Zone] Now restart the server: Zone " + n + " stays CLOSED until then. The start clears its BetterMap fog and the old land's map markers and StructureV2 / RiverBridges records, then pre-loads the new landing - the new structures generate as people explore.");
 }""")
 # ---- the dry run of an undo (spec 6.3 limits)
@@ -2625,7 +2717,7 @@ public void undo() throws Exception {
   say(tc ? "=  The server was not restarted since that reset, so the map / structure records of the old land were never cleared - nothing to fix."
          : "=  Restart the server now: Zone " + n + " stays closed until then (the map fog / markers / structure records of the land are fixed at the start).");
   if (!tok) say("-[Zone] Not every regrow / exploration row of the old land went back (" + tr + ") - they are kept in " + ob.getFileName() + " and the next start puts them back.");
-  if (offline > 0) say("=  " + offline + " player(s) who logged out on Zone " + n + " go to their island on their next login.");
+  if (offline > 0) say("=  " + offline + " player(s) whose next login would land on Zone " + n + " are moved to its landing when they arrive.");
 }""")
 M(rjob, r"""
 public void run() {
@@ -2704,8 +2796,10 @@ public static Object[] resetList(java.util.UUID who, String name) {
     return new Object[] { "ok", "", sb.toString() };
   } catch (Throwable t) { return new Object[] { "error", null, "internal error - see the server log" }; }
 }""")
-# ---- WgRArrive (fix round): PlayerReadyEvent -> a player listed in WgRZ.RELOC (logged out on a zone that was then reset / undone) leaves
-# that zone on their first arrival: their island, else /hub, else the zone's landing (an online player is never listed)
+# ---- WgRArrive (fix round): PlayerReadyEvent -> a player listed in WgRZ.RELOC (their next arrival could land on a spot of a zone that was
+# then reset / undone) who arrives on that spot (48 blocks) is moved to the zone's NEW landing (FR4 fix wg0710fix: not the island - the
+# island trip would make the spot their instance return point again); on a closed zone everyone goes to their island / the hub as before.
+# The entry stays while the player's LIVE return point (InstanceEntityConfig) is still on the spot, else it goes (any world's arrival)
 rarr.addInterface(pool.get("java.util.function.Consumer"))
 rarr.addInterface(pool.get("java.lang.Runnable"))
 for _f in ("@WLD@ w", "@REF@ r", "@PR@ pr", "int k"):
@@ -2713,6 +2807,28 @@ for _f in ("@WLD@ w", "@REF@ r", "@PR@ pr", "int k"):
 F(rarr, "public static final java.util.concurrent.atomic.AtomicLong MOVED = new java.util.concurrent.atomic.AtomicLong();")
 C(rarr, "public WgRArrive() { }")
 C(rarr, "public WgRArrive(@WLD@ w, @REF@ r, @PR@ pr, int k) { this.w = w; this.r = r; this.pr = pr; this.k = k; }")
+M(rarr, r"""
+public static boolean near(double x, double z, double[] at) {
+  if (at == null) return true;
+  double dx = x - at[0];
+  double dz = z - at[1];
+  return dx * dx + dz * dz <= 48.0 * 48.0;
+}""")
+# the player's live instance return point is still on the listed spot of the zone world (zid) - unknown = still on it (keep the entry)
+M(rarr, r"""
+public static boolean rpOnSpot(@ST@ st, @REF@ r, java.util.UUID zid, double[] at) {
+  if (at == null) return false;
+  if (zid == null) return true;
+  try {
+    com.hypixel.hytale.builtin.instances.config.InstanceEntityConfig c = (com.hypixel.hytale.builtin.instances.config.InstanceEntityConfig) st.getComponent(r, com.hypixel.hytale.builtin.instances.config.InstanceEntityConfig.getComponentType());
+    if (c == null) return false;
+    com.hypixel.hytale.builtin.instances.config.WorldReturnPoint rp = c.getReturnPoint();
+    if (rp == null || rp.getWorld() == null || !zid.equals(rp.getWorld())) return false;
+    @TRF@ tf = rp.getReturnPoint();
+    if (tf == null || tf.getPosition() == null) return false;
+    return near(tf.getPosition().x, tf.getPosition().z, at);
+  } catch (Throwable t) { return true; }
+}""")
 M(rarr, r"""
 public void accept(Object ev) {
   try {
@@ -2728,9 +2844,9 @@ public void accept(Object ev) {
     Object ext = st.getExternalData();
     if (!(ext instanceof @EST@)) return;
     @WLD@ w = ((@EST@) ext).getWorld();
-    if (w == null || !@PKG@.WgRZ.wname().equals(w.getName())) return;
-    Object kz = @PKG@.WgRZ.RELOC.isEmpty() ? null : @PKG@.WgRZ.RELOC.remove(p.getUuid().toString());
-    if (kz != null) @PKG@.WgRZ.relocSave();
+    if (w == null) return;
+    Object kz = @PKG@.WgRZ.RELOC.get(p.getUuid().toString());
+    if (!@PKG@.WgRZ.wname().equals(w.getName()) && kz == null) return;
     if (kz == null && !shut) return;
     w.execute(new @PKG@.WgRArrive(w, r, p, kz == null ? 0 - 1 : ((Integer) kz).intValue()));
   } catch (Throwable t) { @PKG@.WgLog.warn("zone reset: the returning player check failed: " + t); }
@@ -2740,26 +2856,47 @@ public void run() {
   try {
     if (this.w == null || !this.w.isAlive() || this.r == null || !this.r.isValid()) return;
     @ST@ st = this.r.getStore();
+    if (st == null) return;
+    String id = this.pr.getUuid().toString();
+    double[] at = null;
+    if (this.k >= 0) at = (double[]) @PKG@.WgRZ.RELOCAT.get(id);
+    if (!@PKG@.WgRZ.wname().equals(this.w.getName())) {
+      // another world (an island ...): the entry goes once the live return point no longer leads to the spot
+      @WLD@ zw = null;
+      try { zw = @UNI@.get().getWorld(@PKG@.WgRZ.wname()); } catch (Throwable ex) { zw = null; }
+      if (zw != null && !rpOnSpot(st, this.r, zw.getWorldConfig().getUuid(), at)) @PKG@.WgRZ.relocDrop(id);
+      return;
+    }
     @PKG@.WgZ2Gen g = @PKG@.WgZ2Isles.genOf(this.w);
-    if (st == null || g == null) return;
+    if (g == null) return;
     int s = (int) this.w.getWorldConfig().getSeed();
     @PKG@.WgZ2Layout L = g.layoutReady(s);
     @TRF@ t = @PKG@.WgOpen.here(st, this.r);
     if (L == null || t == null || t.getPosition() == null) return;
     @VEC@ v = t.getPosition();
     int own = @PKG@.WgZ2Isles.ownerOf(L, ((int) Math.floor(v.x)) >> 5, ((int) Math.floor(v.z)) >> 5);
-    boolean listed = this.k >= 0 && own == this.k;
+    boolean listed = this.k >= 0 && own == this.k && near(v.x, v.z, at);
     boolean shut = own >= 0 && @PKG@.WgRZ.closed(own);     // fix round 2: arrived (login, /home, /warp ...) on a closed zone
-    if (!listed && !shut) return;
-    @PKG@.WgCmds.tell(this.pr, listed ? "=[Zone] Zone " + (this.k + 1) + " was rebuilt on a new seed while you were away - you are sent to your island (or the hub)."
-                                      : "=[Zone] Zone " + (own + 1) + " is closed (a zone reset; it opens after the restart) - you are sent to your island (or the hub).");
-    String how = @PKG@.WgRTask.sendOut(st, this.r, this.pr, this.w);
-    if ("stuck".equals(how) && listed && !shut) {
+    String how = null;
+    if (listed && !shut) {
       @TRF@ lt = g.landingOf(s, this.k);
-      if (lt != null) { ((@CA@) st).addComponent(this.r, @TP@.getComponentType(), @TP@.createForPlayer(this.w, lt)); how = "the zone's landing"; }
+      if (lt != null) {
+        @PKG@.WgCmds.tell(this.pr, "=[Zone] Zone " + (this.k + 1) + " was rebuilt on a new seed while you were away - you are moved to its new landing.");
+        ((@CA@) st).addComponent(this.r, @TP@.getComponentType(), @TP@.createForPlayer(this.w, lt));
+        how = "the zone's new landing";
+      }
     }
+    if (how == null && (listed || shut)) {
+      @PKG@.WgCmds.tell(this.pr, listed && !shut ? "=[Zone] Zone " + (this.k + 1) + " was rebuilt on a new seed while you were away - you are sent to your island (or the hub)."
+                                                 : "=[Zone] Zone " + (own + 1) + " is closed (a zone reset; it opens after the restart) - you are sent to your island (or the hub).");
+      how = @PKG@.WgRTask.sendOut(st, this.r, this.pr, this.w);
+    }
+    // the entry stays while a later login could land on the spot again: sent off a closed zone (the island trip takes this spot as its
+    // return point) or the live return point is still there; else it goes
+    if (this.k >= 0 && !(listed && (shut || !"the zone's new landing".equals(how))) && !rpOnSpot(st, this.r, this.w.getWorldConfig().getUuid(), at)) @PKG@.WgRZ.relocDrop(id);
+    if (how == null) return;
     MOVED.incrementAndGet();
-    @PKG@.WgLog.info("zone reset: " + this.pr.getUsername() + (listed ? " logged out on Zone " + (this.k + 1) + " before its reset / undo" : " arrived on closed Zone " + (own + 1)) + " - sent to " + how);
+    @PKG@.WgLog.info("zone reset: " + this.pr.getUsername() + (listed ? " arrived on their old spot of Zone " + (this.k + 1) + " (logged out there / an island return point) after its reset / undo" : " arrived on closed Zone " + (own + 1)) + " - sent to " + how);
   } catch (Throwable t) { @PKG@.WgLog.warn("zone reset: could not move a returning player off a reset zone: " + t); }
 }""")
 '''

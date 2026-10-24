@@ -414,27 +414,61 @@ def run_files(out, jar, scratch, home):
     t5b = Tk(5, None, None, 0)
     K.check(not bool(t5b.finish()) and bool(t5b.giveUp()), "FR3 ... one that ended first leaves the put-back to the job")
     # FR4 (critic: players offline on the reset zone): the saved player files -> the relocation list (not online, world + position)
+    # FR4 fix (wg0710fix): + players saved on another world (their island) whose instance return point (Components.Instance.ReturnPoint,
+    # World = the zone world's UUID from its config.json) is on the zone - the real file of Skyy (d8ddde89) has exactly that shape
     pdir = os.path.join(save, "universe", "players")
     os.makedirs(pdir, exist_ok=True)
-    def pj(world, x, z):
-        return json.dumps({"Components": {"Transform": {"Position": {"X": x, "Y": 37.0, "Z": z}}, "Player": {"PlayerData": {"World": world}}}}, indent=2)
+    import base64
+    zub = base64.b64encode(bytes(range(16))).decode()
+    other = base64.b64encode(bytes(range(1, 17))).decode()
+    cfgj = os.path.join(wdir, "config.json")
+    open(cfgj, "w").write(json.dumps({"Version": 4, "UUID": {"$binary": zub, "$type": "04"}, "DisplayName": ZW}, indent=2))
+    def pj(world, x, z, rp=None):
+        c = {"Transform": {"Position": {"X": x, "Y": 37.0, "Z": z}}, "Player": {"PlayerData": {"World": world}}}
+        if rp:
+            c["Instance"] = {"ReturnPoint": {"World": {"$binary": rp[0], "$type": "04"}, "ReturnPoint": {"X": rp[1], "Y": 76.0, "Z": rp[2], "Pitch": 0.0, "Yaw": 30.0, "Roll": 0.0}, "ReturnOnReconnect": False}}
+        return json.dumps({"Components": c}, indent=2)
     u1, u2, u3, u4 = ("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333",
                       "44444444-4444-4444-4444-444444444444")
+    u5, u6, u7, u8 = ("55555555-5555-5555-5555-555555555555", "66666666-6666-6666-6666-666666666666", "77777777-7777-7777-7777-777777777777",
+                      "88888888-8888-8888-8888-888888888888")
+    isl = "skyy-island-55555555-5555-5555-5555-555555555555-p3-r1"
     open(os.path.join(pdir, u1 + ".json"), "w").write(pj(ZW, -1251.0, 1045.0))
     open(os.path.join(pdir, u2 + ".json"), "w").write(pj(ZW, 1280.0, 4800.0))
     open(os.path.join(pdir, u3 + ".json"), "w").write(pj("default", -1251.0, 1045.0))
     open(os.path.join(pdir, u4 + ".json"), "w").write("{ not json " + ZW)
     open(os.path.join(pdir, u1 + ".json.bak"), "w").write(pj(ZW, -1251.0, 1045.0))
-    K.eq(int(RZ.relocScan(L, None, 0, False)), 1, "FR4 the plan counts the one player offline on Zone 1 (other zone / other world / broken file / .bak skipped)")
-    K.check(RZ.RELOC.isEmpty(), "FR4 ... the plan lists nobody")
-    K.eq(int(RZ.relocScan(L, None, 0, True)), 1, "FR4 the reset lists that player")
-    K.check(str(list(RZ.RELOC.keySet())) == "['%s']" % u1 and os.path.isfile(os.path.join(wg, "zone-resets", "relocate.properties")), "FR4 ... kept in zone-resets/relocate.properties")
+    open(os.path.join(pdir, u5 + ".json"), "w").write(pj(isl, 5.0, 8.0, (zub, -1222.8, 962.8)))      # island, return point on Zone 1
+    open(os.path.join(pdir, u6 + ".json"), "w").write(pj(isl, 5.0, 8.0, (other, -1222.8, 962.8)))    # return point in ANOTHER world
+    open(os.path.join(pdir, u7 + ".json"), "w").write(pj(isl, 5.0, 8.0, (zub, 1280.0, 4800.0)))      # return point on another zone
+    Tk0 = J("WgRTask")
+    from jpype import JDouble
+    Tk0.MOVEDAT.clear()
+    Tk0.MOVEDAT.put(u8, JArray(JDouble)([-1240.0, 1050.0]))                                          # sent off Zone 1 by the live step
+    Tk0.MOVEDAT.put("99999999-9999-9999-9999-999999999999", JArray(JDouble)([1280.0, 4800.0]))      # ... off another zone
+    K.eq(int(RZ.relocScan(L, None, 0, False)), 2, "FR4 the plan counts the player offline on Zone 1 + the one whose island return point is there (other zone / other world / another world's return point / broken file / .bak skipped)")
+    K.check(RZ.RELOC.isEmpty() and int(Tk0.MOVEDAT.size()) == 2, "FR4 ... the plan lists nobody and keeps the live step's list")
+    RZ.RELOC.put(u2, JClass("java.lang.Integer").valueOf(0))     # an old Zone 1 entry: this change decides Zone 1 anew
+    RZ.RELOC.put(u3, JClass("java.lang.Integer").valueOf(2))     # a Zone 3 entry stays
+    K.eq(int(RZ.relocScan(L, None, 0, True)), 3, "FR4 the reset lists them + the player the live step sent off Zone 1")
+    K.check(sorted(str(x) for x in RZ.RELOC.keySet()) == sorted([u1, u3, u5, u8]) and int(Tk0.MOVEDAT.size()) == 0 and os.path.isfile(os.path.join(wg, "zone-resets", "relocate.properties")),
+            "FR4 ... kept in zone-resets/relocate.properties (the old Zone 1 entry gone, Zone 3's kept): %s" % sorted(str(x) for x in RZ.RELOC.keySet()))
+    rtxt = open(os.path.join(wg, "zone-resets", "relocate.properties"), encoding="latin-1").read()
+    K.check(("%s=1,-1223,963" % u5) in rtxt and ("%s=1,-1251,1045" % u1) in rtxt and ("%s=1,-1240,1050" % u8) in rtxt and ("%s=3" % u3) in rtxt, "FR4 ... each entry keeps its spot (zone,x,z): %s" % rtxt[-400:])
     RZ.RELOC.clear()
-    K.check(int(RZ.relocLoad()) == 1 and int(RZ.RELOC.get(u1)) == 0, "FR4 the next start reads the list back")
+    RZ.RELOCAT.clear()
+    K.check(int(RZ.relocLoad()) == 4 and int(RZ.RELOC.get(u1)) == 0 and [round(float(v)) for v in RZ.RELOCAT.get(u5)] == [-1223, 963] and RZ.RELOCAT.get(u3) is None,
+            "FR4 the next start reads the list back (spots too)")
+    RA = J("WgRArrive")
+    K.check(bool(RA.near(-1230.0, 980.0, RZ.RELOCAT.get(u5))) and not bool(RA.near(-1100.0, 962.0, RZ.RELOCAT.get(u5))) and bool(RA.near(0.0, 0.0, None)),
+            "FR4 an arrival counts within 48 blocks of the spot (an entry without a spot: anywhere on the zone)")
+    RZ.relocDrop(u5)
+    K.check(RZ.RELOC.get(u5) is None and RZ.RELOCAT.get(u5) is None and u5 not in open(os.path.join(wg, "zone-resets", "relocate.properties"), encoding="latin-1").read(), "FR4 relocDrop removes one entry + saves")
     RZ.RELOC.clear()
     RZ.relocSave()
     K.check(not os.path.exists(os.path.join(wg, "zone-resets", "relocate.properties")), "FR4 an empty list removes its file")
     shutil.rmtree(pdir)
+    os.remove(cfgj)
     # ---- fix round 2 checks (second critics), EXECUTED on scratch folders
     zr = os.path.join(wg, "zone-resets", ZW)
     def mkb(name, status, files):
@@ -729,6 +763,21 @@ public void run() {
     int z1n = count(A, L0, 0, true);
     log("H8 stored before: " + A.size() + " chunks, Zone 1 " + z1n);
     String land0 = @W@WgCfg.ZSPAWN;
+    // FR4 fix (wg0710fix): two TEST player files in this scratch world (never the real one): logged out on Zone 1 / on an island whose
+    // instance return point is on Zone 1 (the shape of Skyy's real file) - both must be listed by the reset
+    byte[] zu = @W@WgRZ.zoneUuid();
+    check(zu != null && zu.length == 16, "FR4 the zone world's UUID reads from its config.json");
+    long fx = 0L;
+    java.util.Iterator fi = A.keySet().iterator();
+    while (fi.hasNext()) { Long ix = (Long) fi.next(); if (@W@WgZ2Isles.ownerOf(L0, @CU@.xOfChunkIndex(ix.longValue()), @CU@.zOfChunkIndex(ix.longValue())) == 0) { fx = ix.longValue(); break; } }
+    int fbx = @CU@.xOfChunkIndex(fx) * 32 + 16;
+    int fbz = @CU@.zOfChunkIndex(fx) * 32 + 16;
+    java.nio.file.Path pdir = @W@WgRZ.worldFolder().getParent().getParent().resolve("players");
+    String b64 = zu == null ? "" : java.util.Base64.getEncoder().encodeToString(zu);
+    String D = String.valueOf((char) 36);
+    java.nio.file.Files.write(pdir.resolve("0f0f0f0f-0000-4000-8000-000000000001.json"), ("{\"Components\": {\"Transform\": {\"Position\": {\"X\": " + fbx + ".5, \"Y\": 90.0, \"Z\": " + fbz + ".5}}, \"Player\": {\"PlayerData\": {\"World\": \"skywynn_zones2\"}}}}").getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    java.nio.file.Files.write(pdir.resolve("0f0f0f0f-0000-4000-8000-000000000002.json"), ("{\"Components\": {\"Transform\": {\"Position\": {\"X\": 5.0, \"Y\": 129.0, \"Z\": 8.0}}, \"Instance\": {\"ReturnPoint\": {\"World\": {\"" + D + "binary\": \"" + b64 + "\", \"" + D + "type\": \"04\"}, \"ReturnPoint\": {\"X\": " + (fbx + 3) + ".0, \"Y\": 90.0, \"Z\": " + (fbz - 2) + ".0, \"Pitch\": 0.0, \"Yaw\": 0.0, \"Roll\": 0.0}, \"ReturnOnReconnect\": false}}, \"Player\": {\"PlayerData\": {\"World\": \"skyy-island-0f0f0f0f-0000-4000-8000-000000000002\"}}}}").getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    log("FR4 test player files at Zone 1 (" + fbx + ", " + fbz + ")");
     // ---- refusals + the dry run
     cmd("zone 1 reset confirm");
     waitIdle(30000L);
@@ -779,7 +828,15 @@ public void run() {
     for (int i = 0; i < 400 && !bk.done; i++) Thread.sleep(50L);
     check(bk.res != null && bk.res.indexOf("Empty") != 0 || (bk.res != null && !bk.res.endsWith("Empty,Empty,Empty")), "H7 the new landing is over ground (blocks from y to y-4: " + bk.res + ")");
     check(Bm.size() > 0 && @W@WgRZ.CLOSED == 0, "H8 the zone is open again");
-    check(@W@WgRZ.RELOC.containsKey("d8ddde89-98b2-4739-983e-a39773d582b6") && java.nio.file.Files.exists(@W@WgRZ.relocFile(), new java.nio.file.LinkOption[0]), "FR4 the REAL player file offline on Zone 1 (-1251, 1045) is listed for their island: " + @W@WgRZ.RELOC);
+    double[] fs2 = (double[]) @W@WgRZ.RELOCAT.get("0f0f0f0f-0000-4000-8000-000000000002");
+    check(@W@WgRZ.RELOC.containsKey("0f0f0f0f-0000-4000-8000-000000000001") && fs2 != null && Math.round(fs2[0]) == fbx + 3 && Math.round(fs2[1]) == fbz - 2 && java.nio.file.Files.exists(@W@WgRZ.relocFile(), new java.nio.file.LinkOption[0]),
+          "FR4 the test players (logged out on Zone 1 / an island return point there) are listed with their spots: " + @W@WgRZ.RELOC);
+    // the REAL player file (Skyy's, in this scratch copy) - where it says depends on where Skyy last logged out: listed iff that spot is on Zone 1
+    java.nio.file.Path rf = pdir.resolve("d8ddde89-98b2-4739-983e-a39773d582b6.json");
+    double[] rq = @W@WgRZ.savedPos(@W@WgRZ.readText(rf), zu);
+    boolean rz1 = rq != null && @W@WgRZ.inEither(L0, L1, 0, rq[0], rq[1]);
+    log("FR4 the real player file: " + (!java.nio.file.Files.exists(rf, new java.nio.file.LinkOption[0]) ? "absent" : rq == null ? "not on the zone world, no return point there" : ((rq[2] == 0.0 ? "logged out on the zone world at (" : "island return point on the zone world at (") + Math.round(rq[0]) + ", " + Math.round(rq[1]) + ")" + (rz1 ? " = Zone 1" : " = another zone"))));
+    check(rz1 == @W@WgRZ.RELOC.containsKey("d8ddde89-98b2-4739-983e-a39773d582b6"), "FR4 the REAL player file is listed exactly when its spot is on Zone 1 (" + rz1 + "): " + @W@WgRZ.RELOC);
     // ---- the undo
     cmd("zone 1 reset undo");
     check(waitIdle(60000L) && @W@WgRZ.PLANS.get("u0") != null, "H5 /zone 1 reset undo = a plan");
@@ -858,8 +915,9 @@ def server_phase():
     r2 = subprocess.run(args, cwd=ROOT, env=env, capture_output=True, text=True, timeout=3600)
     open(os.path.join(SCRATCH, "smoke-out.txt"), "w", encoding="utf8").write(r2.stdout + r2.stderr)
     new = sorted(set(os.listdir(smoke)) - before) if os.path.isdir(smoke) else []
-    runs = [n for n in new if n.startswith("run-")]
-    logs = [n for n in new if n.endswith(".log")]
+    # wg0710fix: OUR log only (smoke_test prints "  log: <path>") - another agent's smoke run may finish in the same folder meanwhile
+    ml = re.search(r"^  log: (.+\.log)\s*$", r2.stdout or "", re.M)
+    logs = [os.path.basename(ml.group(1).strip())] if ml and os.path.isfile(ml.group(1).strip()) and os.path.basename(ml.group(1).strip()) in new else []
     txt = open(os.path.join(odir, "probe.txt"), encoding="utf8").read() if os.path.isfile(os.path.join(odir, "probe.txt")) else ""
     for l in txt.splitlines():
         if l.startswith(("OK ", "FAIL ", "H", "RESULT", "console", "probe")):
@@ -881,6 +939,7 @@ def server_phase():
     # fix round: OUR run folder only (smoke_test prints it) - another agent's smoke server may be running in a newer run-* folder
     mk = re.search(r"scratch kept: (.+)", r2.stdout or "")
     runs = [os.path.basename(mk.group(1).strip())] if mk and os.path.isdir(mk.group(1).strip()) else []
+    runs = [n for n in runs if n.startswith("run-") and n in new and os.path.normcase(os.path.abspath(os.path.join(smoke, n))) == os.path.normcase(os.path.abspath(mk.group(1).strip()))]
     if runs:
         rw = os.path.join(smoke, runs[-1], "world")
         kept = os.path.join(SCRATCH, "kept")
@@ -889,7 +948,8 @@ def server_phase():
         if os.path.isdir(os.path.join(rw, "mods", "BetterMap")):
             shutil.copytree(os.path.join(rw, "mods", "BetterMap"), os.path.join(kept, "mods", "BetterMap"))
         shutil.copytree(os.path.join(rw, "universe", "worlds", ZW, "resources"), os.path.join(kept, "universe", "worlds", ZW, "resources"))
-        shutil.rmtree(os.path.join(smoke, runs[-1]), ignore_errors=True)
+        # wg0710fix: the long-path prefix - the PrefabCache copy has paths over 260 chars that a plain rmtree leaves behind
+        shutil.rmtree("\\\\?\\" + os.path.abspath(os.path.join(smoke, runs[-1])), ignore_errors=True)
         out = os.path.join(SCRATCH, "boot.json")
         r3 = subprocess.run([sys.executable, os.path.abspath(__file__), "--phase", "boot", "--out", out, "--dir", SCRATCH, "--jar", JAR, "--home", kept], env=env)
         HK.take(out, "boot")
@@ -910,7 +970,7 @@ def run_boot(out, jar, scratch, home):
     b1 = str(RZ.boot(Paths.get(wg), Paths.get(os.path.join(home, "mods"))))
     K.check("zone 1 (reset)" in b1 and "zone 1 (undo)" not in b1 and b1.count("zone 1 (reset)") == 1 and "no unfinished reset" in b1,
             "H7 start 1 runs the ONE queued tidy (the second reset; the first was cancelled by the undo before any restart): %s" % b1[:400])
-    K.check("offline player(s) go to their island" in b1, "FR4 start 1 reads the offline-player list back: %s" % b1[-200:])
+    K.check("player(s) listed (logged out / an island return point on a reset zone)" in b1, "FR4 start 1 reads the relocation list back: %s" % b1[-200:])
     snap = dict((os.path.relpath(os.path.join(r, f), home), open(os.path.join(r, f), "rb").read()) for r, _d, fs in os.walk(home) for f in fs)
     b2 = str(RZ.boot(Paths.get(wg), Paths.get(os.path.join(home, "mods"))))
     snap2 = dict((os.path.relpath(os.path.join(r, f), home), open(os.path.join(r, f), "rb").read()) for r, _d, fs in os.walk(home) for f in fs)
