@@ -42,3 +42,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-10-24 (Fishing 0.2.0): should Lost Property purses in Zones 2 / 3 (x4 / x20 coins) need a minimum rod tier? [no gate] -> answers go to docs/answered/fishing.md (or economy.md).
 - 2026-10-24 (Wardrobe 0.2.12): loadout slots 15-18 also open free at Overall Level 30 / 40 (slots.byLevel, LOCKED gear.md 2026-10-08) while coins buy slots 11-18 - keep both? [keep both: level slots stay free, coins buy the rest] -> answers go to docs/answered/gear.md.
 - 2026-10-24 (Pets 0.4.17): Pet Fang class XP rises x1.3 (2 -> 2.6 % a rank), not x1.5, because x1.5 breaks the 30 % tree XP cap - OK? [keep x1.3]; max Hatchery hatches ~1.75x the eggs (7 slots, 20 % shorter waits) - OK? [OK] -> docs/answered/pets.md.
+- 2026-10-24 (Zones 0.3.0): the biggest tree that regrows is 6000 blocks by default (you were told 600 earlier) - OK? [6000] -> docs/answered/world.md.
