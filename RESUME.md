@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-23 06:20 MDT; Skyy is resetting the context - a fresh session starts here)
+# SkyWynn - RESUME HERE (updated 2026-10-23 20:00 MDT; Skyy is resetting the context - a fresh session starts here)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -11,30 +11,17 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
    (backup -> `smoke_test.py --allow-pack-api` -> `deploy_set.py --yes` -> `record_deploy.py` -> commit -> `tidy_local.py --yes`).
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
-## STATE (2026-10-23 06:20)
-- LIVE: everything up to TEST-CHECKLIST 239 (freeze fix WorldGen 0.7.9 + StructureV2 back on, zoom keep Trees / Rebirth 0.5.1,
-  no menu item Menu 0.3.46, 10-23 10:54); 238 (dragon riding, pet tooltips, Quirk's tools, Skills leak fix, StructureV2 freeze STOPGAP
-  worldgenEnabled false, 10-23 10:17) (joszza DungeonBosses + River Bridges in the pack, 10-23 08:31) (dragon fighting D1 + boss dragon eggs D6 = Pets 0.4.12 + Mobs 0.1.18, 10-23 06:18). Balance pass P1-P9 DONE (`python tools/balance_model.py --p9 --check` 35 / 0; caster Mana waits
-  for Skyy's feel test; first run ~36 h accepted). Radial tree pages (SkyyTrees 0.5.0) + radial Nexus (SkyyRebirth 0.5.0). Left Alt opens the
-  Menu (VERIFIED). UI R1a (ALT key cap, crouch x2 folds the quest tracker, Stats by source). Wynn elements (elem1). Elemental swords (Gear
-  0.3.40). Dragon pet D0 (Pets 0.4.11). Pack mods StructureV2 (merchant off via `deploy_set tune_structurev2`) + Souls like Bosses ON.
-  Game Review sheet = https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (v16; source tools/dev/scratch/gamereview/ + assemble.py; keep its db capability).
-- LIVE 10-23 12:40: Trees 0.5.2 (TEST 242). sig2 LIVE (Armory 0.1.45, TEST 243). RUNNING: workflow sig4 (Armory 0.1.46 [+ Gear 0.3.44]: base signature for every
-  family) + cls060 READY + PINNED (Trees 0.6.0 + Classes 0.1.47 + Skills 0.4.64 + Rebirth 0.5.2)
-  and sig4 PINNED (Armory 0.1.46) - DEPLOY them as soon as no HytaleServer runs (builders' probe servers). Follow-up: Weaponcraft numbers x1.5.
-  QUEUED Armory: Spellblade great shield = shield-bash attack + 30-block steerable charge (classes.md 10-23); then sig3 UT quirks + sig5
-  Mythic signatures (research/UT-Mythic-Signatures.md; Mythics REPLACE vanilla moves; long-term every vanilla move class-fitted). PRICE TOOLTIPS
-  (research/Price-Tooltips-Spec.md, spec defaults taken): R0 probe SkyyUiProbe 0.9 (running) -> R1 Auctions 0.1.16 -> R2 Bazaar 0.2.2 -> R3 Gear ; Gear 0.3.42 (harvester swing source) LIVE 10-23 (TEST 240), its
-  rows unlock when Trees 0.5.2 deploys; sig1 LIVE (Gear 0.3.43 + Armory 0.1.44, TEST 241). NEXT signature rounds: sig2 (4 locked
-  signatures never built: Whirling Staff, Flurry, Kunai Fan, Page Storm), sig3 (UT quirks + a new signature for every Mythic), sig4 (base
-  signature for every family with none) - research/Weapon-Signatures-Spec.md + gear.md 10-23. Weapon signatures spec done (research/Weapon-Signatures-Spec.md + Skyy's
-  10-23 answers in gear.md) -> builds sig1-sig4 after Gear 0.3.42. Tell joszza: retry-loop message in docs/log 10-23 10:20. QUEUED after zoomfix: SkyyTrees 0.5.2
-  Motherlode = 1 %/rank x3 jackpot, separate from Fortune + stale Plan text sweep + ROW GATES = total AND 3 points in the row
-  above (grandfathered) + HARVEST SWING SPEED (Quick Scythe -> harvester swing; with Gear 0.3.42 harvester swing source)
-  (docs/answered/skills.md 10-23); + Mining node icons once Skyy approves art/tree-node-icons/sheet.png. THEN the CLASS TREE REBUILD (research/Combat-Into-Class-Spec.md
-  + Skyy's 10-23 answers in docs/answered/classes.md: Combat tree folded into each class, 3 branches A1+alts / A2+alt / Weaponcraft, per-branch
-  gates + level floor, 1 point a level, modifiers unlock in the tree + level by use, one free respec) = R0 data + Trees 0.6.0 + Classes 0.1.47
-  + Skills 0.4.64 + Rebirth 0.5.2 together (replaces 0.5.3 / 0.5.4). Node icons: all 11 skill trees + 8 classes drawn (art/tree-node-icons/).
+## STATE (2026-10-23 20:00)
+- LIVE: everything up to TEST-CHECKLIST 247 (today: dragons D1/D3/D6, pet tooltips, Gear 0.3.41-0.3.44 (Quirk's tools, Ability 1 tooltips,
+  tier tag on top, set names, full-set button), Armory 0.1.44-0.1.46 (sig1/sig2/sig4 weapon signatures), Trees 0.5.1-0.6.0 (zoom keep,
+  Motherlode, row gates, node icons, CLASS TREE REBUILD: Combat folded into Weaponcraft), Classes 0.1.47, Skills 0.4.64, Rebirth 0.5.2,
+  WorldGen 0.7.9 (StructureV2 freeze fix), Menu 0.3.46 (no hotbar item), Pets 0.4.16, Shards 0.4.7, joszza pack mods).
+- PINNED, NOT DEPLOYED: SkyyWardrobe 0.2.11 (Requip pet portraits) - deploy after a CLEAN smoke (the last smoke log was another run's).
+- RUNNING (background, this session): workflow archi1 (Shards 0.4.8 + Islands 0.5.25 = starter archipelago R1+R2, research/Starter-Archipelago-Spec.md v2);
+  agent wg0710 fixer (WorldGen 0.7.10 /zone <n> reset + undo: 3 review findings on FR4, real-server harness) -> then deploy WorldGen 0.7.10
+  + Zones 0.2.1 + Exploration 0.3.4 + Zones 0.2.2 (shard ores regrow, READY) TOGETHER. Not finished at a reset -> rerun from the patches.
+- BLOCKER ON SKYY'S PC: two ZoneViewControl jars in UserData/Mods (1.1.1 + 1.1.2) -> server refuses to start; Skyy removes 1.1.1 (other
+  people's mods are read-only for us) - then update PACK.md to 1.1.2.
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
@@ -42,18 +29,15 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Tell joszza: River Bridges' guard role needs MajorDungeons' Mb_Bandit group (fails to load without it).
 - Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST 215-236.
 
-## NEXT (in order; each its own round)
-1. Dragon D3 riding + flying with the saddle, secret dragons, dragon egg icon art.
-2. After the probe tour (research/UI-Queue-Spec.md): R1b feed cards -> vanilla pickup feed; R2 zoom scroll fix (Trees / Rebirth); R3 SkyyQuests
-   PARTICLE TRAIL (Skyy: "Particle trail instead") + objective HUD text + bottom dialogue bar; R4 player heads (PlayerSkin, runtime render,
-   hair); R5 Menu picture tiles phase 1 (+ phase 2 = 31 hub tabs) + page emblems into SkyyTrees.
-3. Next Gear round: ship Quirk's FIXED Multitool + Harvester (Titanium + Lumen; delivered 10-18 in
-   ..\SkyWynn-PRIVATE-art\metal-art\Tools-PRIVATE\z5-held-tools-fixed\<Base>_<Tool>.*; Gear 0.3.26-0.3.40 still read the rejected originals
-   in Tools-PRIVATE\<Base>\ -> G26 check fails -> 0.3.25 look); pad Farming armor textures to a multiple of 32 (client WARN x28, log 10-22 10:00); GearCfg.class not byte-reproducible (8 bytes); vanilla Weapon_Longsword_Flame flat-hit bug; `python tools/pack_drops.py --md`.
-4. Later list: zone gathering spots (research/Zone-Gathering-Spec.md; crop islands 100 / 300 / 800), UT design (12 armor sets + 32 weapons),
-   Powders spec, fishing rework, SkyyZones Z3 / Z4 (needs live probes), authors to ask (research/Structure-Mods-Survey.md).
-5. Small TODOs: fold the 8 abil.costPerLevel.<Class> rows into one table row once the Classes kit has table rows; Skills DRY / CAST maps keyed
-   by UUID never drop quit players (small leak); Sacks 0.8.25 off-hand refill stays parked (Skyy "skip for now").
+## NEXT (in order)
+1. Deploy Wardrobe 0.2.11; the zone reset batch (above) when its fix passes. Tell Skyy when /zone <n> reset is live.
+2. Starter archipelago: R3 radial shard upgrade map (Shards 0.4.9), R4 quests (Quests 0.4.4), R5 combat zone islands, R6 Ranching XP.
+3. Weaponcraft numbers x1.5 (Gear / Mobs / Pets / Accessories balance round); Beastmastery tree hatch-speed + hatchery-slot nodes (Trees + Pets).
+4. sig3 / sig5: UT quirks + Mythic signatures (research/UT-Mythic-Signatures.md; Mythics REPLACE vanilla moves); Spellblade great shield
+   (bash attack + 30-block steerable charge); long-term every vanilla weapon move class-fitted.
+5. Price tooltips R0 probe -> R1 Auctions -> R2 Bazaar (research/Price-Tooltips-Spec.md). BetterMap: runtime listing for new shard worlds.
+6. Older list: UI R1b-R5 after /skyprobe tour; Powders P1 / Fishing stage 2 / UT-28 / SkyyZones 0.3 / Secret dragons build specs in
+   research/cloud/; GlymeraSigns ask (research/cloud/GlymeraSigns-Ask.md); joszza River Bridges guard bug; NoCube Orchard wait.
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
