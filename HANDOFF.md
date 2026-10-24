@@ -32,7 +32,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyQuests | 0.4.4 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
 | SkyyRebirth | 0.5.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
 | SkyyZones | 0.3.0 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
-| SkyyShards | 0.4.8 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
+| SkyyShards | 0.4.9 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.8 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |

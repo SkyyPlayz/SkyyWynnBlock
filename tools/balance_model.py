@@ -7,8 +7,9 @@
     python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
     python tools/balance_model.py --p9       P9 whole first run (player types, the 1-hour rule, zone hours, rebirths, every Skyy goal, stacking) -> targets.md
                                              section 10 with --md; --p9 --check exits 1 on a failed goal (research/Balance-P9-Check.md); --p3 = no P9 LIVE corrections
-    python tools/balance_model.py --p11      P11 starter archipelago (SkyyShards 0.4.8): the cheap-first shard ladder + island upgrade costs, a maxed island's
-                                             output (--p11 --check: exit 1 on a failed row)
+    python tools/balance_model.py --p11      P11 starter archipelago (SkyyShards 0.4.8 + the 0.4.9 re-balance): the cheap-first shard ladder + island
+                                             upgrade costs, a maxed island's output vs hand gathering, the offline harvest ladder (--p11 --check: exit 1
+                                             on a failed row; never writes research/balance/targets.md)
     python tools/balance_model.py --p10      P10 class tree rebuild (Combat into Class, SkyyTrees 0.6.0): points a level, reach, per-branch capstones,
                                              the class-tree damage share vs the old tree, the Combat part's budgets (--p10 --check: exit 1 on a failed row)
     python tools/balance_model.py --econ     P7 economy (coin curve, Bazaar prices by tier, costs on the curve, loop routes) -> targets.md section 9
@@ -3214,9 +3215,17 @@ def el_rows(with_p9=False):
         el_patch(False)
 
 
-# ======================================================================================== P11 starter archipelago (SkyyShards 0.4.8)
+# ======================================================================================== P11 starter archipelago (SkyyShards 0.4.8 / 0.4.9)
 # research/Starter-Archipelago-Spec.md section 13 (Skyy 2026-10-23: "and we make them cheap and easy to upgrade at first, and get harder as
 # you go."): one 10-step shard ladder + island purchases per island tier, coins = hours of income at a reference level (the P7 rule).
+# 0.4.9 RE-FIT (Skyy 2026-10-24, docs/answered/world.md SHARD UPGRADE BONUS: "+2% or more per lvl, new islands stay the same. max islands out
+# put should far exceed player productivity. (you can make itr slower offline or can how long it keeps harvesting offline (make the offline
+# harvest time another upgrade.) but with the numbers required for late game collection, and money making, the shards will be the primary
+# way to collect late game, so players can focus on the combat."): +3 % a level on each of the 3 sub-upgrades (levels count on across the
+# sizes), a new island = today's output (x1.000), a maxed Large island at Totem V = ~3x a focused hand-gathering hour (more with the Time
+# Compressor and Faster modifiers); the old P6 idle cap (idle <= +15 % on top of active play) no longer binds shards - its row is replaced by
+# the shard target; offline harvest = its own shard upgrade (Offline Harvest 0-5: 12 / 18 / 24 / 36 / 48 / 72 h; every shard owned before
+# 0.4.9 keeps the old 3 days = level 5).
 # python tools/balance_model.py --p11 [--check]
 P11_UP_LV = [3, 5, 8, 12, 15, 20, 28, 35, 45, 55]
 P11_UP_H = [0.05, 0.1, 0.2, 0.35, 0.5, 0.75, 1, 1.5, 2, 3]
@@ -3224,9 +3233,14 @@ P11_SPEC_LADDER = [230, 550, 1400, 3400, 6300, 14500, 37000, 105000, 375000, 126
 P11_SUB_H = [[0.01, 0.02, 0.03, 0.05, 0.07], [0.08, 0.1, 0.13, 0.16, 0.2], [0.25, 0.3, 0.4, 0.5, 0.6]]   # Small / Medium / Large, levels 1-5
 P11_GROW_H = [0.15, 0.5]          # to Medium / to Large
 P11_BUY_H = 0.5
-P11_BONUS = 0.5                   # SkyyShards isl.amount.bonus / isl.deco.pct / isl.irrigation.pct: % a level, levels count on across sizes
-P11_SPEC_BONUS = 2.0              # spec 8's +2 % a level for Decorations + Irrigation (a report row: they break its own x1.25 ceiling)
+P11_BONUS = 3.0                   # SkyyShards 0.4.9 isl.amount.bonus / isl.deco.pct / isl.irrigation.pct: % a level, levels count on across sizes
+P11_BONUS_048 = 0.5               # the 0.4.8 default (ShMig049 moves rows still holding it)
+P11_SKYY_MIN = 2.0                # Skyy 2026-10-24: "+2% or more per lvl"
+P11_HAND_X = 2.5                  # 0.4.9 target: a maxed Large island at Totem V >= 2.5 x a focused hand-gathering hour ("far exceed")
 P11_MANUAL = 50                   # shard.manualPct
+P11_OFF_H = [12, 18, 24, 36, 48, 72]      # SkyyShards 0.4.9 up.offline.hours: Offline Harvest level 0..5 (hours between visits counted)
+P11_OFF_STEP = [3, 5, 6, 7, 8]            # up.offline.steps: the ladder step each level 1..5 costs (1,400 .. 105,000 coins)
+P11_TC_MAX = 2.0                          # SkyyShards compressor.mult3 (Time Compressor III)
 
 
 def p11_cost(hours, level):
@@ -3288,7 +3302,8 @@ def p11_rows():
                  [dict(p11_island(1))["S amount %d" % l_] for l_ in range(1, 6)] == [40, 80, 120, 200, 280]))
     rows.append(("T2 Lettuce island = 3,500 coins (0.4.6's island 2 was 19,000)", "{:,}".format(dict(p11_island(2))["buy"]), dict(p11_island(2))["buy"] == 3500))
     mx = p11_mult(3, 5, 5, 5)
-    rows.append(("a maxed Large island <= today's x1.25 (spec 8 re-fit)", "x%.3f" % mx, mx <= 1.25))
+    rows.append(("0.4.9: each sub-upgrade level gives +2 %% or more (Skyy 2026-10-24) - ships +%g %%" % P11_BONUS, "+%g %% a level" % P11_BONUS, P11_BONUS >= P11_SKYY_MIN))
+    rows.append(("0.4.9: a NEW island (Small, subs 0) keeps today's output (x1.000)", "x%.3f" % p11_mult(1, 0, 0, 0), abs(p11_mult(1, 0, 0, 0) - 1.0) < 1e-12))
     path, ok = [p11_mult(1, 0, 0, 0)], True
     for si in range(3):
         for l_ in range(1, 6):
@@ -3302,33 +3317,39 @@ def p11_rows():
     st = 8 / 20.0
     full = (8 + 12 * P11_MANUAL / 100.0) / 20.0
     rows.append(("manual first: a new Farming shard = 8 Eternal / 20 = x%.1f, fully planted x%.1f, Automated x1.0 (= today's Small)" % (st, full), "%.1f / %.1f / 1.0" % (st, full), st < full < 1.0))
-    # the P6 idle cap (Totem I..V = 20..100 % of a farming hour, banked 72 h; P7b: a bonus ON TOP of the active targets): every island at
-    # max multiplies that bonus by mx at most - it must stay within x1.25 of today's bonus, the active targets untouched
-    tot = p7_totals()
-    act = [tot[z][1] for z in range(1, 6)]
-    now_b = [tot[z][0] - tot[z][1] for z in range(1, 6)]
-    new_b = [b * mx for b in now_b]
-    rows.append(("idle stays inside the P6 cap: Totem I..V %s %% / %d h, every island maxed = today's idle bonus x%.3f (<= x1.25), active play unchanged"
-                 % ("/".join(str(x) for x in P6_TOTEM), P7_OFFLINE_H, mx),
-                 "bonus on top x%s -> x%s of the target" % ("/".join("%.2f" % b for b in now_b), "/".join("%.2f" % b for b in new_b)),
-                 all(n <= 1.25 * b + 1e-9 for n, b in zip(new_b, now_b)) and all(0.95 <= a <= 1.05 for a in act)))
+    # 0.4.9: THE SHARD TARGET (replaces the P6 idle cap row): a FULL Large island at Totem k = P6_TOTEM[k] % of a focused hand hour of the zone k
+    # crop (P6 rule, SkyyShards 0.4.4); maxed (3 subs x 15 levels) it is mx x that - Totem V must far exceed hand gathering
+    hand = [P6_RATE["Farming"] * 1.5 * p6_drops(3 * (k + 1) - 1) for k in range(5)]          # Wheat q 1.5, D at the zone's expected Fortune
+    tot_now = [P6_TOTEM[k] / 100.0 * hand[k] for k in range(5)]
+    tot_max = [x * mx for x in tot_now]
+    rows.append(("0.4.9 shard target: a maxed Large island at Totem V >= x%g a focused hand hour (Totem I..V maxed = %s %% of hand)"
+                 % (P11_HAND_X, "/".join("%.0f" % (100.0 * m_ / h_) for m_, h_ in zip(tot_max, hand))),
+                 "Totem V %.0f items / h maxed vs %.0f by hand (x%.2f); with Time Compressor III x%.2f" % (tot_max[4], hand[4], tot_max[4] / hand[4], tot_max[4] / hand[4] * P11_TC_MAX),
+                 tot_max[4] / hand[4] >= P11_HAND_X))
+    tz = p7_totals()
+    rows.append(("[report] 0.4.9: the old P6 idle cap (+15 % on top of active play) no longer binds shards (Skyy 2026-10-24: shards = the primary late-game source)",
+                 "Zone 5 with the Totem V bonus: x%.2f of the active coin target per played hour today, x%.2f with that island maxed" % (
+                     tz[5][0], tz[5][1] + (tz[5][0] - tz[5][1]) * mx), True))
+    sh_ = [(1 + P11_BONUS / 100.0 * 5 * k_) ** 3 for k_ in (1, 2, 3)]
+    rows.append(("[report] output after each size is maxed: Small x%.2f, Medium x%.2f, Large x%.2f (0.4.8 at +%g %%: x%.3f)" % (sh_[0], sh_[1], sh_[2], P11_BONUS_048,
+                 (1 + P11_BONUS_048 / 100.0 * 15) ** 3), "x%.2f" % sh_[2], True))
+    # offline harvest (Skyy: "make the offline harvest time another upgrade"): rising, level 5 = today's 3 days (grandfathered shards), manual 2 h
     man_off = 7200 / 3600.0
-    rows.append(("manual phase: offline output banks at most %g h (shard.manualOfflineSec) vs %d h once Automated" % (man_off, P7_OFFLINE_H),
-                 "%g h / %d h" % (man_off, P7_OFFLINE_H), man_off < P7_OFFLINE_H))
-    # fix2 (critic): the spec's two +2 % rows ALONE (no Amount bonus) already break its x1.25; Amount's 60 -> 100 % spots (if output followed
-    # the spots) would add x1.67 more. Keeping "Small subs 0 = today's Small" AND "maxed Large <= x1.25" leaves ~0.79 % a level for two rows,
-    # 0.5 % for three - SkyyShards ships 0.5 % on Amount / Decorations / Irrigation (a question for Skyy, changeable in Server Setup)
-    spec2 = (1 + P11_SPEC_BONUS / 100.0 * 15) ** 2
-    two = (1.25 ** 0.5 - 1) / 15 * 100
-    rows.append(("[report] spec 8's +2 %% Decorations + Irrigation alone = a maxed Large x%.2f (> its own x1.25 with Small subs 0 = today); "
-                 "the cap leaves %.2f %% a level for two rows - SkyyShards ships %g %% on three (Amount stands in for 'covered / ref')" % (spec2, two, P11_BONUS),
-                 "x%.2f" % spec2, True))
+    off_ok = all(b_ > a_ for a_, b_ in zip(P11_OFF_H, P11_OFF_H[1:])) and P11_OFF_H[-1] == P7_OFFLINE_H and P11_OFF_H[0] >= man_off
+    rows.append(("0.4.9 offline harvest ladder rises, level 5 = today's %d h (shard.maxOfflineSec; every shard owned before 0.4.9 keeps it), level 0 >= the manual %g h"
+                 % (P7_OFFLINE_H, man_off), " / ".join("%d h" % h_ for h_ in P11_OFF_H), off_ok))
+    oc = [p11_cost(P11_UP_H[st_ - 1], P11_UP_LV[st_ - 1]) for st_ in P11_OFF_STEP]
+    rows.append(("0.4.9 offline harvest costs = shard ladder steps %s, rising (cheap first)" % "/".join(str(x) for x in P11_OFF_STEP),
+                 ", ".join("{:,}".format(x) for x in oc), all(b_ > a_ for a_, b_ in zip(oc, oc[1:])) and oc[0] <= 2 * p7_target_h(1)))
+    rows.append(("manual phase: offline output banks at most %g h (shard.manualOfflineSec) vs %d .. %d h once Automated (Offline Harvest 0..5)" % (man_off, P11_OFF_H[0], P11_OFF_H[-1]),
+                 "%g h / %d-%d h" % (man_off, P11_OFF_H[0], P11_OFF_H[-1]), man_off < P11_OFF_H[0]))
+    rows.append(("[report] 0.4.9: storage holds the same TIME at every upgrade level (an island's capacity x its upgrade multiplier: a maxed Large x%.2f)" % mx, "x%.2f" % mx, mx >= 1.0))
     return rows
 
 
 def p11_main():
     rows = p11_rows()
-    print("| P11 starter archipelago (SkyyShards 0.4.8) | Model | OK |\n|---|---|---|")
+    print("| P11 starter archipelago (SkyyShards 0.4.8 + 0.4.9 re-balance) | Model | OK |\n|---|---|---|")
     for t, m, ok in rows:
         print("| %s | %s | %s |" % (t, m, "yes" if ok else "NO"))
     bad = [r for r in rows if not r[2]]

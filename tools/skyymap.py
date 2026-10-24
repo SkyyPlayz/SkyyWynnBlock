@@ -452,6 +452,170 @@ def scaled_boxes(boxes, z, W, H):
     return out
 
 
+# ======================================================================================================== 3b. SHARD MAPS (2026-10-24)
+# SHARD LAYOUTS (SkyyShards 0.4.9, research/Starter-Archipelago-Spec.md section 6 / round R3; Skyy 2026-10-23: "i want it to use a similar
+# visual to the new trees we just added. so in the center in the hub of the shard ... then in a radius around it it will show each island in
+# the shard"). Additive: no 1.0 / 1.1 layout above changes (MAP_VERSION stays "1.0"); this level is SHARD_MAP_VERSION.
+# One hub in the centre (the shard), one disc per island in tier order at its WORLD slot angle (the map mirrors the shard world: the inner
+# ring = the hexagon places, the outer ring = the places between them), lines = the world's bridges (hub -> an inner island, an outer
+# island -> the inner island its bridge hangs on). A caption box under each disc (its tier name) and a banner box in the top left corner are
+# laid out + checked here; the caller measures the caption widths with its own font table (skyyui.text_width).
+SHARD_MAP_VERSION = "1.0"
+SHARD_LABEL_H = 18          # a disc's caption box height (13 px text)
+SHARD_LABEL_GAP = 2         # px between a disc and its caption, and the smallest gap of a caption to anything else
+
+
+def shard_layout(slots, key="shard", col="#f0d060", W=840, H=688, node=40, emb=96, hub=44, r_in=150.0, r_out=290.0, label_w=None,
+                 banner=(8, 8, 260, 44), what="shard map"):
+    """slots = [(angle in degrees (0 = up, clockwise), ring 0 inner / 1 outer, the inner island index a ring-1 bridge hangs on (-1 for
+    ring 0))] in tier order (island i = tier i + 1). label_w = [caption width per island] (None = no captions). Returns the placed +
+    checked layout (place() / check() of this module): nodes ids (key, 0, ring, i), one hub (key) at the centre, banners = [the corner
+    box], lay["labels"] = [(l, t, w, h) or None] per island, lay["shard"] = dict(slots, r_in, r_out). Raises MapError when it does not fit."""
+    cx, cy = W / 2.0, H / 2.0
+    raw = dict(nodes=[], hubs=[dict(key=key, x=cx, y=cy, a=0.0, col=col)], edges=[], junctions=[], W=W, H=H, node=node, emb=emb, hub=hub)
+    ids = []
+    for i, (deg, ring, src) in enumerate(slots):
+        if ring not in (0, 1):
+            raise MapError("skyymap %s: island %d ring %r (0 inner / 1 outer)" % (what, i, ring))
+        r = r_in if ring == 0 else r_out
+        a = math.radians(deg)
+        nid = (key, 0, ring, i)
+        ids.append(nid)
+        raw["nodes"].append(dict(id=nid, kind="up", a=a, ax=r, ay=r, col=col, cap=False, size=node, x=cx + r * math.sin(a), y=cy - r * math.cos(a)))
+    for i, (deg, ring, src) in enumerate(slots):
+        if ring == 0:
+            raw["edges"].append((("hub", key), ids[i], "spoke", 0))
+        else:
+            if not (0 <= src < len(slots)) or slots[src][1] != 0:
+                raise MapError("skyymap %s: outer island %d hangs on %r - not an inner island of this map" % (what, i, src))
+            raw["edges"].append((ids[src], ids[i], "spoke", 1))
+    lay = place(raw, banners=False)
+    if banner:
+        bl, bt, bw, bh = banner
+        lay["banners"] = [dict(key=key, l=bl, t=bt, w=bw, h=bh, align="Start")]
+    lay["info"] = check(lay, ids, what)
+    lay["labels"] = shard_labels(lay, label_w)
+    lay["info"]["min_all"] = shard_check(lay, what)
+    lay["shard"] = dict(slots=list(slots), r_in=r_in, r_out=r_out)
+    return lay
+
+
+def _label_box(n, w, side):
+    """the caption box of disc n on one side: 0 below, 1 above, 2 right, 3 left (SHARD_LABEL_GAP away, centred on the disc)"""
+    h = SHARD_LABEL_H
+    if side == 0:
+        return (int(round(n["cx"] - w / 2.0)), int(round(n["t"] + n["size"] + SHARD_LABEL_GAP)), int(w), h)
+    if side == 1:
+        return (int(round(n["cx"] - w / 2.0)), int(round(n["t"] - SHARD_LABEL_GAP - h)), int(w), h)
+    if side == 2:
+        return (int(round(n["l"] + n["size"] + SHARD_LABEL_GAP)), int(round(n["cy"] - h / 2.0)), int(w), h)
+    return (int(round(n["l"] - SHARD_LABEL_GAP - w)), int(round(n["cy"] - h / 2.0)), int(w), h)
+
+
+def _label_ok(lay, i, b, done):
+    W, H = lay["W"], lay["H"]
+    if not (b[0] >= MARGIN and b[1] >= MARGIN and b[0] + b[2] <= W - MARGIN and b[1] + b[3] <= H - MARGIN):
+        return False
+    for j, n in enumerate(lay["nodes"]):
+        if _box_circle_gap(b[0], b[1], b[2], b[3], n["cx"], n["cy"], n["size"] / 2.0) < (SHARD_LABEL_GAP - 0.01 if j == i else GAP):
+            return False
+    if _box_circle_gap(b[0], b[1], b[2], b[3], W / 2.0, H / 2.0, max(lay["emb"], lay["hub"]) / 2.0) < GAP:
+        return False
+    for bn in lay["banners"]:
+        if _box_gap(b, (bn["l"], bn["t"], bn["w"], bn["h"])) < GAP:
+            return False
+    for d in done:
+        if d is not None and _box_gap(b, d) < GAP:
+            return False
+    for dots in lay["edge_dots"]:
+        for x, y in dots:
+            if b[0] - 3 <= x <= b[0] + b[2] + 3 and b[1] - 3 <= y <= b[1] + b[3] + 3:
+                return False
+    return True
+
+
+def shard_labels(lay, label_w, sides=None):
+    """the caption box of each disc: the first side (below / above / right / left, the one pointing away from the centre first) that is
+    clear of every disc, the hub, the banner, the captions before it and every line; sides = the sides to use (a zoom keeps the 100 %
+    sides). Sets lay["label_side"]. Raises MapError when a caption fits nowhere."""
+    out, used = [], []
+    W, H = lay["W"], lay["H"]
+    for i, n in enumerate(lay["nodes"]):
+        w = label_w[i] if label_w and i < len(label_w) else None
+        if not w:
+            out.append(None)
+            used.append(-1)
+            continue
+        if sides is not None:
+            order = [sides[i]]
+        else:
+            dx, dy = n["cx"] - W / 2.0, n["cy"] - H / 2.0
+            vert = [0, 1] if dy >= 0 else [1, 0]
+            hor = [2, 3] if dx >= 0 else [3, 2]
+            order = (vert + hor) if abs(dy) >= 0.6 * abs(dx) else (hor + vert)
+        pick = None
+        for sd in order:
+            b = _label_box(n, w, sd)
+            if _label_ok(lay, i, b, out):
+                pick = (sd, b)
+                break
+        if pick is None:
+            raise MapError("skyymap shard map: the caption of disc %d fits on no side (%s)" % (i, order))
+        used.append(pick[0])
+        out.append(pick[1])
+    lay["label_side"] = used
+    return out
+
+
+def _box_gap(a, b):
+    return max(b[0] - (a[0] + a[2]), a[0] - (b[0] + b[2]), b[1] - (a[1] + a[3]), a[1] - (b[1] + b[3]))
+
+
+def shard_check(lay, what="shard map"):
+    """the shard map checks on top of check() (the captions' own rules are shard_labels' _label_ok, which raises): no line runs under a
+    disc it does not end at, the banner is clear of every disc and line. Returns the smallest gap found (lines, captions)."""
+    mg = lay["info"]["min_gap"]
+    z = float(lay.get("zoom", 1.0))
+    for k, e in enumerate(lay["edges"]):
+        for n in lay["nodes"]:
+            if n["id"] in (e[0], e[1]):
+                continue
+            for x, y in lay["edge_dots"][k]:
+                g = math.hypot(x - n["cx"], y - n["cy"]) - n["size"] / 2.0
+                if g < 8 * z:
+                    raise MapError("skyymap %s: the line %s -> %s runs under %s" % (what, e[0], e[1], n["id"]))
+                mg = min(mg, g)
+    labs = lay.get("labels") or []
+    for i, b in enumerate(labs):
+        if b is None:
+            continue
+        for j in range(i + 1, len(labs)):
+            if labs[j] is not None:
+                mg = min(mg, _box_gap(b, labs[j]))
+    for bn in lay["banners"]:
+        for n in lay["nodes"]:
+            if _box_circle_gap(bn["l"], bn["t"], bn["w"], bn["h"], n["cx"], n["cy"], n["size"] / 2.0) < GAP:
+                raise MapError("skyymap %s: the banner on disc %s" % (what, n["id"]))
+        for dots in lay["edge_dots"]:
+            for x, y in dots:
+                if bn["l"] <= x <= bn["l"] + bn["w"] and bn["t"] <= y <= bn["t"] + bn["h"]:
+                    raise MapError("skyymap %s: a line runs under the banner" % what)
+    return mg
+
+
+def shard_scaled(lay, z, what="shard map"):
+    """the shard map at zoom z: scaled() (discs, hub, emblem x z; the banner keeps its box in the top left corner) + the captions (centres
+    x z, the same size), checked again"""
+    tmp = dict(lay)
+    tmp["banners"] = []          # scaled() would move a banner to the corner its hub points at (the hub sits in the centre here)
+    out = scaled(tmp, z, what)
+    out["banners"] = [dict(b) for b in lay["banners"]]
+    out["labels"] = shard_labels(out, [None if b is None else b[2] for b in lay["labels"]], lay["label_side"])
+    out["info"]["min_all"] = shard_check(out, "%s at %d %%" % (what, int(round(z * 100))))
+    out["shard"] = lay.get("shard")
+    return out
+
+
 # ======================================================================================================== 4. PICTURES
 class Pic(object):
     """an RGBA picture (straight alpha) with 'over' blending"""
