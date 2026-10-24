@@ -1,24 +1,36 @@
-# Starter Archipelago - spec (2026-10-23)
+# Starter Archipelago + Shard Upgrade Map - spec (2026-10-23, v2)
 
 Where this sits: `research/` (INDEX.md -> research). Answers to the questions at the end go to `docs/answered/world.md` (word for word,
 `python tools/qa_append.py world ...`); build rounds are queued in `RESUME.md` by the local session. Picture: `research/starter-archipelago-layout.png`
-(top-down, 4 px a block, chunk grid every 32 blocks; brown = working bridge, dashes = you build it, blue cross = shard door / portal).
+(layout v2, top-down, 4 px a block, chunk grid every 32 blocks; brown = working bridge, white dashes = you build it, blue cross = shard door / portal).
+v2 changes (Skyy 2026-10-23 ARCHIPELAGO LAYOUT v2 + SHARD UPGRADE MAP): organic islands at varied distances, Foraging between Mining and Farming,
+a walkable ring of bridges + spokes, all bridges our own code-built ones (section 3); the shard menu becomes a radial node map with one island per
+crop / tree tier / ore / fruit / animal, each with Size + 3 five-level sub-upgrades (sections 6-9); the Combat shard = one island per zone
+(section 10); costs per island tier on the coin curve (section 13).
 
-**Skyy's words (docs/answered/world.md 2026-10-23 STARTER ISLAND REDESIGN + SHARDS FROM THE START), summary:** you spawn on one island (keeps the small
-fishing pond); 6 shard islands kinda in a circle around it, 5 joined by bridges (River Bridges by joszza); each island has what you need to start
-that field and its shard, locked until that skill is level 5 (Combat: class level 5). Farming = small farm + water, Foraging = covered in T1 trees,
-Mining = a bridge leading to a big cave full of copper with the shard in it (the Mining SHARD is itself a copper cave with a totem; upgrading the
-copper part grows how much copper is in it and how big it is), Orchard = small T1 (apple) orchard, Ranching = a few fenced animals + a chest of
-crates (quests teach taming / ranching), Combat = today's monster island (no working bridge, you bridge there); from Combat you bridge to the boss
-island to unlock the hub portal. "that way, you can unlock and learn to use the shards before ever leaving the island".
-**It REPLACES** the same day's "shards = level 20 reward" (SkyyShards 0.4.6 lv20 grants).
-
-Later the same day (coordinator relays, Skyy's words):
-- "and we make them cheap and easy to upgrade at first, and get harder as you go." -> section 11 (one cost ladder).
+**Skyy's words** (all in `docs/answered/world.md`, 2026-10-23):
+- STARTER ISLAND REDESIGN + SHARDS FROM THE START (summary): spawn island keeps the small fishing pond; 6 shard islands kinda in a circle around it;
+  each island has what you need to start that field and its shard, locked until that skill is level 5 (Combat: class level 5); Farming = small farm
+  + water, Foraging = covered in T1 trees, Mining = a bridge leading to a big cave full of copper with the shard in it (the Mining SHARD is itself a
+  copper cave; upgrading the copper part grows how much copper is in it and how big it is), Orchard = small T1 (apple) orchard, Ranching = a few
+  fenced animals + a chest of crates (quests teach taming), Combat = today's monster island (no working bridge); Combat -> boss island -> hub portal.
+  It REPLACES the same day's "shards = level 20 reward" (SkyyShards 0.4.6).
+- "and we make them cheap and easy to upgrade at first, and get harder as you go."
 - "and for the farming one, it starts with like 8 eternal wheat around the totem, and a bunch of tilled soil you can plant crops in. (make the
   collection totem pole able to replant, so you can give it seeds, and it will replant in its range. then eternal plants is part of the first
-  island upgrade. and it makes every tilled space on the farm island come planted with the eternal seed of that plant." -> sections 6-7.
-- "so its more manual until at least the first shard island upgrade." -> section 6 (manual phase for EVERY shard, automation = upgrade 1).
+  island upgrade. ..." + "so its more manual until at least the first shard island upgrade."
+- LAYOUT v2: "make it less boxy, and square. make thye distances more random, and is move the foraging back between mining and farming, then put
+  bridges between all of them, so you can walk the islands in a circle, instead of having to go back to the spawn to get to a different one."
+- SHARD UPGRADE MAP (long message, word for word in world.md l.151): radial map like the new trees; centre = the shard icon (click = overall shard
+  upgrades + modifiers on the right); around it one node per island (wheat first; T2 = buy the lettuce island with money, lettuce and lettuce
+  seeds); island click = its upgrades: main = SIZE + 3 sub-upgrades (crop amount, decorations - "the nicer the environment, the happier and more
+  productive the workers summoned by your totem pole are", visual difference per level - and a third), 5 levels each, all maxed before the next
+  size, then they start again; each crop island upgrades separately; the same pattern for all shards except Combat: an island per zone,
+  upgrades = how many mobs at once, how high their level, how fast they spawn; each island upgrade makes it bigger and adds mobs to the pool; at
+  max the Zone 1 island has an upper part with the above-ground mobs and a lower part modelled on the deep caverns with their mobs; always night,
+  night mobs spawn there too.
+- Popups skipped by that message -> spec defaults TAKEN (world.md l.151-152): new islands are added around existing starter islands; Automation
+  is bought once per shard; Ranching door at Ranching 5; the starter cave copper regrows; third sub-upgrade = Irrigation.
 
 ---
 
@@ -36,54 +48,62 @@ Later the same day (coordinator relays, Skyy's words):
 | Quests | SkyyQuests 0.4.3 | tutorial line (24 tasks, `TUT` l.590), objective types `break felled gather craft kill reach enter talk page event tier level bridge area`; outside mods feed `quest:fn:event` and gate parts with `caller=` / `requires=`; `first_shard` (G11) waits on an `island:shard` event nobody sends. |
 | Collections / tiers | SkyyCollections 0.2.32, `tools/tier_tags.py` | T1: `Ore_Copper`, logs `Wood_Oak_Trunk` + `Wood_Birch_Trunk`, crop Wheat (`Plant_Crop_Wheat_Item`, `Plant_Seeds_Wheat`, `Plant_Seeds_Wheat_Eternal`); Orchard = `Plant_Fruit_Apple` / Berries (pays Orchard XP); Ranching = meat collections only (`Food_Chicken_Raw` ...). |
 | Shard ore regrow | SkyyZones 0.2.2 round (docs/answered/world.md 10-23, not pinned yet; SET has 0.2.0) | world prefix `skyy-shard-` = ore regrow region (break -> stone -> regrows). |
-| River Bridges | pack mod (joszza, ARR, permission for all his mods: PACK.md l.16) | `RiverBridges-0.1.1.jar`, prefabs `Server/Prefabs/RiverBridges/<name>.prefab.json`: wood_bridge 21 x 5 (y 0..1, oak trunks + moss), stone_bridge 24 x 6, bridge1 29 x 7 (+ broken_*), kweebec_bridge 29 x 16, trork_bridge 34 x 20. Its loader resolves `RiverBridges/<name>` through the engine `PrefabStore.findAssetPrefabPath` and pastes with `PrefabUtil` + `PrefabRotation` (90-degree steps only). No block / item ids of its own. |
+| River Bridges | pack mod (joszza, ARR, permission for all his mods: PACK.md l.16) - NOT used by v2 (section 3) | `RiverBridges-0.1.1.jar`, prefabs `Server/Prefabs/RiverBridges/<name>.prefab.json`: wood_bridge 21 x 5 (y 0..1, oak trunks + moss), stone_bridge 24 x 6, bridge1 29 x 7 (+ broken_*), kweebec_bridge 29 x 16, trork_bridge 34 x 20. Its loader resolves `RiverBridges/<name>` through the engine `PrefabStore.findAssetPrefabPath` and pastes with `PrefabUtil` + `PrefabRotation` (90-degree steps only). No block / item ids of its own. |
 | Old paper plan | `research/cloud/Starter-Shard-Layout.md` (2026-10-03) | 3-shard chain; superseded by this spec where they differ. |
 
+
 ---
 
-## 2. The layout (one island world, `skyy-island-<pkey>`)
+## 2. The layout v2 (one island world, `skyy-island-<pkey>`)
 
-All islands live in the player's island world (as today). Grass at y 128 for the new islands (the bridge decks sit at y 128, one block above the
-grass line of island 2 at 127 does not matter: nothing new bridges to it). x grows east, z grows south (top of the picture = -z).
+All islands live in the player's island world (as today). x grows east, z grows south (top of the picture = -z). Ring order clockwise from the
+east: Combat - Orchard - Ranching - Mining - Foraging - Farming - (back to Combat). Foraging now sits between Mining and Farming (Skyy).
 
-| Island | Centre (x, z) | Radius | Grass y | Reached by | Shard door at |
+| Island | Centre (x, z) | Base radius | Distance from spawn | Grass y | Shard door at |
 |---|---|---|---|---|---|
-| **Spawn** (today's island 1, unchanged) | (8, 8) | 14 | 128 | - | - (keeps pond, chest, cave, hill) |
-| **Farming** (north) | (8, -38) | 12 | 128 | bridge from Spawn, along z: z -6 .. -26 (gap 20) | island centre (8, 129, -38) |
-| **Foraging** (north-east) | (52, -34) | 12 | 128 | bridge from Farming's east rim, along x at z -38: x 20 .. 40 | centre clearing (52, 129, -34) |
-| **Mining** (west) | (-40, 8) | 16 (rock hill, top y ~142) | 128 | bridge from Spawn, along x: x -6 .. -24, lands at the cave mouth | cave chamber floor (-44, 124, 8) |
-| **Orchard** (south) | (8, 54) | 12 | 128 | bridge from Spawn, along z: z 22 .. 42 | centre (8, 129, 54) |
-| **Ranching** (south-west) | (-36, 50) | 12 | 128 | bridge from Orchard's west rim, along x at z 54: x -4 .. -24 | beside the pen gate (-30, 129, 50) |
-| **Combat** (today's island 2, unchanged) | (46, 14) | 13.5 | 127 | NO bridge (today's plank stubs; you bridge ~11 blocks) | north of the camp ring (46, 128, 9) |
-| **Boss** (today's island 3, unchanged) | (75, 38) | 14 | 129 | you bridge from Combat (~10 blocks) | (hub portal socket 81,134,42 as today) |
+| **Spawn** (today's island 1, unchanged) | (8, 8) | 14 | - | 128 | - (keeps pond, chest, cave, hill) |
+| **Farming** (north-east) | (29, -31) | 12 | 44 | 128 | centre (29, 129, -31) |
+| **Foraging** (north-west) | (-19, -35) | 13 | 51 | 129 | centre clearing (-19, 130, -35) |
+| **Mining** (west) | (-39, 4) | 16 (rock hill, top y ~142) | 47 | 128 | cave chamber floor (-43, 124, 4) |
+| **Ranching** (south-west) | (-26, 45) | 11 | 50 | 127 | beside the pen gate (-21, 128, 45) |
+| **Orchard** (south) | (17, 50) | 12 | 43 | 128 | centre (17, 129, 50) |
+| **Combat** (today's island 2, unchanged) | (46, 14) | 13.5 | 38.5 | 127 | north of the camp ring (46, 128, 9) |
+| **Boss** (today's island 3, unchanged) | (75, 38) | 14 | 72 | 129 | (hub portal socket 81,134,42 as today) |
 
-- "Kinda in a circle": N Farming, NE Foraging, E Combat (+ Boss beyond it, SE), S Orchard, SW Ranching, W Mining. Five working bridges: Spawn-Farming,
-  Spawn-Mining, Spawn-Orchard, Farming-Foraging, Orchard-Ranching. Every bridge runs along an axis on purpose: prefab paste rotates only in
-  90-degree steps (River Bridges' own `PrefabRotation`), so a ring of 60-degree spokes could not use their bridges. Foraging and Ranching are one
-  island further out (two bridges from spawn) - still in the ring, each in sight from Spawn.
-- Gaps checked (stdlib script, centre distance minus radii): every gap >= 14 blocks except the two you build on purpose (Spawn-Combat 11, Combat-Boss
-  10), so nobody steps across by accident.
-- Footprint: x -56 .. 89, z -50 .. 66 (about 5 x 4 chunks; today x -6 .. 89, z -6 .. 52). The `SkyyIsland` template is a Void world; nothing limits
-  this (UNVERIFIED: a 3 x 3-chunk "template box" was LOCKED 2026-09-25 for island SIZE rules - see question 6).
-- Spawn island hill / cave / pond stay where they are; the bridge landings were picked on flat rim: north landing x 6-10 at z -6 (oak at (0,13) and
-  the wall at x=-3 are not in the way), west landing z 6-10 at x -6 (pond origin (1,7) is 7 blocks in), south landing x 6-10 at z 22 (hill is at
-  ~(15.5,16), east of it). The builder re-checks each landing column against `s3_layout()` and moves it at most 3 blocks sideways.
+- **Organic outlines (not boxy):** each new island's rim = base radius x (1 + 0.12 sin 3a + 0.10 sin 2a + 0.06 sin 5a + 0.04 sin a), each term with
+  the island's own phase seed (the picture uses exactly this), so the five never look alike; plus a lower cone with 2-3 hanging rock "drips". The
+  grass height varies +-1 between islands and gets 1-3 small knolls. Spawn / Combat / Boss keep their 0.5.24 shapes (S3 wobble).
+- **Varied distances:** 43 / 44 / 47 / 50 / 51 blocks from spawn, varied radii 11-16, angles 78 / 133 / 185 / 238 / 298 degrees (not 60-degree steps).
+- **Bridges (brown in the picture):**
+  - **Ring (walk the circle, Skyy):** Farming-Foraging (gap ~24), Foraging-Mining (~19), Mining-Ranching (~16), Ranching-Orchard (~22).
+  - **Spokes to spawn:** Spawn-Farming (~16), Spawn-Foraging (~23), Spawn-Mining (~19, lands at the cave mouth), Spawn-Ranching (~24),
+    Spawn-Orchard (~20).
+  - **No working bridge to Combat** (white dashes = you build): Spawn-Combat (~7-11, today's plank stubs), Orchard-Combat (~23) and
+    Farming-Combat (~22) are open sky - the ring has its one gap at Combat. Combat-Boss (~10, today's stubs) as today.
+  (gaps = centre distance minus both rims along the line, measured on the picture's outlines by the stdlib script.)
+- Footprint: x -58 .. 89, z -52 .. 64 (about 5 x 4 chunks; today x -6 .. 89, z -6 .. 52). The `SkyyIsland` template is a Void world.
+- Spawn island hill / cave / pond stay where they are. Spoke landings were picked away from them: the north-east spoke leaves the rim near (17,-4)
+  (the hill is at ~(15.5,16), south-east), the west spoke near (-6,6) (the pond starts at (1,7), 7 blocks in, so the spoke lands beside it), the
+  south spokes near (2,21) and (13,22). The builder re-checks each landing column against `s3_layout()` and slides it along the rim (at most 4
+  blocks) if it hits a generated feature.
 
 ---
 
-## 3. Bridges
+## 3. Bridges: our own code-built bridge for every bridge
 
-1. **First choice: River Bridges' own prefabs, by path, at runtime** (no file copied; ARR files stay in their jar). After a new island is filled,
-   SkyyIslands loads `RiverBridges/wood_bridge` (21 x 5, the log bridge - fits the 20-block gaps with half a block bite each end; the 18-block Mining
-   gap uses it too, overlapping the rim by 1-2) through the same engine calls their loader uses (`PrefabStore` find + load, `PrefabUtil` paste,
-   `PrefabRotation` ROTATE_90 for the z bridges) on the island world thread. `stone_bridge` (24 x 6) is the alternative look (row `archi.bridgePrefab`).
-   No guards are spawned (we never call their `BridgeGuardSpawner`).
-2. **Fallback: our own generated bridge** (vanilla ids, code, like today's stubs but whole): a 3-wide `Wood_Softwood_Planks` deck at y 128, log rails
-   `Wood_Oak_Trunk` every 4 blocks, `Wood_Softwood_Fence` rails. Used when River Bridges is not loaded, the prefab lookup returns nothing, or the
-   paste throws (logged once). Row `archi.bridgeSource` = `riverbridges|own` (default `riverbridges`, auto-falls back).
-3. Bridges are ordinary blocks (like the rest of the starter island): members can break / rebuild them; a missing bridge is never re-pasted
-   (the player's island is theirs). `/island archipelago bridges` (owner) re-pastes only into AIR cells.
-4. The Combat and Boss gaps get today's broken stubs (unchanged).
+**Decision: every bridge is our own generated bridge (vanilla block ids, code, any angle). River Bridges' prefabs are NOT used here.** Reason: the
+ring and the spokes run at every angle; prefab paste rotates only in 90-degree steps (River Bridges' own `PrefabRotation`), and zig-zag prefab
+pieces would leave steps and overlaps at each turn and look worse than one straight bridge. One code path, one look, any length (16-24).
+
+- **Look ("River Bridges style", our own build, nothing copied):** a 3-wide `Wood_Softwood_Planks` deck drawn along the line (every cell whose centre
+  is within 1.5 blocks of the line, so diagonal decks have no holes), `Wood_Oak_Trunk` side beams under both edges, `Wood_Softwood_Fence` rails
+  with a post every 4 blocks, a gentle arch (+1 block over the middle third), a few `Wood_Oak_Trunk` piers dropping 4-6 blocks under long spans,
+  and moss / vines tufts on 1 in 6 beam cells (the "old log bridge" feel of their wood_bridge). Both ends bite 2 blocks into the rim.
+- Generated at BUILD time with the rest of `s3_layout()` (the line maths runs in Python; the jar carries cells like the other islands).
+- Bridges are ordinary blocks (like the whole starter island): members can break / rebuild them; a missing bridge is never re-pasted by itself.
+  `/island archipelago bridges` (owner) re-places only AIR cells of the generated bridges.
+- River Bridges stays in the pack for its worldgen river bridges (PACK.md); this spec takes nothing from it.
+
 
 ---
 
@@ -92,13 +112,13 @@ grass line of island 2 at 127 does not matter: nothing new bridges to it). x gro
 Same mechanism as today: new layout pieces added to `s3_layout()` (a new design `starter.design=archipelago`, the new default; `three` and `classic`
 stay selectable), encoded at build time, pasted by `FillTask` at the first `/island` of a profile. Vanilla tree / formation shapes are READ from
 `Assets.zip` at BUILD time (the build script opens the zip read-only, converts the prefab json to cells, encodes them into the jar) - never
-committed, never read from the game at runtime. Every island = the existing `S3` rim wobble + dirt over stone + a cone underneath.
+committed, never read from the game at runtime. Every new island = the organic outline of section 2 + dirt over stone + a cone with rock drips underneath.
 
 | Island | Contents (vanilla ids; UNVERIFIED ids marked) | Learn-it purpose |
 |---|---|---|
 | Farming | 9 x 9 plot of `Soil_Dirt_Tilled` with `Plant_Crop_Wheat_Block` (growing, NOT Eternal) on 3 rows, 2 rows empty tilled; a 1-wide water channel through the plot (FluidSection, like the pond); a hay bale stack + scarecrow-ish fence post; a small chest (`Furniture_Crude_Chest_Small`) with `Plant_Seeds_Wheat` x16 + a watering can if vanilla has one (UNVERIFIED id). Door in the middle of the plot on a 3 x 3 stone pad. | hoe / plant / water / harvest by hand |
 | Foraging | "covered in T1 trees": 12-14 trees from `Server/Prefabs/Trees/Oak/Stage_5..7` + `Trees/Birch/...` (build-time copy of the shapes), a 5 x 5 clearing in the middle with the door, a chest with T1 saplings x8 (`Plant_Sapling_Oak` / `_Birch` - UNVERIFIED ids, the builder looks them up in Assets.zip). | fell, replant saplings |
-| Mining | a rock hill (Rock_Stone over dirt, grass cap) with ONE cave: mouth 3 wide x 4 high facing the bridge (east, x -24), a 6-block tunnel, a chamber 13 x 13 x 6 (floor y 124) whose walls / ceiling carry ~40 `Ore_Copper_Stone` + 6 in the tunnel; light from vanilla torches / lanterns (UNVERIFIED id); the door on the chamber floor. The copper REGROWS (below). | "a big cave full of copper" |
+| Mining | a rock hill (Rock_Stone over dirt, grass cap) with ONE cave: mouth 3 wide x 4 high facing spawn (east, where the spoke lands), a 6-block tunnel, a chamber 13 x 13 x 6 (floor y 124) whose walls / ceiling carry ~40 `Ore_Copper_Stone` + 6 in the tunnel; light from vanilla torches / lanterns (UNVERIFIED id); the door on the chamber floor. The copper REGROWS (below). | "a big cave full of copper" |
 | Orchard | 6 apple trees (`Server/Prefabs/Trees/Fruit/Stage_2/Apple_Stage2_001`, fruit `Plant_Crop_Apple_Block_Wall`), grass + flowers, a chest with 4 apple saplings (UNVERIFIED id), door at the centre. | pick fruit |
 | Ranching | an 11 x 11 pen of `Wood_Softwood_Fence` with one `Wood_Softwood_Fence_Gate`, a `Bench_Trough`, hay; inside: tamed `Tamed_Cow` x2, `Tamed_Sheep` x2, `Tamed_Chicken` x3; outside the pen (to catch): `Chicken` x2, `Sheep_Lamb` x1, `Cow_Calf` x1 (wild; the Capture Crate group accepts chickens, lambs, calves); a chest: `Tool_Capture_Crate` x4, `Tool_Shears_Basic` x1, `Container_Bucket` x1, `Plant_Crop_Lettuce_Item` x8, `Plant_Crop_Corn_Item` x8. Animals are spawned like today's camp (`NPCPlugin.spawnNPC` on the island world thread) once at first fill, ids kept in `ranch.ids`; wild ones top up to their count every `ranch.respawnSeconds` while a member is near and the tutorial line is not done. | tame, capture, milk, shear, eggs |
 | Combat | today's island 2 + the Combat door on a 3 x 3 stone pad north of the camp. | fight |
@@ -108,7 +128,7 @@ layout data) and, every `archi.caveRegrowSec` (120 s) while a member is on the i
 or `Rock_Stone` / `Rock_Stone_Cobble` (what a mined node leaves). Any other block in that cell (a player's torch, a chest) = left alone. No
 protection change: the starter island stays a normal build island.
 
-**Without SkyyShards** (or older than the version in section 14) the door cells get a `Rock_Stone_Brick` pedestal and nothing else.
+**Without SkyyShards** (or older than 0.4.8, section 16) the door cells get a `Rock_Stone_Brick` pedestal and nothing else.
 
 ---
 
@@ -131,105 +151,232 @@ protection change: the starter island stays a normal build island.
   Before the lock opens the menu still shows the shard's Totems / Upgrades tabs read-only ("look, don't touch") so the player sees what is coming.
 - **0.4.6's level-20 grant is retired:** one-time migration sets each `lv20.<kind>` that still holds 20 to 0 (= no free item); the rows stay
   (an owner can switch item grants back on). Shards already given stay (the item is a valid extra door). Markers `lv20.<kind>=given|had` stay.
-- **0.4.6's bought islands (slots 2-6) stay exactly as bought.** Island buying is kept and moves onto the new cost ladder (section 11).
+- **0.4.6's bought islands (slots 2-6) are kept, never lost:** by default each becomes the next crop island of that shard, same size and totems (section 9.2, question 2).
 - Without SkyyIslands' new design (owner picks `three` / `classic`), shards come as items again: `shard.starterItems` (default true) gives each
   missing kind's item once when the profile's island has no door of that kind (same give logic as 0.4.6, marker `door.item.<kind>`).
 
+
 ---
 
-## 6. Every shard starts MANUAL; automation is the first upgrade
+## 6. The Shard Upgrade Map (one page per shard, radial like the new trees)
 
-Skyy: "so its more manual until at least the first shard island upgrade." Rule for all six shards:
+Built on the node-map kit the radial trees use: `tools/skyyui.py` KIT 1.8 node maps (`node_map(...)`) + **KIT 1.9 keep mode** (`NodeMap.keep_text()`,
+`mapDrawK` / `mapUpdK`, `keep_holder` variants - a click answers with ONE `sendUpdate`, so a zoomed / scrolled map never jumps back to the top
+left), geometry from `tools/skyymap.py`, page rules `research/Radial-Trees-Spec.md` 2.1-2.4 and Style Guide section 16. Our own art only.
 
-| | Manual phase (from the start) | Upgrade 1 = Automation (per shard, section 11 step 1) |
+**Page** (`hub_page`, 1600 x 980, content 1552 x 774, the trees' row: `| rail 232 | 12 | map 840 x 774 | 12 | panel 456 |`):
+- **Left rail:** the 6 shards (24 px shard icon, name 15 bold in the shard colour, line 2 = "Farming 7 - 3 islands" or red "Locked - Farming 5");
+  click = that shard's map. Legend at the foot (owned / can buy / locked / selected - the trees' pictures). Zoom buttons - 100 % + (kit).
+- **Map canvas (840 x 774):** centre = the **shard hub** (the shard item icon `Skyy_Shard_<Kind>` in a 44 px hub over a 96 px shard emblem).
+  Around it **one node per island** in tier order, clockwise from the top: inner ring = tiers 1-8 (45-degree steps), outer ring = tiers 9-16
+  (offset 22.5 degrees, between the inner ones). Node = a 32 px disc with the island's item icon (Wheat, Lettuce, Oak Log, Copper Ore, Apple,
+  Chicken ...) and a pip arc for its size (S / M / L = 1 / 2 / 3 pips). Edges: hub -> T1, then T(n) -> T(n+1) along the rings (a path you walk
+  outwards); gold when the far island is owned, grey dotted when not. States: owned (shard colour ring), can buy (gold ring), locked (grey +
+  padlock), selected (cyan halo, moved by keep mode). Banners: shard name + motto (e.g. "FARMING SHARD - grow it island by island").
+  Element count: at most 16 island nodes + 1 hub + 16 edges ~ 120 elements per map (MAP_MAX_ELEMENTS 1000).
+- **The map mirrors the world:** inside the shard world the islands sit at the same angles around the hub plaza (section 9.4), so "the lettuce
+  island is up and to the right" is true in both.
+- **Right panel (456), three views** (pre-placed `keep_holder` variants, one shown):
+  1. **Shard view (click the centre):** shard head (icon 40, name 18 bold, "Farming 23 - 4 islands - 2 at Large"); **Automation** (the first
+     shard upgrade, section 7; a big card until bought, then a green "Automated" line); **Storage** II-V; **Auto-Compactor** I-II; **Time
+     Compressor** I-III; **Totem modifiers** (craft Wider / Faster / Replant / Compost / Storage / Rare Finder - today's list); Totem Bench tier
+     (link); **Collect all** and **Enter shard** buttons. Each upgrade line = name, now -> next (Style Guide 15 colours), cost with green / red
+     "(you have N)", one Primary button.
+  2. **Island view (click an owned island):** caption "Farming - T1 Wheat Island - Medium"; **SIZE** row (3 pips S/M/L) with **Grow to Large**
+     (Primary; disabled + red line "Max all 3 upgrades first: 5/5, 3/5, 4/5" until the three subs are 5/5); then the **three sub-upgrade rows**
+     (name, 5 pips, what the next level does, cost, Upgrade button): Amount / Decorations / Irrigation (names per shard, section 8); then the
+     island's totems ("2 / 4 pads") with Collect island. Maxed Large = gold "Island complete".
+  3. **Buy view (click a locked island):** "T2 Lettuce Island", what it makes, cost: coins + 128 Lettuce + 32 Lettuce Seeds (green / red you have
+     N), requirement lines, **Buy island** (Primary). A tier whose previous tier is not owned: "Buy the Wheat island first" (the path is in order).
+- **Replaces** today's shard menu tabs Upgrades + Islands. Today's Totems and Collect tabs stay as the page's two other tabs on the Menu-Pattern
+  tab row (Map | Totems | Collect); the portal / hub / SkyWynn Menu entry points open the Map tab. Locked shard (level < 5): the map shows
+  read-only with a red lock line in the shard view ("look, don't touch").
+
+---
+
+## 7. Manual first, Automation = the first shard upgrade (where the earlier rules sit in the map)
+
+Skyy: "so its more manual until at least the first shard island upgrade." Default taken: **Automation is bought once per shard** (shard view, the
+first card; ladder step 2 = 550 coins + 128 of the shard's T1 raw item). Before it, every island of that shard is in the manual phase; after
+it, every island of that shard (bought now or later) is automated.
+
+| | Manual phase (until Automation) | Automated |
 |---|---|---|
-| Who works | you: plant / fell / pick / mine / tend by hand (all normal gathering XP, collections, drops) | the totem does everything in its range on its own |
-| Totem output | `shard.manualPct` (default 50) % of the normal worker rate, counting only spots that are filled right now (scan, below) | 100 % (today's live rate maths, unchanged) |
-| What comes back by itself | only Eternal things (Farming's 8 Eternal Wheat) and ore (Skyy's regrow rule) | everything: crops, trees, fruit, animals |
-| Replant | the totem replants in its range from what you GIVE it (seeds / saplings / animals) | not needed (Eternal) - the store keeps what is left, you can take it out |
-| Offline | at most `shard.manualOfflineSec` (default 7,200 s = 2 h) of output, then it waits for you | `shard.maxOfflineSec` (259,200 s = 3 days, as today) |
-| Repair on Enter | soil / rim / pads / bridges only - a crop / tree / animal you took stays gone until replanted | today's full repair (AIR cells refilled) |
+| Who works | you: plant / fell / pick / mine / tend by hand (normal gathering XP, collections, drops) | the totems do everything in their range |
+| Totem output | `shard.manualPct` (50) % of the worker rate, counting only spots filled right now (scan) | 100 % |
+| What comes back by itself | only Eternal things (Farming's 8 Eternal Wheat) and ore (Skyy's regrow rule) | everything: "every tilled space ... planted with the eternal seed of that plant"; trees, fruit, animals likewise |
+| Replant | the totem replants in its range from what you GIVE it (seeds / saplings / animals) | not needed - the store keeps what is left, you may take it out |
+| Offline | at most `shard.manualOfflineSec` (7,200 s = 2 h) of output | `shard.maxOfflineSec` (3 days, as today) |
+| Repair on Enter | soil / rim / pads / bridges / decorations only - a crop / tree / animal you took stays gone until replanted | today's full repair (AIR cells refilled) |
 
-Per shard:
+Per shard at the start (its T1 island, Small) and what you give the totem:
 
-| Shard | Starts with (slot 1, Small) | You give the totem | Automation upgrade makes |
+| Shard | T1 island starts with | You give the totem | Automation makes |
 |---|---|---|---|
-| **Farming** | Skyy: "8 eternal wheat around the totem, and a bunch of tilled soil you can plant crops in": the Harvest Spirit I on pad 1 = the island centre (0.4.7), the 8 cells around it `Plant_Crop_Wheat_Block_Eternal`, every other farm cell of today's Small layout = empty `Soil_Dirt_Tilled`. Placing seeds / tilling / watering is ALLOWED on that soil (shard:fn:allowed change). | seeds (any crop seeds - wheat first, later crops when their seeds exist) | "every tilled space on the farm island come planted with the eternal seed of that plant": each tilled cell becomes the Eternal block of the crop it holds (empty cells: the island's crop, Wheat) |
-| **Foraging** | half of today's grove tree spots with an oak (shape from the build-time prefab), the rest bare grass; felling is allowed, the trunk / stump goes, leaves decay | saplings (`Plant_Sapling_Oak` / `_Birch`, UNVERIFIED ids) | Eternal grove: every tree spot holds a tree again after felling (today's repair) |
-| **Orchard** | half of today's apple spots with an apple tree, the rest bare | apple saplings | Eternal orchard: every spot has a fruiting tree; picked fruit comes back on the repair tick |
-| **Mining** | Cave I / Copper I (section 8), the Quarry Spirit I on the chamber floor | nothing (ore regrows - Skyy's 10-23 rule, SkyyZones `skyy-shard-` prefix) | Living vein: the totem's offline share goes from 2 h to 3 days and its rate to 100 % |
-| **Ranching** | the pen with 3 tamed chickens (today's island type), room for 8 | animals: release a filled Capture Crate in the pen, or the totem page takes a crate | Herd: the pen tops itself back up to its cap with the kinds you have had |
-| **Combat** | the arena with a Soul Cage I | Soul Orbs (armory:fn:soulcage, as today) | Soul Cage works on its own at 100 % |
+| Farming | Skyy: "8 eternal wheat around the totem, and a bunch of tilled soil you can plant crops in": Harvest Spirit I on pad 1 = the centre (0.4.7), the 8 cells around it `Plant_Crop_Wheat_Block_Eternal`, every other farm cell empty `Soil_Dirt_Tilled`; placing seeds / tilling / watering ALLOWED on that soil (`shard:fn:allowed` change) | seeds (the island's crop) | every tilled cell = the Eternal block of the island's crop (`Plant_Seeds_<Crop>_Eternal` exist for all 14 crops + our Eternal Mushroom Spores) |
+| Foraging | half of the tree spots with trees of the island's tier, the rest bare; felling allowed | saplings | every spot regrows its tree after felling |
+| Orchard | half of the fruit-tree spots planted | the fruit's saplings | every spot fruits again by itself |
+| Mining | the T1 Copper cave (section 9.3), Quarry Spirit I on the cave floor | nothing (ore regrows - Skyy's 10-23 rule) | the totem's rate 100 % + 3 days offline |
+| Ranching | the T1 Chicken pen with 3 tamed chickens, room for the Amount level | animals (release a filled Capture Crate in the pen, or the totem page takes a crate) | the pen tops itself back up to its Amount cap |
+| Combat | the Zone 1 island (section 10), a Soul Cage I | Soul Orbs (as today) | the Soul Cage kills on its own at 100 % |
 
 **Seed / sapling store and the replant maths** (Skyy: "make the collection totem pole able to replant, so you can give it seeds, and it will
 replant in its range"):
-- Store per shard island (not per totem, so moving a totem never loses seeds): `<kind>.i<n>.seed.<itemId>=<count>`, at most `shard.seedStoreMax`
-  (640) per id. The totem page gets a "Seeds" card: Give seeds (takes every matching seed / sapling from your inventory, counted before / after,
-  saved before the items vanish - the 0.4.6 save-first rule), Take back. Works on every worker totem whose shard plants (Harvest Spirit, Lumber
-  Spirit; Orchard's Harvest Spirit).
-- While someone is inside (each `shard.regrowSec`, 90 s) and at every Enter / Collect: for each EMPTY plantable cell inside a worker totem's range
-  the totem places the crop's first growth stage (or the tree / apple shape for saplings) and takes 1 seed / sapling. Crops then grow by vanilla
-  rules while the world is loaded.
-- The lazy output (offline / between visits) counts covered cells: `covered = Eternal cells in range + planted cells in range`, from the last scan
-  (saved `<kind>.i<n>.cells=<eternal>,<planted>`, written only when it changes). Rate = today's formula x `covered / ref` with `ref` = today's
-  Small-island count (20 for Farming). Manual phase: planted cells count `shard.manualPct` %, Eternal cells 100 %, and each crop item the totem
-  makes from a planted cell uses `1 - shard.seedReturnPct/100` (default 50 % back = half a seed) from the store; store empty = planted cells stop
-  counting. Foraging / Orchard: 1 sapling per `shard.itemsPerSapling` (20) logs / fruit.
-- Numbers (Harvest Spirit I, Small, no modifiers, default rows): start = 8 Eternal / 20 = **0.4 / min (24 / h)**; all 20 cells planted by hand or by
-  seeds = (8 + 12 x 0.5) / 20 = **0.7 / min (42 / h)**; after Automation = **1.0 / min (60 / h) = exactly today's live rate**. Hand farming is
-  ~500 / h (balance GUESS), so the totem is 5-8 % of hand play before Automation and 12 % after: manual play matters, and every later number
-  (P6 idle share, P7 incomes, `balance_model.py`) stays as it is.
-- Today's `Skyy_TotemMod_Replant` (+10 %) keeps its bonus and ALSO halves seed use on that totem (it "replants smarter"). Today's Eternal seeds
-  (`Plant_Seeds_Wheat_Eternal`, the grow cost) and SkyyCollections' Eternal seeds (e.g. Eternal Mushroom Spores) given to the store plant an Eternal
-  cell directly (never used up) - a way to automate cells one by one before the upgrade.
-- Collections / XP from the totem: unchanged (`shard.xpPercent`, collections source "shard").
-- Existing shard islands (built before this) are **grandfathered as automated** (`<kind>.auto=1` by the migration): nothing anyone owns gets worse.
-
-Foraging and Orchard get the same replant mechanic (coordinator default, taken): yes, saplings in the same store.
+- A store per island (moving a totem never loses seeds): `<kind>.i<n>.seed.<itemId>=<count>`, at most `shard.seedStoreMax` (640) per id. The
+  totem page gets a "Seeds" card: Give seeds (takes the matching seeds / saplings from your inventory, counted before / after, saved before the
+  items vanish - the 0.4.6 save-first rule), Take back. Works on every worker totem that plants (Harvest Spirit, Lumber Spirit).
+- While someone is inside (every `shard.regrowSec`, 90 s) and at every Enter / Collect: each EMPTY plantable cell inside a worker totem's range
+  gets the crop's first growth stage (or the tree / fruit-tree shape) and 1 seed / sapling is taken. Crops then grow by vanilla rules.
+- Lazy output between visits counts covered cells: `covered = Eternal cells in range + planted cells in range` (last scan, saved
+  `<kind>.i<n>.cells=<eternal>,<planted>` only when it changes). Manual phase: planted cells count `shard.manualPct` %, Eternal 100 %; each item
+  the totem makes from a planted cell uses `1 - shard.seedReturnPct/100` (50 % back = half a seed) from the store; empty store = planted cells
+  stop counting. Foraging / Orchard: 1 sapling per `shard.itemsPerSapling` (20) logs / fruit.
+- Numbers (Harvest Spirit I, T1 Wheat Small, all subs 0, default rows): start = 8 Eternal / 20 = **0.4 / min (24 / h)**; fully planted =
+  (8 + 12 x 0.5) / 20 = **0.7 / min**; Automated = **1.0 / min = today's live Small rate**. Hand farming is ~500 / h (balance GUESS): the totem is
+  5-8 % of hand play before Automation, 12 % after. Manual play matters.
+- `Skyy_TotemMod_Replant` keeps +10 % and ALSO halves seed use on its totem. Eternal seeds given to the store (`Plant_Seeds_*_Eternal`, the
+  Eternal Mushroom Spores) plant an Eternal cell directly and are never used up - a way to automate cells one by one before the upgrade.
+- Foraging and Orchard use the same replant mechanic (coordinator default, taken).
+- Existing shards (built before this) are **grandfathered as Automated** (`<kind>.auto=1`): nothing anyone owns gets worse.
 
 ---
 
-## 7. Farming shard (the worked example)
+## 8. Island upgrades: SIZE + three sub-upgrades (the pattern for every shard but Combat)
 
-1. Slot 1 Small: centre pad = Harvest Spirit I, 8 Eternal Wheat around it, the rest of today's farm cells tilled and empty, water cells as today.
-2. Player plants seeds by hand (allowed now), waters, harvests ripe wheat (Farming XP, Wheat collection, seeds drop).
-3. Gives the totem seeds -> it keeps its range planted -> 0.7 / min while seeds last.
-4. Buys Automation (step 1: 230 coins + 64 Wheat) -> every tilled cell becomes Eternal -> 1.0 / min, no seeds, 3 days offline.
-5. Then Grow Medium / Large, totem tier-ups, more pads, more islands (section 11).
+Skyy: "the main upgrade is the size. but i want 3 sub upgrades ... (so you have to max the 3 sub upgrades before you can upgrade the wheat island to
+the next size. ... (well probably do 5 levels per sub upgrade.) and when max you upgrade to the next isalnd size, and have to start upgrading you
+sub upgrades again."
+
+- **Sizes:** Small 13 x 13 -> Medium 21 x 21 -> Large 29 x 29 (today's three, grown in place). Pads 3 / 4 / 5 (today).
+- **Three sub-upgrades, 5 levels each, per size.** Grow is only possible at 5 / 5 / 5; after a grow the three levels start again at 0 **but never
+  lose what they gave**: each size's level 0 starts where the size below ended (a grow can never make an island worse). Each crop / tier island
+  upgrades separately.
+
+| Sub-upgrade | Farming / Foraging / Orchard name | Mining name | Ranching name | Effect per level (L1 .. L5, every size) |
+|---|---|---|---|---|
+| **Amount** | Crop Amount / Tree Amount / Fruit Trees | Ore Amount ("the copper part": richness, section 9.3) | Herd Size | share of the island's spots filled: L0 60 %, +8 % a level -> 100 % at L5 (a bigger size has 2-2.6x the spots, so Medium L0 > Small L5) |
+| **Decorations** | Decorations | Decorations | Decorations | workers' mood: +2 % totem productivity a level, kept across sizes (Small 0-10 %, Medium 10-20 %, Large 20-30 %) + a VISIBLE change every level (below) |
+| **Irrigation** (third, default taken) | Irrigation | Underground Springs | Water Troughs | faster regrowth / produce: +2 % worker rate a level, kept across sizes (0-10 / 10-20 / 20-30 %) + more water features every level (below) |
+
+Rejected third-upgrade ideas (listed for Skyy): **Worker Lodging** (more workers per totem - doubles what pads already do), **Soil Quality**
+(+yield per crop - overlaps Amount and Fortune), **Lighting** (night output - overlaps the Harvest Moon / Mushroom totems).
+
+**Decorations - what each level adds (Skyy: "visual differences per lvl")** - placed from vanilla blocks / vanilla prop prefabs (read from
+Assets.zip at BUILD time, never committed); a bigger size places more of each and in more places:
+
+| Level | Farming | Foraging | Orchard | Mining (cave) | Ranching |
+|---|---|---|---|---|---|
+| 1 | flower borders along the rim + a dirt path to the totem | ferns + mushrooms under the trees | flower beds between the rows | lanterns on the walls | hay bales + a feed trough |
+| 2 | fences with a gate + lanterns on posts | a log bench + a stump table | fruit crates + a ladder | a rail track + a mine cart | paddock fences with gates |
+| 3 | hay bales, a scarecrow, barrels | a woodcutter's hut corner (axe rack, chopping block) | a picnic table + beehives | timber support beams + a tool rack | a chicken coop (`Coop_Chicken` model as deco) + a water barrel |
+| 4 | a small roofed barn / shed + benches | a lantern trail + vines | a pergola arch with vines | a glowing crystal cluster + a small forge corner | a small barn |
+| 5 | a windmill (or gazebo) + banners + a paved plaza round the totem | a treehouse platform | a fountain garden + banners | a lit crystal arch over the totem + banners | a weathervane + banners + a paved yard |
+
+**Irrigation - what each level adds:** L1 one water channel, L2 cross channels, L3 a small pond, L4 a fountain, L5 a raised basin with a
+waterfall (Mining: drip pools -> a spring -> an underground stream -> a crystal pool -> a waterfall from the cave roof; Ranching: troughs ->
+a pond -> a stream -> a fountain -> a waterfall). Water through `FluidSection` (as the spawn pond).
+
+Island output (all multiplied; capped per totem tier by `totem.workerMax` as today): `rate x covered/ref x (1 + deco%) x (1 + irrigation%) x
+modifiers`. **Balance re-fit (R1):** `ref` and the speeds are re-fitted so that a T1 island at Small with subs 0 (Automated) = today's Small
+output and a fully maxed Large = today's Large x 1.25 (the deeper ladder is worth a little more), and the P6 idle cap holds (idle shards add
+at most +15 % on top of active play - `research/balance/targets.md` Part 8). Checked by the new `balance_model.py` flag (section 13).
 
 ---
 
-## 8. Mining shard = a copper cave
+## 9. One island per tier: the ladders per shard
 
-Skyy: "the mining shard should be a cave full over copper with a totem in it. as you upgrade the copper part of the shard, you can upgrade how much
-copper is in the cave, and how big the cave is." + "you can make multiple of the collection totem poles right?" -> yes: pads per cave size.
+The node list of each map = the shard's own tier ladder, read at BUILD time from `tools/tier_tags.py` (one table, the standing tier rule), sorted
+by tier then name (the sort-by-tier rule):
 
-- Each Mining island becomes a **cave inside a rock island** (outer box = today's island footprint 13 / 21 / 29, so the hexagon, bridges and hub do
-  not move): a short tunnel from the plank bridge into a chamber; walls, ceiling and floor pillars `Rock_Stone`; copper `Ore_Copper_Stone` on a
-  share of the exposed cells (a fixed pattern per island seed, so a repaint is identical); light = vanilla light blocks every 6 cells (UNVERIFIED
-  id); totem pads on the chamber floor. Ore regrows by Skyy's rule (SkyyZones prefix region); the Enter repair also puts ore back on AIR (today).
-- Two upgrade tracks (both on the ladder, section 11):
+| Shard | Islands (T1 first) | Count | Each island grows | Buy cost items |
+|---|---|---|---|---|
+| Farming | `CROP_LADDER`: Wheat, Lettuce, Carrot, Corn, Cauliflower, Turnip, Pumpkin, Aubergine, Tomato, Chilli, Cotton, Rice, Potato, Onion, Mushroom (spores) | 15 | that crop (Eternal block after Automation) | 128 crop + 32 seeds (Skyy's "money, lettuce, and lettuce seeds") |
+| Foraging | `LOGS` tiers 1-15 (one island per TIER, its trees mixed: T1 Oak + Birch, T2 Beech / Ash / Aspen / Apple, ... T15 Crystal / Stormbark) | 15 | that tier's trees | 128 logs of the tier + 16 saplings |
+| Mining | `ORES` + `ZONE_METALS` by tier: Copper (T1), Iron, ... (11 ores; the zone metals in their host rock) | 11 | a cave of that ore (9.3) | 128 ore + 4 Enchanted (the ore's) |
+| Orchard | Apple (T1, Skyy), Berries, then the wild fruits (Coconut, Mango, Pinkberry, Azure, Spiral, Windwillow) by tier / price | 8 | that fruit's trees / bushes | 128 fruit + 16 saplings |
+| Ranching | Chicken (T1), Cow, Pig, Sheep, Goat, Turkey, Boar, Bison (meat collections first, then by price) | 8 | that animal (tamed role, at most 8 live NPCs shown per island) | 64 of its meat + 2 Capture Crates |
+| Combat | Zone 1-5 (section 10) | 5 | a zone arena | coins + that zone's mob drops |
 
-| Cave size | Chamber (W x D x H) | Fits | Pads | Copper I 8 % | II 12 % | III 16 % | IV 21 % | V 27 % (copper cells) |
-|---|---|---|---|---|---|---|---|---|
-| I (start) | 11 x 11 x 5 | Small 13 | 3 | 27 | 41 | 55 | 72 | 92 |
-| II | 15 x 15 x 6 | Medium 21 | 3 | 47 | 70 | 94 | 123 | 158 |
-| III | 19 x 19 x 7 | Medium 21 | 4 | 71 | 107 | 143 | 188 | 241 |
-| IV | 23 x 23 x 8 | Large 29 | 4 | 101 | 152 | 202 | 266 | 342 |
-| V | 27 x 27 x 9 | Large 29 | 5 | 136 | 204 | 272 | 357 | 459 |
+### 9.1 Buying an island
+In order (T(n) needs T(n-1) owned - the path on the map), from the map's Buy view: coins (section 13) + the items above, items taken first and
+counted, coins LAST, everything back on a failure (the 0.4.6 buy flow). The new island appears Small at its ring place (repainted at once when the
+shard world is loaded, else at the next Enter), with one empty pad set; Automated if the shard is.
 
-  (copper cells = richness x (ceiling W x D + walls 4 x W x H); stdlib check.) "Copper" = the richness track; "Cave" = the size track. A richer
-  cave = more nodes inside each totem's range; a bigger cave = more room, more pads, more nodes.
-- Totem maths: the Quarry Spirit's coverage = copper cells inside its range (3-D box, range = totem.range<tier>) / `ref`, `ref` = the copper cells
-  a Quarry Spirit I covers in Cave I / Copper I (so the start = today's 1 / min before the manual share); capped by `totem.workerMax` per tier as
-  today. More copper than today's flat Large (160) is fine: the per-tier cap keeps idle output on the P6 targets; hand mining is swing-limited.
-- Existing Mining islands are rebuilt once as caves (only OUR generated blocks change; shard worlds forbid player building, totems stay on their
-  pads and are re-seated on the cave floor): Small -> Cave I / Copper II, Medium -> Cave III / Copper II, Large -> Cave V / Copper II (node
-  counts 41 / 107 / 204 vs today's 16 / 72 / 160 - never fewer). Marker `mining.i<n>.cave=<size>`, `mining.i<n>.rich=<r>`.
+### 9.2 What happens to 0.4.6's slots 2-6
+0.4.6 sold extra islands of the SAME crop (all Wheat). One island per crop now. **Default: each extra Wheat island bought under 0.4.6 becomes the
+next crop island in order (slot 2 -> Lettuce, slot 3 -> Carrot ...), same size, its totems and storage kept**; the subs start at the level that
+keeps its output >= before (R1 computes). Alternative (question 2): refund what was paid and remove them.
+
+### 9.3 Mining = copper caves (Skyy: "a cave full over copper with a totem in it ... upgrade how much copper is in the cave, and how big the cave is")
+- Every Mining island is a **cave inside a rock island** (outer box = the size's footprint 13 / 21 / 29): a short tunnel from its bridge into a
+  chamber; walls, ceiling and floor pillars of the ore's host rock (`Rock_Stone` for Copper / Iron ...; Sandstone / Shale / Volcanic / Basalt for
+  the zone metals); ore on a share of the exposed cells (a fixed pattern per island seed, so a repaint is identical); vanilla light blocks every 6
+  cells (UNVERIFIED id); totem pads on the chamber floor. Ore regrows by Skyy's rule (SkyyZones `skyy-shard-` prefix); the Enter repair also puts
+  ore back on AIR (0.4.7 behaviour).
+- **"How big the cave is" = SIZE**, **"how much copper" = Ore Amount**:
+
+| Size | Chamber (W x D x H) | Pads | Ore cells at Amount L0 (8 %) .. L5 (28 %) |
+|---|---|---|---|
+| Small | 11 x 11 x 5 | 3 | 27 .. 95 |
+| Medium | 19 x 19 x 7 | 4 | 95 (L0 = Small's max) .. 250 |
+| Large | 27 x 27 x 9 | 5 | 250 .. 476 |
+
+  (ore cells = share x (ceiling W x D + walls 4 x W x H); Medium / Large L0 start at the size below's max, then +share per level.)
+- Quarry Spirit coverage = ore cells inside its range (3-D box) / `ref` (= what a Quarry Spirit I covers in a Small Copper cave at L0), capped by
+  `totem.workerMax` per tier (today). Hand mining is swing-limited, so more ore is never a balance problem.
+- Existing Mining islands are rebuilt once as Copper caves (only OUR generated blocks change; players cannot build in shard worlds; totems are
+  re-seated on the cave floor in pad order): Small -> Small / Amount 2, Medium -> Medium / Amount 1, Large -> Large / Amount 0 - never fewer ore
+  nodes than today's 16 / 72 / 160.
+
+### 9.4 The shard world layout
+Per shard region (x = 1024 x kind, as today): the hub plaza at the region origin; inner ring of 8 island places at radius 64 (45-degree steps,
+T1 at north), outer ring of 8 at radius 120 (offset 22.5 degrees) - the same angles as the map nodes. Large islands (29) leave 20+ blocks
+between inner neighbours. Bridges (code-built, section 3): hub -> each inner island, inner neighbours to each other (a ring), each outer island
+-> its two inner neighbours' midpoint island. Existing slot islands (0.4.6 hexagon at RING 48) are moved once to their tier place (shard worlds
+hold only our generated blocks + totems on pads; totems re-seated) - marker `<kind>.layout=v2`.
 
 ---
 
-## 9. Ranching starter: how Hytale animals work (Assets.zip facts, for the quests)
+## 10. The Combat shard: one island per zone
+
+Skyy: "the combat shard will have an island per zone. and you can lvl up how many mobs spawn at once, how high of lvl the mobs are, and how fast
+they spawn. each island upgrade makes the island bigger, and adds more mob options to the pool. at max lvl zone 1 combat shard island will have an
+upper portion for all the mobs that appear above ground, and a lower section modelled after the deep caverns with the mobs that appear in those deep
+caves. (its always night on the combat shard, and the mobs that spawn at night spawn there too.)"
+
+- **Islands:** Zone 1 .. Zone 5 on the inner ring (72-degree steps). Zone 1 comes with the Combat shard (door at class level 5); Zone N (N >= 2) is
+  bought on the map: coins at the zone's middle tier (section 13) + 64 of that zone's common mob drop, needs class level 20 x (N - 1) (the zone's
+  first level; row `combat.zoneLevel.<N>`).
+- **Always night:** the shard world's time is held at midnight (the island worlds already hold time: SkyyIslands `time.held`; the same engine
+  call), so night-only spawns (Zone 1's void mobs) are in every pool.
+- **SIZE adds mobs to the pool** (Zone 1 shown; mob ids from the Zone 1 table in `research/Mob-Levels-Research.md` 3.3, exact role ids checked
+  in R5):
+
+| Zone 1 size | Island | Pool |
+|---|---|---|
+| Small | a grassy plains arena | Skeleton_Fighter, Wolf_Black + the night void mobs |
+| Medium | + a forest edge and a rocky rise | + Bear_Grizzly, Spider, Skeleton_Burnt_Praetorian |
+| Large (max) | **upper part**: plains + forest + a swamp corner (all above-ground Zone 1 mobs, incl. Snake_Marsh, Fen_Stalker, skeleton mages); **lower part**: a cavern under the island modelled on the deep caverns (`SkyyWorldGen` deep band look: stone, crystals, a little lava), reached by a spiral stair | upper: every above-ground + night Zone 1 mob; lower: goblins (scrapper, lobber, miner, hermit), cave rats, cave spiders, magma toads, Golem_Firesteel, mineshaft skeletons |
+
+  Zones 2-5 follow the same rule from their own zone tables (e.g. Zone 2: savanna -> + scrub / plateau -> + desert / oasis above, desert caves
+  below).
+- **Three sub-upgrades (5 levels per size, the same max-then-grow rule):**
+
+| Sub | Small L0 .. L5 | Medium L0 .. L5 | Large L0 .. L5 |
+|---|---|---|---|
+| **Mobs at once** | 3 .. 8 | 8 .. 12 | 12 .. 18 (split upper / lower) |
+| **Mob level** (inside the zone's band; Zone 1 = Lv 1-20) | 1-3 .. 5-8 | 5-8 .. 10-13 | 10-13 .. 16-20 |
+| **Spawn speed** (respawn seconds) | 30 .. 15 | 15 .. 10 | 10 .. 6 |
+
+- **Manual vs Automated:** manual = you fight the mobs yourself (normal combat XP, drops, SkyyMobs levels - spawned like today's camp:
+  `NPCPlugin.spawnNPC` on the shard world thread, levels through the same path `camp.levelMin/Max` uses). Automated (the shard's Automation):
+  the Soul Cage also kills on its own (lazy maths as today) using the pool, the mob level and the spawn speed. Spawns only while an owner /
+  co-op member is inside; at most the "Mobs at once" cap alive.
+- Today's single skeleton island becomes the Zone 1 island (Small, subs 0; existing Soul Cage + its tier kept).
+
+---
+
+## 11. Ranching starter: how Hytale animals work (Assets.zip facts, for the quests)
 
 - **Capture Crate** `Tool_Capture_Crate` (recipe 4 `Wood_All` + 50 `Ingredient_Life_Essence` at the Farmingbench): primary use = `UseCaptureCrate`,
   accepts NPC group `Capture_Crate` = baby / small animals (`*Chicken`, `*Chicken_Chick`, `*Cow_Calf`, `*Sheep_Lamb`, `*Pig_Piglet`, `*Goat_Kid`,
@@ -242,11 +389,11 @@ copper is in the cave, and how big the cave is." + "you can make multiple of the
   (11-14 h); Chicken - shear for feathers + lays `Food_Egg` every 36-48 h. `Coop_Chicken` (Farmingbench T3) holds 6 chickens and pulls in wild ones
   within 10 blocks. No breeding found in Assets.zip (babies are separate spawn roles; UNVERIFIED whether they grow up).
 - So the pen teaches: feed (lettuce / corn in the chest) -> lead with a held lure -> crate a chicken / lamb / calf -> release in the pen -> milk /
-  shear / collect eggs. Meat collections stay the Ranching skill's XP source (SkyyCollections); see question 5 for produce XP.
+  shear / collect eggs. Meat collections stay the Ranching skill's XP source (SkyyCollections); see question 4 for produce XP.
 
 ---
 
-## 10. Quests (SkyyQuests: a new line `archipelago`, open mode, auto for everyone; replaces task `first_shard` / G11)
+## 12. Quests (SkyyQuests: a new line `archipelago`, open mode, auto for everyone; replaces task `first_shard` / G11)
 
 Each island is a short line of 3-4 tasks; they run in any order beside the tutorial. Places come from SkyyIslands `island:places` (new names
 `farm`, `forage`, `minecave`, `orchard`, `ranch`). Shard events come from SkyyShards through `quest:fn:event` (`shard:door:<kind>` door opened,
@@ -261,16 +408,18 @@ Each island is a short line of 3-4 tasks; they run in any order beside the tutor
 | Ranching | reach `ranch`; feed an animal (`event island:feed`, UNVERIFIED hook) or skip: collect an egg (`gather Food_Egg`); shear a sheep (`gather Ingredient_Fabric_Scrap_Wool`); milk a cow (`gather` the filled milk bucket id, UNVERIFIED); catch an animal in a crate (`event island:capture` from a crate-use listener, UNVERIFIED - fallback: `bridge` on a filled-crate item in the inventory); reach Ranching 5; open the Ranching Shard | coins 50, item `Tool_Capture_Crate` 2 |
 | Combat | (tutorial tasks `island_two`, `defeat_mobs` stay); reach class level 5 (`level <class skill>`); open the Combat Shard | coins 50 |
 
-Hints say exactly where to go ("Cross the north bridge to the Farming island"). The tutorial's `first_shard` task becomes "Open any shard" (event
+Hints say exactly where to go ("Cross the north-east bridge to the Farming island"). The tutorial's `first_shard` task becomes "Open any shard" (event
 `shard:door:*`) so its old reward pays once. The hub flow (`island_three`, `mini_boss`, `to_hub`) is unchanged.
+
 
 ---
 
-## 11. Costs: one cheap-first ladder (Skyy: "cheap and easy to upgrade at first, and get harder as you go")
+## 13. Costs (Skyy: "cheap and easy to upgrade at first, and get harder as you go")
 
-One table every shard / island / totem upgrade points into. Step k costs `h_k` hours of income at reference level `L_k` (the P7 rule "every coin cost
-= hours of income at your level", `coins:fn:curve` x 8,333 at Lv 10, rounded with `p7_round`). Computed with `tools/balance_model.py` (`p7_H_at`,
-`p7_round`), not guessed:
+All coins follow the P7 rule "every coin cost = hours of income at a reference level" (`coins:fn:curve` x 8,333 at Lv 10, rounded with `p7_round`),
+so they move with the live coin curve. Numbers below were computed with `tools/balance_model.py` (`p7_H_at`, `p7_round`), not guessed.
+
+### 13.1 Shard-wide upgrades (the centre panel): one 10-step ladder
 
 | Step | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -278,185 +427,210 @@ One table every shard / island / totem upgrade points into. Step k costs `h_k` h
 | Hours of income | 0.05 | 0.1 | 0.2 | 0.35 | 0.5 | 0.75 | 1 | 1.5 | 2 | 3 |
 | **Coins** | **230** | **550** | **1,400** | **3,400** | **6,300** | **14,500** | **37,000** | **105,000** | **375,000** | **1,260,000** |
 
-Each step = 2.2-3.6x the one before (harder as you go); steps 1-5 together = 11,880 coins = 1.4 h of Zone-1 income (cheap). The coins follow the
-live coin curve: if an owner edits `coins.curve`, the ladder moves with it.
+| Upgrade | Steps | + materials | Was |
+|---|---|---|---|
+| Automation (once per shard) | 2 (550) | 128 of the shard's T1 raw item (Wheat / Oak Log / Copper / Apple / Raw Chicken / Bone) | new |
+| Storage II / III / IV / V | 6 / 8 / 9 / 10 | Enchanted as today | 43,500 / 305,000 / 1,085,000 / 3,880,000 |
+| Auto-Compactor I-II, Time Compressor I-III, Totem Bench II-IV | unchanged (P7b "1 h of the zone", already rising 43.5k -> 1.085M) | as today | (question 3) |
+| Totem tier-up I->II .. IV->V (on the pole, 0.4.7) | materials only | `totem.upCost` "1:4,2:16,4:40,8:100" (Enchanted : Life Essence) | "1:10,2:25,3:50,5:100" |
 
-| Upgrade | Steps | Coins | + that shard's materials (rows) | Was (0.4.6 / 0.4.7) |
-|---|---|---|---|---|
-| Automation (per shard, upgrade 1) | 1 | 230 | 64 Wheat / 64 Oak Log / 32 Apple / 64 Copper / 32 Raw Chicken / 32 Bone | new |
-| Grow Medium (Farming, Foraging, Orchard, Ranching, Combat) | 3 | 1,400 | 2 Enchanted (Wheat / Oak / Apple / Raw Chicken / Bone) (+ Farming: 8 Eternal seeds as today) | 8,300 |
-| Grow Large | 5 | 6,300 | 6 Enchanted (+ Farming 24 Eternal seeds) | 43,500 |
-| Mining Cave size II / III / IV / V | 2 / 4 / 6 / 8 | 550 / 3,400 / 14,500 / 105,000 | Enchanted Cobblestone 1 / 2 / 6 / 16 | (grow M / L 8,300 / 43,500) |
-| Mining Copper II / III / IV / V | 3 / 5 / 7 / 9 | 1,400 / 6,300 / 37,000 / 375,000 | Enchanted Copper 1 / 3 / 8 / 24 | new |
-| Extra island, slot 2 / 3 / 4 / 5 / 6 | 5 / 7 / 8 / 9 / 10 | 6,300 / 37,000 / 105,000 / 375,000 / 1,260,000 | Enchanted 8 / 16 / 32 / 64 / 128 (0.4.6 items kept) | 19,000 / 57,000 / 170,000 / 510,000 / 1,535,000 |
-| Storage II / III / IV / V | 6 / 8 / 9 / 10 | 14,500 / 105,000 / 375,000 / 1,260,000 | Enchanted as today | 43,500 / 305,000 / 1,085,000 / 3,880,000 |
-| Totem tier-up I->II / II->III / III->IV / IV->V | materials only (as today) | - | `totem.upCost` "1:4,2:16,4:40,8:100" (Enchanted : Life Essence) | "1:10,2:25,3:50,5:100" |
+### 13.2 Island upgrades: per island tier, cheap at Small, rising through the sizes
 
-- **How it replaces 0.4.6's "islands 2-6 at x3":** the rows `island.coins.base` / `island.coins.level` / `island.coins.step` stop being read; slot N
-  pays step `island.step.<N>` of the ladder. Slot 2 drops from 19,000 to 6,300 (cheap start), slot 6 stays about the same (1.26M vs 1.535M), so
-  "costs a lot to get many islands" still holds at the top. Same for grow and storage: the old flat / x3 numbers become ladder steps.
-- Auto-Compactor, Time Compressor and Totem Bench tiers keep their P7b "1 h of the zone" prices (they are Zone-2+ comforts that already rise
-  43.5k -> 1.085M) - question 3.
-- **Balance check:** the P7b check in `tools/balance_model.py` ("shard upgrades = 1 h of the matching zone", targets.md l.502) is replaced by a
-  ladder check (new flag, e.g. `--p11 --check`): steps strictly rising by >= 2x; steps 1-5 <= 2 h of Zone-1 income; step 7 <= 1 h at Lv 28;
-  storage V <= 3 h at Lv 55; idle output unchanged (section 6 numbers: post-Automation = today's rate). `--md` regenerates targets.md.
-- Coins are taken LAST (items first, counted before / after, everything back on a failure) - the 0.4.6 buy flow.
+Reference level = the island's tier start level (`balance_model.BAND` = `tier_tags` LEVEL_BANDS: T1 1, T2 8, T3 15, T4 20, T5 28, ... T15 95); hours
+per purchase:
+
+| Purchase | Hours of income at the tier's level |
+|---|---|
+| Buy the island (T2+) | 0.5 |
+| Small subs, level 1-5 (each of the 3) | 0.01 / 0.02 / 0.03 / 0.05 / 0.07 |
+| Grow to Medium | 0.15 |
+| Medium subs, level 1-5 | 0.08 / 0.10 / 0.13 / 0.16 / 0.20 |
+| Grow to Large | 0.5 |
+| Large subs, level 1-5 | 0.25 / 0.30 / 0.40 / 0.50 / 0.60 |
+
+Coins that gives (each sub's levels 1-5; there are three subs per size):
+
+| Island | Buy | Small subs | Grow M | Medium subs | Grow L | Large subs | Whole island maxed |
+|---|---|---|---|---|---|---|---|
+| T1 (Wheat, Oak, Copper, Apple, Chicken) | (free with the shard) | 40 / 80 / 120 / 200 / 280 | 600 | 320 / 400 / 520 / 630 / 790 | 2,000 | 990 / 1,200 / 1,600 / 2,000 / 2,400 | 37,310 (9.4 h at Lv 1) |
+| T2 (Lettuce ...) | 3,500 | 70 .. 490 | 1,100 | 570 .. 1,400 | 3,500 | 1,800 .. 4,200 | 65,680 |
+| T3 | 6,300 | 130 .. 880 | 1,900 | 1,000 .. 2,500 | 6,300 | 3,100 .. 7,600 | 117,610 |
+| T5 | 18,500 | 370 .. 2,600 | 5,500 | 2,900 .. 7,400 | 18,500 | 9,200 .. 22,000 | 343,530 |
+| T8 | 125,000 | 2,500 .. 17,500 | 38,000 | 20,000 .. 50,500 | 125,000 | 63,000 .. 150,000 | 2,345,800 |
+| T10 | 290,000 | 5,800 .. 40,500 | 86,500 | 46,000 .. 115,000 | 290,000 | 145,000 .. 345,000 | 5,402,400 |
+| T15 (Mushroom ...) | 2,670,000 | 53,500 .. 375,000 | 800,000 | 425,000 .. 1,070,000 | 2,670,000 | 1,335,000 .. 3,205,000 | 49,920,500 |
+
+- The very first island click costs 40 coins (cheap and easy); each level, each size and each tier costs more (harder as you go). A whole island
+  = about 9.4 h of income at its tier's level, spread over 47 purchases.
+- Materials per purchase (rows): Amount = the island's raw item (Small 16 x level) / its Enchanted item (Medium 1 x level, Large 2 x level);
+  Decorations = building materials (Small: 16 logs + 16 stone a level; Medium: + 8 lanterns / glass; Large: + Enchanted logs / stone);
+  Irrigation = the raw item + water buckets (Small) / Enchanted (Medium / Large); Grow = Enchanted 4 (Medium) / 16 (Large) + the Eternal seeds
+  rows that exist today (Farming).
+- Combat zone islands: Zone 1 at T2 numbers, Zone N at `P7_MID_T` (2 / 5 / 8 / 11 / 14).
+- **How this replaces 0.4.6's "islands 2-6 at x3":** there are no anonymous slots any more; the rows `island.coins.base` / `island.coins.level` /
+  `island.coins.step` / `island.items.2..6` and `grow.medium.coins` / `grow.large.coins` stop being read (kept in the file, Undo-able); the T2
+  island costs 3,500 (0.4.6 slot 2: 19,000) and the price climbs with the tier, so many islands still cost a lot at the top.
+
+### 13.3 Balance check
+The P7b check in `tools/balance_model.py` ("shard upgrades = 1 h of the matching zone", targets.md l.502) is replaced by a new flag (e.g.
+`--p11 --check`): shard ladder strictly rising >= 2x a step; steps 1-5 <= 2 h of Zone-1 income; island purchases rising within each size and
+each size above the one below; a maxed island <= 10 h at its tier level; idle output: a fully maxed Large <= today's Large x 1.25 and the P6 idle
+share <= +15 % (Part 8). `--md` regenerates targets.md. P9 (`--p9 --check`) must still pass.
 
 ---
 
-## 12. Server Setup rows (tools/CONFIG-CONTRACT.md: key, label, category, type, default, min, max, opts, unit, flags, help)
+## 14. Server Setup rows (tools/CONFIG-CONTRACT.md: key, label, category, type, default, min, max, opts, unit, flags, help)
 
 **SkyyIslands** (category `isles` "Starter islands"):
 
 | Key | Type / default | Flags | Help |
 |---|---|---|---|
 | `starter.design` | choice `archipelago|three|classic`, default `archipelago` | new | existing row, one more value |
-| `archi.existing` | choice `add|new|off`, default `add` | new | add the new islands around existing islands / only new profiles / never |
-| `archi.bridgeSource` | choice `riverbridges|own`, default `riverbridges` | live | River Bridges prefab, falls back to our own |
-| `archi.bridgePrefab` | choice `wood_bridge|stone_bridge`, default `wood_bridge` | new | |
-| `archi.caveRegrowSec` | int 120 s (0-3600; 0 = off) | live | starter cave copper regrow |
+| `archi.existing` | choice `add|new|off`, default `add` (Skyy's default, taken) | new | add the new islands around existing islands / only new profiles / never |
+| `archi.caveRegrowSec` | int 120 s (0-3600; 0 = off) | live | starter cave copper regrow (default taken) |
 | `ranch.tamed` | text `Tamed_Cow:2,Tamed_Sheep:2,Tamed_Chicken:3` | new | pen animals (role ids) |
 | `ranch.wild` | text `Chicken:2,Sheep_Lamb:1,Cow_Calf:1` | live | animals to catch |
 | `ranch.respawnSeconds` | int 600 s (0 = never) | live | wild top-up while the tutorial is open |
-| `archi.chest.<farm|forage|orchard|ranch>` | items with qty (defaults in section 4) | new | chest contents |
+| `archi.chest.<farm|forage|orchard|ranch>` | items with qty (section 4 defaults) | new | chest contents |
 
-**SkyyShards** (categories `shards`, `costs`, `totems`):
+**SkyyShards** (categories `shards`, `costs`, `islands`, `combat`, `totems`):
 
 | Key | Type / default | Flags |
 |---|---|---|
 | `shard.lock.<kind>` (6) | int 5 (0-100; 0 = open) | live |
-| `shard.lock.skill.<kind>` (6) | text (Farming / Foraging / Mining / Orchard / Ranching / class) | live |
+| `shard.lock.skill.<kind>` (6) | text Farming / Foraging / Mining / Orchard / Ranching / class | live |
 | `shard.starterItems` | bool true | live |
-| `shard.manualPct` | int 50 % (0-100) | live |
-| `shard.manualOfflineSec` | int 7,200 s | live |
-| `shard.seedStoreMax` | int 640 | live |
-| `shard.seedReturnPct` | int 50 % | live |
-| `shard.itemsPerSapling` | int 20 | live |
-| `up.levels` | text `3,5,8,12,15,20,28,35,45,55` | live |
-| `up.hours` | text `0.05,0.1,0.2,0.35,0.5,0.75,1,1.5,2,3` | live |
-| `up.auto.step` / `up.auto.items.<kind>` | int 1 / items | live |
-| `grow.medium.step` / `grow.large.step` | int 3 / 5 (replace `grow.*.coins`) | live |
-| `cave.size.step.2..5` / `cave.size.items.2..5` | 2,4,6,8 / Enchanted Cobblestone 1,2,6,16 | live |
-| `cave.rich.step.2..5` / `cave.rich.items.2..5` | 3,5,7,9 / Enchanted Copper 1,3,8,24 | live |
-| `cave.rich.pct` | text `8,12,16,21,27` (%) | live |
-| `island.step.2..6` | 5,7,8,9,10 (replace `island.coins.*`) | live |
-| `storage.step.2..5` | 6,8,9,10 (replace `storage.coins.*`) | live |
+| `shard.manualPct` / `shard.manualOfflineSec` | int 50 % / 7,200 s | live |
+| `shard.seedStoreMax` / `shard.seedReturnPct` / `shard.itemsPerSapling` | int 640 / 50 % / 20 | live |
+| `up.levels` / `up.hours` | text `3,5,8,12,15,20,28,35,45,55` / `0.05,0.1,0.2,0.35,0.5,0.75,1,1.5,2,3` | live |
+| `up.auto.step` / `up.auto.items.<kind>` | int 2 / items | live |
+| `storage.step.2..5` | 6, 8, 9, 10 (replace `storage.coins.*`) | live |
+| `isl.buyHours` | dec 0.5 | live |
+| `isl.subHours.small|medium|large` | text `0.01,0.02,0.03,0.05,0.07` / `0.08,0.1,0.13,0.16,0.2` / `0.25,0.3,0.4,0.5,0.6` | live |
+| `isl.growHours.medium|large` | dec 0.15 / 0.5 | live |
+| `isl.buyItems.<kind>` | text (section 9 table) | live |
+| `isl.subItems.<kind>.<amount|deco|irrigation>` | text per size | live |
+| `isl.amount.pct` | text `60,68,76,84,92,100` (% of spots filled, L0..L5) | live |
+| `isl.deco.pct` / `isl.irrigation.pct` | dec 2 / 2 (% a level, kept across sizes) | live |
+| `cave.amount.pct` | text `8,12,16,20,24,28` (Small; Medium / Large start at the size below's max) | live |
+| `combat.zoneLevel.2..5` | int 20 / 40 / 60 / 80 | live |
+| `combat.cap.<small|medium|large>` / `combat.level.<size>` / `combat.respawn.<size>` | text (section 10 tables) | live |
+| `combat.pool.<zone>.<size>` | text role ids (section 10) | live |
+| `combat.nightHold` | bool true | live |
 | `totem.upCost` | text `1:4,2:16,4:40,8:100` (new default) | live |
 
-A Server Setup "Cost ladder" card shows the 10 steps in coins at the live curve (read-only), so an owner sees what each row means.
+A read-only "Cost ladder" card in Server Setup shows the 10 shard steps and a T1 / T5 / T10 island row in coins at the live curve.
 
 ---
 
-## 13. Saved data + migrations
+## 15. Saved data + migrations
 
-- **SkyyIslands** `islands/<pkey>.properties`: `archi=1` (built / added), `archi.<kind>=done|skip:<why>|moved:<dx>,<dz>`, `ranch.ids`, `archi.v=1`.
+- **SkyyIslands** `islands/<pkey>.properties`: `archi=1`, `archi.<kind>=done|skip:<why>|moved:<dx>,<dz>`, `ranch.ids`, `archi.v=2`.
   - New profiles: built with the island (FillTask).
-  - **Existing islands (`archi.existing=add`, default):** once, at the island world's next load (like `pondOnce`): for each new island, check its
-    whole box (island + bridge + 4 blocks margin, y 96-160) is AIR; if yes paste it, if not try the same spot 16 and then 32 blocks further out
-    along its spoke (bridge then = our own generated one, length fitted); if still blocked: `skip:built` and SkyyShards' `shard.starterItems`
-    gives that kind's item instead (so nobody is left without a door). Player builds are never touched. The spawn / combat / boss islands are
-    never changed. Done markers make it run once; `/island archipelago retry` (owner) re-runs only skipped kinds.
-  - `/island reset`: the new world gets the full archipelago (design row).
-- **SkyyShards** `shards/<pkey>.properties`: `<kind>.door.starter`, `<kind>.auto=1`, `<kind>.i<n>.seed.<id>`, `<kind>.i<n>.cells`, `mining.i<n>.cave`,
-  `mining.i<n>.rich`, `door.item.<kind>`.
-  - **Migration ShMig048 (config, once):** History snapshot first (verified), then only lines still holding the OLD default are rewritten
-    (`lv20.<kind>` 20 -> 0, `totem.upCost`, the new step rows replace `island.coins.*` / `grow.*.coins` / `storage.coins.*` which stay readable but
-    unused), one config-changes.log line each with Undo, run-once marker `skyyshards-0.4.8-ladder` written last, bytes / line endings kept.
-    Hand-edited values are kept and logged.
-  - **Player data (once per profile file, on first load):** every shard island that exists gets `<kind>.auto=1` (grandfathered automation); every
-    Mining island gets its cave values (section 8) and is repainted as a cave on the next Enter (only generated blocks; totems re-seated). Copy of
-    the file into `history/ladder/<stamp>/` before the first write; `ladder.done=1` marker.
-- **SkyyQuests**: new line file `quests/archipelago.properties` (copy-once like every line); `first_shard` text changes only in the default file
-  (an edited file on disk is kept).
-- **Rollback:** Shards 0.4.8 -> 0.4.7: Undo the ShMig048 rows first; 0.4.7 ignores the new keys (doors still work as placed portal blocks, but locks,
-  manual phase and caves are gone - caves stay as blocks, 0.4.7's Enter repair repaints a flat Mining island over them). Islands 0.5.25 -> 0.5.24:
-  added islands stay as plain blocks. Both are a FLOOR entry in `tools/deploy_set.py` (Shards and Islands roll back together).
+  - **Existing islands (`archi.existing=add`, Skyy's default):** once, at the island world's next load (like `pondOnce`): each new island's box
+    (island + its bridges + 4 blocks margin, y 96-160) must be AIR; if not, try 12 and then 24 blocks further out along its angle (bridges are
+    code-built, so they simply get longer); still blocked: `skip:built` and SkyyShards' `shard.starterItems` gives that kind's item instead.
+    Player builds are never touched; Spawn / Combat / Boss never change. `/island archipelago retry` (owner) re-runs skipped kinds.
+  - `/island reset`: the new world gets the full archipelago.
+- **SkyyShards** `shards/<pkey>.properties` (per island `<kind>.i<n>.*`, `type` now unique per kind = the tier item):
+  `<kind>.door.starter`, `<kind>.auto`, `<kind>.layout=v2`, `<kind>.i<n>.size` (existing), `.amt`, `.deco`, `.irr` (0-5), `.seed.<id>`, `.cells`;
+  Mining `.amt` = ore amount; Combat `combat.i<n>.zone`, `.cap`, `.lvl`, `.spd`; `door.item.<kind>`.
+  - **ShMig048 (config, once):** verified History snapshot; only lines still holding the OLD default rewritten (`lv20.<kind>` 20 -> 0 = item grants
+    off; `totem.upCost`); `island.coins.*`, `island.items.*`, `grow.*.coins`, `storage.coins.*` stay but are no longer read (new rows replace
+    them); one config-changes.log line each with Undo; run-once marker `skyyshards-0.4.8-map` written last; bytes / line endings kept.
+  - **Player files (once per profile, first load; copy to `history/map/<stamp>/` first, marker `map.done=1`):** `<kind>.auto=1` on every
+    shard that already has islands (grandfathered Automation); extra 0.4.6 Wheat islands -> the next crop tiers (section 9.2); sub levels set so
+    output >= before; Mining islands -> caves (9.3); the Combat island -> Zone 1; islands moved to their ring places (9.4) on the next Enter.
+- **0.4.6 level-20 items** stay valid as extra doors; markers `lv20.<kind>` kept.
+- **SkyyQuests:** new line file `quests/archipelago.properties` (copy-once); `first_shard` text changes only in the default file.
+- **Rollback:** a FLOOR entry: SkyyShards 0.4.8 + SkyyIslands 0.5.25 roll back together; Undo the ShMig048 rows first; copy
+  `history/map/<stamp>/` back over `shards/` with the server stopped (0.4.7 cannot read crop-typed islands beyond Wheat); added starter islands
+  stay as plain blocks.
 
 ---
 
-## 14. Build split (rounds, in order)
+## 16. Build split (rounds, in order)
+
+Existing-mod check first (PROJECT-RULES 2): River Bridges checked (not used here, section 3); CurseForge survey (Jev) for "skyblock starter
+islands", "animal pen", "upgrade tree / island upgrade UI" before R1 / R2 - learn or pack, record in PACK.md.
 
 | Round | Mods | Size | What |
 |---|---|---|---|
-| R0 probe | SkyyUiProbe (or a tiny probe mod) on the smoke server | lean | (a) paste `RiverBridges/wood_bridge` by path into a void instance (PrefabStore + PrefabUtil, rotation 90); (b) the Eternal block id for each crop the store can plant, sapling item ids, a sign block with server-set text, light block id; (c) tamed animals spawned in a void world stay in an 11 x 11 fence pen; (d) the vanilla events for seed placing, crate capture, feeding (for quest hooks); (e) tilled soil reverting to dirt. |
-| R1 | SkyyShards 0.4.8 (from 0.4.7; patch `tools/shards_0_4_8_patch.py`) + `tools/balance_model.py` ladder check | FULL / ultracode (economy, saved data, migrations) | doors (`shard:fn:door`), locks, lock card, manual phase + seed store + replant, Automation upgrade, Mining caves + two tracks, cost ladder + ShMig048, lv20 off, starter items fallback, quest events. |
-| R2 | SkyyIslands 0.5.25 (from 0.5.24) | FULL (several islands, migration onto existing worlds, NPCs) | `archipelago` design, 5 islands + bridges, doors, ranch animals + chests, cave regrow, existing-island add, `island:places` names, quest events `island:plant|feed|capture`. Builds in parallel with R1; deploys WITH R1. |
-| R3 | SkyyQuests 0.4.4 | lean | `archipelago` line + `first_shard` text. After R1 + R2 (needs their events), may ride the same deploy. |
-| R4 (optional, question 5) | SkyySkills | lean | Ranching XP for eggs / wool / milk / taming. |
-
-Survey first (PROJECT-RULES 2): River Bridges = the bridge source (checked above); CurseForge for a "starter islands / skyblock spawn" or "animal
-pen" mod before R2 (cheap, Jev). Nothing in the pack adds shard doors / caves (no duplicate).
-
----
-
-## 15. Risks
-
-1. River Bridges' prefab paste by path is read from bytecode strings only - UNVERIFIED (R0 a). Fallback is built in.
-2. Bigger island worlds (5 x 4 chunks): more chunks load on `/island`; FillTask grows from ~3 islands to 8 (+ trees, cave) - time it in the smoke
-   test (today ~15 ms slices); `islands.unloadEmptySeconds` (0.5.24) still unloads them.
-3. Existing islands: players may have built out into the void where the new islands go - the AIR box check + move-out + item fallback covers it.
-4. Tamed animals in a void island world may wander off the pen / fall (no breeding found to replace them) - pen gate closed, fence 2 high if needed,
-   `ranch.respawnSeconds` only for the wild catchables; tamed losses are replaced only by the player (that is the lesson).
-5. The manual phase lowers early output of NEW shard islands vs today - intended (Skyy); existing islands grandfathered.
-6. Seeds placed by the totem in a loaded world while a player stands there: one place per cell per tick, world thread, <= 529 cells per totem (range 11).
-7. Changing Mining islands into caves: totems must be re-seated on the new floor in the same pad order (0.4.7's pad list); a failed repaint
-   leaves the flat island (repaint is idempotent, retried on the next Enter).
-8. The `skill:fn:level` for Orchard / Ranching / class must return the same numbers the menus show (0.4.6 used it - known good).
-9. Starter cave regrow must never put ore into a cell a player filled with something else (only AIR / stone placeholders).
+| R0 probe | SkyyUiProbe / a tiny probe on the smoke server | lean | sapling / light / sign ids; Eternal blocks for all 14 crops; tamed animals stay in a void-world pen; time held at midnight in an instance + night spawns; seed placing / crate / feeding events (quest hooks); a node map with 16 nodes + 3 panel variants in keep mode (M8a / M5 not yet run in game). |
+| R1 | SkyyShards 0.4.8 (from 0.4.7) + `tools/balance_model.py` `--p11` | ULTRACODE (economy, saved data, migrations, several systems) | doors (`shard:fn:door`) + locks; manual phase + seed store + replant + Automation; islands per tier (buy, size, 3 subs, materials, the cost formulas); Mining caves; decorations / irrigation pieces (build-time vanilla prefab reads); world layout v2; migrations ShMig048 + player files; quest events. Data + world only - the menu keeps today's tabs, with the new buttons as a plain list. |
+| R2 | SkyyIslands 0.5.25 (from 0.5.24) | FULL | `archipelago` design v2 (organic islands, code-built ring + spoke bridges), doors, ranch, chests, cave regrow, existing-island add, `island:places` names, quest events. Parallel with R1, deploys WITH R1. |
+| R3 | SkyyShards 0.4.9 | FULL | the Shard Upgrade Map page (node map keep mode, rail, 3 panel views, Totems / Collect tabs) + `tools/skyymap.py` shard layouts; one-menu-pattern check (`research/Menu-Pattern.md`). |
+| R4 | SkyyQuests 0.4.4 | lean | `archipelago` line + `first_shard` text (after R1 + R2). |
+| R5 | SkyyShards 0.4.10 (+ SkyyMobs if levels need a bridge) | FULL | Combat zone islands: night hold, pools per size, the Zone 1 Large upper + deep-cavern lower part, 3 combat subs, Soul Cage on the pool. |
+| R6 (optional, question 4) | SkyySkills | lean | Ranching XP for eggs / wool / milk / taming. |
 
 ---
 
-## 16. Test steps (in game, after R1 + R2 (+ R3) deploy)
+## 17. Risks
 
-1. New profile -> `/island`: the spawn island looks like today (pond, chest, cave, hill) and 5 new islands + 5 bridges are there as in the picture;
-   Combat and Boss as today with stub bridges.
-2. Walk each bridge; each island has its contents (section 4) and a door with a "level 5" sign.
-3. Right-click the Farming door at Farming < 5: lock card + chat line, no teleport. `/skilladmin` (or play) to Farming 5: the door opens the Farming shard.
-4. Farming shard: Harvest Spirit in the middle, 8 Eternal Wheat around it, the rest tilled and empty. Plant seeds by hand - allowed. Give the totem
-   16 seeds: empty cells in its range get planted within 90 s; the seed count goes down.
-5. Leave 10 min, come back, Collect: about 0.4-0.7 wheat / min worth; leave 3 h: only 2 h counted (manual cap).
-6. Buy Automation (230 coins + 64 Wheat): every tilled cell becomes Eternal Wheat; Collect rate = 1 / min; offline 3 days.
-7. Mining: the starter cave has copper; mine 10, wait 2 min on the island: they come back. Mining 5 -> the Mining shard is a cave with the Quarry
-   Spirit inside; buy Cave II (550) and Copper II (1,400): the cave grows / more copper, totem stays on its pad.
-8. An OLD Mining shard (Small / Medium / Large from before): it is a cave now with at least as many copper nodes; Automation already owned.
-9. Ranching: chest has crates, shears, bucket, lettuce, corn; crate a chicken outside the pen and release it inside; shear a sheep, milk a cow,
-   pick up an egg; quests tick.
-10. Combat island: bridge across yourself; the Combat door is locked until class level 5; Boss island -> Hub portal works as today.
-11. An existing player's island (made before the update): the new islands appear around it on first load; nothing they built moved; a blocked spot
-    gives the shard item instead (chat line).
-12. Server Setup -> Shards -> Costs: the ladder card shows 230 ... 1,260,000; change `up.hours` step 1 to 0.1: Automation costs 460.
-13. Buying island slot 2: 6,300 coins + 8 Enchanted (was 19,000).
-14. `python tools/balance_model.py --p11 --check` (new) and `--p9 --check` both pass.
+1. Bigger island worlds (5 x 4 chunks) and bigger shard worlds (outer ring at radius 120 = about 8 x 8 chunks per shard region): FillTask / shard
+   paint times (15 ms slices) and memory - measured in the smoke test; `islands.unloadEmptySeconds` and `shard.unloadSec` still unload them.
+2. Existing starter islands: players may have built where the new islands go - AIR box check + move-out + item fallback.
+3. Tamed animals in void worlds wander / fall; at most 8 live NPCs per Ranching island (more are virtual); pens closed.
+4. Manual phase lowers early output of NEW shards vs today - intended (Skyy); existing shards grandfathered.
+5. Many islands per shard (up to 16) x 3 subs: the per-island lazy maths must stay one pass per Collect (no world reads offline; cells from the
+   last scan).
+6. Decorations / irrigation pieces are pasted into live shard worlds - only into cells the generator owns (the island's footprint above the
+   soil), never over pads / totems; idempotent repaint.
+7. The keep-mode map is proven on trees but not with 3 panel variants + Buy / Grow buttons - R0 probes it.
+8. Combat night hold + spawning in an instance world (no natural spawns): our own spawner (camp code) - mob caps must hold under co-op.
+9. Migration of 0.4.6 extra Wheat islands to other crops changes what those islands make (question 2).
+10. Balance: three multiplying subs - the R1 re-fit + `--p11` check keep idle output inside the P6 cap.
 
 ---
 
-## Questions for Skyy (each with today's default in [brackets])
+## 18. Test steps (in game, after R1 + R2 (+ R3 ... R5))
 
-1. **Existing players' islands** - add the 5 new islands around islands that already exist (only into empty sky, never over builds), or only for
-   new profiles / after an `/island reset`? [Add around existing islands; a blocked spot gives that shard as an item instead.]
-2. **Automation scope** - is the first upgrade (Eternal plants) bought once per shard (covers every island of that shard, now and later) or once
-   per island? [Once per shard - fewer clicks; 230 coins.]
+1. New profile -> `/island`: spawn island as today; 5 new organic islands at uneven distances, Foraging between Mining and Farming; walk the ring
+   Farming -> Foraging -> Mining -> Ranching -> Orchard on bridges without going back to spawn; 5 spokes from spawn; no bridge to Combat.
+2. Each island has its contents (section 4) and a door with a level-5 sign; a locked door shows the lock card.
+3. Farming 5 -> Farming shard: Harvest Spirit in the middle, 8 Eternal Wheat around it, the rest tilled and empty; plant seeds by hand; give the
+   totem 16 seeds: empty cells in range get planted within 90 s, the store goes down; leave 3 h: only 2 h counted.
+4. Open the Map tab: centre = Farming Shard icon; T1 Wheat node owned; T2 Lettuce node gold "can buy". Click the centre: Automation, Storage,
+   Compactor, Compressor, Modifiers on the right. Buy Automation (550 + 128 Wheat): every tilled cell becomes Eternal; rate 1 / min.
+5. Click Wheat: Size Small, Amount / Decorations / Irrigation 0/5; "Grow to Medium" disabled with a red line. Buy Decorations 1 (40 coins + logs /
+   stone): flower borders + a path appear; level 2: fences + lanterns ... each level visibly different. Max all three: Grow unlocks; grow -> the
+   island is Medium and the three bars are 0/5 again, output not lower than before.
+6. Zoom the map to 200 %, scroll to the outer ring, click nodes: the view does not jump (keep mode).
+7. Click Lettuce: buy for 3,500 coins + 128 Lettuce + 32 Lettuce Seeds; a Small Lettuce island appears at its place in the shard world (same
+   direction as on the map), manual or Automated as the shard is.
+8. Mining shard: a copper cave; Ore Amount levels add copper in the walls; grow makes the chamber bigger. An OLD Mining island is now a cave with
+   at least as many nodes.
+9. Combat shard (class 5): always night; Zone 1 Small arena spawns skeletons / wolves / night mobs; Mobs at once / Mob level / Spawn speed change
+   what spawns; at Large the lower cavern holds goblins, cave spiders, rats, magma toads, Golem_Firesteel.
+10. An existing player's starter island gets the new islands on first load, nothing they built moved; a blocked spot gives the shard item.
+11. A 0.4.6 extra Wheat island is now the Lettuce (Carrot ...) island with its totems.
+12. Server Setup -> Shards: change `isl.subHours.small` -> the map's prices change; the Cost ladder card matches.
+13. `python tools/balance_model.py --p11 --check` and `--p9 --check` pass.
+
+---
+
+## Questions for Skyy (only real choices; default in [brackets])
+
+1. **Island sizes** - keep three sizes (Small / Medium / Large), so a whole island = 3 x 15 sub levels + 2 grows, or add a fourth (Huge 37 x 37)?
+   [Three.]
+2. **0.4.6's extra Wheat islands** (bought today for 19k+) - turn them into the next crop islands (Lettuce, Carrot ...) with their totems, or
+   refund what was paid and remove them? [Turn them into the next crops.]
 3. **Comfort upgrades** - move Auto-Compactor, Time Compressor and Totem Bench tiers onto the cheap-first ladder too, or keep their prices
-   (43.5k -> 1.085M)? [Keep them - they are Zone-2+ comforts that already rise.]
-4. **Ranching lock** - Ranching 5 (the skill fed by meat) or Beastmastery 5 (the pet skill; 0.4.6 used it for Ranching)? [Ranching 5.]
-5. **Ranching XP** - should eggs, wool, milk and taming / catching animals give Ranching XP (today only meat does, so reaching Ranching 5 means
-   killing animals)? [Yes - a small SkyySkills round.]
-6. **Bigger island world** - the starter world grows from about 3 x 2 to 5 x 4 chunks. OK? [Yes.]
-7. **Starter cave copper** - should the starter island's copper cave regrow like the shard ores (break -> stone -> back in 2 min)? [Yes.]
+   (43.5k -> 1.085M)? [Keep them.]
+4. **Ranching XP** - should eggs, wool, milk and taming / catching give Ranching XP (today only meat does)? [Yes - a small SkyySkills round.]
+5. **Foraging islands** - one island per tree TIER (15, e.g. T1 Oak + Birch mixed) or one per tree type (34)? [Per tier.]
 
 ## For the local session (UNVERIFIED - check before / in the builds)
 
-- River Bridges prefabs can be loaded by path `RiverBridges/wood_bridge` through `PrefabStore.findAssetPrefabPath` and pasted with `PrefabUtil` +
-  `PrefabRotation` from another plugin (R0 a). Prefab bounds in section 1 come from the jar's json (read in memory).
-- Item / block ids not confirmed: sapling items (`Plant_Sapling_Oak` / `_Birch` / apple), Eternal blocks for crops other than wheat, a watering-can
-  item, light block, server-text sign, the filled milk bucket id (`Container_Bucket_State_Filled_Milk` seen as a drop string).
-- Engine hooks for quests: seed placing on tilled soil, Capture Crate use, feeding - none checked; the fallbacks in section 10 work without them.
-- Vanilla babies growing up / breeding: not found in Assets.zip (`Server/NPC`, `Server/Farming` searched for breed / offspring) - assume no.
-- The 3 x 3-chunk island template box (LOCKED 2026-09-25) is a size rule, not an engine limit - re-read `docs/answered/world.md` /
-  `docs/plans/SkyyIslands-Plan.md` before R2 (question 6 asks Skyy anyway).
-- Cost ladder numbers were computed with `tools/balance_model.py` `p7_H_at` + `p7_round` (scratch script, deleted); the ladder check flag `--p11`
-  does not exist yet (R1 adds it).
-- Mining cave node counts are geometry estimates (section 8); the R1 builder computes the real pattern and reprints the table.
-- Coordinates assume the 0.5.24 `S3_ISLES`; landing columns re-checked against `s3_layout()` in R2.
-- SkyyZones 0.2.2 (shard ore regrow) must be live before the Mining cave relies on it (SET has 0.2.0 today); until then the shard's own Enter
-  repair puts ore back on AIR (0.4.7 behaviour).
+- Item / block ids not confirmed: saplings (`Plant_Sapling_*`), light block, server-text sign, filled milk bucket
+  (`Container_Bucket_State_Filled_Milk` seen as a drop string), vanilla prop prefabs for decorations (windmill / barn / gazebo / mine cart).
+- Eternal crop blocks: `Plant_Crop_Wheat_Block_Eternal` is used live; the other 13 crops' Eternal blocks are assumed from their Eternal seeds.
+- Engine hooks for quests: seed placing on tilled soil, Capture Crate use, feeding - fallbacks in section 12.
+- Holding night in an instance world (`time.held` in SkyyIslands is the lead) and night-only spawns without natural spawning.
+- Vanilla babies growing up / breeding: not found in Assets.zip - assume no.
+- Keep-mode page updates (probe M8a / M5) not yet proven in game; R0.
+- Cost numbers from `tools/balance_model.py` `p7_H_at` + `p7_round` (scratch scripts, deleted); `--p11` does not exist yet (R1 adds it).
+- Gaps and outlines in section 2 are from the picture's formula; R2 re-measures on the real generated cells.
+- SkyyZones 0.2.2 (shard ore regrow) must be live before caves rely on it (SET has 0.2.0); until then the Enter repair puts ore back on AIR.
+- Ring order and angles of the shard-world islands assume up to 16 islands per shard (Farming / Foraging 15, Mining 11).
