@@ -15,7 +15,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBank | 0.1.16 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
 | SkyyIslands | 0.5.25 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.2.1 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products |
-| SkyyGear | 0.3.45 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
+| SkyyGear | 0.3.46 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.65 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.32 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
 | SkyyClasses | 0.1.48 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
@@ -36,7 +36,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.8 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
-| SkyyFishing | 0.1.12 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2); tick early-out |
+| SkyyFishing | 0.2.0 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2); tick early-out |
 | SkyyMerchants | 0.1.7 | roaming merchants (one per zone, move 20 min, rumours, special-weapon shop); floor: switch part.merchants off before removing; 0.7 port; private writer |
 | SkyyPets | 0.4.17 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
 | SkyyWardrobe | 0.2.12 | loadouts: armor + hotbar + pet / summon + abilities per profile, one-click write-ahead swap, /wardrobe; pre-warm, per-profile journal lock |
