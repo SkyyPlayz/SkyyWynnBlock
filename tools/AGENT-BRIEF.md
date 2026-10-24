@@ -58,3 +58,6 @@ Script/patch paths, the compile line, what you built, what you left out and why,
 With the game closed you may run `python tools/smoke_test.py --jar <new jar>` - the ONLY allowed server start (offline, on a scratch
 copy of the world in its own `tools/dev/scratch/smoke/run-<stamp>/`, deleted by the tool; ~4 GB RAM each). PASS needs every
 `[<Mod>] <SET version> ready` line, so a NEW mod must print exactly that line.
+
+## Vanilla first (Skyy 2026-10-24)
+Before adding ANY new item, set, block or structure: search Assets.zip (read-only) and grep docs/answered/ for "vanilla" / "already in the game" for that thing. Use the vanilla one if it exists (e.g. Ornate Bronze armor existed; a new Bronze set was made by mistake). Then a pack mod; build new only for what is missing. Say in your report what you checked.

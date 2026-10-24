@@ -26,6 +26,10 @@ Standing rules for anyone working on this project, person or AI. Where this file
 - Never commit game files, vanilla-derived assets (generate them into the jars at build time), other authors' files (unless their licence
   allows it), or personal data. `tools/dev/scratch/`, `backups/`, `.claude/worktrees/` and built jars are git-ignored - keep it so.
 - Vanilla Hytale first, then borrow ideas (or licence-allowed code) from others - "never build new when you can steal what already works".
+- **Order: vanilla -> existing mod -> build only what we need** (Skyy 2026-10-24: "remember to check whats in the vanilla game before looking for a
+  mod. look for a mod before building. then only build what we need. (if its better to make a mod than take one, do. but only if its worth it.)"):
+  1) search Assets.zip (and the recorded decision lines - grep docs/answered for "vanilla" / "already in the game") for an existing item / set /
+  block / structure; 2) only then survey mods; 3) build only the missing part - our own version only when clearly worth it.
 - **Check for an existing mod BEFORE building one** (Skyy 2026-10-11: "before making a mod, check if one already exists that does what we
   want. if it does, include it. if its still better to make our own, learn from how the other was made to make building ours easier and
   faster."): every new system / spec starts with a short survey (CurseForge + Skyy's Mods folder; cheap - free OpenRouter models first).
