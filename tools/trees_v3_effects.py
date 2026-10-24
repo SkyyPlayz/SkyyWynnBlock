@@ -331,7 +331,7 @@ def flat(eff):
 
 def unit(eff):
     """display unit: fractions (Fortune / XP / Breaking Power / synergy / chances) show x100 as %, SkyyGear stats are whole % already"""
-    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.", "dodge.", "lg.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall")) else 1.0   # P7b: + lg.
+    return 100.0 if (eff[:3] in ("dd.", "xp.", "bp.") or eff.startswith(("petsyn.", "petxp.", "gem.", "coins.", "extra.", "dodge.", "lg.")) or eff in ("class.xp", "cook.ingr", "hpp", "fall", "hatchspd")) else 1.0   # P7b: + lg.
 
 
 def natural(e):
@@ -363,7 +363,7 @@ _EW = {"thorns": "Thorns", "lowHeal": "Heal", "hpregen": "Regen", "hp": "Health"
        "vein": "Ore", "feller": "Logs", "fall": "Fall", "gem": "Gems", "coins": "Coins", "extra": "Extra", "dmgLow": "Damage", "dmgBoss": "Damage",
        "drAll": "Guard", "kbRes": "Steady", "drop": "Drop", "rare": "Rare", "bossRoll": "Boss", "dbl": "Double",
        # P8c
-       "petxp": "Pet XP", "hatch": "Slots",
+       "petxp": "Pet XP", "hatch": "Slots", "hatchspd": "Hatch time cut",   # hatchspd: r062_apply (Warm Nest); fixer: "Hatch" alone did not say it is a time cut
        # P8d
        "dodge": "Dodge",
        # P7b (SkyyExploration)
@@ -412,6 +412,7 @@ def describe(e):
                                                                      "petsyn.foraging": "Foraging pet stats", "petsyn.green": "Farming and Foraging pet stats",
                                                                      "petsyn.rare": "stats of Rare or better pets", "petsyn.all": "stats of every pet",
                                                                      "hatch": "Hatchery slot",
+                                                                     "hatchspd": "shorter egg hatch time",   # 0.6.2 / 0.4.17 (r062_apply: Warm Nest)
                                                                      # 0.6.0 (Combat into Class: Reprisal, Second Wind, Rally)
                                                                      "thorns": "melee damage dealt back", "lowHeal": "max Health healed once a fight below 20 %",
                                                                      "hpregen": "out-of-combat Health regen",
@@ -612,6 +613,7 @@ PET_XP_KINDS = ("combat", "mining", "green", "all")                      # petxp
 PET_SYN_KINDS = ("combat", "mining", "farming", "foraging", "green", "rare", "all")   # petsyn.<k>: rare = Rare or better pets of any kind; all = every pet (fixer)
 TREE_DODGE_MAX = 0.25     # P8d: SkyySkills acro.treeDodgeMax default - the most tree dodge push it applies (fraction)
 P8D_TREES = V3D.P8D_TREES   # P8d: the seven useful + light trees of round P8d
+HATCH_CUT_MAX = 0.25      # r062 (SkyyPets 0.4.17): the most the Beastmastery tree cuts egg hatch time by default (Warm Nest 4 x 5 % = 20 %)
 HATCH_EXTRA_MAX = 10      # P8c fixer 2: SkyyPets PetHatchery.extra clamps the extra Hatchery slots to 10 (pets.hatch.slots 2 + 10 = MAX_SLOTS 12)
 
 
@@ -650,7 +652,10 @@ def check():
         assert "," not in key(tree, b, uid)
     # P8c: the Beastmastery tree is SkyyPets' (the Beastmastery skill exists since SkyySkills 0.4.60): pet XP / pet stat rows only, each
     # pet kind's budgets held (spec 4.4: pet XP <= TREE_XP_MAX per kind, pet stats <= TREE_PETSTAT_MAX per kind)
-    assert all(e[3] == "SkyyPets" and (e[4].startswith(("petxp.", "petsyn.")) or e[4] == "hatch") and e[6] is None for e in EFFECTS if e[0] == "Beastmastery"), "P8c: Beastmastery = SkyyPets pet rows"
+    assert all(e[3] == "SkyyPets" and (e[4].startswith(("petxp.", "petsyn.")) or e[4] in ("hatch", "hatchspd")) and e[6] is None for e in EFFECTS if e[0] == "Beastmastery"), "P8c: Beastmastery = SkyyPets pet rows (r062: + hatchspd)"
+    # r062 (SkyyPets 0.4.17): the hatch time cut rows - Beastmastery only, inside the budget (SkyyPets clamps the live sum at 90 % too)
+    assert all(e[0] == "Beastmastery" and e[3] == "SkyyPets" and e[6] is None for e in EFFECTS if e[4] == "hatchspd"), "r062: hatchspd rows"
+    assert sum(vmax(e) for e in EFFECTS if e[4] == "hatchspd") <= HATCH_CUT_MAX + 1e-9, "r062: hatch time cut over its budget"
     # P8c fixer 2: the Hatchery slot row(s) - Beastmastery only, whole slots, inside the extra-slot clamp
     assert all(e[0] == "Beastmastery" and e[5] == int(e[5]) for e in EFFECTS if e[4] == "hatch"), "P8c: hatch rows"
     assert sum(vmax(e) for e in EFFECTS if e[4] == "hatch") <= HATCH_EXTRA_MAX, "P8c: Hatchery slots over the clamp"
@@ -700,6 +705,44 @@ def check():
 
 
 check()
+
+# ---------------------------------------------------------------------------------------------------- r062 (SkyyTrees 0.6.2 + SkyyPets 0.4.17)
+# r062_apply() - ONLY those two builds call it (opt-in like trees_v3_data.v4_apply; every other build reads the table above unchanged):
+#  1. BEASTMASTERY HATCHING (docs/answered/pets.md 2026-10-23, Skyy: "(in the beast master tree, have upgrades that speed up hatching and give
+#     more hatchery slots too.)"): Warm Nest (Wild Roots r2c) "hatchspd" = a fraction cut off every Hatchery egg's wait (5 % a rank, 4 ranks =
+#     20 %; HATCH_CUT_MAX 25 %) and Burrow Nursery (Deep Burrow r4c) "hatch" = +1 Hatchery slot a rank (2 ranks; SkyyPets sums every "hatch"
+#     row: Gentle Hand 3 + 2 = 5 extra, inside HATCH_EXTRA_MAX 10). Recommended defaults - research/balance/targets.md has no hatch target; a
+#     Common egg 120 s -> 96 s, a Mythic 2 h -> 1 h 36 m at 20 %; the slot pair keeps the 12-slot ceiling out of reach of the tree alone.
+#     APPENDED at the end: every older SkyyPets row keeps its index (V3P<i> / V3X<i> fields, trees.properties keys unchanged).
+#  2. WEAPONCRAFT x1.5, PETS PART (docs/answered/classes.md 2026-10-23 CLASS TREE REBUILD BUILT: "Weaponcraft (old Combat) per-rank numbers to
+#     be raised ~x1.5"): Pet Fang (Combat b3 r3a, every class tree's Weaponcraft row 3) damage 1 -> 1.5 % a rank (x1.5; ceiling 7.5 -> 11.25
+#     at rank 5 with a x1.5 Mythic pet); class XP 2 -> 2.6 % a rank (x1.3: the Combat / class tree's XP budget TREE_XP_MAX 30 % with Battle
+#     Insight's 10 % = 19.5 + 10 = 29.5 %; x1.5 = 32.5 % would break it). SkyyPets 0.4.17 moves trees.properties lines still on the old
+#     defaults once (PetsMigW15).
+R062_APPLIED = []
+R062_ROWS = [("Beastmastery", 3, "r2c", "SkyyPets", "hatchspd", 0.05, None, 0),   # Warm Nest: -5 % egg hatch time a rank
+             ("Beastmastery", 2, "r4c", "SkyyPets", "hatch", 1.0, None, 0)]       # Burrow Nursery: +1 Hatchery slot a rank
+R062_FANG = {("Combat", 3, "r3a", "xp.combat"): (0.02, 0.026), ("Combat", 3, "r3a", "dmg"): (1, 1.5)}   # (old per rank, new per rank)
+
+
+def r062_apply():
+    """SkyyTrees 0.6.2 / SkyyPets 0.4.17 (once): the two Beastmastery hatching rows + Pet Fang's raised numbers. Returns True."""
+    if R062_APPLIED:
+        return True
+    V3D.r062_apply()
+    seen = set()
+    for i, e in enumerate(EFFECTS):
+        k = (e[0], e[1], e[2], e[4])
+        if k in R062_FANG:
+            assert e[3] == "SkyyPets" and e[5] == R062_FANG[k][0], ("r062: the Pet Fang row moved", e)
+            EFFECTS[i] = tuple(e[:5]) + (R062_FANG[k][1],) + tuple(e[6:])
+            seen.add(k)
+    assert seen == set(R062_FANG), seen
+    assert not [e for e in EFFECTS if (e[0], e[1], e[2]) in set(r[:3] for r in R062_ROWS)]
+    EFFECTS.extend(R062_ROWS)
+    R062_APPLIED.append(1)
+    check()
+    return True
 
 if __name__ == "__main__":
     for m in ("SkyyGear", "SkyyPets", "SkyyAccessories", "SkyySkills", "SkyyCooking", "SkyyFishing", "SkyyTrees", "SkyyClasses", "SkyyMobs", "SkyyExploration"):

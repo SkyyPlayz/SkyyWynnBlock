@@ -31,6 +31,9 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-24, wc15 Weaponcraft x1.5): SkyyGear 0.3.45 + SkyyMobs 0.1.19 + SkyyClasses 0.1.48 roll back TOGETHER, and only after undoing the 'wc15' rows in Server Setup -> Changes (Gear 10, Mobs 10, Classes 4) - older jars would keep the raised numbers as admin values. After the Undo the marker stays, so a later upgrade will not raise those lines again; restoring a pre-wc15 History snapshot removes the marker. No saved player data. Ships with SkyyTrees 0.6.2 (the new /tree texts).
+# FLOOR (2026-10-24, bm1 + wc15 texts): SkyyTrees 0.6.2 (Warm Nest + Burrow Nursery Beastmastery nodes, Beastmastery in tree:<uuid> for Menu Right now, Pet Fang + the 13 wc15 Weaponcraft texts) and SkyyPets 0.4.17 (applies the hatching nodes, Pet Fang 2.6 / 1.5 via one-time PetsMigW15) each roll back alone (Trees to 0.6.1: the new node keys are dropped on the next save and the points come back unspent; the Weaponcraft texts show the old numbers while wc15's Gear / Mobs / Classes apply the new ones, display only). Before rolling Pets back to 0.4.16, Undo the four PetsMigW15 rows in Server Setup -> Changes.
+# FLOOR (2026-10-24, ward012): SkyyWardrobe 0.2.12 (loadout slots 11-18 bought with coins via SkyyCoins bridge; own file requip/<pkey>/shop.json) rolls back alone to 0.2.11 - bought slots are only locked there (shop.json untouched, never deleted) and return with 0.2.12; index/loadout formats unchanged, no migration.
 # FLOOR (2026-10-24, archi1): SkyyShards 0.4.8 + SkyyIslands 0.5.25 pin + roll back TOGETHER (shard:fn:door; Islands places the doors, Shards records them). Shards 0.4.8 retypes 0.4.6 extra islands to tier keys (<kind>.i<n>.type / .legacy, map.done) that 0.4.7 cannot read. Roll back to Shards 0.4.7 + Islands 0.5.24: first Undo the ShMig048 rows (Server Setup > Shards > Changes) and the starter.design row (Islands > Changes), stop the server, copy Skyy_SkyyShards/history/map/<pkey>.pre-0.4.8.properties back over shards/<pkey>.properties. Added archipelago / cave / decoration blocks stay as plain blocks. Islands 0.5.24 alone reads starter.design=archipelago as three (safe).
 # FLOOR (2026-10-24, shield1): SkyyArmory 0.1.47 (great shield bash arc 120 / knockback 22 / slam 30 + the 30-block steerable Bulwark Charge, new ArmoryWishSys A / D reader, 9 new gshield.rush.* rows, 8 old gshield.charge.* rows hidden) rolls back alone to 0.1.46 (the 8-block charge and its old rows come back, the new keys are ignored, a running charge / cooldown is runtime only). No saved data, no migration.
 # FLOOR (2026-10-24, collharv): SkyyCollections 0.2.33 (Harvester / sickle swing harvests credited - CollSwing crops only; ripe = any harvest state incl. DynamicSeasons Crude / Best / Epic; F-window closes after its harvest; break claim only for empty-hand breaks) rolls back alone to 0.2.32 (swings stop counting again); no saved-data change. Rebuild needs SKYY_GEAR_0329_JAR (Gear 0.3.29 jar from backups/archive/old-jars-20261022.tar.xz). Baited fishing-trap catches now also count (scope note). CollTier table baked from a tier_tags.py with fish2 draft rows (sort only).
@@ -64,9 +67,9 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.35"), ("SkyySacks", "0.8.29"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.33"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.25"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.44"), ("SkyySkills", "0.4.64"),
-    ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.47"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.6.1"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.25"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.45"), ("SkyySkills", "0.4.64"),
+    ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.48"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.6.2"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -113,7 +116,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.18"), ("SkyyWorldGen", "0.7.10"),
+    ("SkyyMobs", "0.1.19"), ("SkyyWorldGen", "0.7.10"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -123,8 +126,8 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.16"),
-    ("SkyyWardrobe", "0.2.11"),
+    ("SkyyPets", "0.4.17"),
+    ("SkyyWardrobe", "0.2.12"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.

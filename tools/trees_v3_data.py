@@ -5588,6 +5588,68 @@ def v4_md():
     return "\n".join(out)
 
 
+# ===================================================================================================================================
+# SkyyTrees 0.6.2 + SkyyPets 0.4.17 (2026-10-24): r062_apply() - ONLY those builds call it (opt-in like v4_apply; older builds read the table
+# unchanged), and BEFORE v4_apply (Pet Fang's text is copied into every class tree's Weaponcraft branch).
+#  1. BEASTMASTERY HATCHING (docs/answered/pets.md 2026-10-23, Skyy: "(in the beast master tree, have upgrades that speed up hatching and give
+#     more hatchery slots too.)"): two NEW upgrades with NEW saved keys (nobody owns a rank in them) in rows that held 2 upgrades (a skill row
+#     may hold 3 - every row 3 does): Warm Nest = Wild Roots row 2, r2c (-5 % egg hatch time a rank, 4 ranks = -20 %) and Burrow Nursery =
+#     Deep Burrow row 4, r4c (+1 Hatchery slot a rank, 2 ranks; with Gentle Hand's 3 = 5 extra slots, inside SkyyPets' 10-slot clamp).
+#     SkyyPets applies both (tools/trees_v3_effects.py r062_apply rows; ranks via tree:fn:level).
+#  2. WEAPONCRAFT x1.5, PETS PART (docs/answered/classes.md 2026-10-23 CLASS TREE REBUILD BUILT): Pet Fang's text follows its new numbers
+#     (+2.6 % class XP - held by the 30 % class XP budget TREE_XP_MAX - and +1.5 % damage a rank, x the Combat pet's rarity bonus).
+R062_APPLIED = []
+R062_NEW = [("Beastmastery", 3, 2, {"id": "r2c", "name": "Warm Nest", "max": 4, "cost": 1, "text": "-5% egg hatch time/rank", "hook": None}),
+            ("Beastmastery", 2, 4, {"id": "r4c", "name": "Burrow Nursery", "max": 2, "cost": 1, "text": "+1 Hatchery slot/rank", "hook": None})]
+R062_TEXT = {"Combat.b3.r3a": (("+2% combat XP and +1% damage per equipped Combat pet tier, per rank",       # the table's own text
+                                "+2% Combat XP and +1% damage/rank, x your Combat pet's rarity bonus"),       # after p052_apply (SkyyTrees)
+                               "+2.6% class XP and +1.5% damage/rank, x your Combat pet's rarity bonus")}
+#  3. WEAPONCRAFT x1.5, wc15 PART (round wc15: SkyyGear 0.3.45 / SkyyMobs 0.1.19 / SkyyClasses 0.1.48 apply the numbers, tools/wc15.py ROWS;
+#     they ship in the same set as SkyyTrees 0.6.2): the /tree texts of those 13 rows follow the new numbers. Accessory Plates and the
+#     SkyyClasses hit rows / Second Wind are HELD in tools/wc15.py, so their texts stay.
+R062_TEXT.update({
+    "Combat.b1.r1a": (("+2% weapon damage/rank",), "+3% weapon damage/rank"),                                        # Hone Edge
+    "Combat.b1.r1b": (("+2% crit chance/rank",), "+3% crit chance/rank"),                                            # Weak Spot
+    "Combat.b1.r4a": (("+3% crit damage/rank",), "+4.5% crit damage/rank (rounded to whole %)"),                     # Crit Mastery
+    "Combat.b1.r4b": (("+2% damage per combat-tagged armor piece/rank",), "+3% damage per combat-tagged armor piece/rank"),   # Gear Resonance
+    "Combat.b1.r5b": (("+1% damage per metal tier above Iron per rank (max +20%)",),
+                      "+1.5% damage per metal tier above Iron per rank (rounded to whole %, max +30%)"),             # Weapon Tempering
+    "Combat.b2.r1b": (("+3% knockback resistance/rank",), "+4.5% knockback resistance/rank"),                        # Iron Will
+    "Combat.b2.r3a": (("+2% damage reduction/rank",), "+3% damage reduction/rank"),                                  # Thick Skin
+    "Combat.b2.r3b": (("3% of the melee damage you take is dealt back to the attacker per rank",),
+                      "4.5% of the melee damage you take is dealt back to the attacker per rank"),                   # Reprisal
+    "Combat.b3.r1a": (("+2% chance/rank a kill drops 1 more item of its loot (never gear)",),
+                      "+3% chance/rank a kill drops 1 more item of its loot (never gear)"),                          # Scavenger
+    "Combat.b3.r1b": (("3% chance/rank a kill also pays coins (the mob's level)",),
+                      "4.5% chance/rank a kill also pays coins (the mob's level)"),                                  # Coin Purse
+    "Combat.b3.r3b": (("+1% chance/rank a kill drops 1 more of its rarest loot (never gear)",),
+                      "+1.5% chance/rank a kill drops 1 more of its rarest loot (never gear)"),                      # Rare Drop
+    "Combat.b3.r4a": (("+3% chance/rank a boss or mini boss drops its loot once more (never gear)",),
+                      "+4.5% chance/rank a boss or mini boss drops its loot once more (never gear)"),                # Boss Hunter
+    "Combat.b3.r5a": (("2% chance/rank a kill drops its whole loot twice (never gear)",),
+                      "3% chance/rank a kill drops its whole loot twice (never gear)"),                              # Lucky Kill
+})
+
+
+def r062_apply():
+    """SkyyTrees 0.6.2 / SkyyPets 0.4.17 (once; before v4_apply). Returns True."""
+    if R062_APPLIED:
+        return True
+    assert not V4_APPLIED, "r062_apply must run before v4_apply (Weaponcraft copies Pet Fang's text)"
+    for tn, bn, rn, u in R062_NEW:
+        row = [r for r in tree(tn)["branches"][bn - 1]["rows"] if r["r"] == rn][0]
+        assert len(row["ups"]) == 2 and not row["cap"] and u["id"] not in [x["id"] for x in row["ups"]], (tn, bn, rn)
+        row["ups"].append(dict(u))
+    for k, (o, n) in R062_TEXT.items():
+        tn, bs, uid = k.split(".")
+        u = [x for r in tree(tn)["branches"][int(bs[1:]) - 1]["rows"] for x in r["ups"] if x["id"] == uid][0]
+        assert u["text"] in o and u["hook"] is None, ("R062: the text moved", k, u["text"])
+        u["text"] = n
+    R062_APPLIED.append(1)
+    check()
+    return True
+
+
 if __name__ == "__main__" and "--v4md" in __import__("sys").argv:
     import os as _os
     _p = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "research", "Class-Tree-v4-Table.md")

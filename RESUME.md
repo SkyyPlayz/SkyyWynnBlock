@@ -35,7 +35,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   tier_tags), zones03 (Zones 0.3.0 + Skills 0.4.65 incl. DynamicSeasons Farming XP), ward012 (Wardrobe 0.2.12), shield1 (Armory 0.1.47).
 - wg0711 builder: WorldGen 0.7.11 floating islets (black grass, shape + trees, soil + own zone, spacing, height / rate / variants, bigger island).
 - Workflow compact1 (wf_db5ae0e3-e84): Sacks 0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts.
-QUEUE: Trees 0.6.3 + Classes (sapling fix, Farming tree = crop Farming level, A1 alts late either/or) after bm1 + wc15; Gear lane after wc15
+QUEUE: SHARDS R3 (0.4.9) + RE-BALANCE: shards = primary late-game source, +2%+ per upgrade level, new islands unchanged, offline-harvest-time upgrade (docs/answered/world.md 2026-10-24); Trees 0.6.3 + Classes (sapling fix, Farming tree = crop Farming level, A1 alts late either/or) after bm1 + wc15; Gear lane after wc15
 (gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
 research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Pets (rarity colours) then Secret dragons; Shards R3 / Quests R4 / R5 / R6 after
 archi1; Zones 0.3.1; sig3 / sig5 after shield1; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
