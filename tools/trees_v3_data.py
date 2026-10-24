@@ -5516,8 +5516,9 @@ def v4_check():
                         lines.append(f["hook"][1])
         assert sorted(lines) == sorted(CLASS_LINES[cn]), (cn, lines)
         b1 = t["branches"][0]["rows"]
-        assert b1[0]["free"]["hook"][1] == "A1" and b1[1]["free"]["hook"][1] == "A4a"
-        assert ("A4b" in CLASS_LINES[cn]) == bool(b1[1].get("free2")) and (not b1[1].get("free2") or b1[1]["free2"]["hook"][1] == "A4b")
+        ar = (R063_ALT_ROW if globals().get("R063_APPLIED") else 2) - 1   # 0.6.3: the A1-alts sit at the end of the split (row 5)
+        assert b1[0]["free"]["hook"][1] == "A1" and b1[ar]["free"]["hook"][1] == "A4a"
+        assert ("A4b" in CLASS_LINES[cn]) == bool(b1[ar].get("free2")) and (not b1[ar].get("free2") or b1[ar]["free2"]["hook"][1] == "A4b")
         assert t["branches"][1]["rows"][1]["free"]["hook"][1] == "A2" and t["branches"][1]["rows"][4]["free"]["hook"][1] == "A3"
         w = t["branches"][2]["rows"]
         assert w[0]["free"]["key"] == "Skill.Combat.b1.r1.free" and w[1]["free"]["hook"][0] == "fx" and w[4]["free"]["hook"][0] == "fx"
@@ -5531,7 +5532,8 @@ def v4_check():
                 for u in r["ups"]:
                     if u.get("modnode"):
                         ln = [x for x, ab in CLASS_LINES[cn].items() if ab == u["hook"][1]][0]
-                        assert r["r"] >= LINE_ROW[ln] and b["line"] == ("A1" if LINE_BRANCH[ln] == 0 else "A2"), (cn, u["name"], r["r"])
+                        fl = R063_SPLIT[cn] if (globals().get("R063_APPLIED") and ln in ("A4a", "A4b")) else LINE_ROW[ln]   # 0.6.3: an alt's modifiers sit on its path (rows split..5)
+                        assert r["r"] >= fl and b["line"] == ("A1" if LINE_BRANCH[ln] == 0 else "A2"), (cn, u["name"], r["r"])
     return True
 
 
@@ -5647,6 +5649,317 @@ def r062_apply():
         u["text"] = n
     R062_APPLIED.append(1)
     check()
+    return True
+
+
+# ===================================================================================================================================
+# SkyyTrees 0.6.3 (2026-10-24): r063_apply() - ONLY that build calls it (opt-in like r062_apply), AFTER v4_apply (it re-rows branch 1).
+# THE A1 ALTS = LATE-GAME EITHER / OR (docs/answered/classes.md 2026-10-24 A1 ALTS, Skyy: "the A1 alts are supposed to be late game. both
+# options are supposed to be significantly better than the A1 sacred heal. and its supposed to be an either or. the tree splits, you pick a
+# path, and get locked out of the other. so, there is no option to swap. you have to respec the tree."):
+#  - branch 1 of every class tree SPLITS: rows 1 .. split-1 = the trunk (the A1, its modifiers, the shared passives), rows split .. 5 = two
+#    PATHS side by side - path A = every node of the first A1-alt (its modifier unlock nodes + the passives that name it; A on the left of
+#    each ring), path B = the second A1-alt's (on the right); the two A1-alts are the free ability nodes at the END of their path (row 5,
+#    the OR pair, R063_ALT_ROW). The split row is the latest one (3, else 2) at which BOTH paths can still open every row alone (each row of
+#    trunk + one path holds >= 3 ranks and rows 1..n >= 5 n - the per-branch gates; asserted).
+#  - path = u["path"] "A" / "B" (SkyyTrees: buying a node of one path locks the other until a respec; the alt comes with row 5 only on its
+#    own path). The capstone row: a capstone that names an A1-alt belongs to that path (u["path"] too).
+#  - every node keeps its SAVED KEY (only rows / ids / order change); R063_OLDROW keeps each node's 0.6.2 row (the one-time update reads it).
+#  - a class with ONE A1-alt (the Assassin) has path A only: nothing to lock, its alt still comes with row 5.
+R063_APPLIED = []
+R063_ALT_ROW = 5
+R063_SPLITS = (3, 2)     # the split rows tried, latest first
+R063_SPLIT = {}          # class -> its split row
+R063_OLDROW = {}         # class -> {saved key: the 0.6.2 row of that branch-1 node}
+R063_PATHAB = {}         # class -> (path A ability id, path B ability id or None)
+R063_MOVES = {}          # class -> [(key, name, old row, new row, path)] (the report table)
+
+
+def _r063_side(cn, u):
+    """the path ("A" / "B") a branch-1 node belongs to: a modifier of an A1-alt, or a passive whose codes name exactly one A1-alt"""
+    L = CLASS_LINES[cn]
+    alts = {L["A4a"]: "A"}
+    if "A4b" in L:
+        alts[L["A4b"]] = "B"
+    h = u.get("hook")
+    if not h:
+        return None
+    if h[0] == "mod":
+        return alts.get(h[1])
+    sides = set(alts[a] for a in (_v4_ab_of_code(c) for c, _v in h[1]) if a in alts)
+    return sides.pop() if len(sides) == 1 else None
+
+
+def _r063_bad(rows, paths, side, cap_side):
+    """(first row a path cannot open, total shortfall) over every path; (99, 0) = every path opens rows 2-5 alone (its A1-alt) and the
+    capstone's path (every path for a trunk capstone) opens row 6: row n needs rows 1..n-1 >= 5 (n-1) ranks and row n-1 >= 3 ranks,
+    counting the trunk + that path only (the per-branch gates; the level floor aside)"""
+    first, short = 99, 0
+    for p in paths:
+        cum = 0
+        top = 6 if cap_side in (None, p) else 5
+        for i in range(1, top):
+            rk = sum(n["max"] for n in rows[i] if side.get(n["key"]) in (None, p))
+            cum += rk
+            sh = max(0, 3 - rk) + max(0, GATE_STEP * i - cum)
+            if sh and i + 1 < first:
+                first = i + 1
+            short += sh
+    return first, short
+
+
+def _r063_rows(cn, body, side, split, paths, cap_side):
+    """rows 1-5 of branch 1 for one split row (None = it cannot be laid out): path nodes only in rows split..5 (each path spread evenly,
+    deeper rows first), trunk nodes fill rows 1 .. split-1 (their 0.6.2 order), the rest of the trunk the shallowest path rows with room;
+    then moves / swaps (path nodes never above the split, <= V4_ROW_MAX a row, >= 1 node a row) until both paths open every row"""
+    rows = dict((i, []) for i in range(1, 6))
+    prow = list(range(split, 6))
+    for p in paths:
+        lst = [n for n in body if side.get(n["key"]) == p]
+        k = len(prow)
+        quota = [len(lst) // k + (1 if i >= k - len(lst) % k else 0) for i in range(k)]
+        j = 0
+        for i, q in zip(prow, quota):
+            rows[i].extend(lst[j:j + q])
+            j += q
+    trunk = [n for n in body if not side.get(n["key"])]
+    for n in trunk:
+        for i in list(range(1, split)) + prow:
+            if len(rows[i]) < V4_ROW_MAX:
+                rows[i].append(n)
+                break
+        else:
+            return None
+    if any(len(rows[i]) > V4_ROW_MAX for i in rows):
+        return None
+    for _pass in range(400):
+        cur = _r063_bad(rows, paths, side, cap_side)
+        if cur[0] == 99:
+            break
+        best = None
+        for i in range(1, 6):
+            for j in range(1, 6):
+                if i == j:
+                    continue
+                for b in list(rows[j]):
+                    if side.get(b["key"]) and i < split:
+                        continue
+                    for a in list(rows[i]) + [None]:
+                        if a is None and (len(rows[i]) >= V4_ROW_MAX or len(rows[j]) <= 1):
+                            continue
+                        if a is not None and ((side.get(a["key"]) and j < split) or a["max"] == b["max"]):
+                            continue
+                        rows[j].remove(b)
+                        rows[i].append(b)
+                        if a is not None:
+                            rows[i].remove(a)
+                            rows[j].append(a)
+                        sc = _r063_bad(rows, paths, side, cap_side)
+                        if a is not None:
+                            rows[j].remove(a)
+                            rows[i].append(a)
+                        rows[i].remove(b)
+                        rows[j].append(b)
+                        key = (sc[0], -sc[1])
+                        if key > (cur[0], -cur[1]) and (best is None or key > best[0]):
+                            best = (key, i, j, a, b)
+        if best is None:
+            return None
+        _k, i, j, a, b = best
+        rows[j].remove(b)
+        rows[i].append(b)
+        if a is not None:
+            rows[i].remove(a)
+            rows[j].append(a)
+    if _r063_bad(rows, paths, side, cap_side)[0] != 99 or not all(rows[i] for i in rows):
+        return None
+    return rows
+
+
+# THE TRUNK TOP-UP: with the split a path player can buy only the trunk + their own path, so branch 1 must hold enough for each path alone
+# (rows 2-5 = the alt; row 6 = the capstone's path, or both for an A1 capstone). Four classes were short; a few GENERIC class passives (a
+# weapon / defence / Mana passive, never an ability's own upgrade, never a Combat twin) move from Weaponcraft or branch 2 into the trunk of
+# branch 1 - their saved keys, ranks and effects stay (fx codes are summed over the whole class tree); branch 2 keeps >= 26 ranks (its own
+# capstone needs 25) and Weaponcraft >= 60. Each path then holds >= 25 ranks (Warrior / Berserker / Archer / Mage with room to spare;
+# Spellblade path A and Monk path A exactly 25 - nothing generic is left to lend: noted in the 0.6.3 report).
+R063_LEND = {"Warrior": [(2, "Stone Guard"), (2, "Mending Guard")],
+             "Berserker": [(2, "Thirst"), (2, "Red Mist"), (1, "Adrenaline")],
+             "Spellblade": [(1, "Sapping Mark")],
+             "Archer": [(2, "Splinter Shots"), (2, "Focus Fire")],
+             "Mage": [(2, "Arcane Skin")]}
+R063_OLDPOS = {}         # class -> {saved key: (branch 1-3, row)} of EVERY class-tree node in 0.6.2 (the one-time update's old gates)
+R063_LENT = {}           # class -> [(saved key, name, from branch 1-3, from row)]
+
+
+def _r063_lend(t):
+    cn = t["name"]
+    out = []
+    for bi, nm in R063_LEND.get(cn, []):
+        hit = [(r, u) for r in t["branches"][bi]["rows"] for u in r["ups"] if u["name"] == nm]
+        assert len(hit) == 1, ("0.6.3 lend: one node named", cn, nm, len(hit))
+        r, u = hit[0]
+        assert not u.get("combat") and not r["cap"] and u["hook"][0] == "fx" and _v4_target(u) in ("M", "W"), ("0.6.3 lend: a generic class passive only", cn, nm)
+        assert len(r["ups"]) >= 2, ("0.6.3 lend: its row keeps a node", cn, nm)
+        r["ups"].remove(u)
+        src = t["branches"][bi]
+        for _fix in range(6):   # a row it left is short now: deeper passives of the same branch move up, one at a time (never a modifier)
+            fi = _r063_first_bad(src)
+            if fi == 99:
+                break
+            moved = False
+            for r2 in sorted(src["rows"][fi:5], key=lambda x: -x["r"]):
+                for x in list(r2["ups"]):
+                    if x["hook"][0] != "fx" or x.get("combat") or len(r2["ups"]) < 2:
+                        continue
+                    r2["ups"].remove(x)
+                    src["rows"][fi - 1]["ups"].append(x)
+                    if _r063_first_bad(src) > fi:
+                        R063_LENT.setdefault(cn, []).append((x["key"], x["name"] + " (moved up inside its branch to row %d)" % fi, bi + 1, r2["r"]))
+                        moved = True
+                        break
+                    src["rows"][fi - 1]["ups"].remove(x)
+                    r2["ups"].append(x)
+                if moved:
+                    break
+            if not moved:
+                break
+        assert _r063_rule_ok(src), ("0.6.3 lend: its branch still opens every row", cn, nm)
+        for r2 in src["rows"]:
+            if r2["cap"]:
+                continue
+            for j, x in enumerate(r2["ups"]):   # the rows' ids follow their order again (ids are places, never saved)
+                x["id"] = "r%d%s" % (r2["r"], "abcdef"[j])
+        out.append(u)
+        R063_LENT.setdefault(cn, []).append((u["key"], nm, bi + 1, r["r"]))
+    return out
+
+
+def _r063_first_bad(b):
+    """the first row (1-5) of one branch breaking the v4 rule (>= 3 ranks, rows 1..n >= 5 n, 1-6 nodes); 99 = none"""
+    cum = 0
+    for r in b["rows"][:5]:
+        rk = sum(u["max"] for u in r["ups"])
+        cum += rk
+        if rk < 3 or cum < GATE_STEP * r["r"] or not (1 <= len(r["ups"]) <= V4_ROW_MAX):
+            return r["r"]
+    return 99
+
+
+def _r063_rule_ok(b):
+    return _r063_first_bad(b) == 99
+
+
+def _r063_class(t):
+    cn = t["name"]
+    L = CLASS_LINES[cn]
+    R063_OLDPOS[cn] = dict((u["key"], (bi + 1, r["r"])) for bi, bb in enumerate(t["branches"]) for r in bb["rows"] for u in r["ups"])
+    b = t["branches"][0]
+    assert b["line"] == "A1" and b["rows"][1]["free"]["hook"][1] == "A4a" and b["rows"][R063_ALT_ROW - 1]["free"] is None, cn
+    paths = ["A", "B"] if "A4b" in L else ["A"]
+    R063_PATHAB[cn] = (L["A4a"], L.get("A4b"))
+    lent = _r063_lend(t)
+    oldrow = {}
+    order = {}
+    body = []
+    for r in b["rows"]:
+        for u in r["ups"]:
+            oldrow[u["key"]] = r["r"]
+            order[u["key"]] = len(order)
+            if not r["cap"]:
+                body.append(u)
+    for u in lent:   # a lent passive joins the trunk after branch 1's own nodes
+        oldrow[u["key"]] = 0
+        order[u["key"]] = len(order)
+        body.append(u)
+    side = dict((u["key"], _r063_side(cn, u)) for u in body)
+    cap = b["rows"][5]["ups"][0]
+    side[cap["key"]] = _r063_side(cn, cap)
+    cap_side = side[cap["key"]]
+    R063_OLDROW[cn] = oldrow
+    rows = None
+    split = None
+    for split in R063_SPLITS:
+        rows = _r063_rows(cn, body, side, split, paths, cap_side)
+        if rows:
+            break
+    assert rows, ("0.6.3: branch 1 of %s cannot split so both paths open every row" % cn)
+    R063_SPLIT[cn] = split
+
+    def grp(n):
+        return 0 if side.get(n["key"]) == "A" else (2 if side.get(n["key"]) == "B" else 1)
+    # the order on each ring: path A on the left, the trunk in the middle, path B on the right (0.6.2 order inside each group)
+    letters = "abcdef"
+    moves = []
+    for i in range(1, 6):
+        ups = sorted(rows[i], key=lambda n: (grp(n), order[n["key"]]))
+        out = []
+        for j, n in enumerate(ups):
+            y = dict(n)
+            y["id"] = "r%d%s" % (i, letters[j])
+            y.pop("path", None)
+            if side.get(n["key"]):
+                y["path"] = side[n["key"]]
+            out.append(y)
+            moves.append((n["key"], n["name"], oldrow[n["key"]], i, side.get(n["key"])))
+        b["rows"][i - 1]["ups"] = out
+    if cap_side:
+        cap["path"] = cap_side
+    moves.append((cap["key"], cap["name"], 6, 6, cap_side))
+    R063_MOVES[cn] = moves
+    # the two A1-alts: free at the end of their paths (row 5)
+    r2, r5 = b["rows"][1], b["rows"][R063_ALT_ROW - 1]
+    r5["free"] = r2["free"]
+    if r2.get("free2"):
+        r5["free2"] = r2.pop("free2")
+    r2["free"] = None
+
+
+def r063_check():
+    """the split rules (check() runs them once r063_apply ran)"""
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        cn = t["name"]
+        L = CLASS_LINES[cn]
+        paths = ["A", "B"] if "A4b" in L else ["A"]
+        b = t["branches"][0]
+        sp = R063_SPLIT[cn]
+        assert sp in R063_SPLITS and b["rows"][R063_ALT_ROW - 1]["free"]["hook"][1:] == ("A4a", L["A4a"]), cn
+        assert ("A4b" in L) == bool(b["rows"][R063_ALT_ROW - 1].get("free2")) and all(not r.get("free2") for r in b["rows"][:R063_ALT_ROW - 1]), cn
+        assert all(r["free"] is None for r in b["rows"][1:R063_ALT_ROW - 1]), cn
+        side = {}
+        for r in b["rows"]:
+            for u in r["ups"]:
+                s_ = _r063_side(cn, u)
+                assert u.get("path") == s_, ("0.6.3: a path node is tagged with its own path", cn, u["name"], u.get("path"), s_)
+                assert not s_ or r["r"] >= sp or r["cap"], ("0.6.3: a path node above the split", cn, u["name"], r["r"])
+                side[u["key"]] = s_
+        rows = dict((r["r"], r["ups"]) for r in b["rows"][:5])
+        cap_side = b["rows"][5]["ups"][0].get("path")
+        assert _r063_bad(rows, paths, side, cap_side)[0] == 99, ("0.6.3: a path cannot open its rows alone", cn)
+        keys = sorted(u["key"] for bb in t["branches"] for r in bb["rows"] for u in r["ups"])
+        assert keys == sorted(R063_OLDPOS[cn]), ("0.6.3: every saved key of the class tree is still there", cn)
+        for bb in t["branches"][1:]:   # branches 2 + 3: no path node; they keep >= 26 / 60 ranks
+            assert all(not u.get("path") for r in bb["rows"] for u in r["ups"]), cn
+        assert sum(u["max"] for r in t["branches"][1]["rows"] if not r["cap"] for u in r["ups"]) >= 26, cn
+        assert sum(u["max"] for r in t["branches"][2]["rows"] if not r["cap"] for u in r["ups"]) >= 60, cn
+        for p in paths:   # each path: >= 25 ranks with the trunk, and nodes of its own (a path is taken by buying one)
+            assert sum(u["max"] for r in b["rows"][:5] for u in r["ups"] if u.get("path") in (None, p)) >= 25, (cn, p)
+            assert any(u.get("path") == p for r in b["rows"][:5] for u in r["ups"]), (cn, p)
+    return True
+
+
+def r063_apply():
+    """SkyyTrees 0.6.3 (once; AFTER v4_apply). Returns True."""
+    if R063_APPLIED:
+        return True
+    assert V4_APPLIED, "r063_apply re-rows the 0.6.0 class trees - run v4_apply first"
+    for t in TREES:
+        if t["kind"] == "class":
+            _r063_class(t)
+    R063_APPLIED.append(1)
+    check()
+    r063_check()
     return True
 
 
