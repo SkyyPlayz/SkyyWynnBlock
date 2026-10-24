@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-23 20:00 MDT; Skyy is resetting the context - a fresh session starts here)
+# SkyWynn - RESUME HERE (updated 2026-10-23 21:10 MDT; Skyy is resetting the context - a fresh session starts here)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -11,15 +11,22 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
    (backup -> `smoke_test.py --allow-pack-api` -> `deploy_set.py --yes` -> `record_deploy.py` -> commit -> `tidy_local.py --yes`).
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
-## STATE (2026-10-23 20:00)
-- LIVE: everything up to TEST-CHECKLIST 247 (today: dragons D1/D3/D6, pet tooltips, Gear 0.3.41-0.3.44 (Quirk's tools, Ability 1 tooltips,
-  tier tag on top, set names, full-set button), Armory 0.1.44-0.1.46 (sig1/sig2/sig4 weapon signatures), Trees 0.5.1-0.6.0 (zoom keep,
-  Motherlode, row gates, node icons, CLASS TREE REBUILD: Combat folded into Weaponcraft), Classes 0.1.47, Skills 0.4.64, Rebirth 0.5.2,
-  WorldGen 0.7.9 (StructureV2 freeze fix), Menu 0.3.46 (no hotbar item), Pets 0.4.16, Shards 0.4.7, joszza pack mods).
-- LIVE 10-23 20:15 (TEST-CHECKLIST 248): zone reset + undo, shard ores regrow, Requip pet portraits, Trees 0.6.1, Menu 0.3.47.
-- RUNNING (background, this session): workflow archi1 (Shards 0.4.8 + Islands 0.5.25 = starter archipelago R1+R2, research/Starter-Archipelago-Spec.md v2);
-  (zone reset fixed + pinned, see above). Not finished at a reset -> rerun from the patches.
-- ZoneViewControl duplicate (1.1.1 + 1.1.2) fixed by Skyy 10-23 (1.1.1 removed).
+## STATE (2026-10-23 21:10 - Skyy is resetting the session)
+- LIVE: everything up to TEST-CHECKLIST 248. Today's deploys (236-248): dragon fighting / riding / eggs, pet tooltips + portraits, Gear
+  0.3.41-0.3.44 (Quirk's tools, Ability 1 tooltips, tier tag on top, real set names, green / red requirements, full-set button), Armory
+  0.1.44-0.1.46 (weapon signatures sig1 / sig2 / sig4), CLASS TREE REBUILD (Trees 0.6.1 + Classes 0.1.47 + Skills 0.4.64 + Rebirth 0.5.2:
+  Combat folded into Weaponcraft, OR pick, modifiers unlock in the tree - Skyy "i love the chages to the tree!"), node icons for every tree,
+  zoom keep, Motherlode jackpot, row gates, harvest swing, WorldGen 0.7.10 (/zone <n> reset + undo; StructureV2 freeze fixed), Zones 0.2.2
+  (shard ores regrow), Exploration 0.3.4, Menu 0.3.47 (no hotbar item; unspent points in Right now), Pets 0.4.16, Shards 0.4.7 (tier up on the
+  totem page, centre pad), Wardrobe 0.2.11 (Requip pet portraits), joszza DungeonBosses + River Bridges.
+- NOT FINISHED at the reset: workflow archi1 = starter archipelago R1 + R2 (SkyyShards 0.4.8 + SkyyIslands 0.5.25) per
+  research/Starter-Archipelago-Spec.md v2 (layout APPROVED, research/starter-archipelago-layout.png) + every Skyy answer in
+  docs/answered/world.md 2026-10-23 (STARTER ISLAND REDESIGN ... ARCHIPELAGO LAYOUT APPROVED). It stopped in the BUILD step: untracked
+  tools/shards_0_4_8_patch.py, tools/islands_0_5_25_patch.py, SkyyShards/*_0.4.8.py, SkyyIslands/*_0.5.25.py and the uncommitted
+  tools/balance_model.py edit (its --p11 cost check) are its unreviewed drafts. NEXT SESSION: re-launch Workflow skywynn-round tag archi1 with
+  the same task (mods / quotes in docs/log 10-23 20:00 line) - tell the builder these drafts exist (reuse or redo), recheck true.
+- Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
+  may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
