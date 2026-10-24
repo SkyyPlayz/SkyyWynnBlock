@@ -272,4 +272,4 @@ tests always come first.
 245. Tier tag first, real set names, green / red requirements, full-set craft / upgrade button
 246. Shards free at level 20 (skill-matched), buy islands 2-6 (coins x3 + Enchanted), shard recipes off
 247. Hatch reel never freezes, Dog / Corgi portraits, totem tier up on its page, totem in the island centre
-248. /zone <n> reset + undo, shard ores regrow, Requip pet portraits, '... Modifier' names, unspent tree points in Right now
+248. (zone reset + undo PASSED 2026-10-24) shard ores regrow, Requip pet portraits, '... Modifier' names, unspent tree points in Right now
