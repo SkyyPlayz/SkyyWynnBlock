@@ -28,14 +28,12 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24 12:00)
-- LIVE since 11:58 (TEST-CHECKLIST 249, backup deploy-20261024-1158): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25
-  (starter archipelago), Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes 0.1.48 (wc15), Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12,
-  Zones 0.3.0 + Skills 0.4.65.
-- PINNED for the next batch: WorldGen 0.7.11 (+ flying_islands on via deploy). READY, held: Fishing 0.2.0 (needs Gear 0.3.46 pole ladder).
-- Building: workflow gear046 (Gear 0.3.46: pole ladder, armor upgrades in place, Ornate Bronze, tooltip header) | workflow compact1 (Sacks
-  0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts) 
-- Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). Full tidy_local after builders finish.
+## RUNNING (2026-10-24 13:10) - nothing building; everything above is LIVE
+- LIVE 11:58 (TEST 249): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25, Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes
+  0.1.48, Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12, Zones 0.3.0 + Skills 0.4.65.
+- LIVE 13:06 (TEST 250, backup deploy-20261024-1306): WorldGen 0.7.11 (+ StructureV2 flying_islands on), Sacks 0.8.30, Gear 0.3.46, Fishing 0.2.0.
+- Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). Run tidy_local --yes next (the
+  xc-ward012 nested folder crashed --scratch smoke).
 QUEUE: SHARDS R3 (0.4.9) + RE-BALANCE: shards = primary late-game source, +2%+ per upgrade level, new islands unchanged, offline-harvest-time upgrade (docs/answered/world.md 2026-10-24); Trees 0.6.3 + Classes (sapling fix, Farming tree = crop Farming level, A1 alts late either/or) after bm1 + wc15; Gear lane after wc15
 (gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
 research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Pets (rarity colours) then Secret dragons; Shards R3 / Quests R4 / R5 / R6 after

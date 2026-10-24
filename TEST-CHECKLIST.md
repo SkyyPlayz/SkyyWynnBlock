@@ -56,3 +56,4 @@ tests always come first.
 ### Latest
 248. (zone reset + undo PASSED) still open: shard ores regrow, Requip pet portraits, "... Modifier" names, unspent tree points in Right now
 249. BIG BATCH 2026-10-24: starter archipelago + shard doors, mob drops -> Combat bag, Harvester / seasonal crops count + Farming XP, great shield Bulwark Charge, Weaponcraft x1.5, Beastmastery hatching nodes, Wardrobe coin slots, whole-island gathering + regrowing trees
+250. BATCH 2 2026-10-24: floating islands in the void (black grass fixed, round islands + trees, spacing, heights, flying islands on), auto-compact per-bag upgrade + crafting opens Enchanted + Unpack, gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, Fishing stage 2 (Zone 2-3 fish, T3-T9 rods)
