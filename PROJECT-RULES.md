@@ -72,6 +72,10 @@ Respect the rollback floors in `tools/deploy_set.py`.
 - **UI looks and feels vanilla:** shared kit `tools/skyyui.py` + `research/Vanilla-UI-Style-Guide.md`; inline pages only; HANDOFF section 2.
 - **Tooltips / flavor text bigger + colour coded** (Skyy 2026-10-18: "make all the flavor text use a slightly bigger font, and color code
   everything. so you can see what stats it gives at a glance"): one colour code everywhere, Style Guide section 15; every new or changed tooltip follows it.
+- **Rarity colours + tooltip layout everywhere** (Skyy 2026-10-24: "make that the global default. if it has a rarity, it gets color coded.   if it
+  has flavor text, the text is well laid out, well organized, clear, readable, and color coded."): anything with a rarity (items, pets, mounts, eggs,
+  charms, cosmetics) shows its rarity colour on the icon / frame AND the popup title; every tooltip uses clear sections like the approved pet
+  tooltip (docs/answered/pets.md 2026-10-24) with the Style Guide section 15 colours.
 - **Tier tags** (Skyy 2026-10-15: "keep this as a general rule"): every item with a tier - now or added later - shows it first in its flavor
   text (`T3 Iron - text`; materials = their tool's tier; own ladders `T2 Totem`), from the one table `tools/tier_tags.py`
   (research/Tier-Tags-Plan.md). A round that adds a tiered item adds it to that table; `tools/ci/langdup.py` keeps one writer per lang key.

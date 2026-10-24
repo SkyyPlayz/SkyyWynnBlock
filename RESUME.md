@@ -39,7 +39,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 | ward012 | wf_8f83da9a-0d9 | Wardrobe 0.2.12 coin prices (defaults) | - |
 | shield1 | wf_1ad1203e-7be | Armory 0.1.47 Spellblade great shield | sig3 / sig5 (Armory) |
 Side fixes: Sacks 0.8.29 mob drops -> Combat (REVIEWED, rebuild after fish2's tier_tags then pin); Collections harvester credit (building); WorldGen 0.7.11 black grass on floating islets (building).
-Then: price tooltips R0 probe -> Auctions -> Bazaar; BetterMap shard-world listing. Each finished round: pin -> smoke -> deploy (game closed).
+Then: RARITY + TOOLTIP PASS across all mods (PROJECT-RULES 4 'Rarity colours + tooltip layout'; audit every rarity item / tooltip, fix in each mod's next round); price tooltips R0 probe -> Auctions -> Bazaar; BetterMap shard-world listing. Each finished round: pin -> smoke -> deploy (game closed).
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.

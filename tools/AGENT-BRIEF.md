@@ -61,3 +61,6 @@ copy of the world in its own `tools/dev/scratch/smoke/run-<stamp>/`, deleted by 
 
 ## Vanilla first (Skyy 2026-10-24)
 Before adding ANY new item, set, block or structure: search Assets.zip (read-only) and grep docs/answered/ for "vanilla" / "already in the game" for that thing. Use the vanilla one if it exists (e.g. Ornate Bronze armor existed; a new Bronze set was made by mistake). Then a pack mod; build new only for what is missing. Say in your report what you checked.
+
+## Rarity colours + tooltip layout (Skyy 2026-10-24)
+Anything with a rarity gets its rarity colour on the icon / frame and the popup title. Every tooltip / flavor text is laid out in clear sections (model: the Pets page tooltip - BONUS / BUFFS NOW / AT LV 50 / PROGRESS / ABILITIES) and colour coded per research/Vanilla-UI-Style-Guide.md section 15. Applies to every new or changed tooltip.
