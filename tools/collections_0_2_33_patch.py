@@ -31,6 +31,12 @@ NOTE = '''0.2.33 (2026-10-24) = HARVESTER SWINGS COUNT (Skyy's bug, 2026-10-24: 
      thread, so a swing arc that broke a one-tier-up crop or a bush first (SkyyGear's Failed path) handed the crops reaped after it to
      that break - credited as the break's drops, or lost when the broken block was placed / deco.
   3. Diagnostic: the first credited swing logs "Harvester / sickle swing harvests reach SkyyCollections"; the ready line names the rule.
+  Review fixes: the F-harvest window closes right after the harvest that opened it (a swing a moment later is crop-only again); a swing
+  burst older than 1 s (its task never ran) or made for another profile key is credited at once and replaced, never left stuck.
+  4. RIPE QUALITY STATES (Skyy 2026-10-24 "i am at lettuce collection 0 despite farming hundreds of lettuce"): DynamicSeasons (pack, ON)
+     ends crop growth in Crude / StageFinal / Best / Epic by season; 0.2.32 counted only StageFinal, so F-harvested and broken Crude / Best
+     crops (most Lettuce off-season) counted 0. CollSwing.ripe = a state with a Harvest drop on a block that has a StageFinal state; H1
+     (break), H2 (F-harvest window) and the swing crop map use it.
   Never twice: an F-pickup's stacks go to its break context, an F-harvest's to its window, a swing's to the burst - each pickup event
   takes exactly one of the three branches; a broken one-up crop (Failed path) fires a BreakBlockEvent and no pickup (H1 re-rolls it once).
   Saved data: no format change. Past harvests are not back-filled: nothing saved them per crop (SkyySkills keeps only Farming XP totals).
@@ -69,11 +75,13 @@ for _k, _v in (("HDT", "com.hypixel.hytale.server.core.asset.type.blocktype.conf
                ("IDL", "com.hypixel.hytale.server.core.asset.type.item.config.ItemDropList"),
                ("IDR", "com.hypixel.hytale.server.core.asset.type.item.config.ItemDrop"),
                ("IDC", "com.hypixel.hytale.server.core.asset.type.item.config.container.ItemDropContainer"),
-               ("INVC", "com.hypixel.hytale.server.core.inventory.InventoryComponent")):
+               ("INVC", "com.hypixel.hytale.server.core.inventory.InventoryComponent"),
+               ("SDT", "com.hypixel.hytale.server.core.asset.type.blocktype.config.StateData")):
     assert _k not in T, "0.2.33 token clashes: " + _k
     T[_k] = _v
 for c, m in ((T["HDT"], "getItemId"), (T["HDT"], "getDropListId"), (T["IDL"], "getAssetMap"), (T["IDL"], "getContainer"), (T["IDR"], "getItemId"),
-             (T["IDC"], "getAllDrops"), (T["INVC"], "getItemInHand"), (T["BGA"], "getHarvest"), (T["BTM"], "getNextIndex"), (T["BTM"], "getAsset")):
+             (T["IDC"], "getAllDrops"), (T["INVC"], "getItemInHand"), (T["BGA"], "getHarvest"), (T["BTM"], "getNextIndex"), (T["BTM"], "getAsset"),
+             (T["BTY"], "getState"), (T["SDT"], "getStateNames")):
     B.probe(pool, c, m)
 def _bc33(cls, meth):
     import jpype as _jp
@@ -137,6 +145,27 @@ M(swg, r"""
 public static boolean claims(@PKG@.GatherCtx g, Thread t, long nanos) {
   return g != null && !g.done && g.held == null && g.thread == t && nanos - g.nanos >= 0L && nanos - g.nanos < 250000000L;
 }""")
+# follow-up (Skyy 2026-10-24 "i am at lettuce collection 0 despite farming hundreds of lettuce"): DynamicSeasons (in the pack, ON) ends every
+# vanilla crop's growth in a QUALITY state - Crude (poor), StageFinal (normal), Best, Epic (FarmingData QualityBlockState; its 14 crop
+# patches add Crude + Best with their own Harvest drop lists). 0.2.32 called only StageFinal ripe: an F-harvest of a Crude / Best crop opened
+# no window and a broken one was a "placed, not ripe" block (its seed was placed) - both counted 0. RIPE = this state has a Harvest drop and
+# the block is a crop (its states include StageFinal): StageFinal, Crude, Best, Epic and any later quality state; a placed seed / plant is
+# in its default state (no Harvest), so nothing placed becomes "ripe"
+M(swg, r"""
+public static boolean ripe(@BTY@ bt) {
+  if (bt == null) return false;
+  String s = @PKG@.CollUtil.stateOf(bt);
+  if (s == null) return false;
+  if ("StageFinal".equals(s)) return true;
+  try {
+    @BGA@ g = bt.getGathering();
+    if (g == null || g.getHarvest() == null) return false;
+    @SDT@ sd = bt.getState();
+    if (sd == null) return false;
+    java.util.Set names = sd.getStateNames();
+    return names != null && names.contains("StageFinal");
+  } catch (Throwable t) { return false; }
+}""")
 # the crop map (SkyySkills 0.4.14 Sickle.put / addCrop, without the XP rule): a RIPE crop = the StageFinal state of a block with a Harvest
 # drop; its produce = the first item its harvest emits (giveDrops -> BlockHarvestUtils.getDrops: the drop list's items in container order,
 # then the Harvest ItemId); multi = the produce can be emitted twice by one harvest (berry bushes); ids = every item its harvest can drop
@@ -161,7 +190,7 @@ public static void addCrop(java.util.HashMap m, @BTY@ bt) {
   if (g == null) return;
   @HDT@ h = g.getHarvest();
   if (h == null) return;
-  if (!"StageFinal".equals(@PKG@.CollUtil.stateOf(bt))) return;
+  if (!ripe(bt)) return;
   String key = null;
   int cnt = 0;
   java.util.HashSet ids = new java.util.HashSet();
@@ -282,32 +311,68 @@ public static int credit(@PR@ pr, java.util.UUID u, String key, java.util.List e
   if (!SEEN) { SEEN = true; @PKG@.CollUtil.info("Harvester / sickle swing harvests reach SkyyCollections - swing-reaped ripe crops count (one credit per pickup)"); }
   return n;
 }""")
+# review fix (LOW 2): a burst = Object[] { PlayerRef, String key, ArrayList events, Long nanos made }; its task credits exactly THAT entry
 M(swg, r"""
-public static int flush(java.util.UUID u) {
+public static int creditEntry(java.util.UUID u, Object o) {
   try {
-    Object o = PEND.remove(u);
     if (!(o instanceof Object[])) return 0;
     Object[] a = (Object[]) o;
     return credit((@PR@) a[0], u, (String) a[1], (java.util.List) a[2]);
   } catch (Throwable t) { failed(t); return 0; }
 }""")
+M(swg, r"""
+public static int flushEntry(java.util.UUID u, Object entry) {
+  if (u == null || entry == null || !PEND.remove(u, entry)) return 0;
+  return creditEntry(u, entry);
+}""")
+M(swg, r"""
+public static int flush(java.util.UUID u) {
+  Object o = u == null ? null : PEND.remove(u);
+  return creditEntry(u, o);
+}""")
+# review fix (LOW 1): the F-harvest window closes right after the harvest that opened it handed its pickups over (they all come inside
+# one FarmingUtil.giveDrops call; this task runs after it) - a Harvester swing a moment later is a swing again (crop-only), not the window
+M(swg, r"""
+public static boolean closeUse(java.util.UUID u, Object use) {
+  if (u == null || use == null) return false;
+  return @PKG@.CollPending.USE.remove(u, use);
+}""")
 RUN(swt)
 F(swt, "public java.util.UUID u;")
-C(swt, "public CollSwingTask(java.util.UUID u) { this.u = u; }")
+F(swt, "public Object entry;")
+F(swt, "public Object use;")
+C(swt, "public CollSwingTask(java.util.UUID u, Object entry, Object use) { this.u = u; this.entry = entry; this.use = use; }")
 M(swt, r"""
 public void run() {
-  @PKG@.CollSwing.flush(this.u);
+  if (this.use != null) { @PKG@.CollSwing.closeUse(this.u, this.use); return; }
+  @PKG@.CollSwing.flushEntry(this.u, this.entry);
 }""")
-# one pickup into this tick's burst of the player; the first of a burst queues the task (an executor that refuses it drops the burst)
+M(swg, r"""
+public static void queueClose(java.util.UUID u, Object use, java.util.concurrent.Executor w) {
+  if (u == null || use == null || w == null) return;
+  try { w.execute(new @PKG@.CollSwingTask(u, null, use)); } catch (Throwable t) { }
+}""")
+# one pickup into this tick's burst of the player; the first of a burst queues the task (an executor that refuses it drops the burst).
+# review fix (LOW 2): a burst older than STALE_NS (its task never ran - the world went away) or made for another profile key is credited
+# now (what it holds is real pickups; creditOne still drops it when its profile is not the active one) and a new burst + task start
+F(swg, "public static final long STALE_NS = 1000000000L;")
+F(swg, "public static final java.util.concurrent.atomic.AtomicLong REPLACED = new java.util.concurrent.atomic.AtomicLong();")
 M(swg, r"""
 public static boolean add(java.util.UUID u, @PR@ pr, String key, Object e, java.util.concurrent.Executor w) {
   if (u == null || e == null || w == null || key == null) return false;
+  long now = System.nanoTime();
   Object o = PEND.get(u);
-  if (o instanceof Object[] && key.equals(((Object[]) o)[1])) { ((java.util.ArrayList) ((Object[]) o)[2]).add(e); return false; }
+  if (o instanceof Object[]) {
+    Object[] a = (Object[]) o;
+    long age = a.length > 3 && a[3] instanceof Long ? now - ((Long) a[3]).longValue() : STALE_NS;
+    if (key.equals(a[1]) && age >= 0L && age < STALE_NS) { ((java.util.ArrayList) a[2]).add(e); return false; }
+    if (PEND.remove(u, o)) { REPLACED.incrementAndGet(); creditEntry(u, o); }
+  }
   java.util.ArrayList l = new java.util.ArrayList();
   l.add(e);
-  PEND.put(u, new Object[] { pr, key, l });
-  try { w.execute(new @PKG@.CollSwingTask(u)); } catch (Throwable t) { PEND.remove(u); return false; }
+  Object[] ne = new Object[] { pr, key, l, Long.valueOf(now) };
+  PEND.put(u, ne);
+  try { w.execute(new @PKG@.CollSwingTask(u, ne, null)); } catch (Throwable t) { PEND.remove(u, ne); return false; }
   return true;
 }""")
 # CollPickupSys (world thread, inside the engine's interactivelyPickupItem): not creative, a sickle / Harvester in the main hand -> the burst
@@ -329,7 +394,16 @@ public static void swing(@ST@ st, @REF@ r, @PR@ pr, java.util.UUID u, @IPE@ e) {
 # H1: BreakBlockEvent (also fired first by the F pickup of loose blocks) -> ctx + deferred CollBreakTask
 event_system(bsy, "CollBreakSys", "@BBE@", r"""''')
 
-# ============================================================================== H3: the three branches
+# ============================================================================== H1 / H2: ripe = any quality state (DynamicSeasons Crude / Best / Epic)
+P.rep('''    g.ripe = "StageFinal".equals(@PKG@.CollUtil.stateOf(bt));''', '''    g.ripe = @PKG@.CollSwing.ripe(bt);   // 0.2.33: DynamicSeasons' Crude / Best / Epic ripe states too''')
+P.rep('''    if (!"StageFinal".equals(@PKG@.CollUtil.stateOf(bt))) return;
+    @BGA@ g = bt.getGathering();''', '''    if (!@PKG@.CollSwing.ripe(bt)) return;   // 0.2.33: DynamicSeasons' Crude / Best / Epic ripe states too
+    @BGA@ g = bt.getGathering();''')
+
+# ============================================================================== H3: the three branches (+ the window closes after its harvest)
+P.rep('''    w.execute(new @PKG@.CollPickupTask(e, pr, u, @PKG@.CollUtil.pkey(u)));""")''',
+      '''    @PKG@.CollSwing.queueClose(u, use, w);   // 0.2.33 review fix: the window ends with the harvest that opened it
+    w.execute(new @PKG@.CollPickupTask(e, pr, u, @PKG@.CollUtil.pkey(u)));""")''')
 P.rep('''    if (g != null && !g.done && g.thread == Thread.currentThread() && System.nanoTime() - g.nanos < 250000000L) { g.pickups.add(e); return; }
     long[] use = (long[]) @PKG@.CollPending.USE.get(u);
     if (use == null || System.currentTimeMillis() - use[0] > 2000L) return;''',
@@ -340,6 +414,6 @@ P.rep('''    if (g != null && !g.done && g.thread == Thread.currentThread() && S
 assert P.s.count("registerCommand(") == REG0 and P.s.count("registerSystem(") == SYS0, "command / system registrations changed"
 assert P.s.count(' = K("') == CLS0 + 2, "0.2.33: two classes added (CollSwing, CollSwingTask)"
 _i = P.s.index
-assert _i("public static boolean claims(") < _i('event_system(psy, "CollPickupSys"') and _i("public static int flush(") < _i("public CollSwingTask(java.util.UUID u)") < _i("public static boolean add(java.util.UUID u, @PR@ pr")
+assert _i("public static boolean ripe(") < _i("public static void addCrop(") < _i('event_system(bsy, "CollBreakSys"') and _i("public static boolean claims(") < _i('event_system(psy, "CollPickupSys"') and _i("public static int flushEntry(") < _i("public CollSwingTask(java.util.UUID u, Object entry") < _i("public static void queueClose(") < _i("public static boolean add(java.util.UUID u, @PR@ pr")
 P.finish()
 print("wrote SkyyCollections/build_skyycollections_0.2.33.py (%d changes)" % len(P.changes))

@@ -40,7 +40,7 @@ SCRATCH = os.path.abspath(HK.arg("--dir", os.path.join(ROOT, "tools", "dev", "sc
 PKG = "com.skyy.collections."
 # CfgFn / CfgRows: the version text; CollTier: the working tree's tools/tier_tags.py (round fish2's uncommitted SkyyFishing rows, not this
 # round) - the table every jar copies; CollPickupSys: the three branches; the plugin: the ready line
-EXPECT = {"CfgFn": ["~m opExport"], "CfgRows": ["~m header"], "CollTier": ["~<clinit>"], "CollPickupSys": ["~m handle"],
+EXPECT = {"CfgFn": ["~m opExport"], "CfgRows": ["~m header"], "CollTier": ["~<clinit>"], "CollPickupSys": ["~m handle"], "CollBreakSys": ["~m handle"], "CollUseSys": ["~m handle"],
           "SkyyCollectionsPlugin": ["~m setup"]}
 if "--expect-dump" in sys.argv:
     EXPECT = {}
@@ -48,6 +48,10 @@ ADDED = ["CollSwing", "CollSwingTask"]
 AZ = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
 GEAR_GEN = os.path.join(ROOT, "SkyyGear", "build_skyygear_0.3.44.py")          # read-only: the Harvester ids
 T31 = None
+# every Farming crop collection (build_skyycollections: the 14 Plant_Crop_<C>_Item crops) + the berry bush
+ALL_CROPS = ("Wheat", "Carrot", "Potato", "Corn", "Tomato", "Lettuce", "Onion", "Turnip", "Cauliflower", "Aubergine", "Chilli", "Rice", "Pumpkin",
+             "Cotton", "Berry")
+DS_JAR = os.path.join(B.USERDATA, "Mods", "DynamicSeasons-7.0.8.jar")          # read-only: its Crude / Best harvest lists
 
 
 def tmod(path, name):
@@ -99,7 +103,7 @@ def run_static(out, jar, scratch, home):
     h3 = h3[:h3.index('""")')]
     a, b, c = h3.index("CollSwing.claims(g, Thread.currentThread(), System.nanoTime())) { g.pickups.add(e); return; }"), \
         h3.index("CollPending.USE.get(u)"), h3.index("{ @PKG@.CollSwing.swing(st, r, pr, u, e); return; }")
-    K.check(a < b < c and h3.count("CollSwing.swing(") == 1 and h3.index("w.execute(new @PKG@.CollPickupTask(") > c,
+    K.check(a < b < c and h3.count("CollSwing.swing(") == 1 and c < h3.index("CollSwing.queueClose(u, use, w);") < h3.index("w.execute(new @PKG@.CollPickupTask("),
             "S CollPickupSys: F-pickup claim -> F-harvest window -> swing (returns) -> the window's CollPickupTask; each pickup takes ONE branch")
     K.check("g.held == null" in g[g.index("public static boolean claims("):g.index("public static boolean claims(") + 300], "S claims needs no item in hand")
     d = os.path.join(scratch, "static")
@@ -128,7 +132,7 @@ def _drop_ids(z, path):
 
 
 def run_sw(out, jar, scratch, _home):
-    from jpype import JClass, JImplements, JOverride
+    from jpype import JClass, JImplements, JOverride, JArray, JLong
     K = HK.Child(out)
     HK.jvm([B.SERVER_JAR, jar], verify=True)
     br = JClass("java.util.concurrent.ConcurrentHashMap")()
@@ -147,7 +151,7 @@ def run_sw(out, jar, scratch, _home):
     # the crop map from the REAL vanilla StageFinal harvest drop lists (keys() reads the same lists from the block assets in game)
     z = zipfile.ZipFile(AZ)
     crops = {}
-    for cname in ("Wheat", "Carrot", "Potato", "Berry"):
+    for cname in ALL_CROPS:
         crops[cname] = _drop_ids(z, "Server/Drops/Crop/%s/Drops_Plant_Crop_%s_StageFinal_Harvest.json" % (cname, cname))
     m = HM()
     for cname, lst in crops.items():
@@ -214,7 +218,7 @@ def run_sw(out, jar, scratch, _home):
     K.check(not Sw.PEND.containsKey(U), "SW the burst is gone after its task")
     # the same task again / a flush without a burst: nothing
     s2 = snap()
-    Task(U).run()
+    Task(U, None, None).run()
     K.eq(int(Sw.flush(U)), 0, "SW a second flush credits nothing")
     K.eq(delta(s2, snap()), {}, "SW the task run again credits nothing (never twice)")
     # 2. one wheat crop: exactly its amount
@@ -258,6 +262,80 @@ def run_sw(out, jar, scratch, _home):
         def execute(self, r):
             raise RuntimeError("refused")
     K.check(not bool(Sw.add(U, None, key, IPE(mkis("Plant_Crop_Wheat_Item", 1)), Refuse())) and not Sw.PEND.containsKey(U), "SW a refused task leaves no burst behind")
+    # 9. review fix LOW 2: a stale burst (its task never ran) is credited once and replaced - the next swing queues a new task
+    Long_ = JClass("java.lang.Long")
+    AL = JClass("java.util.ArrayList")
+    sysj = JClass("java.lang.System")
+    old_l = AL()
+    old_l.add(IPE(mkis("Plant_Crop_Wheat_Item", 2)))
+    stale = JArray(JClass("java.lang.Object"))([None, key, old_l, Long_(int(sysj.nanoTime()) - 2000000000)])
+    Sw.PEND.put(U, stale)
+    s2 = snap()
+    first, nq = swing([("Plant_Crop_Carrot_Item", 1)])
+    K.check(first == [True] and nq == 1, "SW2 a burst stuck for 2 s does not block: the next swing queues a new task: %s" % first)
+    K.eq(delta(s2, snap()), {"Plant_Crop_Wheat_Item": 2, "Plant_Crop_Carrot_Item": 1}, "SW2 the stuck burst's wheat is credited once, the new swing's carrot once")
+    s2 = snap()
+    JClass(PKG + "CollSwingTask")(U, stale, None).run()
+    K.eq(delta(s2, snap()), {}, "SW2 the stuck burst's own task, if it runs late, credits nothing (never twice)")
+    # a fresh burst for another profile key: credited (dropped by creditOne for the inactive key), the new burst still queues
+    fresh = JArray(JClass("java.lang.Object"))([None, key, AL(), Long_(int(sysj.nanoTime()))])
+    fresh[2].add(IPE(mkis("Plant_Crop_Potato_Item", 3)))
+    Sw.PEND.put(U, fresh)
+    s2 = snap()
+    first, nq = swing([("Plant_Crop_Wheat_Item", 1)], k=key + "-p2")
+    K.check(first == [True] and nq == 1, "SW2 a key change starts a new burst + task")
+    K.eq(delta(s2, snap()), {"Plant_Crop_Potato_Item": 3}, "SW2 the old key's burst is credited (not lost); the -p2 burst is dropped as inactive")
+    K.check(int(Sw.REPLACED.get()) == 2 and not Sw.PEND.containsKey(U), "SW2 two bursts replaced, nothing left pending")
+    # 10. review fix LOW 1: the F-harvest window closes after its harvest's pickups -> a swing right after is crop-only again
+    USE = JClass(PKG + "CollPending").USE
+    w1 = JArray(JLong)([int(sysj.currentTimeMillis())])
+    USE.put(U, w1)
+    Sw.queueClose(U, w1, ex)
+    K.check(len(queued) == 1 and USE.get(U) is not None, "SW3 an F-harvest pickup queues the window close; the window stays open for the rest of that harvest")
+    for r_ in list(queued):
+        r_.run()
+    del queued[:]
+    K.check(USE.get(U) is None, "SW3 after the harvest's tick the window is closed (a Harvester swing within 2 s goes down the crop-only swing branch)")
+    w2 = JArray(JLong)([int(sysj.currentTimeMillis())])
+    USE.put(U, w2)
+    K.check(not bool(Sw.closeUse(U, w1)) and USE.get(U) is not None, "SW3 a late close of an older window leaves a NEW F-harvest's window open")
+    USE.remove(U)
+    s2 = snap()
+    swing(junk + [("Plant_Crop_Wheat_Item", 2), ("Ingredient_Stick", 1), ("Ingredient_Life_Essence", 2)])
+    K.eq(delta(s2, snap()), {"Plant_Crop_Wheat_Item": 2, "Ingredient_Life_Essence": 2}, "SW3 F then swing: the swing's junk counts 0, the crop once")
+    # 11. follow-up (Skyy: "lettuce collection 0"): EVERY Farming crop, one swing each, credits its own collection exactly once
+    per = {}
+    for cname in ALL_CROPS:
+        lst = crops[cname]
+        prod = "Plant_Fruit_Berries_Red" if cname == "Berry" else "Plant_Crop_%s_Item" % cname
+        K.check(lst[0][0] == prod, "SW4 %s: the vanilla StageFinal harvest list leads with %s (%s)" % (cname, prod, lst[0][0]))
+        s2 = snap()
+        swing(lst)
+        dl = delta(s2, snap())
+        want = {}
+        for i, q in lst:
+            if R.itemColl.get(i) is not None:
+                want[i] = want.get(i, 0) + q
+        per[cname] = dl.get(prod, 0)
+        K.eq(dl, want, "SW4 a Harvester swing on ripe %s credits exactly its drops once" % cname)
+        c_ = R.itemColl.get(prod)
+        K.check(c_ is not None and str(R.id[int(c_)]).lower() == ("berries" if cname == "Berry" else cname.lower()), "SW4 %s lands in its own collection (%s)" % (prod, c_ is not None and str(R.id[int(c_)])))
+    K.notes.append("SW4 per-crop produce credited: %s" % per)
+    # DynamicSeasons' quality harvests (Crude / Best ripe states) hand over the same produce first -> counted the same
+    if os.path.isfile(DS_JAR):
+        dz = zipfile.ZipFile(DS_JAR)
+        for cname in [c for c in ALL_CROPS if c != "Berry"]:
+            for q_ in ("Poor", "Best"):
+                n_ = "Server/Drops/Crop/%s/Drops_Plant_Crop_%s_Eternal_%s_Harvest.json" % (cname, cname, q_)
+                if n_ not in dz.namelist():
+                    continue
+                lst = _drop_ids(dz, n_)
+                s2 = snap()
+                swing(lst)
+                K.check(delta(s2, snap()).get("Plant_Crop_%s_Item" % cname, 0) == sum(qq for i, qq in lst if i == "Plant_Crop_%s_Item" % cname) > 0,
+                        "SW4 DynamicSeasons %s %s harvest: its %s counted once" % (cname, q_, cname))
+    else:
+        K.notes.append("DynamicSeasons jar not found - its quality lists not swung")
     K.check(int(Sw.CROPS.get()) >= 5 and bool(Sw.SEEN), "SW the diagnostic counted the crops (%d) and logged once" % int(Sw.CROPS.get()))
     K.save()
 
@@ -327,6 +405,72 @@ def run_fh(out, jar, scratch, _home):
     K.save()
 
 
+def run_ripe(out, jar, scratch, _home):
+    """CollSwing.ripe on engine BlockType objects (Unsafe-made, fields set like the asset loader): a DynamicSeasons crop's StageFinal, Crude,
+    Best and Epic states are ripe; its Stage1 / default (no Harvest) are not; a block without a StageFinal state (a Health plant with a
+    Harvest drop) is not"""
+    from jpype import JClass
+    K = HK.Child(out)
+    HK.jvm([B.SERVER_JAR, jar], verify=True)
+    Sw = JClass(PKG + "CollSwing")
+    uf = JClass("sun.misc.Unsafe").class_.getDeclaredField("theUnsafe")
+    uf.setAccessible(True)
+    U_ = uf.get(None)
+
+    def findf(k, n):
+        while k is not None:
+            try:
+                f = k.getDeclaredField(n)
+                f.setAccessible(True)
+                return f
+            except Exception:
+                k = k.getSuperclass()
+        raise KeyError(n)
+
+    def setany(o, n, v):
+        findf(o.getClass(), n).set(o, v)
+    BTY = JClass("com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType")
+    SDT = JClass("com.hypixel.hytale.server.core.asset.type.blocktype.config.StateData")
+    BGA = JClass("com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockGathering")
+    HDT = JClass("com.hypixel.hytale.server.core.asset.type.blocktype.config.HarvestingDropType")
+    HM = JClass("java.util.HashMap")
+
+    def mkstates(item, names):
+        sd = U_.allocateInstance(SDT.class_)
+        s2b, b2s = HM(), HM()
+        for nm in names:
+            sid = "*%s_State_Definitions_%s" % (item, nm)
+            s2b.put(nm, sid)
+            b2s.put(sid, nm)
+        setany(sd, "stateToBlock", s2b)
+        setany(sd, "blockToState", b2s)
+        return sd
+
+    def mkbt(item, state, sd, harvest):
+        bt = U_.allocateInstance(BTY.class_)
+        setany(bt, "id", "*%s_State_Definitions_%s" % (item, state) if state else item)
+        setany(bt, "state", sd)
+        if harvest:
+            g = U_.allocateInstance(BGA.class_)
+            setany(g, "harvest", HDT(None, harvest))
+            setany(bt, "gathering", g)
+        return bt
+    lt = "Plant_Crop_Lettuce_Block"
+    sd = mkstates(lt, ["Stage1", "Stage2", "StageFinal", "Crude", "Best", "Epic"])
+    K.check(str(mkbt(lt, "Crude", sd, "x").getStateForBlock(mkbt(lt, "Crude", sd, "x").getId())) == "Crude", "RIPE the fake block reads its state like the engine")
+    for st_, hv, want in (("StageFinal", "Drops_Plant_Crop_Lettuce_StageFinal_Harvest", True), ("Crude", "Drops_Plant_Crop_Lettuce_Eternal_Poor_Harvest", True),
+                          ("Best", "Drops_Plant_Crop_Lettuce_Eternal_Best_Harvest", True), ("Epic", "Drops_X_Epic", True),
+                          ("Stage1", None, False), ("Stage2", None, False)):
+        K.eq(bool(Sw.ripe(mkbt(lt, st_, sd, hv))), want, "RIPE Lettuce %s" % st_)
+    K.check(not bool(Sw.ripe(mkbt(lt, None, sd, None))), "RIPE the default (just planted) state is not ripe")
+    hp = "Plant_Crop_Health1"
+    K.check(not bool(Sw.ripe(mkbt(hp, None, None, "Drops_Health1"))), "RIPE a stateless Health plant with a Harvest drop is not ripe (placeable)")
+    sd2 = mkstates("Plant_Crop_Wild_Grass_Block", ["Stage1", "Stage2", "Stage3"])
+    K.check(not bool(Sw.ripe(mkbt("Plant_Crop_Wild_Grass_Block", "Stage2", sd2, "Drops_Grass"))), "RIPE a harvestable state of a block WITHOUT StageFinal is not ripe")
+    K.check(not bool(Sw.ripe(None)), "RIPE null")
+    K.save()
+
+
 if __name__ == "__main__":
     HK.run(name="SkyyCollections", version=VERSION, jar=JAR, old_jar=OLD_JAR, pkg=PKG, scratch=SCRATCH, expect=EXPECT, added=ADDED,
-           phases=[("static", run_static), ("sw", run_sw), ("cl", run_cl), ("fh", run_fh)], script=__file__)
+           phases=[("static", run_static), ("sw", run_sw), ("cl", run_cl), ("fh", run_fh), ("ripe", run_ripe)], script=__file__)
