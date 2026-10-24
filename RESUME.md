@@ -28,18 +28,17 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24, Skyy: "dont worry about usage, work through your whole list") - 7 workflow rounds, one mod set each
-| tag | run | mods | after it |
-|---|---|---|---|
-| archi1 | wf_872e02c7-228 | Shards 0.4.8 + Islands 0.5.25 + balance_model --p11 | R3 map (Shards 0.4.9), R4 quests (Quests 0.4.4), R5 combat islands (Shards 0.4.10), R6 Ranching XP (Skills) |
-| bm1 | wf_3ac82bdc-be4 | Trees 0.6.2 + Pets 0.4.17 (Beastmastery hatch nodes, tree:<uuid> string, Weaponcraft x1.5 Pets part) | Trees 0.6.3 + Classes: SAPLING FIX (research/Sapling-Fix-Trees-0.6.3.md) + FARMING TREE LEVEL = crop Farming, not skill:farmavg (docs/answered/skills.md 2026-10-24) + A1 ALTS late-game either/or lock, no swap, respec/rebirth keep levels (docs/answered/classes.md 2026-10-24) - after bm1 AND wc15 (Classes); then then Pets: rarity-coloured pet icons + popup text (docs/answered/pets.md 2026-10-24), then Secret dragons D5b (Pets) |
-| wc15 | wf_5bc6aa23-5aa | Gear 0.3.45 + Mobs 0.1.19 + Accessories 0.5.33 (+ Classes) - Weaponcraft x1.5 | GATHERING ARMOR UPGRADES IN PLACE (Smithing next-tier craft converts the old piece, docs/answered/gear.md 2026-10-24) + ORNATE BRONZE craftable combat set + tooltip HEADER (slot / tier / class / type / speed / rarity / 'Mining Lv 23 (15-23)' under the name, above stats - docs/answered/ui.md 2026-10-24) FIRST, then Powders P1 (Gear + Sacks), UT-28 (Gear; incl. vanilla Weapon_Daggers_Bronze_Ancient as UT or Mythic + research/Vanilla-Gear-Audit.md), beta #12 / #17 (Gear), Fishing B (Gear) |
-| fish2 | wf_bc0a9adf-4c0 | Fishing 0.2.0 (+ tier_tags.py) | Powders after it (tier_tags) |
-| zones03 | wf_69fd12bf-ce0 | Zones 0.3.0 + Skills 0.4.65 | Skills: Farming XP for DynamicSeasons Crude / Best / Epic crops (same ripe rule as Collections 0.2.33) FIRST, then Zones 0.3.1 (scaffolding / gates) |
-| ward012 | wf_8f83da9a-0d9 | Wardrobe 0.2.12 coin prices (defaults) | - |
-| shield1 | wf_1ad1203e-7be | Armory 0.1.47 Spellblade great shield | sig3 / sig5 (Armory) |
-Side fixes: Sacks 0.8.29 mob drops -> Combat (REVIEWED, rebuild after fish2's tier_tags then pin); Collections harvester credit (building); WorldGen 0.7.11 black grass on floating islets (building).
-Then: RARITY + TOOLTIP PASS across all mods (PROJECT-RULES 4 'Rarity colours + tooltip layout'; audit every rarity item / tooltip, fix in each mod's next round); price tooltips R0 probe -> Auctions -> Bazaar; BetterMap shard-world listing. Each finished round: pin -> smoke -> deploy (game closed).
+## RUNNING (2026-10-24 11:25; a session restart killed the workflows - finishers took over, reports in tools/dev/scratch/resume/<tag>.md)
+- PINNED, deploy waits for builders' test servers: Sacks 0.8.29 (mob drops -> Combat) + Collections 0.2.33 (Harvester swings + seasonal crops count).
+- READY, held for bm1: wc15 Gear 0.3.45 + Mobs 0.1.19 + Classes 0.1.48 (Weaponcraft x1.5) - ship with Trees 0.6.2 + new /tree texts.
+- Finishers (Opus agents): archi1 (Shards 0.4.8 + Islands 0.5.25), bm1 (Trees 0.6.2 + Pets 0.4.17 + wc15 tree texts), fish2 (Fishing 0.2.0 +
+  tier_tags), zones03 (Zones 0.3.0 + Skills 0.4.65 incl. DynamicSeasons Farming XP), ward012 (Wardrobe 0.2.12), shield1 (Armory 0.1.47).
+- wg0711 builder: WorldGen 0.7.11 floating islets (black grass, shape + trees, soil + own zone, spacing, height / rate / variants, bigger island).
+- Workflow compact1 (wf_db5ae0e3-e84): Sacks 0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts.
+QUEUE: Trees 0.6.3 + Classes (sapling fix, Farming tree = crop Farming level, A1 alts late either/or) after bm1 + wc15; Gear lane after wc15
+(gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
+research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Pets (rarity colours) then Secret dragons; Shards R3 / Quests R4 / R5 / R6 after
+archi1; Zones 0.3.1; sig3 / sig5 after shield1; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
 
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
