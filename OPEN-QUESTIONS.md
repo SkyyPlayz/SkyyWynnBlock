@@ -39,3 +39,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### ui  (answers -> docs/answered/ui.md, topic `ui`)
 
 ## Pet eggs (research/Pet-Eggs-Spec.md, asked 2026-10-15)  (answers -> docs/answered/pets.md, topic `pets`)
+- 2026-10-24 (Fishing 0.2.0): should Lost Property purses in Zones 2 / 3 (x4 / x20 coins) need a minimum rod tier? [no gate] -> answers go to docs/answered/fishing.md (or economy.md).
