@@ -28,7 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24 13:10) - nothing building; everything above is LIVE
+## RUNNING (2026-10-24 13:20) - building: shard049 (Shards 0.4.9 map + re-balance), tree063 (Trees 0.6.3 + Classes 0.1.49),
+  petcol (Pets 0.4.18 rarity colours), quest044 (Quests 0.4.4 archipelago line). Deploy them as ONE batch, one smoke.
 - LIVE 11:58 (TEST 249): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25, Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes
   0.1.48, Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12, Zones 0.3.0 + Skills 0.4.65.
 - LIVE 13:06 (TEST 250, backup deploy-20261024-1306): WorldGen 0.7.11 (+ StructureV2 flying_islands on), Sacks 0.8.30, Gear 0.3.46, Fishing 0.2.0.
