@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-23 21:10 MDT; Skyy is resetting the context - a fresh session starts here)
+# SkyWynn - RESUME HERE (updated 2026-10-24; archi1 re-launched - see STATE)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -35,7 +35,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST 215-236.
 
 ## NEXT (in order)
-1. Deploy Wardrobe 0.2.11; the zone reset batch (above) when its fix passes. Tell Skyy when /zone <n> reset is live.
+1. Starter archipelago R1 + R2 (archi1, NOT FINISHED above) -> deploy.
 2. Starter archipelago: R3 radial shard upgrade map (Shards 0.4.9), R4 quests (Quests 0.4.4), R5 combat zone islands, R6 Ranching XP.
 3. Weaponcraft numbers x1.5 (Gear / Mobs / Pets / Accessories balance round); Beastmastery tree hatch-speed + hatchery-slot nodes (Trees + Pets) + add
    Beastmastery to Trees' tree:<uuid> bridge string so Menu 'Right now' shows its unspent points.

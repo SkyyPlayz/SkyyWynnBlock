@@ -46,59 +46,16 @@ The trial ended (Skyy 2026-10-19: "grokbot wont be working on the project. every
 
 ## Open tasks (top = next)
 
-<!-- 2026-10-20 local session: list topped up to 8 from RESUME.md 'AFTER THE RESET' + 'RUNNING NOW'. Each is a no-game-file draft: output in
-research/cloud/, start with the decisions followed, end with 'Questions for Skyy' (defaults) + 'For the local session'. -->
-<!-- 2026-10-23 local session: the 8 tasks above + a Powders spec DONE by 2 agents (research/cloud/LOG.md lines); new list below. Each = no-game-file draft, decisions first, Questions for Skyy (defaults) + For the local session. -->
-- [ ] SkyyZones 0.3 build spec (Z3 whole-tree fell + crops, Z3b scaffolding, Z4 gates / anti-AFK) -> `research/cloud/SkyyZones-0.3-Spec.md` from research/cloud/SkyyZones-Spec-Check.md + research/cloud/Zone-Gathering-Review.md (defaults taken).
-- [ ] Powders P1 build spec (items + sockets + Anvil tab, exact ids / rows / tier tags) -> `research/cloud/Powders-P1-Build.md` from research/cloud/Powders-Spec-Draft.md (defaults taken).
-- [ ] Fishing stage 2 build spec (Zone 2-3 species, tier 3-6 rods, numbers vs research/balance) -> `research/cloud/Fishing-Stage2-Build.md` from research/cloud/Fishing-Rework-Survey.md.
-- [ ] UT first 28 build sheet (ids, stats as bands -> balance_model inputs, drop sources) -> `research/cloud/UT-28-Build-Sheet.md` from research/cloud/UT-Design-Draft.md.
-- [ ] Secret dragons D5b spec (Void / Blood / Light / Crystal kinds + egg sources, rows) -> `research/cloud/Secret-Dragons-Spec.md` from research/cloud/Dragon-Pet-Review.md.
-- [ ] Wardrobe coin prices spec (cosmetic sink, Economy-Sinks-Survey default pick) -> `research/cloud/Wardrobe-Coin-Prices.md`.
-- [ ] Balance targets refresh notes: which research/balance/targets.md sections are pre-P9 and what the --p9 re-run must change -> `research/cloud/Targets-Refresh-Notes.md`.
-- [ ] GlymeraSigns ask draft (ARR, no modpack text; docs/answered/social.md 2026-10-23) -> `research/cloud/GlymeraSigns-Ask.md` (short message Skyy sends, like the joszza ask).
-<!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
-out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
-OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
-<!-- 2026-10-05 15:30 UTC (Skyy): WAIT FOR THE USAGE RESET (TUESDAYS 15:00 UTC = Tue 2026-10-06 per the app's usage card; the 2026-10-05 "Mondays" fix was wrong) before any new work. After it: the local session runs the
-RESUME 'Next' build list (Gear 0.2.3 first); cloud sessions then do the no-game-files specs - build 5 traversal spec (SkyyArmory 0.1.1 +
-SkyyClasses 0.1.12), the Stats page spec (task below), the class-ability spec. Docs consolidation PRs #6 + #7 are merged. -->
-<!-- 2026-10-05 cloud session: the docs consolidation is DONE in a pull request (Docs consolidation map + README draft tasks removed);
-OPEN-QUESTIONS.md now holds only open questions - every answer (incl. the 'Q&A with Skyy 2026-10-02' / 'LOCKED 2026-10-04' lines named below)
-is word for word in docs/answered/<topic>.md; map of everything: INDEX.md. -->
-<!-- 2026-10-05 local session (Skyy: "make sure the cloud agent has a good list to work on while tokens are out"; local weekly usage 94%, resets Mon
-2026-10-06 15:00 UTC). The first 9 feed the next local rounds; the class design is in research/classes/ (one file per class + README rules),
-Skyy's locks are in OPEN-QUESTIONS 'LOCKED 2026-10-04'. Removed as done / superseded: Wynncraft level-curve research (research/Mob-Curve-Spec.md),
-Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by per-ability trees + paths), Tool progression research (research/Tool-Levels-Spec.md). -->
-<!-- 2026-10-05 evening local session (Skyy: "if you need more research done, put it on the cloud agents list. im going to start it now"):
-the 4 GATHERING PROGRESSION tasks below come FIRST - Skyy's big direction (docs/answered/bags.md 'LOCKED 2026-10-05 ... BIG DIRECTION'):
-SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock the next tier's recipes, compressed Enchanted materials,
-trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
-docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
-progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-
-<!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
-<!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-<!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
-lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
-Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
-
-
-<!-- 2026-10-07 night local session (Skyy: "update the cloud agents todo list, and ill start em working real quick."). Removed: Fishing
-gear icons v2 (DONE locally today: models-local/art/fishing via tools/art/make_fishing.py - final rods/reels/parts + rod 3D renders).
-Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, Monk weapons + right-click block + NO void protection);
-class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
-Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
-
-
-
-<!-- 2026-10-09 local session (Skyy at work: "if you need, you can keep the cloud agent working at the same time. to speed things up."). 7 local
-builds run (merchants, sacks, tools, collections, fishing, auctions, trees). These 5 are specs only (no game files) - one commit + OUTBOX block each. -->
-<!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
-(SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
-builds need these specs. Specs only; one commit + OUTBOX block each. -->
-
-<!-- 2026-10-13 local session review: today's art + mockups APPROVED; these follow-ups. One commit + OUTBOX block each. -->
+<!-- 2026-10-24 local session: the 10-23 list (8 specs) is DONE + logged in research/cloud/LOG.md; older comment history trimmed (git history).
+New list from RESUME.md 'Next'. Each = no-game-file draft in research/cloud/, decisions followed first, end with 'Questions for Skyy' (defaults) + 'For the local session'. -->
+- [ ] Starter archipelago R4 quests build sheet (SkyyQuests 0.4.4 `archipelago` line: steps, texts, rewards, Ranching walkthrough) -> `research/cloud/Archipelago-Quests-R4.md` from research/Starter-Archipelago-Spec.md sections 11-12.
+- [ ] Starter archipelago R5 combat shard islands (one island per zone, mob pools, always night, upper + deep-cavern halves, upgrade rows) -> `research/cloud/Combat-Shard-Islands-R5.md` from research/Starter-Archipelago-Spec.md section 10.
+- [ ] Ranching XP R6 (eggs / wool / milk / taming XP numbers vs research/balance) -> `research/cloud/Ranching-XP-R6.md`.
+- [ ] Weaponcraft x1.5 balance notes (which Gear / Mobs / Pets / Accessories numbers move, before / after table) -> `research/cloud/Weaponcraft-x1.5-Notes.md`.
+- [ ] Beastmastery tree nodes (hatch speed + hatchery slots: node ids, costs, Trees + Pets bridge keys) -> `research/cloud/Beastmastery-Nodes.md`.
+- [ ] sig3 / sig5 build sheet (UT quirks + Mythic signatures that REPLACE vanilla moves) -> `research/cloud/Sig3-Sig5-Build.md` from research/UT-Mythic-Signatures.md.
+- [ ] Spellblade great shield spec (bash attack + 30-block steerable charge) -> `research/cloud/Spellblade-Great-Shield.md`.
+- [ ] Price tooltips R1 Auctions / R2 Bazaar build notes (after the R0 probe) -> `research/cloud/Price-Tooltips-R1-R2.md` from research/Price-Tooltips-Spec.md.
 
 ## Done (delete after logging - see the rules above)
 (none)
