@@ -271,3 +271,4 @@ tests always come first.
 244. Class trees (Combat folded in, 3 branches, OR pick, modifiers in the tree), base weapon Ability 1s, summon slot at Beastmastery 10, dragon FIGHTER + MOUNT
 245. Tier tag first, real set names, green / red requirements, full-set craft / upgrade button
 246. Shards free at level 20 (skill-matched), buy islands 2-6 (coins x3 + Enchanted), shard recipes off
+247. Hatch reel never freezes, Dog / Corgi portraits, totem tier up on its page, totem in the island centre
