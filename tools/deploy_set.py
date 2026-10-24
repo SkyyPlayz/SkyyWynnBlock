@@ -31,6 +31,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
 # FLOOR (2026-10-22, elem1 Wynn elements): SkyyMobs 0.1.17 + SkyyGear 0.3.39 + SkyyClasses 0.1.46 + SkyyPets 0.4.10 + SkyyAccessories 0.5.32 pin + roll back TOGETHER (Gear owns element Defence / Poison / the Imbue part via gear:imbue; Mobs' element hits read gear:fn:elemDef). Before a rollback Undo the 40 migrate39 ut.* rows in Server Setup -> Changes. NEVER roll SkyyAccessories below 0.5.32 once a Skyy_Talisman_<Earth|Thunder|Water|Fire|Air|Prism>_T1..T6 exists (unknown items). SkyyMenu 0.3.45 rolls back alone.
+# FLOOR (2026-10-24, wg0711 structures over the void): SkyyWorldGen 0.7.11 - new saved data mods/Skyy_SkyyWorldGen/void-islets.properties (one line per floating island built, key z<zone>g<reset gen>|prefab|x,y,z) + 7 zones.void* rows; healed void tints and island blocks are written into skywynn_zones2 / skywynn_zones / skywynn_proof2 chunks. Rolls back alone to 0.7.10 (the 0.7.10 reset/undo + per-zone seeds FLOOR is unchanged): healed tints and island blocks stay (harmless); 0.7.10 ignores the file and rows; new void chunks are black again and StructureV2 goes back to the world seed with no void filter. Zone reset/undo handle the islands like any other blocks of that zone's chunks. The deploy also switches StructureV2 flying_islands on (0.5) once if still default (marker .skywynn-flying-islands-on).
 # FLOOR (2026-10-24, zones03): SkyyZones 0.3.0 - before rolling back below 0.3.0 run /zones restore all (Server Setup -> Zones -> Regrowing blocks -> Put every mined block back now), wait until /zones status shows 0 waiting and 0 trees down, then stop the server; Undo the Mig030 lines in Server Setup -> Changes if wanted (0.2.2 reads regrow logs / crops above 0 as 0, warned). 0.2.2 ignores zones.gatherWorlds (those worlds stay FULL protected) and skips G / W journal lines; trees.properties, regen/<world>.shapes and migrate-0.3.0.done may stay. SkyySkills 0.4.65 rolls back alone (jar only; builder-placed blocks are marked placed again, Crude / Best / Epic crops pay no Farming XP again).
 # FLOOR (2026-10-24, wc15 Weaponcraft x1.5): SkyyGear 0.3.45 + SkyyMobs 0.1.19 + SkyyClasses 0.1.48 roll back TOGETHER, and only after undoing the 'wc15' rows in Server Setup -> Changes (Gear 10, Mobs 10, Classes 4) - older jars would keep the raised numbers as admin values. After the Undo the marker stays, so a later upgrade will not raise those lines again; restoring a pre-wc15 History snapshot removes the marker. No saved player data. Ships with SkyyTrees 0.6.2 (the new /tree texts).
 # FLOOR (2026-10-24, bm1 + wc15 texts): SkyyTrees 0.6.2 (Warm Nest + Burrow Nursery Beastmastery nodes, Beastmastery in tree:<uuid> for Menu Right now, Pet Fang + the 13 wc15 Weaponcraft texts) and SkyyPets 0.4.17 (applies the hatching nodes, Pet Fang 2.6 / 1.5 via one-time PetsMigW15) each roll back alone (Trees to 0.6.1: the new node keys are dropped on the next save and the points come back unspent; the Weaponcraft texts show the old numbers while wc15's Gear / Mobs / Classes apply the new ones, display only). Before rolling Pets back to 0.4.16, Undo the four PetsMigW15 rows in Server Setup -> Changes.
@@ -117,7 +118,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.19"), ("SkyyWorldGen", "0.7.10"),
+    ("SkyyMobs", "0.1.19"), ("SkyyWorldGen", "0.7.11"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -308,6 +309,7 @@ def tune_structurev2(world):
     mark = os.path.join(d_, ".skywynn-merchant-off")
     if os.path.exists(mark):
         _sv2_worldgen_stopgap(d_, cfg, world)
+        _sv2_flying_islands(d_, cfg, world)
         return
     if not os.path.isfile(cfg):
         os.makedirs(d_, exist_ok=True)
@@ -323,6 +325,25 @@ def tune_structurev2(world):
             print("StructureV2: traveling merchant switched off for world %s" % world)
     open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-22: StructureV2 merchant.enabled set false once (Skyy / joszza). Delete this file to let the deploy do it again.\n")
     _sv2_worldgen_stopgap(d_, cfg, world)
+    _sv2_flying_islands(d_, cfg, world)
+
+
+def _sv2_flying_islands(d_, cfg, world):
+    """2026-10-24 (Skyy: "turn on the spawn rate on the floating island structures"): StructureV2 overrides.flying_islands
+    {"enabled": false, "spawnChance": 0.0} -> {"enabled": true, "spawnChance": 0.5} ONCE per world, only while it still holds that
+    untouched default (an admin's own value is kept; /sv2 admin can change it). Run-once marker; only those two tokens change."""
+    import re
+    mark = os.path.join(d_, ".skywynn-flying-islands-on")
+    if os.path.exists(mark) or not os.path.isfile(cfg):
+        return
+    raw = open(cfg, "rb").read()
+    new, n = re.subn(rb'("flying_islands"\s*:\s*\{\s*"enabled"\s*:\s*)false(\s*,\s*"spawnChance"\s*:\s*)0\.0', rb'\1true\g<2>0.5', raw, count=1)
+    if n:
+        tmp = cfg + ".tmp"
+        open(tmp, "wb").write(new)
+        os.replace(tmp, cfg)
+        print("StructureV2: flying islands switched on (spawnChance 0.5) for world %s" % world)
+    open(mark, "w", encoding="utf-8").write("SkyWynn deploy 2026-10-24: StructureV2 flying_islands on (0.5) once if still default (Skyy). Delete this file to let the deploy check again.\n")
 
 
 def _sv2_worldgen_stopgap(d_, cfg, world):

@@ -32,10 +32,9 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - LIVE since 11:58 (TEST-CHECKLIST 249, backup deploy-20261024-1158): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25
   (starter archipelago), Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes 0.1.48 (wc15), Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12,
   Zones 0.3.0 + Skills 0.4.65.
-- READY, held: Fishing 0.2.0 (needs Gear 0.3.46 pole ladder).
+- PINNED for the next batch: WorldGen 0.7.11 (+ flying_islands on via deploy). READY, held: Fishing 0.2.0 (needs Gear 0.3.46 pole ladder).
 - Building: workflow gear046 (Gear 0.3.46: pole ladder, armor upgrades in place, Ornate Bronze, tooltip header) | workflow compact1 (Sacks
-  0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts) | WorldGen 0.7.11 builder fixing 6 review findings (then pin; flying_islands
-  spawn rate = deploy_set tune_structurev2 step, variants + bigger island = follow-up specs, option A reset-only).
+  0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts) 
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). Full tidy_local after builders finish.
 QUEUE: SHARDS R3 (0.4.9) + RE-BALANCE: shards = primary late-game source, +2%+ per upgrade level, new islands unchanged, offline-harvest-time upgrade (docs/answered/world.md 2026-10-24); Trees 0.6.3 + Classes (sapling fix, Farming tree = crop Farming level, A1 alts late either/or) after bm1 + wc15; Gear lane after wc15
 (gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
