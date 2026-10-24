@@ -7,6 +7,8 @@
     python tools/balance_model.py --power    P5 power sources (gear rolls, Void Charms, pets, UT / Mythic meters, the 1-hour rule) -> targets.md section 7
     python tools/balance_model.py --p9       P9 whole first run (player types, the 1-hour rule, zone hours, rebirths, every Skyy goal, stacking) -> targets.md
                                              section 10 with --md; --p9 --check exits 1 on a failed goal (research/Balance-P9-Check.md); --p3 = no P9 LIVE corrections
+    python tools/balance_model.py --p11      P11 starter archipelago (SkyyShards 0.4.8): the cheap-first shard ladder + island upgrade costs, a maxed island's
+                                             output (--p11 --check: exit 1 on a failed row)
     python tools/balance_model.py --p10      P10 class tree rebuild (Combat into Class, SkyyTrees 0.6.0): points a level, reach, per-branch capstones,
                                              the class-tree damage share vs the old tree, the Combat part's budgets (--p10 --check: exit 1 on a failed row)
     python tools/balance_model.py --econ     P7 economy (coin curve, Bazaar prices by tier, costs on the curve, loop routes) -> targets.md section 9
@@ -3212,7 +3214,135 @@ def el_rows(with_p9=False):
         el_patch(False)
 
 
+# ======================================================================================== P11 starter archipelago (SkyyShards 0.4.8)
+# research/Starter-Archipelago-Spec.md section 13 (Skyy 2026-10-23: "and we make them cheap and easy to upgrade at first, and get harder as
+# you go."): one 10-step shard ladder + island purchases per island tier, coins = hours of income at a reference level (the P7 rule).
+# python tools/balance_model.py --p11 [--check]
+P11_UP_LV = [3, 5, 8, 12, 15, 20, 28, 35, 45, 55]
+P11_UP_H = [0.05, 0.1, 0.2, 0.35, 0.5, 0.75, 1, 1.5, 2, 3]
+P11_SPEC_LADDER = [230, 550, 1400, 3400, 6300, 14500, 37000, 105000, 375000, 1260000]   # spec 13.1
+P11_SUB_H = [[0.01, 0.02, 0.03, 0.05, 0.07], [0.08, 0.1, 0.13, 0.16, 0.2], [0.25, 0.3, 0.4, 0.5, 0.6]]   # Small / Medium / Large, levels 1-5
+P11_GROW_H = [0.15, 0.5]          # to Medium / to Large
+P11_BUY_H = 0.5
+P11_BONUS = 0.5                   # SkyyShards isl.amount.bonus / isl.deco.pct / isl.irrigation.pct: % a level, levels count on across sizes
+P11_SPEC_BONUS = 2.0              # spec 8's +2 % a level for Decorations + Irrigation (a report row: they break its own x1.25 ceiling)
+P11_MANUAL = 50                   # shard.manualPct
+
+
+def p11_cost(hours, level):
+    return p7_round(hours * p7_H_at(level))
+
+
+def p11_island(t):
+    """every purchase of an island of tier t, in buying order: [(what, coins)]"""
+    lv = BAND[max(1, min(16, t)) - 1]
+    out = [] if t <= 1 else [("buy", p11_cost(P11_BUY_H, lv))]
+    for si in range(3):
+        for l_ in range(5):
+            for sub in ("amount", "deco", "irrigation"):
+                out.append(("%s %s %d" % ("SML"[si], sub, l_ + 1), p11_cost(P11_SUB_H[si][l_], lv)))
+        if si < 2:
+            out.append(("grow %s" % "ML"[si], p11_cost(P11_GROW_H[si], lv)))
+    return out
+
+
+def p11_mult(size, a, d, i, pct=P11_BONUS):
+    lt = lambda l_: 5 * (size - 1) + l_
+    return (1 + pct / 100.0 * lt(a)) * (1 + pct / 100.0 * lt(d)) * (1 + pct / 100.0 * lt(i))
+
+
+def p11_rows():
+    rows = []
+    lad = [p11_cost(h, l) for l, h in zip(P11_UP_LV, P11_UP_H)]
+    rows.append(("shard ladder = spec 13.1 (230 .. 1,260,000)", ", ".join("{:,}".format(x) for x in lad), lad == P11_SPEC_LADDER))
+    ratios = [b / float(a) for a, b in zip(lad, lad[1:])]
+    rows.append(("shard ladder rises every step, >= x1.5 (the spec's own table: 3,400 -> 6,300 = x1.85)", "x%.2f .. x%.2f" % (min(ratios), max(ratios)), min(ratios) >= 1.5))
+    z1 = 2 * p7_target_h(1)
+    rows.append(("ladder steps 1-5 <= 2 h of Zone 1 income (%s)" % "{:,.0f}".format(z1), "{:,}".format(lad[4]), max(lad[:5]) <= z1))
+    rows.append(("Automation = ladder step 2 = 550 coins", "{:,}".format(lad[1]), lad[1] == 550))
+    worst_h, rising = 0.0, True
+    prev_total = 0
+    for t in range(1, 16):
+        isl = p11_island(t)
+        c = dict(isl)
+        lv = BAND[t - 1]
+        for si, sz in enumerate("SML"):
+            for sub in ("amount", "deco", "irrigation"):
+                seq = [c["%s %s %d" % (sz, sub, l_)] for l_ in range(1, 6)]
+                if seq != sorted(seq) or len(set(seq)) < 5:
+                    rising = False
+            if si > 0 and c["%s amount 1" % sz] <= c["%s amount 5" % "SML"[si - 1]]:
+                rising = False
+            if si < 2 and c["grow %s" % "ML"[si]] <= c["%s amount 5" % sz]:
+                rising = False
+        total = sum(v for k, v in isl)
+        h = total / p7_H_at(lv)
+        worst_h = max(worst_h, h)
+        if t > 1 and total <= prev_total:
+            rising = False
+        prev_total = total
+    rows.append(("island purchases rise within each size, each size above the one below, each grow above its size, each tier above the last", "15 tiers", rising))
+    rows.append(("a whole island (buy + 45 sub levels + 2 grows) <= 10 h at its tier level", "worst %.1f h" % worst_h, worst_h <= 10.0))
+    t1 = [v for k, v in p11_island(1)]
+    rows.append(("the first click is cheap: T1 Small subs 40 / 80 / 120 / 200 / 280", ", ".join(str(dict(p11_island(1))["S amount %d" % l_]) for l_ in range(1, 6)),
+                 [dict(p11_island(1))["S amount %d" % l_] for l_ in range(1, 6)] == [40, 80, 120, 200, 280]))
+    rows.append(("T2 Lettuce island = 3,500 coins (0.4.6's island 2 was 19,000)", "{:,}".format(dict(p11_island(2))["buy"]), dict(p11_island(2))["buy"] == 3500))
+    mx = p11_mult(3, 5, 5, 5)
+    rows.append(("a maxed Large island <= today's x1.25 (spec 8 re-fit)", "x%.3f" % mx, mx <= 1.25))
+    path, ok = [p11_mult(1, 0, 0, 0)], True
+    for si in range(3):
+        for l_ in range(1, 6):
+            for w in range(3):
+                a = [l_ if j < w + 1 else l_ - 1 for j in range(3)]
+                path.append(p11_mult(si + 1, *a))
+        if si < 2:
+            path.append(p11_mult(si + 2, 0, 0, 0))
+    ok = all(b >= a - 1e-12 for a, b in zip(path, path[1:]))
+    rows.append(("the 47 purchases never lower an island's output (a grow keeps what the subs gave)", "x%.3f -> x%.3f" % (path[0], path[-1]), ok and abs(path[0] - 1.0) < 1e-12))
+    st = 8 / 20.0
+    full = (8 + 12 * P11_MANUAL / 100.0) / 20.0
+    rows.append(("manual first: a new Farming shard = 8 Eternal / 20 = x%.1f, fully planted x%.1f, Automated x1.0 (= today's Small)" % (st, full), "%.1f / %.1f / 1.0" % (st, full), st < full < 1.0))
+    # the P6 idle cap (Totem I..V = 20..100 % of a farming hour, banked 72 h; P7b: a bonus ON TOP of the active targets): every island at
+    # max multiplies that bonus by mx at most - it must stay within x1.25 of today's bonus, the active targets untouched
+    tot = p7_totals()
+    act = [tot[z][1] for z in range(1, 6)]
+    now_b = [tot[z][0] - tot[z][1] for z in range(1, 6)]
+    new_b = [b * mx for b in now_b]
+    rows.append(("idle stays inside the P6 cap: Totem I..V %s %% / %d h, every island maxed = today's idle bonus x%.3f (<= x1.25), active play unchanged"
+                 % ("/".join(str(x) for x in P6_TOTEM), P7_OFFLINE_H, mx),
+                 "bonus on top x%s -> x%s of the target" % ("/".join("%.2f" % b for b in now_b), "/".join("%.2f" % b for b in new_b)),
+                 all(n <= 1.25 * b + 1e-9 for n, b in zip(new_b, now_b)) and all(0.95 <= a <= 1.05 for a in act)))
+    man_off = 7200 / 3600.0
+    rows.append(("manual phase: offline output banks at most %g h (shard.manualOfflineSec) vs %d h once Automated" % (man_off, P7_OFFLINE_H),
+                 "%g h / %d h" % (man_off, P7_OFFLINE_H), man_off < P7_OFFLINE_H))
+    # fix2 (critic): the spec's two +2 % rows ALONE (no Amount bonus) already break its x1.25; Amount's 60 -> 100 % spots (if output followed
+    # the spots) would add x1.67 more. Keeping "Small subs 0 = today's Small" AND "maxed Large <= x1.25" leaves ~0.79 % a level for two rows,
+    # 0.5 % for three - SkyyShards ships 0.5 % on Amount / Decorations / Irrigation (a question for Skyy, changeable in Server Setup)
+    spec2 = (1 + P11_SPEC_BONUS / 100.0 * 15) ** 2
+    two = (1.25 ** 0.5 - 1) / 15 * 100
+    rows.append(("[report] spec 8's +2 %% Decorations + Irrigation alone = a maxed Large x%.2f (> its own x1.25 with Small subs 0 = today); "
+                 "the cap leaves %.2f %% a level for two rows - SkyyShards ships %g %% on three (Amount stands in for 'covered / ref')" % (spec2, two, P11_BONUS),
+                 "x%.2f" % spec2, True))
+    return rows
+
+
+def p11_main():
+    rows = p11_rows()
+    print("| P11 starter archipelago (SkyyShards 0.4.8) | Model | OK |\n|---|---|---|")
+    for t, m, ok in rows:
+        print("| %s | %s | %s |" % (t, m, "yes" if ok else "NO"))
+    bad = [r for r in rows if not r[2]]
+    for t, m, _ok in bad:
+        print("FAIL %s: %s" % (t, m))
+    print("P11 check: %d rows, %d fail" % (len(rows), len(bad)))
+    if "--check" in sys.argv:
+        sys.exit(1 if bad else 0)
+
+
 def main():
+    if "--p11" in sys.argv:           # P11 starter archipelago (SkyyShards 0.4.8): the cheap-first ladder; --check: exit 1 on a failed row
+        p11_main()
+        return
     if "--p10" in sys.argv:           # P10 class tree rebuild (SkyyTrees 0.6.0): points, reach, the four sources; --check: exit 1 on a failed row
         p10_main()
         return
