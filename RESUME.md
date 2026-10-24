@@ -38,6 +38,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 | zones03 | wf_69fd12bf-ce0 | Zones 0.3.0 + Skills 0.4.65 | Zones 0.3.1 (scaffolding / gates) |
 | ward012 | wf_8f83da9a-0d9 | Wardrobe 0.2.12 coin prices (defaults) | - |
 | shield1 | wf_1ad1203e-7be | Armory 0.1.47 Spellblade great shield | sig3 / sig5 (Armory) |
+Side fixes: Sacks 0.8.29 mob drops -> Combat (REVIEWED, rebuild after fish2's tier_tags then pin); Collections harvester credit (building); WorldGen 0.7.11 black grass on floating islets (building).
 Then: price tooltips R0 probe -> Auctions -> Bazaar; BetterMap shard-world listing. Each finished round: pin -> smoke -> deploy (game closed).
 
 ## WAITING ON SKYY
