@@ -16,10 +16,10 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   tier tag on top, set names, full-set button), Armory 0.1.44-0.1.46 (sig1/sig2/sig4 weapon signatures), Trees 0.5.1-0.6.0 (zoom keep,
   Motherlode, row gates, node icons, CLASS TREE REBUILD: Combat folded into Weaponcraft), Classes 0.1.47, Skills 0.4.64, Rebirth 0.5.2,
   WorldGen 0.7.9 (StructureV2 freeze fix), Menu 0.3.46 (no hotbar item), Pets 0.4.16, Shards 0.4.7, joszza pack mods).
-- PINNED, NOT DEPLOYED: SkyyWardrobe 0.2.11 (Requip pet portraits) - deploy after a CLEAN smoke (the last smoke log was another run's).
+- PINNED, NOT DEPLOYED (game open): Wardrobe 0.2.11, Trees 0.6.1, Menu 0.3.47, zone reset batch (WorldGen 0.7.10 + Zones 0.2.2 +
+  Exploration 0.3.4) - deploy all after a CLEAN smoke (check the smoke log shows these versions).
 - RUNNING (background, this session): workflow archi1 (Shards 0.4.8 + Islands 0.5.25 = starter archipelago R1+R2, research/Starter-Archipelago-Spec.md v2);
-  agent wg0710 fixer (WorldGen 0.7.10 /zone <n> reset + undo: 3 review findings on FR4, real-server harness) -> then deploy WorldGen 0.7.10
-  + Zones 0.2.1 + Exploration 0.3.4 + Zones 0.2.2 (shard ores regrow, READY) TOGETHER. Not finished at a reset -> rerun from the patches.
+  (zone reset fixed + pinned, see above). Not finished at a reset -> rerun from the patches.
 - ZoneViewControl duplicate (1.1.1 + 1.1.2) fixed by Skyy 10-23 (1.1.1 removed).
 
 ## WAITING ON SKYY
@@ -31,7 +31,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 ## NEXT (in order)
 1. Deploy Wardrobe 0.2.11; the zone reset batch (above) when its fix passes. Tell Skyy when /zone <n> reset is live.
 2. Starter archipelago: R3 radial shard upgrade map (Shards 0.4.9), R4 quests (Quests 0.4.4), R5 combat zone islands, R6 Ranching XP.
-3. Weaponcraft numbers x1.5 (Gear / Mobs / Pets / Accessories balance round); Beastmastery tree hatch-speed + hatchery-slot nodes (Trees + Pets).
+3. Weaponcraft numbers x1.5 (Gear / Mobs / Pets / Accessories balance round); Beastmastery tree hatch-speed + hatchery-slot nodes (Trees + Pets) + add
+   Beastmastery to Trees' tree:<uuid> bridge string so Menu 'Right now' shows its unspent points.
 4. sig3 / sig5: UT quirks + Mythic signatures (research/UT-Mythic-Signatures.md; Mythics REPLACE vanilla moves); Spellblade great shield
    (bash attack + 30-block steerable charge); long-term every vanilla weapon move class-fitted.
 5. Price tooltips R0 probe -> R1 Auctions -> R2 Bazaar (research/Price-Tooltips-Spec.md). BetterMap: runtime listing for new shard worlds.
