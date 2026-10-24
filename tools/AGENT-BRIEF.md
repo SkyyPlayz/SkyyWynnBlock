@@ -64,3 +64,4 @@ Before adding ANY new item, set, block or structure: search Assets.zip (read-onl
 
 ## Rarity colours + tooltip layout (Skyy 2026-10-24)
 Anything with a rarity gets its rarity colour on the icon / frame and the popup title. Every tooltip / flavor text is laid out in clear sections (model: the Pets page tooltip - BONUS / BUFFS NOW / AT LV 50 / PROGRESS / ABILITIES) and colour coded per research/Vanilla-UI-Style-Guide.md section 15. Applies to every new or changed tooltip.
+Gear tooltip order (Skyy 2026-10-24): name; then header lines - slot, tier, class, type (cloth / light / heavy), weapon speed, rarity, level line "Mining Lv 23 (15-23)"; then all stats; then set / flavor.
