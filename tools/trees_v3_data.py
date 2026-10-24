@@ -5111,6 +5111,15 @@ def _v4_target(u):
     return "M" if "M" in tg else "W"
 
 
+V4_MODNAME_SUFFIX = False   # 0.6.1: a modifier unlock node shows "<Ability>: <Modifier> Modifier" (only builds that set this; saved keys never change)
+
+
+def v4_mod_name(abname, mod):
+    """the display name of a modifier unlock node (0.6.1 adds the word Modifier unless the name already ends in it)"""
+    n = "%s: %s" % (abname, mod)
+    return n + " Modifier" if (V4_MODNAME_SUFFIX and not mod.endswith("Modifier")) else n
+
+
 def v4_mod_text(abname, mod):
     return "Unlocks the %s modifier for %s: put it in one of its 2 modifier slots - it levels up as you use %s" % (mod, abname, abname)
 
@@ -5145,7 +5154,7 @@ def _v4_class(t, combat):
                     if pair in mods_seen:
                         dropped.append(dict(key=k, ab=pair[0], mod=pair[1], max=u["max"], name=u["name"]))
                         continue
-                    n.update(name="%s: %s" % (abname[pair[0]], pair[1]), max=1, text=v4_mod_text(abname[pair[0]], pair[1]),
+                    n.update(name=v4_mod_name(abname[pair[0]], pair[1]), max=1, text=v4_mod_text(abname[pair[0]], pair[1]),
                              mod=pair, oldmax=u["max"])
                     mods_seen[pair] = n
                 elif ik in V4_RENAME:
@@ -5159,7 +5168,7 @@ def _v4_class(t, combat):
         for m in CLASS_MODS[ab]:
             if (ab, m) in mods_seen:
                 continue
-            n = dict(id="m", name="%s: %s" % (abname[ab], m), max=1, cost=RANK_COST, text=v4_mod_text(abname[ab], m),
+            n = dict(id="m", name=v4_mod_name(abname[ab], m), max=1, cost=RANK_COST, text=v4_mod_text(abname[ab], m),
                      hook=("mod", ab, m), key="Class.%s.m.%s.%s" % (cn, ab, m), ikey=None, oldrow=LINE_ROW[ln], cap=False, tg=("ab", ab),
                      mod=(ab, m), oldmax=0, new=True)
             mods_seen[(ab, m)] = n
