@@ -58,7 +58,9 @@ SkyyWorldGen = its OWN zone metals (round ores01, SkyyWorldGen 0.7.3, research/Z
 Titanium ore blocks + raw ores + ingots and the Dusk / Azurvane / Cinder / Lumen alloy ingots - ids WG_IDS, not in Assets.zip).
 Zone metals show their OWN word at their OWN ladder step (WORDS): "T5 Lead", "T9 Azurvane" (TT_VERSION 1 put them at the zone partner's tier,
 "T4 Lead" - the 15-step ladder above replaced that).
-Weapons / armor / gathering armor / rods / fish / totems / accessories / Lost Loot are tagged by their own rounds (T2 / T3) with the
+SkyyFishing = its own rods, reels and fish (round fish2, SkyyFishing 0.2.0: ids FI_IDS, not in Assets.zip; fish use the own-ladder word
+"Fish", rods / reels T5 / T6 show Chromium / Azurvane on the Adamantite / Mithril ids).
+Weapons / armor / gathering armor / totems / accessories / Lost Loot are tagged by their own rounds (T2 / T3) with the
 rules below (tier_for_level, ladder_tag); only the families with fixed id lists live in ROWS today.
 Left untagged on purpose: stone / dirt / sand, Silver / Gold / Prisma, gems, mob drops (hides + leathers too), food, tree seeds,
 the Enchanted Cobblestone / Rubble.
@@ -71,8 +73,8 @@ GEAR_INTERNAL = ("Crude", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "
 OLD_LADDER = GEAR_INTERNAL      # TT_VERSION 1: the number was internal + 1 (T1 Crude, T2 Copper, T3 Iron ... T8 Onyxium)
 CRUDE_WORDS = ("Crude", "Wood")    # T1 items of these words keep the word "Crude" in their tag ("T1 Crude"); every other T1 item says Copper
 SEP = " - "                      # format A: "T3 Iron - text"
-OWN_LADDERS = ("Totem", "Loot", "Bench", "Talisman", "Charm")      # ores01: + Charm (the Furnace Charm line, SkyyAccessories 0.5.25)
-OWNERS = ("SkyyCollections", "SkyyGear", "SkyyArmory", "SkyyWorldGen")
+OWN_LADDERS = ("Totem", "Loot", "Bench", "Talisman", "Charm", "Fish")      # ores01: + Charm (the Furnace Charm line, SkyyAccessories 0.5.25); fish2: + Fish (SkyyFishing 0.2.0)
+OWNERS = ("SkyyCollections", "SkyyGear", "SkyyArmory", "SkyyWorldGen", "SkyyFishing")          # fish2: + SkyyFishing (its rods, reels and fish)
 # Hides + leathers are NOT tagged (coordinator 2026-10-15): the plan's Soft T1 ... Prismic T8 order was a PLACEHOLDER (economy.md price
 # order) and Skyy picked "Leave untagged" for things the design gives no real tier - a wrong tag is worse than none.
 
@@ -495,6 +497,31 @@ A2_WEAPONS = tuple("Weapon_%s_%s_SkyWynn" % (_f, _g) for _f in A2_FAMILIES for _
 for _id_g in A2_WEAPONS:
     _add(_id_g, metal_tier(_id_g.split("_")[-2]), "armory_metal", "SkyyArmory")
 AR_IDS = frozenset(A1_WEAPONS + A2_WEAPONS)
+# SkyyFishing 0.2.0 (round fish2, research/cloud/Fishing-Stage2-Build.md 2 / 3; Skyy 2026-10-20 "just go with the recommended on all of them"):
+# its 8 rods, 7 reels and 27 fish. Owner SkyyFishing (its lang writes the tags; one writer per key). Made by SkyyFishing's build (FI_IDS, not in
+# Assets.zip). The rod / reel ids keep their 0.1 words (no saved-data change); rods + reels T5 / T6 SHOW the Zone 3 metals (spec question 1:
+# Adamantite and Mithril ore only exist in Zones 4 / 5): Rod_Adamantite = "T8 Chromium", Rod_Mithril = "T9 Azurvane" (WORDS), like Bamboo shows
+# "T1 Crude" (sticks, Wooden). Fish: own-ladder word "Fish"; a fish's tier = max(its zone's first step - Z1 T1, Z2 T4, Z3 T7 -, the tier of the
+# lowest rod that lands its minimum weight) (spec question 3) - SkyyFishing's build re-checks that rule against its species table.
+FI_RODS = (("Bamboo", "Crude"), ("Copper", "Copper"), ("Iron", "Iron"), ("Thorium", "Thorium"), ("Cobalt", "Cobalt"), ("Adamantite", "Chromium"),
+           ("Mithril", "Azurvane"), ("Onyxium", "Onyxium"))          # (id word, shown metal)
+FI_REELS = FI_RODS[:7]                                               # no Onyxium reel yet (stage 3)
+FI_FISH = (("OverdueMinnow", 1), ("Bluegill", 1), ("RustbackTrout", 1), ("QueuePerch", 1), ("MisfiledCarp", 1), ("StampedCatfish", 1),
+           ("MirebridgeEel", 1), ("PonderingPike", 2), ("GoldenKoi", 1), ("Goldfish", 1),
+           ("OasisCarp", 4), ("Sandskipper", 4), ("DunePiranha", 4), ("MirageEel", 4), ("TarPitGudgeon", 4), ("LostLuggageGrouper", 4),
+           ("MirageSturgeon", 7), ("Sandsalmon", 4),
+           ("FrostCod", 7), ("WhisperChar", 7), ("SnowmeltTrout", 7), ("IceboundSalmon", 7), ("PermitLamprey", 7), ("GlassPike", 8),
+           ("WhisperSturgeon", 9), ("BlizzardHalibut", 8), ("SleeperAisle9", 9))
+for _fam_f, _pre_f, _rows_f in (("rod", "SkyyFishing_Rod_", FI_RODS), ("reel", "SkyyFishing_Reel_", FI_REELS)):
+    for _w_f, _m_f in _rows_f:
+        _add(_pre_f + _w_f, metal_tier(_m_f), _fam_f, "SkyyFishing")
+        if _m_f in CRUDE_WORDS:
+            WORDS[_pre_f + _w_f] = "Crude"                    # "T1 Crude" (Wooden); T8 Chromium / T9 Azurvane = the ladder nouns
+for _k_f, _t_f in FI_FISH:
+    _add("SkyyFishing_Fish_" + _k_f, _t_f, "fish", "SkyyFishing")
+    WORDS["SkyyFishing_Fish_" + _k_f] = "Fish"
+FI_IDS = frozenset(i for i, r in ROWS.items() if r[2] == "SkyyFishing")      # made by SkyyFishing's build (not in Assets.zip)
+assert len(FI_IDS) == 8 + 7 + 27 and tag_text(ROWS["SkyyFishing_Rod_Adamantite"][0]) == "T8 Chromium"
 
 
 # ------------------------------------------------------------------------------------------------ rarity-tagged items (no T-number)
@@ -609,4 +636,4 @@ def families():
     return sorted(set(r[1] for r in ROWS.values()))
 
 
-del _m, _t, _w, _c, _k, _b, _id, _h, _f, _i, _e, _z, _s, _lo, _hi, _sk, _rows, _code, _look, _nm, _sl
+del _m, _t, _w, _c, _k, _b, _id, _h, _f, _i, _e, _z, _s, _lo, _hi, _sk, _rows, _code, _look, _nm, _sl, _fam_f, _pre_f, _rows_f, _w_f, _m_f, _k_f, _t_f

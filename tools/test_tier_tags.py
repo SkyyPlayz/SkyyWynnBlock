@@ -90,7 +90,7 @@ ENCH_ALLOYS = [t for t in getattr(EN, "TABLE_ALLOYS", []) if t[2] in TT.ROWS]
 COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 15, "seed": 28, "spore": 2, "enchanted": 56 + len(ENCH_ORES) + len(ENCH_ALLOYS), "foraging_armor": 60,
           "farming_armor": 60, "fishing_armor": 20, "tool": 34, "armory": 11,          # 0.3.29: + the Mushroom (crop, 2 spores, its Enchanted item), the gathering armor rows
           "can": 6 + 10, "harvester": 4 + 12, "forever_tool": 27, "armory_metal": 76 + 80, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5,
-          "mining_armor": 32, "bucket": 1}          # SkyyGear 0.3.31: + the Infinite Water Bucket (T4 Thorium, TT.OWN_IDS)
+          "mining_armor": 32, "bucket": 1, "rod": 8, "reel": 7, "fish": 27}          # fish2 (SkyyFishing 0.2.0): its rods / reels / fish (TT.FI_IDS); SkyyGear 0.3.31: + the Infinite Water Bucket (T4 Thorium, TT.OWN_IDS)
           #          # SkyyGear 0.3.23 (G2): + the forever tools of Bronze + the 8 zone metals (pickaxe / hatchet / multitool 27), cans Mithril + 9, Harvesters Cobalt / Adamantite / Mithril + 9 (TT.OWN_IDS); SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
@@ -117,6 +117,19 @@ ok(len(TT.A2_WEAPONS) == 80 and set(TT.A2_WEAPONS) <= TT.AR_IDS and TT.tag_for("
    and TT.tag_for("Weapon_Shield_Lumen_SkyWynn") == "T15 Lumen" and TT.tag_for("Weapon_Sword_Dusk_SkyWynn") == TT.combat_tag("Weapon_Sword_Dusk_SkyWynn", 0),
    "SkyyArmory 0.1.34 A2 rows (T5 Lead .. T15 Lumen)")
 ok(all(r[2] in TT.OWNERS and 1 <= r[0] <= 16 for r in TT.ROWS.values()), "rows in range")
+# fish2 (SkyyFishing 0.2.0, research/cloud/Fishing-Stage2-Build.md 2 / 3): rods + reels at their SHOWN metal (T5 / T6 = Chromium / Azurvane on the
+# Adamantite / Mithril ids), Wooden = "T1 Crude", fish "T<n> Fish" (zone floor 1 / 4 / 7 or the rod that lands the minimum weight)
+_FI = {"SkyyFishing_Rod_Bamboo": "T1 Crude", "SkyyFishing_Rod_Copper": "T1 Copper", "SkyyFishing_Rod_Iron": "T2 Iron", "SkyyFishing_Rod_Thorium": "T4 Thorium",
+       "SkyyFishing_Rod_Cobalt": "T7 Cobalt", "SkyyFishing_Rod_Adamantite": "T8 Chromium", "SkyyFishing_Rod_Mithril": "T9 Azurvane",
+       "SkyyFishing_Rod_Onyxium": "T16 Onyxium", "SkyyFishing_Reel_Bamboo": "T1 Crude", "SkyyFishing_Reel_Mithril": "T9 Azurvane",
+       "SkyyFishing_Fish_OverdueMinnow": "T1 Fish", "SkyyFishing_Fish_PonderingPike": "T2 Fish", "SkyyFishing_Fish_OasisCarp": "T4 Fish",
+       "SkyyFishing_Fish_MirageSturgeon": "T7 Fish", "SkyyFishing_Fish_FrostCod": "T7 Fish", "SkyyFishing_Fish_GlassPike": "T8 Fish",
+       "SkyyFishing_Fish_SleeperAisle9": "T9 Fish"}
+for i, want in _FI.items():
+    ok(TT.tag_for(i) == want, "fish2: tag_for(%s) = %r, want %r" % (i, TT.tag_for(i), want))
+ok(TT.ids_for("SkyyFishing") == sorted(TT.FI_IDS) == sorted(TT.ids_in("rod") + TT.ids_in("reel") + TT.ids_in("fish")) and len(TT.FI_IDS) == 42
+   and "SkyyFishing_Reel_Onyxium" not in TT.ROWS and TT.internal("SkyyFishing_Rod_Adamantite") is None and TT.ladder_tag(4, "Fish") == "T4 Fish"
+   and TT.described("SkyyFishing_Fish_OasisCarp", "x") == "T4 Fish - x", "fish2: SkyyFishing owns its 42 ids, own ladder Fish")
 ok(all(TT.word(i) == "Crude" for i in TT.ROWS if i.split("_")[2:3] and i.split("_")[2] in ("Crude", "Wood") and i.startswith(("Tool_", "Weapon_")))
    and all(TT.tier(i) == 1 for i in TT.ROWS if TT.word(i) == "Crude"), "every Crude / Wood tool or weapon says 'T1 Crude'")
 
@@ -254,7 +267,7 @@ except Exception as e:     # no cached copy / no game: the table checks above st
 if az:
     with zipfile.ZipFile(az) as z:
         ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
-    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS and i not in TT.AR_IDS and i not in TT.CO_IDS]   # AR_IDS: SkyyArmory's build   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
+    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS and i not in TT.AR_IDS and i not in TT.CO_IDS and i not in TT.FI_IDS]   # FI_IDS: SkyyFishing's build; AR_IDS: SkyyArmory's build   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
     missing = sorted(i for i in vanilla if i not in ids)
     ok(not missing, "not in Assets.zip: %s" % missing)
     ok(not [i for i in TT.WG_IDS if i in ids], "ores01: no SkyyWorldGen id exists in Assets.zip")
