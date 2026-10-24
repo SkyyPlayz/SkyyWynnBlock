@@ -3067,7 +3067,7 @@ row_bar = status_bar
 def static_row(ident, w, h=None, icon=None, name="", sub=None, tag=None, action=None, bar=True, state="static", gap=ROW_GAP,
                icon_size=40, tag_w=150, tag_kind="rowBadge", action_kind="secondary", action_w=None, action_on=True,
                action_sound=None, name_kind="rowName", sub_kind="rowSub", name_col=None, sub_col=None, tag_col=None, pad=8,
-               anchor=None, ids=None):
+               anchor=None, ids=None, icon_bg=None):
     """Kit 1.4: a FIXED-WIDTH list row (the WorldEventListRow look without FlexWeight - SkyyAccessories 0.4.5's rows) as ONE markup:
     Group #ident (LayoutMode Left, h + gap bottom) holding the row panel #<ident>P (w minus the action, padding left / right 8;
     state "static" = the #101925(0.55) panel Group, "normal" / "selected" = a clickable Button with row_style: bind #<ident>P)
@@ -3078,6 +3078,9 @@ def static_row(ident, w, h=None, icon=None, name="", sub=None, tag=None, action=
     action_on=False = the vanilla Disabled look - a runtime state: choose(J("c"), static_row(...), static_row(..., action_on=False))).
     Texts (name / sub / tag): proven text inline, punctuated / J() text as b.set lines in .sets, "" = empty (b.set it yourself).
     ids = {"panel", "bar", "icon_box", "icon", "text", "name", "sub", "tag", "action"} keeps a restyled page's old ids.
+    icon_bg (2026-10-24, SkyyPets 0.4.18 rarity frames; additive - None = the output above, byte for byte) = a colour (kit name,
+    literal or J() runtime colour, e.g. the rarity colour at alpha) for a square #<ident>If (icon_size + 4) behind the icon: the
+    icon then sits 2 px in, so the square shows as a 2 px frame + tint around it (plain Group Background, as group(bg=)).
     Returns a Markup: .h = its outer height (h + gap), .w, .sets, .ids, .text_w (the text column width)."""
     check_id(ident)
     ids = dict(ids or {})
@@ -3109,8 +3112,16 @@ def static_row(ident, w, h=None, icon=None, name="", sub=None, tag=None, action=
             kids.append(status_bar(got["bar"], True, col=bar))
     if icon is not None:
         got["icon_box"], got["icon"] = idd("icon_box", "Ib"), idd("icon", "Ic")
-        kids.append(_inside(group(got["icon_box"], None, w=box_w, h=h),
-                            [item_icon(got["icon"], icon, icon_size, anchor={"left": 0, "top": (h - icon_size) // 2})]))
+        if icon_bg is None:
+            kids.append(_inside(group(got["icon_box"], None, w=box_w, h=h),
+                                [item_icon(got["icon"], icon, icon_size, anchor={"left": 0, "top": (h - icon_size) // 2})]))
+        else:
+            got["icon_frame"] = idd("icon_frame", "If")
+            fs_ = icon_size + 4
+            ft = (h - fs_) // 2
+            kids.append(_inside(group(got["icon_box"], None, w=box_w, h=h),
+                                [group(got["icon_frame"], None, w=fs_, h=fs_, anchor={"left": 0, "top": ft}, bg=icon_bg),
+                                 item_icon(got["icon"], icon, icon_size, anchor={"left": 2, "top": ft + 2})]))
     nh, shh = fs(LABELS[name_kind][0]) + 6, fs(LABELS[sub_kind][0]) + 5
     tot = nh + (shh if sub is not None else 0)
     fit([tot], h, "static_row text")

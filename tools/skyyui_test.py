@@ -1399,6 +1399,17 @@ def phase_kit14(samples):
     rj = samples["k14 static row runtime id"]
     check(UI.render(rj).startswith("Group #SkyyTSq2 {") and "Group #SkyyTSq2Bar { Anchor: (Width: 4, Right: 8); }" in UI.render(rj)
           and rj.sets == [(P + "Sq" + J("i", "2") + "Nm", "Text", J("nm", "Steve"))], "static_row: a runtime id, bar=None keeps the space")
+    # 2026-10-24 (SkyyPets 0.4.18 rarity frames): icon_bg = a tinted square behind the icon (None = byte-identical to the row above)
+    rf0 = UI.static_row(P + "Sr", 572, icon="Weapon_Sword_Iron", name="Iron sword", sub="Rare", tag="12 m", action="Equip", icon_bg=None)
+    rf = UI.static_row(P + "Sr", 572, icon="Weapon_Sword_Iron", name="Iron sword", sub="Rare", tag="12 m", action="Equip", icon_bg="#8b339e(0.4)")
+    rfj = UI.static_row(P + "Sr", 572, icon=J("ic", "Weapon_Sword_Iron"), name="Iron sword", icon_bg=J("ib", "#8b339e(0.4)"))
+    check(str(rf0) == str(r) and r.ids == rf0.ids, "static_row icon_bg=None: the kit 1.4 output byte for byte")
+    check("Group #SkyyTSrIf { Anchor: (Width: 44, Height: 44, Left: 0, Top: 6); Background: #8b339e(0.4); }" in rf
+          and "ItemIcon #SkyyTSrIc { Anchor: (Width: 40, Height: 40, Left: 2, Top: 8); ItemId: \"Weapon_Sword_Iron\"; }" in rf
+          and rf.index("SkyyTSrIf") < rf.index("SkyyTSrIc") and rf.ids["icon_frame"] == P + "SrIf" and rf.text_w == r.text_w,
+          "static_row icon_bg: a 44 px square behind the 40 px icon (2 px frame), drawn first, text column unchanged")
+    check('+ (ib) + "; }' in UI.java_expr(rfj) and UI.render(rfj).count("Background: #8b339e(0.4)") == 1, "static_row icon_bg=J(): a runtime colour")
+    raises(lambda: UI.static_row(P + "Sx", 572, icon="Weapon_Sword_Iron", icon_bg="purple-ish"), ValueError, "static_row icon_bg must be a colour")
     raises(lambda: UI.static_row(P + "Sx", 200, icon="Weapon_Sword_Iron", tag="x", action="Go"), ValueError, "static_row too narrow")
     raises(lambda: UI.static_row(P + "Sx", 572, action="Go", action_on=J("c")), ValueError, "static_row action_on runtime -> choose")
     raises(lambda: UI.static_row(P + "S_x", 572), ValueError, "static_row underscore id", "underscore")

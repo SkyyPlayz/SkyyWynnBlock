@@ -572,6 +572,11 @@ gives at a glance" (docs/answered/ui.md). Applies to every hover tooltip on our 
 - Group lines: name / level first, then what it GIVES (coloured values), then requirements, then minor info last.
 - Rollout: kit first (one tooltip helper), then each mod's next round adopts it; Pets (the screenshot) first.
 
+- RARITY ON ICONS (Skyy 2026-10-24 global rule, PROJECT-RULES 4): grid cells use a hidden display-only item per rarity (e.g. SkyyPets
+  `Skyy_PetIcon_<Kind>_<Rarity>`) so the client draws the quality frame + popup title colour like items; rows use
+  `skyyui.static_row(icon_bg=<rarity colour>)` (40%% square, 2 px edge; faint grey when empty). Keep row names soft white - Epic purple
+  text is ~2.4:1 on the row panel.
+
 ## 16. Node maps: radial tree pages (kit 1.8, 2026-10-22)
 
 Skyy: "i definitely want to do the rebirth page like this, but id like to do our trees like this." + popups "Grouped pages", "Separate per
