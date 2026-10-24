@@ -360,3 +360,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shards at level 20 + buying shard islands (DEPLOYED 2026-10-23, backup deploy-20261023-1833) | [2026-10](2026-10.md) |
 | Hatch reel fix + pet portraits, totem tier up on the pole + centre pad (DEPLOYED 2026-10-23, backup deploy-20261023-1942) | [2026-10](2026-10.md) |
 | Zone reset + undo, shard ores regrow, Requip pet portraits, modifier names, unspent points in Right now (DEPLOYED 2026-10-23, backup deploy-20261023-2015) | [2026-10](2026-10.md) |
+| Starter archipelago + Combat bag + Harvester counts + Bulwark Charge + Weaponcraft x1.5 + Beastmastery hatching + Wardrobe coin slots + whole-island gathering (DEPLOYED 2026-10-24, backup deploy-20261024-1158) | [2026-10](2026-10.md) |

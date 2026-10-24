@@ -28,13 +28,15 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24 11:25; a session restart killed the workflows - finishers took over, reports in tools/dev/scratch/resume/<tag>.md)
-- PINNED, deploy waits for builders' test servers: Sacks 0.8.29 (mob drops -> Combat) + Collections 0.2.33 (Harvester swings + seasonal crops count).
-- READY, held for bm1: wc15 Gear 0.3.45 + Mobs 0.1.19 + Classes 0.1.48 (Weaponcraft x1.5) - ship with Trees 0.6.2 + new /tree texts.
-- Finishers (Opus agents): archi1 (Shards 0.4.8 + Islands 0.5.25), bm1 (Trees 0.6.2 + Pets 0.4.17 + wc15 tree texts), fish2 (Fishing 0.2.0 +
-  tier_tags), zones03 (Zones 0.3.0 + Skills 0.4.65 incl. DynamicSeasons Farming XP), ward012 (Wardrobe 0.2.12), shield1 (Armory 0.1.47).
-- wg0711 builder: WorldGen 0.7.11 floating islets (black grass, shape + trees, soil + own zone, spacing, height / rate / variants, bigger island).
-- Workflow compact1 (wf_db5ae0e3-e84): Sacks 0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts.
+## RUNNING (2026-10-24 12:00)
+- LIVE since 11:58 (TEST-CHECKLIST 249, backup deploy-20261024-1158): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25
+  (starter archipelago), Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes 0.1.48 (wc15), Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12,
+  Zones 0.3.0 + Skills 0.4.65.
+- READY, held: Fishing 0.2.0 (needs Gear 0.3.46 pole ladder).
+- Building: workflow gear046 (Gear 0.3.46: pole ladder, armor upgrades in place, Ornate Bronze, tooltip header) | workflow compact1 (Sacks
+  0.8.30 auto-compact per-bag coin upgrade + crafting uncompacts) | WorldGen 0.7.11 builder fixing 6 review findings (then pin; flying_islands
+  spawn rate = deploy_set tune_structurev2 step, variants + bigger island = follow-up specs, option A reset-only).
+- Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). Full tidy_local after builders finish.
 QUEUE: SHARDS R3 (0.4.9) + RE-BALANCE: shards = primary late-game source, +2%+ per upgrade level, new islands unchanged, offline-harvest-time upgrade (docs/answered/world.md 2026-10-24); Trees 0.6.3 + Classes (sapling fix, Farming tree = crop Farming level, A1 alts late either/or) after bm1 + wc15; Gear lane after wc15
 (gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
 research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Pets (rarity colours) then Secret dragons; Shards R3 / Quests R4 / R5 / R6 after
