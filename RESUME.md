@@ -28,6 +28,18 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
+## RUNNING (2026-10-24, Skyy: "dont worry about usage, work through your whole list") - 7 workflow rounds, one mod set each
+| tag | run | mods | after it |
+|---|---|---|---|
+| archi1 | wf_872e02c7-228 | Shards 0.4.8 + Islands 0.5.25 + balance_model --p11 | R3 map (Shards 0.4.9), R4 quests (Quests 0.4.4), R5 combat islands (Shards 0.4.10), R6 Ranching XP (Skills) |
+| bm1 | wf_3ac82bdc-be4 | Trees 0.6.2 + Pets 0.4.17 (Beastmastery hatch nodes, tree:<uuid> string, Weaponcraft x1.5 Pets part) | Secret dragons D5b (Pets) |
+| wc15 | wf_5bc6aa23-5aa | Gear 0.3.45 + Mobs 0.1.19 + Accessories 0.5.33 (+ Classes) - Weaponcraft x1.5 | Powders P1 (Gear + Sacks), UT-28 (Gear), beta #12 / #17 (Gear), Fishing B (Gear) |
+| fish2 | wf_bc0a9adf-4c0 | Fishing 0.2.0 (+ tier_tags.py) | Powders after it (tier_tags) |
+| zones03 | wf_69fd12bf-ce0 | Zones 0.3.0 + Skills 0.4.65 | Zones 0.3.1 (scaffolding / gates) |
+| ward012 | wf_8f83da9a-0d9 | Wardrobe 0.2.12 coin prices (defaults) | - |
+| shield1 | wf_1ad1203e-7be | Armory 0.1.47 Spellblade great shield | sig3 / sig5 (Armory) |
+Then: price tooltips R0 probe -> Auctions -> Bazaar; BetterMap shard-world listing. Each finished round: pin -> smoke -> deploy (game closed).
+
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
 - Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png (8 Home tiles) + research/cloud/page-emblems-art/sheet.png (4 page emblems).
