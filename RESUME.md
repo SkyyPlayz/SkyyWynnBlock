@@ -39,8 +39,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: Gear lane after wc15
-(gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
+QUEUE: Gear lane (Powders, UT-28 incl. Ancient Bronze daggers +
 research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Secret dragons (Pets); R6 Ranching XP; Zones 0.3.1; sig3 / sig5 after shield1; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
 
 ## WAITING ON SKYY
