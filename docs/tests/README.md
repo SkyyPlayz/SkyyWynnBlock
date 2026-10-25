@@ -363,3 +363,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Starter archipelago + Combat bag + Harvester counts + Bulwark Charge + Weaponcraft x1.5 + Beastmastery hatching + Wardrobe coin slots + whole-island gathering (DEPLOYED 2026-10-24, backup deploy-20261024-1158) | [2026-10](2026-10.md) |
 | Floating islands + auto-compact upgrade + armor upgrades in place + Ornate Bronze + tooltip header + Fishing stage 2 (DEPLOYED 2026-10-24, backup deploy-20261024-1306) | [2026-10](2026-10.md) |
 | Shard Upgrade Map + shard re-balance + saplings + Farming tree level + A1 alt paths + pet rarity colours + archipelago quests (DEPLOYED 2026-10-24, backup deploy-20261024-1617) | [2026-10](2026-10.md) |
+| Shard menu disconnect hotfix + HUD crop Farming line + archipelago shift / retry (DEPLOYED 2026-10-24, backup deploy-20261024-2138) | [2026-10](2026-10.md) |

@@ -28,9 +28,9 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24 16:30) - building: isl026 (Islands 0.5.26 retry), cap064 (Trees 0.6.4 + Classes 0.1.50 capstones + Assassin alt),
-  hud036 (Hud 0.3.36 Farming line), r5combat2 (Shards 0.4.11 Combat islands, on top of the hotfix).
-  PINNED, deploys when the game closes (watch armed): Shards 0.4.10 HOTFIX (shard menu disconnect) + Hud 0.3.36 - stay out of the shard menu until then. Deploy as ONE batch, one smoke (hotfix first if the others lag).
+## RUNNING (2026-10-24 16:30) - building: cap064 (Trees 0.6.4 + Classes 0.1.50 capstones + Assassin alt),
+  r5combat2 (Shards 0.4.11 Combat islands, on top of the hotfix).
+  LIVE 21:38 (TEST 252, backup deploy-20261024-2138): Shards 0.4.10 hotfix, Hud 0.3.36, Islands 0.5.26. Deploy as ONE batch, one smoke (hotfix first if the others lag).
 - LIVE 16:17 (TEST 251, backup deploy-20261024-1617): Shards 0.4.9 (Upgrade Map + re-balance), Trees 0.6.3 + Classes 0.1.49, Pets 0.4.18, Quests 0.4.4.
 - LIVE 11:58 (TEST 249): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25, Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes
   0.1.48, Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12, Zones 0.3.0 + Skills 0.4.65.
