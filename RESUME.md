@@ -28,7 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-25 09:35) - nothing building.
+## RUNNING (2026-10-25 10:00) - building: ut28 (Gear 0.3.47 UT first 28), drag5 (Pets 0.4.19 secret dragons), ranch6 (Skills 0.4.66
+  Ranching XP), zones031 (Zones 0.3.1), + spec writer research/Augments-Spec.md (augments replace Powders - Skyy 10-25). One batch, one smoke.
   LIVE 09:34 (TEST 254, backup deploy-20261025-0934): Shards 0.4.11 Combat Shard zone islands.
   LIVE 22:18 (TEST 253, backup deploy-20261024-2218): Trees 0.6.4 + Classes 0.1.50 (per-path capstones + Shadow Mark).
   LIVE 21:38 (TEST 252, backup deploy-20261024-2138): Shards 0.4.10 hotfix, Hud 0.3.36, Islands 0.5.26. tidy_local ran 2026-10-25 09:40 (scratch links removed first).
@@ -39,7 +40,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: Gear lane (Powders, UT-28 incl. Ancient Bronze daggers +
+QUEUE: AUGMENTS (after its spec + Skyy's answers; Powders dropped); Gear lane ( UT-28 incl. Ancient Bronze daggers +
 research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Secret dragons (Pets); R6 Ranching XP; Zones 0.3.1; sig3 / sig5 after shield1; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
 
 ## WAITING ON SKYY
