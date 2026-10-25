@@ -28,7 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24 16:20) - nothing building; all three batches LIVE
+## RUNNING (2026-10-24 16:30) - building: isl026 (Islands 0.5.26 retry), cap064 (Trees 0.6.4 + Classes 0.1.50 capstones + Assassin alt),
+  hud036 (Hud 0.3.36 Farming line), r5combat (Shards 0.4.10 Combat islands). Deploy as ONE batch, one smoke.
 - LIVE 16:17 (TEST 251, backup deploy-20261024-1617): Shards 0.4.9 (Upgrade Map + re-balance), Trees 0.6.3 + Classes 0.1.49, Pets 0.4.18, Quests 0.4.4.
 - LIVE 11:58 (TEST 249): Sacks 0.8.29, Collections 0.2.33, Shards 0.4.8 + Islands 0.5.25, Armory 0.1.47, Gear 0.3.45 + Mobs 0.1.19 + Classes
   0.1.48, Trees 0.6.2 + Pets 0.4.17, Wardrobe 0.2.12, Zones 0.3.0 + Skills 0.4.65.
@@ -36,7 +37,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: Islands (/island archipelago retry + shift); Trees (per-path capstones, 2nd Assassin alt - OPEN-QUESTIONS); HUD Farming line = crop level; R5 Combat shard islands; Gear lane after wc15
+QUEUE: Gear lane after wc15
 (gathering armor upgrades in place, Ornate Bronze combat set, tooltip header order, then Powders, UT-28 incl. Ancient Bronze daggers +
 research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Secret dragons (Pets); R6 Ranching XP; Zones 0.3.1; sig3 / sig5 after shield1; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
 
