@@ -367,3 +367,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Per-path capstones + Shadow Mark (2nd Assassin alt) (DEPLOYED 2026-10-24, backup deploy-20261024-2218) | [2026-10](2026-10.md) |
 | Combat Shard zone islands (always night, mob pools, deep cavern, 1-1.5x of fighting) (DEPLOYED 2026-10-25, backup deploy-20261025-0934) | [2026-10](2026-10.md) |
 | Ranching XP + secret dragons + scaffolding / skill gates / fair play (DEPLOYED 2026-10-25, backup deploy-20261025-1131) | [2026-10](2026-10.md) |
+| First 28 Untiered items (19 live) (DEPLOYED 2026-10-25, backup deploy-20261025-1146) | [2026-10](2026-10.md) |
