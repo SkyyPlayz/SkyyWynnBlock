@@ -3129,8 +3129,12 @@ def el_patch(on):
 P5_DRAGONS = {   # kind: (start rarity, Lv 100 stats before rarity, element) = SkyyPets 0.4.11 DRAGONS
     "DragonPlain": ("Rare", {"str": 28, "cd": 21, "def": 11}, "Earth"), "DragonTundra": ("Rare", {"mp": 28, "def": 11}, "Water"),
     "DragonFire": ("Rare", {"str": 23, "cc": 9, "cd": 23}, "Fire"), "DragonStorm": ("Rare", {"mp": 42, "mana": 18}, "Thunder"),
-    "DragonSky": ("Rare", {"cc": 18, "cd": 30.5, "def": 7.5}, "Air")}
-P5_DRAGON_SHARE = {"DragonPlain": 23.0, "DragonTundra": 23.0, "DragonFire": 25.5, "DragonStorm": 22.0, "DragonSky": 28.0}   # pets.dragon.fight.share (%)
+    "DragonSky": ("Rare", {"cc": 18, "cd": 30.5, "def": 7.5}, "Air"),
+    # SkyyPets 0.4.19 secret dragons (research/cloud/Secret-Dragons-Spec.md 1.1): no element (None = no element damage line; a small perk instead)
+    "DragonVoid": ("Rare", {"str": 27, "cd": 26, "cc": 6}, None), "DragonBlood": ("Rare", {"str": 30, "cd": 25, "health": 7}, None),
+    "DragonLight": ("Rare", {"mp": 28, "health": 5, "def": 6}, None), "DragonCrystal": ("Rare", {"def": 17, "health": 7, "str": 14}, None)}
+P5_DRAGON_SHARE = {"DragonPlain": 23.0, "DragonTundra": 23.0, "DragonFire": 25.5, "DragonStorm": 22.0, "DragonSky": 28.0,   # pets.dragon.fight.share (%)
+                   "DragonVoid": 25.0, "DragonBlood": 23.0, "DragonLight": 22.5, "DragonCrystal": 23.0}   # 0.4.19: refit (spec starts 24 / 26 / 18 / 20)
 P5_DRAGON_STAGE = (40.0, 60.0, 80.0, 100.0)      # pets.dragon.stageDamage (% of the bite: Weakling, Smalling, Biteling, Flyling)
 P5_DRAGON_STAGE_LV = (4, 7, 10)                  # pets.dragon.stage2 / 3 / 4
 P5_DRAGON_SLOT2 = 0.5                            # pets.slot2.buffPercent
@@ -3150,7 +3154,8 @@ def p5_dragon_power(kind, L, rarity_i, rebirths=0):
     """(summoned = 50 % buffs x (1 + bites), the same dragon in the pet slot) - DPS x EHP, its element damage on (pets.elemDmg)"""
     _r, st, el = P5_DRAGONS[kind]
     st = dict(st)
-    st["f" + el] = st.get("f" + el, 0.0) + EL_PET_DMG
+    if el:          # 0.4.19: the secret dragons have no element
+        st["f" + el] = st.get("f" + el, 0.0) + EL_PET_DMG
     fac = P5_PET_RARITY[rarity_i]
     pet = p5_pet_power(st, fac, L, rebirths)
     summ = p5_pet_power(st, fac * P5_DRAGON_SLOT2, L, rebirths) * (1.0 + p5_dragon_share(kind, L, rarity_i, rebirths))

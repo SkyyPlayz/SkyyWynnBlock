@@ -42,7 +42,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
+QUEUE: UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
+  switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
   Heart roll, Light zone guardians give), SkyyFishing (Void catch roll), SkyyCollections (Crystal reward give) via pets:fn:secretRoll / giveSecretEgg;
   AUGMENTS - research/Augments-Spec.md written, Skyy answered 8 questions 10-25 (docs/answered/gear.md, last 6 lines): REVISE the spec to
   them (no removal / overwrite + fuse, elemental 10 tiers, zone-tier drops + zone primary elements Z1 Earth, Poison = weapon modifier, Attack Speed
