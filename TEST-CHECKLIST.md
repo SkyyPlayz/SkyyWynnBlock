@@ -61,3 +61,4 @@ tests always come first.
 252. BATCH 4 2026-10-24: shard menu no longer disconnects (Shards 0.4.10), HUD Farming = crop level, blocked starter islands shift + /island archipelago retry
 253. BATCH 5 2026-10-24: every A1-alt path has its own branch-1 capstone; Assassin Shadow Mark alt + Death Sentence
 254. BATCH 6 2026-10-25: Combat Shard - Zone 1-5 islands, always night, mob pools by size + Large deep cavern, mobs at once / level / spawn speed, maxed island ~1.25x fighting
+255. BATCH 7 2026-10-25: Ranching XP (taming / crate / milking), secret dragons Void / Blood / Light / Crystal (admin eggs only so far), Zones scaffolding + skill gates + anti-AFK

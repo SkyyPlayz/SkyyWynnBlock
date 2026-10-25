@@ -28,8 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-25 10:00) - building: ut28 (Gear 0.3.47 UT first 28), drag5 (Pets 0.4.19 secret dragons), ranch6 (Skills 0.4.66
-  Ranching XP), zones031 (Zones 0.3.1), One batch, one smoke.
+## RUNNING (2026-10-25 11:35) - building: ut28 (Gear 0.3.47 UT first 28) only.
+  LIVE 11:31 (TEST 255, backup deploy-20261025-1131): Skills 0.4.66 Ranching XP, Pets 0.4.19 secret dragons, Zones 0.3.1.
   USAGE: weekly 92% at 10:40 on 10-25 (resets 10-27 09:00) - Skyy: "stop at 98% usage, and update the files/repo". Launch NOTHING new;
   at 98% stop running rounds (their reports go to tools/dev/scratch/resume/) and finish the hand-off.
   LIVE 09:34 (TEST 254, backup deploy-20261025-0934): Shards 0.4.11 Combat Shard zone islands.
