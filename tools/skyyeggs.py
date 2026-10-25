@@ -225,6 +225,31 @@ def _dragon_checks():
 
 _dragon_checks()
 
+# SECRET DRAGON EGGS (SkyyPets 0.4.19, research/cloud/Secret-Dragons-Spec.md = round D5b; docs/answered/pets.md 2026-10-23 SECRET DRAGON EGGS).
+# A list of its own (NOT in DRAGON_EGGS: SkyyMobs' boss drop + older SkyyPets builds read DRAGON_EGGS as the elemental eggs). Same tuple shape.
+# Plain names (no "Dragon" - Skyy: "no quest or explanation - players figure them out"); never craftable, never sold by us, one per profile
+# per word (pets:fn:giveSecretEgg). ALL_DRAGON_EGGS = the order SkyyPets 0.4.19+ ships (its DRAGONS table follows it).
+SECRET_EGGS = [
+    ("Skyy_PetEgg_Dragon_Void", "DragonVoid", "Strange Void Egg", "SkyyPets", "void"),
+    ("Skyy_PetEgg_Dragon_Blood", "DragonBlood", "Crimson Egg", "SkyyPets", "blood"),
+    ("Skyy_PetEgg_Dragon_Light", "DragonLight", "Radiant Egg", "SkyyPets", "light"),
+    ("Skyy_PetEgg_Dragon_Crystal", "DragonCrystal", "Crystal Egg", "SkyyPets", "crystal"),
+]
+SECRET_EGG_IDS = [e[0] for e in SECRET_EGGS]
+SECRET_RATES = "void=30, blood=20"                # per 10,000 per qualifying event (pets:fn:secretRoll); a word not listed = always
+ALL_DRAGON_EGGS = DRAGON_EGGS + SECRET_EGGS
+ALL_DRAGON_EGG_IDS = [e[0] for e in ALL_DRAGON_EGGS]
+
+
+def _secret_checks():
+    assert len(ALL_DRAGON_EGG_IDS) == len(set(ALL_DRAGON_EGG_IDS)) == 9 and not set(ALL_DRAGON_EGG_IDS) & set(IDS)
+    assert all(parse_id(i) is None for i in SECRET_EGG_IDS) and all(e[3] == "SkyyPets" for e in SECRET_EGGS)
+    assert len(set(e[1] for e in ALL_DRAGON_EGGS)) == 9 and len(set(e[4] for e in ALL_DRAGON_EGGS)) == 9
+    assert all(e[1].startswith("Dragon") and len(e[2]) <= 40 and "Dragon" not in e[2] and e[4].isalpha() for e in SECRET_EGGS)
+
+
+_secret_checks()
+
 
 # ---------------------------------------------------------------------------------------------------------------- self checks (import time)
 def _checks():

@@ -555,6 +555,20 @@ for _c in _EGG.CATEGORIES:
 for _e in _EGG.DRAGON_EGGS:
     if _e[3] == "SkyyPets":
         _add_rarity(_e[0], "Legendary", "Dragon Egg", "dragonegg", "SkyyPets")
+# Secret dragon eggs (SkyyPets 0.4.19, research/cloud/Secret-Dragons-Spec.md): Legendary items too, but tagged plain "Legendary Egg - ..."
+# (family secretegg) - the secret stays a secret (Skyy: "no quest or explanation - players figure them out").
+for _e in getattr(_EGG, "SECRET_EGGS", []):
+    _add_rarity(_e[0], "Legendary", "Egg", "secretegg", "SkyyPets")
+
+
+# UT-28 (SkyyGear 0.3.47 round ut28, research/cloud/UT-28-Build-Sheet.md section 6): the first 28 Zone 1-5 Untiered items (64 ids, tools/ut28.py)
+# tagged with their ZONE'S ALLOY (gear.md 285 "UT = the zone's alloy"): Z1 T3 Bronze, Z2 T6 Dusk, Z3 T9 Azurvane, Z4 T12 Cinder, Z5 T15 Lumen.
+# Family "ut"; owner = the mod that builds the copy (SkyyGear 55, SkyyArmory 9 - its round writes their lang). Not in Assets.zip (UT_IDS).
+import ut28 as _UT28        # pure Python table, no game files
+for _u28r in _UT28.rows():
+    _add(_u28r[0], metal_tier(_UT28.ZONE_ALLOY[_u28r[3]]), "ut", "SkyyGear" if _u28r[4] == "gear" else "SkyyArmory")
+UT_IDS = tuple(_UT28.IDS)
+del _u28r
 
 
 def rarity_tag_for(item_id):
