@@ -28,7 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-24 22:40) - building: r5tune (Shards 0.4.11 Combat islands READY; retuning defaults to 1-1.5x of fighting per Skyy), then pin + deploy.
+## RUNNING (2026-10-25 09:35) - nothing building.
+  LIVE 09:34 (TEST 254, backup deploy-20261025-0934): Shards 0.4.11 Combat Shard zone islands.
   LIVE 22:18 (TEST 253, backup deploy-20261024-2218): Trees 0.6.4 + Classes 0.1.50 (per-path capstones + Shadow Mark).
   LIVE 21:38 (TEST 252, backup deploy-20261024-2138): Shards 0.4.10 hotfix, Hud 0.3.36, Islands 0.5.26. tidy_local NOT run yet
   (a builder's xc-menuu1 crosscheck holds a junction) - run it after cap064 + r5combat2 finish, after checking scratch for links.

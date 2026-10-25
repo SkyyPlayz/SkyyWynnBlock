@@ -365,3 +365,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shard Upgrade Map + shard re-balance + saplings + Farming tree level + A1 alt paths + pet rarity colours + archipelago quests (DEPLOYED 2026-10-24, backup deploy-20261024-1617) | [2026-10](2026-10.md) |
 | Shard menu disconnect hotfix + HUD crop Farming line + archipelago shift / retry (DEPLOYED 2026-10-24, backup deploy-20261024-2138) | [2026-10](2026-10.md) |
 | Per-path capstones + Shadow Mark (2nd Assassin alt) (DEPLOYED 2026-10-24, backup deploy-20261024-2218) | [2026-10](2026-10.md) |
+| Combat Shard zone islands (always night, mob pools, deep cavern, 1-1.5x of fighting) (DEPLOYED 2026-10-25, backup deploy-20261025-0934) | [2026-10](2026-10.md) |

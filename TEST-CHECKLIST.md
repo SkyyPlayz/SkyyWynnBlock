@@ -60,3 +60,4 @@ tests always come first.
 251. BATCH 3 2026-10-24: radial Shard Upgrade Map + re-balance (+3 % a level, Offline Harvest), saplings from leaves + stump replant, Farming tree = crop level, A1 alts as late either/or paths (+50 %), pet rarity colours, 'Your Islands' archipelago quest line
 252. BATCH 4 2026-10-24: shard menu no longer disconnects (Shards 0.4.10), HUD Farming = crop level, blocked starter islands shift + /island archipelago retry
 253. BATCH 5 2026-10-24: every A1-alt path has its own branch-1 capstone; Assassin Shadow Mark alt + Death Sentence
+254. BATCH 6 2026-10-25: Combat Shard - Zone 1-5 islands, always night, mob pools by size + Large deep cavern, mobs at once / level / spawn speed, maxed island ~1.25x fighting
