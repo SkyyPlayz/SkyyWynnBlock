@@ -257,3 +257,9 @@ Ideas - pick one.
 - 🔵 **Coming (round sig1):** every weapon's tooltip shows an **"Ability 1 - <Name>"** block: what it does + **"Charge: N energy - what fills it"**. UT weapons fill **40 % faster**, Mythic **60 % faster** (Server Setup rows; some get a NEW signature instead).
 
 - The charge is kept when you swap weapons and back (SkyyGear). Full table + plans: `research/Weapon-Signatures-Spec.md`.
+
+## A1 alt 2: Shadow Mark (built 2026-10-24, SkyyClasses 0.1.50 / Trees 0.6.4; Skyy: second Assassin alt, docs/answered/classes.md 2026-10-24)
+- Path B of branch 1 (Vanishing Act = path A). Marks the enemy you look at (24 blocks) for 8 s: Exposed - every hit on it from anyone +20 % x strength (30 % at Lv 1, 60 % cap); your next hit is a First Strike; a marked kill takes 8 s off the cooldown. x1.5 alt power like every A1 alt.
+- Shapes: Walk = plain mark; Sprint (Marked Run) = mark + 20 % haste 3 s; Air (Mark from Above) = on landing marks every enemy within 5 blocks at 60 %; Crouch (Patient Mark) = mark 150 % duration + 2 s cloak.
+- Cost 7 Mana + 2 Stamina, 24 s cooldown (crouch / air 26 s). Modifiers: Duration, Power, Radius, Efficiency. Path passives: Lingering Mark, Quiet Mark, Killing Intent (3 ranks each).
+- Capstones: path A Shroud of Night (enemies in the smoke Exposed +20 %, cloak +3 s inside); path B Death Sentence (a marked kill passes the mark to the nearest enemy within 8 blocks and readies First Strike, once per 4 s). Numbers: Server Setup ab.ShadowMark.numbers / ab.Capstones2.numbers.

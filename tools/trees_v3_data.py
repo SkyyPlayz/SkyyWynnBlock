@@ -5488,7 +5488,8 @@ def v4_check():
             for r in b["rows"]:
                 assert r["gate"] == GATE_STEP * (r["r"] - 1) and r["cap"] == (r["r"] == 6)
                 assert 1 <= len(r["ups"]) <= V4_ROW_MAX, (cn, b["name"], r["r"], len(r["ups"]))
-                assert not r["cap"] or (len(r["ups"]) == 1 and r["ups"][0]["max"] == 1 and r["ups"][0]["cost"] == CAP_COST), (cn, b["name"])
+                _ncap = R064_CAPS_MAX if (globals().get("R064_APPLIED") and b["line"] == "A1") else 1   # 0.6.4: branch 1 holds a capstone per A1-alt path (+ the trunk one)
+                assert not r["cap"] or (1 <= len(r["ups"]) <= _ncap and all(_x["max"] == 1 and _x["cost"] == CAP_COST for _x in r["ups"])), (cn, b["name"])
                 rk = sum(u["max"] for u in r["ups"])
                 if r["r"] <= 5:   # reachability (per-branch gates): row n >= 3 ranks (the row-above rule) and rows 1..n >= 5 n
                     cum += rk
@@ -5960,6 +5961,248 @@ def r063_apply():
     R063_APPLIED.append(1)
     check()
     r063_check()
+    return True
+
+
+# ===================================================================================================================================
+# SkyyTrees 0.6.4 + SkyyClasses 0.1.50 (2026-10-24): r064_apply() - ONLY that build calls it, IN PLACE OF r063_apply (it runs r063_apply
+# itself, between its two steps). docs/answered/classes.md 2026-10-24 PER-PATH CAPSTONES + 2ND ASSASSIN ALT (Skyy: "Start the next queued
+# rounds from RESUME (... per-path capstones + 2nd Assassin alt ...)" - both defaults taken):
+#  1. BEFORE the split: the Assassin's second A1-alt SHADOW MARK (SkyyClasses 0.1.50, tier 4) joins branch 1 like every other class's A4b
+#     (free2 of row 2, its 4 modifier unlock nodes and 3 passives of its own) - r063's split then lays both Assassin paths out the same way.
+#  2. AFTER the split: EVERY A1-alt path ends in a capstone of its own (row 6 of branch 1): the 4 that already had one keep it (Aegis Eternal,
+#     Crimson Eternal, Riftmaw, Spider's Den), the 4 path capstones that sat in row 5 since 0.6.0 move up into row 6 (Warlord's Domain, No
+#     Mind, Prism Overload, Holy Land - keys, ranks, effects unchanged), 8 paths get a NEW capstone (R064_CAPS, SkyyClasses applies them); a
+#     trunk capstone (Untouchable, Ghost Protocol, Cataclysm, Miracle) stays for both paths. Then the rows are repaired so EACH path alone
+#     opens row 6 (rows 1..5 >= 25 ranks, row 5 >= 3) - nodes only move rows inside branch 1, path nodes never above the split.
+R064_APPLIED = []
+R064_CAPS_MAX = 3
+R064_ALT = ("Assassin", "ShadowMark", "Shadow Mark", ("Duration", "Power", "Radius", "Efficiency"))
+# the Assassin's Shadow Mark path passives (saved keys Class.Assassin.x.*; icon places = free places of the old branch 1)
+R064_PASSIVES = [
+    dict(key="Class.Assassin.x.LingeringMark", ikey="Assassin.b1.r2c", name="Lingering Mark", max=3, hook=("fx", (("a.ShadowMark.dur", 1.0),)),
+         text="Shadow Mark lasts +1s per rank", now="Shadow Mark lasts +{v} s"),
+    dict(key="Class.Assassin.x.QuietMark", ikey="Assassin.b1.r3c", name="Quiet Mark", max=3, hook=("fx", (("a.ShadowMark.cost", 8.0),)),
+         text="Shadow Mark costs -8% Mana and Stamina per rank", now="Shadow Mark costs {v}% less"),
+    dict(key="Class.Assassin.x.KillingIntent", ikey="Assassin.b1.r5c", name="Killing Intent", max=3, hook=("fx", (("a.ShadowMark.pow", 5.0),)),
+         text="Shadow Mark's Exposed bonus +5% stronger per rank", now="Shadow Mark +{v}% stronger"),
+]
+# (class, A1-alt the capstone belongs to, saved key, icon place, name, code, page text, Now line) - SkyyClasses 0.1.50 UpFx applies the codes
+R064_CAPS = [
+    ("Warrior", "GuardiansOath", "Class.Warrior.x.OathOfLegions", "Warrior.b1.r6b", "Oath of Legions", "xLegion",
+     "Guardian's Oath binds every party member within its reach at once, and while it holds you take 15% less damage (on top of its cut, 60% at most)",
+     "your Oath binds the whole party in reach; you take 15% less while it holds"),
+    ("Spellblade", "ShatteringArc", "Class.Spellblade.x.Shatterpoint", "Spellblade.b1.r6b", "Shatterpoint", "xShatterpt",
+     "Every enemy Shattering Arc hits gives back 2 Momentum (10 at most a cast), and the arc deals +30% to Breached enemies",
+     "each Arc hit gives 2 Momentum back (10 max); +30% to Breached enemies"),
+    ("Archer", "ArrowRain", "Class.Archer.x.Raincaller", "Archer.b1.r6a", "Raincaller", "xRaincall",
+     "Arrow Rain drifts toward the enemy nearest its centre (1 block every half second), and its arrows deal +30% to rooted (Pinned) enemies",
+     "your rain chases the nearest enemy; +30% to rooted enemies"),
+    ("Monk", "HundredFists", "Class.Monk.x.StormOfFists", "Monk.b1.r6a", "Storm of Fists", "xFistStorm",
+     "Hundred Fists sends its shockwave every 5th combo hit (not every 10th), and the shockwave strikes every enemy in the aura, Awed or not",
+     "a shockwave every 5th hit, through every enemy in the aura"),
+    ("Mage", "Starfall", "Class.Mage.x.Supernova", "Mage.b1.r6a", "Supernova", "xSupernova",
+     "When Starfall ends, its stars collapse into one blast: every enemy inside takes 20% of a star's hit per star that landed (200% at most)",
+     "Starfall ends in a blast: 20% of a star per star that hit (200% max)"),
+    ("Priest", "MartyrsGrace", "Class.Priest.x.SaintsCovenant", "Priest.b1.r6b", "Saint's Covenant", "xCovenant",
+     "Martyr's Grace loses no strength as it jumps, and healing it cannot give becomes a ward (10% of max Health at most, 10s)",
+     "no drop between jumps; overheal becomes a ward (10% of max Health)"),
+    ("Assassin", "VanishingAct", "Class.Assassin.x.ShroudOfNight", "Assassin.b1.r6a", "Shroud of Night", "xShroud",
+     "Enemies inside your Vanishing Act smoke are Exposed (+20% damage taken from everyone), and while you stand in it your cloak holds 3s longer",
+     "your smoke Exposes enemies +20%; your cloak holds 3 s longer inside it"),
+    ("Assassin", "ShadowMark", "Class.Assassin.x.DeathSentence", "Assassin.b1.r6b", "Death Sentence", "xSentence",
+     "When a Shadow-Marked enemy dies, the mark jumps to the nearest enemy within 8 blocks with a fresh timer, and your First Strike is ready again (once every 4s)",
+     "a marked kill passes the mark on and readies First Strike (every 4 s)"),
+]
+# the row-5 path capstones of 0.6.0 that move up into row 6 (saved key -> the A1-alt they belong to)
+R064_PROMOTE = {"Class.Berserker.b2.r6": "WarlordsBanner", "Class.Monk.b3.r6": "StillWater", "Class.Mage.b2.r6": "ArcaneBeam",
+                "Class.Priest.b3.r6": "Sanctuary"}
+R064_CODES = tuple(c[5] for c in R064_CAPS)                      # the 8 new capstone codes (SkyyClasses' UpFx)
+R064_APCODES = tuple(c for p in R064_PASSIVES for c, _v in p["hook"][1])   # the Shadow Mark ability parameters (a.ShadowMark.dur / cost / pow)
+R064_MOVES = {}          # class -> [(key, name, row before, row after, path)] (the report table)
+R064_LINES = []
+
+
+def r064_lines():
+    """the Assassin's second A1-alt in the shared ability tables (CLASS_LINES A4b + CLASS_MODS) - SkyyClasses 0.1.50 calls this alone (it
+    reads the base trees, not the layout); r064_apply calls it first. Idempotent. Returns True."""
+    if R064_LINES:
+        return True
+    cn, ab, _nm, mods = R064_ALT
+    assert "A4b" not in CLASS_LINES[cn] and ab not in CLASS_MODS, "0.6.4: the Assassin has one A1-alt before this round"
+    CLASS_LINES[cn]["A4b"] = ab
+    CLASS_MODS[ab] = list(mods)
+    R064_LINES.append(1)
+    return True
+
+
+def _r064_assassin(t):
+    """step 1 (before r063's split): Shadow Mark = the free2 of branch 1 row 2 + its 4 modifier unlock nodes + 3 passives (rows 2-4)"""
+    cn, ab, nm, mods = R064_ALT
+    b = t["branches"][0]
+    r2 = b["rows"][1]
+    assert r2["free"]["hook"][1:] == ("A4a", "VanishingAct") and not r2.get("free2"), "0.6.4: the Assassin's row 2 holds Vanishing Act alone"
+    r2["free2"] = {"name": nm, "text": "", "hook": ("abil", "A4b", ab), "ikey": "Assassin.b1.r5.free", "ability": True}
+    new = []
+    for m in mods:
+        k = "Class.%s.m.%s.%s" % (cn, ab, m)
+        new.append({"id": "", "name": v4_mod_name(nm, m), "max": 1, "cost": RANK_COST, "text": v4_mod_text(nm, m), "hook": ("mod", ab, m),
+                    "key": k, "ikey": None, "modnode": True, "oldmax": 0, "from": k})
+    for p in R064_PASSIVES:
+        new.append({"id": "", "name": p["name"], "max": p["max"], "cost": RANK_COST, "text": p["text"], "hook": p["hook"], "now": p["now"],
+                    "key": p["key"], "ikey": p["ikey"], "from": p["key"]})
+    # where they wait for the split (r063 re-rows every branch-1 node; a row here holds <= V4_ROW_MAX): the lightest rows 2-4 first
+    for u in new:
+        r = sorted([x for x in b["rows"][1:4] if len(x["ups"]) < V4_ROW_MAX], key=lambda x: (len(x["ups"]), x["r"]))[0]
+        r["ups"].append(u)
+    for r in b["rows"][:5]:
+        for j, x in enumerate(r["ups"]):
+            x["id"] = "r%d%s" % (r["r"], "abcdef"[j])
+
+
+def _r064_fix(cn, b, paths, side, split):
+    """step 2 repair: moves / swaps of branch-1 nodes between rows 1-5 (path nodes never above the split, <= V4_ROW_MAX a row, >= 1 a
+    row) until EVERY path alone opens row 6 (each path has a capstone now); the smallest number of moves, the 0.6.3 places kept otherwise"""
+    rows = dict((r["r"], r["ups"]) for r in b["rows"][:5])
+    moved = []
+    for _pass in range(200):
+        cur = _r063_bad(rows, paths, side, None)
+        if cur[0] == 99:
+            return moved
+        best = None
+        for i in range(1, 6):
+            for j in range(1, 6):
+                if i == j:
+                    continue
+                for x in list(rows[j]):
+                    if side.get(x["key"]) and i < split:
+                        continue
+                    for y in list(rows[i]) + [None]:
+                        if y is None and (len(rows[i]) >= V4_ROW_MAX or len(rows[j]) <= 1):
+                            continue
+                        if y is not None and ((side.get(y["key"]) and j < split) or y["max"] == x["max"]):
+                            continue
+                        rows[j].remove(x)
+                        rows[i].append(x)
+                        if y is not None:
+                            rows[i].remove(y)
+                            rows[j].append(y)
+                        sc = _r063_bad(rows, paths, side, None)
+                        if y is not None:
+                            rows[j].remove(y)
+                            rows[i].append(y)
+                        rows[i].remove(x)
+                        rows[j].append(x)
+                        key = (sc[0], -sc[1], -(abs(i - j)), 0 if y is None else -1)
+                        if key[:2] > (cur[0], -cur[1]) and (best is None or key > best[0]):
+                            best = (key, i, j, x, y)
+        assert best is not None, ("0.6.4: branch 1 of %s cannot be repaired so every path opens its capstone" % cn)
+        _k, i, j, x, y = best
+        rows[j].remove(x)
+        rows[i].append(x)
+        moved.append((x["key"], x["name"], j, i))
+        if y is not None:
+            rows[i].remove(y)
+            rows[j].append(y)
+            moved.append((y["key"], y["name"], i, j))
+    raise AssertionError("0.6.4: the repair did not settle for " + cn)
+
+
+def _r064_class(t):
+    """step 2 (after r063's split): a capstone per A1-alt path in row 6, then the rows repaired"""
+    cn = t["name"]
+    L = CLASS_LINES[cn]
+    paths = ["A", "B"] if "A4b" in L else ["A"]
+    alt_path = {L["A4a"]: "A"}
+    if "A4b" in L:
+        alt_path[L["A4b"]] = "B"
+    b = t["branches"][0]
+    r5, r6 = b["rows"][4], b["rows"][5]
+    assert r6["cap"] and len(r6["ups"]) == 1, cn
+    before = dict((u["key"], r["r"]) for r in b["rows"] for u in r["ups"])
+    have = set(u.get("path") for u in r6["ups"] if u.get("path"))
+    for k, ab in sorted(R064_PROMOTE.items()):
+        u = [x for x in r5["ups"] if x["key"] == k]
+        if not k.startswith("Class.%s." % cn):
+            continue
+        assert len(u) == 1 and u[0].get("path") == alt_path[ab] and alt_path[ab] not in have, ("0.6.4: the promoted capstone sits on its path in row 5", cn, k)
+        r5["ups"].remove(u[0])
+        r6["ups"].append(u[0])
+        have.add(alt_path[ab])
+    for c in R064_CAPS:
+        if c[0] != cn:
+            continue
+        p = alt_path[c[1]]
+        assert p not in have, ("0.6.4: a path with two capstones", cn, c[4])
+        r6["ups"].append({"id": "", "name": c[4], "max": 1, "cost": CAP_COST, "text": c[6], "hook": ("fx", ((c[5], 1.0),)), "now": c[7],
+                          "key": c[2], "ikey": c[3], "from": c[2], "path": p})
+        have.add(p)
+    assert have == set(paths), ("0.6.4: every A1-alt path has its capstone", cn, have)
+    side = dict((u["key"], u.get("path")) for r in b["rows"] for u in r["ups"])
+    moved = _r064_fix(cn, b, paths, side, R063_SPLIT[cn])
+    letters = "abcdef"
+
+    def grp(n):
+        return 0 if n.get("path") == "A" else (2 if n.get("path") == "B" else 1)
+    for r in b["rows"]:
+        order = dict((u["key"], j) for j, u in enumerate(r["ups"]))
+        r["ups"] = sorted(r["ups"], key=lambda n: (grp(n), order[n["key"]]))
+        for j, u in enumerate(r["ups"]):
+            u["id"] = ("r%d%s" % (r["r"], letters[j])) if (not r["cap"] or len(r["ups"]) > 1) else "r6"
+    after = dict((u["key"], r["r"]) for r in b["rows"] for u in r["ups"])
+    R064_MOVES[cn] = [(k, [u["name"] for r in b["rows"] for u in r["ups"] if u["key"] == k][0], before.get(k, 0), after[k], side.get(k))
+                      for k in sorted(after) if before.get(k, 0) != after[k]]
+    R064_MOVES[cn + ".fix"] = moved
+
+
+def r064_check():
+    """the 0.6.4 rules (r064_apply runs them)"""
+    for t in TREES:
+        if t["kind"] != "class":
+            continue
+        cn = t["name"]
+        L = CLASS_LINES[cn]
+        paths = ["A", "B"] if "A4b" in L else ["A"]
+        b = t["branches"][0]
+        caps = b["rows"][5]["ups"]
+        assert sorted(u["path"] for u in caps if u.get("path")) == paths and sum(1 for u in caps if not u.get("path")) <= 1, (cn, [u["name"] for u in caps])
+        side = dict((u["key"], u.get("path")) for r in b["rows"] for u in r["ups"])
+        rows = dict((r["r"], r["ups"]) for r in b["rows"][:5])
+        assert _r063_bad(rows, paths, side, None)[0] == 99, ("0.6.4: a path cannot open its capstone alone", cn)
+        for r in b["rows"]:
+            for u in r["ups"]:
+                assert u.get("path") == _r063_side(cn, u), ("0.6.4: a node tagged with its own path", cn, u["name"], u.get("path"))
+                assert not u.get("path") or r["r"] >= R063_SPLIT[cn], ("0.6.4: a path node above the split", cn, u["name"])
+        assert all(not u.get("path") for bb in t["branches"][1:] for r in bb["rows"] for u in r["ups"]), cn
+    assert "A4b" in CLASS_LINES["Assassin"] and R063_PATHAB["Assassin"] == ("VanishingAct", "ShadowMark")
+    return True
+
+
+def r064_apply():
+    """SkyyTrees 0.6.4 (once; AFTER v4_apply, IN PLACE OF r063_apply). Returns True."""
+    global FX_CLASSES
+    if R064_APPLIED:
+        return True
+    assert V4_APPLIED and not R063_APPLIED, "r064_apply = Shadow Mark, r063's split, the per-path capstones - after v4_apply, instead of r063_apply"
+    r064_lines()
+    _r064_assassin(tree("Assassin"))
+    r063_apply()
+    FX_CLASSES = FX_CLASSES + R064_CODES   # the new SkyyClasses capstone codes (only builds that apply 0.6.4 know them; their nodes come next)
+    for c in R064_CAPS:
+        V4_CODE.setdefault(c[5], c[1])     # the ability each new capstone code belongs to (r063's path rule reads it)
+    for t in TREES:
+        if t["kind"] == "class":
+            _r064_class(t)
+    # the one-time alt063 update reads every class node's 0.6.2 place (R063_OLDPOS): the nodes new in 0.6.4 had none - they count as
+    # branch 1 row 6 (no 0.6.2 file holds a rank on them, and row 6 never gates a line the update checks)
+    newk = set(c[2] for c in R064_CAPS) | set(p["key"] for p in R064_PASSIVES) | set("Class.%s.m.%s.%s" % (R064_ALT[0], R064_ALT[1], m) for m in R064_ALT[3])
+    for c in R064_CAPS + [(R064_ALT[0],)]:
+        for k in newk:
+            if k.startswith("Class.%s." % c[0]):
+                R063_OLDPOS[c[0]][k] = (1, 6)
+    R064_APPLIED.append(1)
+    check()
+    r064_check()
     return True
 
 

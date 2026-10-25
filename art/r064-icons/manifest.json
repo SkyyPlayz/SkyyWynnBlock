@@ -1,0 +1,176 @@
+{
+ "what": "SkyWynn round cap064 icons (SkyyTrees 0.6.4 + SkyyClasses 0.1.50): 11 class-tree node icons + the Shadow Mark ability icon - DRAFT v1",
+ "generator": "tools/art/make_r064_icons.py (class_kit painter; the ability frame is the approved Assassin frame of art/ability-icons)",
+ "deterministic": true,
+ "original_pixels": true,
+ "nodes": [
+  {
+   "key": "Warrior.b1.r6b",
+   "icon_id": "Skyy_NodeIcon_Warrior_B1R6b",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Warrior_B1R6b.png",
+   "name": "Oath of Legions",
+   "category": "ward",
+   "accent": "#d6e4ee",
+   "shows": "the great helm (Guardian's Oath) on a gold burst + a party mark (capstone: the oath binds the whole party in reach)"
+  },
+  {
+   "key": "Spellblade.b1.r6b",
+   "icon_id": "Skyy_NodeIcon_Spellblade_B1R6b",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Spellblade_B1R6b.png",
+   "name": "Shatterpoint",
+   "category": "ability",
+   "accent": "#8fc8ff",
+   "shows": "the Shattering Arc with its shards on a teal burst + blue Momentum chevrons (capstone: arc hits give Momentum back)"
+  },
+  {
+   "key": "Archer.b1.r6a",
+   "icon_id": "Skyy_NodeIcon_Archer_B1R6a",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Archer_B1R6a.png",
+   "name": "Raincaller",
+   "category": "damage",
+   "accent": "#ff9a3c",
+   "shows": "falling arrows (Arrow Rain) on a green burst chasing an orange target (capstone: the rain drifts onto the nearest enemy)"
+  },
+  {
+   "key": "Monk.b1.r6a",
+   "icon_id": "Skyy_NodeIcon_Monk_B1R6a",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Monk_B1R6a.png",
+   "name": "Storm of Fists",
+   "category": "damage",
+   "accent": "#ff9a3c",
+   "shows": "the two fists (Hundred Fists) inside orange shockwave rings on a saffron burst (capstone: a shockwave every 5th hit)"
+  },
+  {
+   "key": "Mage.b1.r6a",
+   "icon_id": "Skyy_NodeIcon_Mage_B1R6a",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mage_B1R6a.png",
+   "name": "Supernova",
+   "category": "damage",
+   "accent": "#ff9a3c",
+   "shows": "falling stars (Starfall) on a fire burst + a bright star (capstone: the stars collapse into one blast)"
+  },
+  {
+   "key": "Priest.b1.r6b",
+   "icon_id": "Skyy_NodeIcon_Priest_B1R6b",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Priest_B1R6b.png",
+   "name": "Saint's Covenant",
+   "category": "health",
+   "accent": "#ff7a7a",
+   "shows": "the two hearts of Martyr's Grace on a holy burst + a ward (capstone: no drop between jumps, overheal becomes a ward)"
+  },
+  {
+   "key": "Assassin.b1.r6a",
+   "icon_id": "Skyy_NodeIcon_Assassin_B1R6a",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R6a.png",
+   "name": "Shroud of Night",
+   "category": "damage",
+   "accent": "#ff9a3c",
+   "shows": "the Vanishing Act smoke on a lilac burst + an orange target (capstone: enemies in the smoke are Exposed)"
+  },
+  {
+   "key": "Assassin.b1.r6b",
+   "icon_id": "Skyy_NodeIcon_Assassin_B1R6b",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R6b.png",
+   "name": "Death Sentence",
+   "category": "damage",
+   "accent": "#ff9a3c",
+   "shows": "a skull (a marked kill) on a lilac burst, the target mark + a fork (capstone: the mark jumps on, First Strike ready)"
+  },
+  {
+   "key": "Assassin.b1.r2c",
+   "icon_id": "Skyy_NodeIcon_Assassin_B1R2c",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R2c.png",
+   "name": "Lingering Mark",
+   "category": "ability",
+   "accent": "#8fc8ff",
+   "shows": "the hood under the target mark (Shadow Mark) + a blue hourglass (the mark lasts longer)"
+  },
+  {
+   "key": "Assassin.b1.r3c",
+   "icon_id": "Skyy_NodeIcon_Assassin_B1R3c",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R3c.png",
+   "name": "Quiet Mark",
+   "category": "resource",
+   "accent": "#b496ff",
+   "shows": "the hood under the target mark + a mana crystal with a violet down arrow (costs less)"
+  },
+  {
+   "key": "Assassin.b1.r5c",
+   "icon_id": "Skyy_NodeIcon_Assassin_B1R5c",
+   "file": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R5c.png",
+   "name": "Killing Intent",
+   "category": "damage",
+   "accent": "#ff9a3c",
+   "shows": "the hood under the target mark + an orange up arrow (a stronger Exposed bonus)"
+  }
+ ],
+ "ability": {
+  "id": "ShadowMark",
+  "class": "Assassin",
+  "file": "Common/Icons/Abilities/Assassin/ShadowMark.png",
+  "frame_from": "art/ability-icons/Common/Icons/Abilities/Assassin/VanishingAct.png",
+  "shows": "the lilac Assassin hood under an orange target mark (the Exposed brand)"
+ },
+ "files": [
+  {
+   "path": "Common/Icons/Abilities/Assassin/ShadowMark.png",
+   "bytes": 4619,
+   "sha256": "79269d24397048bee3f6f339c17b996549224307a7663de03b70d20c3c9ee236"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Archer_B1R6a.png",
+   "bytes": 1255,
+   "sha256": "1304df28ecce2dbc117717f65fb17b2d1f0a7ff857847d5e3ca90c64449ae4c2"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R2c.png",
+   "bytes": 922,
+   "sha256": "eac8df0360429e9a872cc83299683a4a9eb8a84bec948fd95cc60cd5ecc58c0f"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R3c.png",
+   "bytes": 953,
+   "sha256": "11e2f3af87a34ed1dff5a4283b0392b272626d9581bbd0264a0fe540c81afaaf"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R5c.png",
+   "bytes": 796,
+   "sha256": "e4294a550b2f7324b7bfccde461987e53b0aa0077171f215f3d26642f871dc89"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R6a.png",
+   "bytes": 1045,
+   "sha256": "9789c8f8c4e94ab548b6432dce19b9b38a2232a27a872adc2ac87a92a089917e"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Assassin_B1R6b.png",
+   "bytes": 1180,
+   "sha256": "4975c6dc2a4eac8037e56f3d499c2d609567fa4a81ea83b3648bf3084b4064e7"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Mage_B1R6a.png",
+   "bytes": 1060,
+   "sha256": "72c7204856021a94bc1bf17111cb8740b96d55c0a70cea3b5ae1b39e0652dae5"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Monk_B1R6a.png",
+   "bytes": 1252,
+   "sha256": "a8226059bc30c8aa620a1db3dddb9f31c4209500f665927e124726cdc0059953"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Priest_B1R6b.png",
+   "bytes": 1112,
+   "sha256": "f09820981d6a5ef91eda21ea8f3d28df630e31b002e4118ab0ba8f2d8208c57c"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Spellblade_B1R6b.png",
+   "bytes": 1013,
+   "sha256": "8f2bbf47a347d4ecbe4c0b8154d08aed97e0377df330dbc7d1f4a3768884e627"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_NodeIcon_Warrior_B1R6b.png",
+   "bytes": 1276,
+   "sha256": "43eb96580f9d8e804288808b0c5c9607fc1db99aa7745ff66793a453465262eb"
+  }
+ ]
+}
