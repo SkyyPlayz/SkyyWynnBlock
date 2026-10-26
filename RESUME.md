@@ -43,7 +43,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: PET WIDGET (SkyyHud widget + SkyyPets bridge: pet + summon portraits in rarity frame, name + level, XP bar, summon health +
+QUEUE: FARMING TREE AOE SEED BAGS node (docs/answered/skills.md 2026-10-25; 3x3 -> 5x5 planting); PET WIDGET (SkyyHud widget + SkyyPets bridge: pet + summon portraits in rarity frame, name + level, XP bar, summon health +
   ability cooldown; docs/answered/pets.md 2026-10-25); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
   TOTEM PAGE + BENCH REDESIGN (Shards 0.4.13, mockups APPROVED 10-25: art/ui-totem-page/*.html, research/Totem-Page-Redesign.md) - launch
   the moment shbags (0.4.12) is pinned; UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
