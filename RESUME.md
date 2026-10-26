@@ -29,9 +29,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## STOPPED AT USAGE LIMIT (2026-10-26 ~03:20, weekly 100%, resets 10-27 09:00 local) - Skyy: "stop at 98% usage, and update the files/repo".
-  NEXT SESSION (after the reset), in order: (1) Shards 0.4.13 totemui - built READY (harness 868/0, crosscheck READY); a Sonnet review was
-  running at the stop - if it has no report in tools/dev/scratch/resume/totemui-review.md, re-run the review (locks / payments / dx;dz / selector walk),
-  then pin (Shards 0.4.11 -> 0.4.13, FLOOR text in docs/log 2026-10-26 BUILT totemui line + below), ONE smoke, deploy, tell Skyy the totem UI is done
+  NEXT SESSION (after the reset), in order: (1) Shards 0.4.13 totemui - built READY (harness 868/0, crosscheck READY); its review found 5 problems (2 HIGH: paid-then-lock-timeout loses items/coins; tier-up drops a hand-placed totem spot) - research/Shards-0.4.13-Review.md;
+  fix them (lean Opus builder), re-review, then pin (Shards 0.4.11 -> 0.4.13, FLOOR text in docs/log 2026-10-26 BUILT totemui line + below), ONE smoke, deploy, tell Skyy the totem UI is done
   (Skyy: "lmk when the ui for the totems is done"). (2) Skills 0.4.67 forxp PINNED (not deployed) - deploy with (1).
   (3) ench1 (Collections 0.2.34 + Bazaar 0.2.2) workflow was running at the stop - check its journal / files; finish + pin if READY.
   totemui FLOOR: SkyyShards 0.4.13 rolls back alone to 0.4.12 - no migration; hand-placed totem entries carry an 8th part "dx;dz" 0.4.12 ignores -
