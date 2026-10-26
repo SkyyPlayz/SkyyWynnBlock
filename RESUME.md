@@ -29,7 +29,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING (2026-10-25) - PINNED (not deployed): Shards 0.4.12 bag fix. Building: totemui (Shards 0.4.13 totem page + bench
-  redesign, lean), compfix (Sacks 0.8.31 auto-compact refresh on unlock + every 180 s, Essence of Life -> Life Essence Concentrated pair).
+  redesign, lean), compfix (Sacks 0.8.31 auto-compact refresh on unlock + every 180 s, Essence of Life -> Life Essence Concentrated pair),
+  ench1 (Collections 0.2.34 + Bazaar 0.2.2 Enchanted in Pocket crafting + reverse), petwid (Hud 0.3.37 pet widget), aoeseed (Trees 0.6.5).
   LIVE 11:46 (TEST 256, backup deploy-20261025-1146): Gear 0.3.47 first 28 UT (19 live, 9 wait for Armory).
   LIVE 11:31 (TEST 255, backup deploy-20261025-1131): Skills 0.4.66 Ranching XP, Pets 0.4.19 secret dragons, Zones 0.3.1.
   USAGE: weekly 92% at 10:40 on 10-25 (resets 10-27 09:00) - Skyy: "stop at 98% usage, and update the files/repo". Launch NOTHING new;
@@ -44,9 +45,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: ROUND E1 - Enchanted recipes in Pocket (inventory) crafting + reverse 1 -> 100 (SkyyCollections recipes + SkyyBazaar loop check;
-  tools/skyyench.py rules; docs/answered/bags.md 2026-10-25); FARMING TREE AOE SEED BAGS node (docs/answered/skills.md 2026-10-25; 3x3 -> 5x5 planting); PET WIDGET (SkyyHud widget + SkyyPets bridge: pet + summon portraits in rarity frame, name + level, XP bar, summon health +
-  ability cooldown; docs/answered/pets.md 2026-10-25); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
+QUEUE: SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
    UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
   switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
   Heart roll, Light zone guardians give), SkyyFishing (Void catch roll), SkyyCollections (Crystal reward give) via pets:fn:secretRoll / giveSecretEgg;
