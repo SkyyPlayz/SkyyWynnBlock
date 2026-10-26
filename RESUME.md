@@ -28,7 +28,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-25 11:50) - NOTHING building; everything finished is LIVE.
+## RUNNING (2026-10-25 12:00) - building: shbags (Shards 0.4.12: Map-tab costs pay from the Pocket Dimension).
   LIVE 11:46 (TEST 256, backup deploy-20261025-1146): Gear 0.3.47 first 28 UT (19 live, 9 wait for Armory).
   LIVE 11:31 (TEST 255, backup deploy-20261025-1131): Skills 0.4.66 Ranching XP, Pets 0.4.19 secret dragons, Zones 0.3.1.
   USAGE: weekly 92% at 10:40 on 10-25 (resets 10-27 09:00) - Skyy: "stop at 98% usage, and update the files/repo". Launch NOTHING new;
@@ -43,7 +43,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
+QUEUE: TOTEM PAGE REDESIGN + RANGE AURA (Shards 0.4.13 after shbags 0.4.12; research/Totem-Page-Redesign.md - 3 questions to Skyy); UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
   switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
   Heart roll, Light zone guardians give), SkyyFishing (Void catch roll), SkyyCollections (Crystal reward give) via pets:fn:secretRoll / giveSecretEgg;
   AUGMENTS - research/Augments-Spec.md written, Skyy answered 8 questions 10-25 (docs/answered/gear.md, last 6 lines): REVISE the spec to
