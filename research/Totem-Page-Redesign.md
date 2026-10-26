@@ -31,3 +31,16 @@ Follows research/Menu-Pattern.md, tools/skyyui.py, PROJECT-RULES 4 (rarity + too
 1. Range aura: until you turn it off, or 30 s after closing the page? [30 s after closing, toggle on the page]
 2. Put GIVE / TAKE SEEDS on the totem page too (also keep them on the Map tab)? [yes, both]
 3. Mockup picture first, or build straight away? [mockup first - the cloud draws it, Skyy picks]
+
+## Totem Bench (added 2026-10-25)
+Skyy (screenshots of the Farming Totem Bench: Craft tab = 9 rows "name / cost text / Bench or Need items / SELECT" + a right cost panel;
+Make Pole tab nearly empty): "same with this. it looks weird and im not sure how to use it. make it visual, make it pretty, and make it easy to use"
+Proposed:
+- One page, tabs kept to two: TOTEMS (craft) and BENCH (upgrade); "Make Pole" folds into TOTEMS as the step after crafting.
+- TOTEMS = a grid of totem CARDS with the totem's icon in its rarity colour, its job in one line ("Worker: harvests crops", "Rain: waters crops"),
+  and a state badge: green "Can craft", gold "Need items", grey padlock "Bench II" - click a card = the right panel.
+- Right panel: big icon, what it does + how to use it (place on a pad in the shard, give seeds, add modifiers), costs green / red with
+  "(you have N)" incl. the Pocket Dimension, ONE Craft button; under it the "Make it a Totem Pole" step when you hold a hand-held Totem I.
+- BENCH tab: Bench I -> IV as a ladder of 4 cards, what each tier unlocks (totem cards shown small), the next tier's cost, Upgrade button.
+- A one-line "How totems work" strip on top: craft at the bench -> place on a pad -> it works the crops in range -> tier up + modifiers.
+Mockup: art/ui-totem-page/bench-mockup.html.

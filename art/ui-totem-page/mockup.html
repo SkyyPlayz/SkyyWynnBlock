@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Totem Page Mockup</title>
+<style>
+:root{--bg:#0d1626;--panel:#16233a;--card:#1b2b47;--edge:#2f4670;--gold:#e8c46a;--text:#d6deea;--dim:#8c9bb3;--green:#6fd16f;--red:#e86a6a;--blue:#5aa9ff;--btn:#2a4470;--btnh:#35558a;--rare:#5aa9ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif;padding:16px}
+.win{max-width:1180px;margin:0 auto;background:var(--panel);border:2px solid var(--edge);border-radius:6px;box-shadow:0 0 0 1px #000,0 12px 40px #0008}
+.title{text-align:center;padding:8px;border-bottom:1px solid var(--edge);letter-spacing:.08em;font-weight:700;font-size:13px}
+.cols{display:grid;grid-template-columns:270px 1fr 1fr;gap:12px;padding:14px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:6px;padding:12px;margin-bottom:12px}
+.card h3{margin:0 0 2px;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold)}
+.what{color:var(--dim);font-size:12px;margin-bottom:8px}
+.big{font-size:28px;font-weight:700;color:var(--green)}
+.g{color:var(--green)}.r{color:var(--red)}.d{color:var(--dim)}.n{color:var(--rare);font-weight:700}
+.bar{height:8px;background:#0b1424;border-radius:4px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--green)}
+.btn{display:inline-block;background:var(--btn);border:1px solid #4a6aa3;color:#fff;border-radius:4px;padding:7px 12px;font-size:12px;font-weight:700;letter-spacing:.04em;margin:4px 4px 0 0;cursor:default}
+.btn.primary{background:#3c64b3;border-color:#6b95e0}.btn.off{opacity:.45}
+.totem{width:120px;height:120px;margin:4px auto 8px;border-radius:50%;border:3px solid var(--rare);display:grid;place-items:center;font-size:52px;background:radial-gradient(#22406e,#14223a)}
+.name{text-align:center;font-weight:700}.tag{text-align:center;font-size:12px;color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin:8px 0;position:relative}
+.grid span{aspect-ratio:1;background:#3a2a1a;border-radius:2px}.grid span.in{background:#6a8f3a}.grid span.t{background:var(--gold)}
+.ring{position:absolute;border:2px dashed #b9f;border-radius:50%;pointer-events:none}
+.slot{display:flex;gap:10px;align-items:center;padding:8px;border:1px dashed var(--edge);border-radius:6px;margin-top:6px}
+.slot .ic{width:36px;height:36px;border-radius:6px;background:#0b1424;display:grid;place-items:center;font-size:20px;color:var(--dim)}
+.list{font-size:12px;margin:6px 0 0;padding-left:16px}.list li{margin:2px 0}
+.cost div{font-size:13px}.foot{display:flex;justify-content:space-between;padding:0 14px 14px}
+.note{font-size:12px;color:var(--dim);padding:0 14px 12px}
+</style></head><body>
+<div class="win">
+ <div class="title">HARVEST SPIRIT TOTEM POLE II</div>
+ <div class="cols">
+  <div>
+   <div class="card">
+    <div class="totem">🌾</div>
+    <div class="name n">Harvest Spirit Totem Pole II</div>
+    <div class="tag">T2 Totem · pad 1 · Wheat Island</div>
+   </div>
+   <div class="card">
+    <h3>Range</h3><div class="what">5 blocks around the totem. Lit cells are worked.</div>
+    <div class="grid" id="g"></div>
+    <span class="btn primary">SHOW RANGE: ON</span>
+    <div class="what" style="margin-top:6px">A ring of particles marks the edge; it fades 30 s after you close this page. Only you see it.</div>
+   </div>
+   <span class="btn">PICK UP (click twice)</span>
+  </div>
+  <div>
+   <div class="card">
+    <h3>Output</h3><div class="what">What this totem makes while it is placed.</div>
+    <div class="big">4.05 <span style="font-size:14px">items / min</span></div>
+    <div>Crops in range: <b>72</b> of 112</div><div class="bar"><i style="width:64%"></i></div>
+    <div class="d">Goes to the island's storage - collect on the Collect tab.</div>
+   </div>
+   <div class="card">
+    <h3>Seeds &amp; replanting</h3><div class="what">Give the totem seeds and it replants harvested cells in its range by itself.</div>
+    <div>Seed store: <span class="r">0 Wheat Seeds</span> · 8 Eternal cells (never need seeds)</div>
+    <span class="btn primary">GIVE SEEDS</span><span class="btn off">TAKE SEEDS</span>
+    <div class="d" style="margin-top:6px">Takes seeds from your inventory and Pocket Dimension. Automation (shard upgrade) makes every cell Eternal.</div>
+   </div>
+   <div class="card">
+    <h3>Booster</h3><div class="what">A short power-up for this totem.</div>
+    <div class="slot"><div class="ic">+</div><div><b>Empty</b><br><span class="d">1 Life, Water or Void Essence = <span class="g">+25 % output for 10 min</span></span></div></div>
+    <span class="btn">ADD BOOSTER</span>
+   </div>
+  </div>
+  <div>
+   <div class="card">
+    <h3>Tier up → Totem Pole III</h3><div class="what">A higher tier works faster and reaches further.</div>
+    <div class="cost"><div class="g">+1.6 items / min · range 5 → 6 blocks</div>
+     <div class="g">2 Enchanted Wheat (you have 3)</div><div class="r">16 Life Essence (you have 4)</div></div>
+    <div class="r" style="font-size:12px;margin-top:6px">Your Totem Bench I stops at Totem Pole II - upgrade the bench first.</div>
+    <span class="btn off">TIER UP</span>
+   </div>
+   <div class="card">
+    <h3>Modifiers (2 slots)</h3><div class="what">Modifiers change how the totem works. Craft them at the Totem Bench, then put them in a slot.</div>
+    <div class="slot"><div class="ic">+</div><div><b>Slot 1 - empty</b><br><span class="d">Click to see what fits</span></div></div>
+    <div class="slot"><div class="ic">+</div><div><b>Slot 2 - empty</b><br><span class="d">Click to see what fits</span></div></div>
+    <ul class="list">
+     <li><span class="n">Auto-Replant</span> - <span class="g">seed store lasts 2x longer</span></li>
+     <li><span class="n">Wide Reach</span> - <span class="g">+1 range</span>, <span class="r">-10 % speed</span></li>
+     <li><span class="n">Quick Hands</span> - <span class="g">+15 % speed</span></li>
+     <li><span class="n">Double Crop</span> - <span class="g">5 % chance of 2x</span></li>
+    </ul>
+    <div class="d" style="font-size:12px">You have none yet - Totem Bench → Modifiers tab.</div>
+   </div>
+  </div>
+ </div>
+ <div class="note">Mockup only - numbers and modifier names are examples; the build uses the real values. Buttons you can't use show why instead.</div>
+ <div class="foot"><span></span><span class="btn">CLOSE</span></div>
+</div>
+<script>
+const g=document.getElementById('g'),R=5,c=6;for(let y=0;y<13;y++)for(let x=0;x<13;x++){const s=document.createElement('span');const d=Math.hypot(x-c,y-c);if(x==c&&y==c)s.className='t';else if(d<=R)s.className='in';g.appendChild(s)}
+const ring=document.createElement('div');ring.className='ring';g.appendChild(ring);
+function place(){const w=g.clientWidth,cell=w/13,r=(R+.5)*cell;ring.style.width=ring.style.height=(2*r)+'px';ring.style.left=((c+.5)*cell-r)+'px';ring.style.top=((c+.5)*cell-r)+'px'}place();addEventListener('resize',place);
+</script>
+</body></html>
