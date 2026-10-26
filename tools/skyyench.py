@@ -31,8 +31,19 @@ Skyy's words this follows (docs/answered/bags.md + gear.md, word for word there)
 
 Rules kept here (the build scripts assert them):
   - RATIO 100 is a BUILD-TIME constant (a runtime ratio could not change the baked recipe and would mis-credit items players hold).
-  - No reverse recipe in this jar yet: Skyy 2026-10-16 asked for un-compress (Enchanted -> 100 base, research/Collections-Tools-
-    Redesign-Spec.md 4.2) - it ships in round E1 together with SkyyBazaar's loop check; until then check_assets still refuses one.
+  - REVERSE RECIPE (round E1 = SkyyCollections 0.2.34 + SkyyBazaar 0.2.2; Skyy 2026-10-16 "lets add a way to craft them back into the 100
+    normal items" + 2026-10-25 docs/answered/bags.md "allow crafting enchanted items, and crafting them back into 100 work in the
+    inventory"): every Enchanted item (and the vanilla pair VANILLA_ENCH: Greater Essence of Life) crafts back into RATIO of its base -
+    1 -> RATIO, never another ratio. e1_files() builds them (standalone recipe files REV_DIR + REV_PREFIX<Key>); check_assets(e1=True)
+    allows exactly these and nothing else that makes a base item. Built only by a build that passes e1=True (SkyyCollections 0.2.34+);
+    an older pin's rebuild (e1 False) stays byte-identical and still refuses a reverse recipe. SkyyBazaar 0.2.2+ models every one of
+    them in its money-loop checks (reverse_rows()).
+  - POCKET CRAFTING (E1): the 100 -> 1 recipes are ALSO at the vanilla inventory crafting (bench Fieldcraft) in our own Fieldcraft category
+    FIELD_CAT ("Compressing"; vanilla has only Tools), same recipe id + KnowledgeRequired = the same collection unlock as the Workbench
+    tab. Every reverse recipe is OPEN (KnowledgeRequired false; research/Collections-Tools-Redesign-Spec.md 4.2 "anyone holding one
+    (Bazaar, AH, gift) can open it" + Skyy 2026-10-16 "if i need copper but only have enchanted copper, i can craft it back to 100
+    copper"; = SkyySacks' Void Unpack button, which has no unlock check either), so no known-recipe entry is managed for it; the vanilla
+    pair's two recipes are open too (its vanilla Farmer's Workbench recipe is open to everyone).
   - Crafting is never a collection credit (the base items counted when gathered); only a GIVER that creates an Enchanted item credits it,
     through SkyyCollections' coll:fn:add alias (base x RATIO, once, at creation).
   - Icons / textures are a "shiny copy of the vanilla resource", GENERATED at build time from Assets.zip (nothing vanilla is committed).
@@ -55,6 +66,18 @@ TAB_TEXT = "Compressing"
 TAB_LANG = ["benchCategories.workbench.skyycompressing=" + TAB_TEXT, TAB_NAME_KEY + "=" + TAB_TEXT]
 BENCH_ID = "Workbench"
 ART_DIR = "SkyyCollections/Ench"          # Common/<...> for textures / the cube model; icons in Icons/ItemsGenerated/
+# ench1fix2: the item flavour-text colour code (research/Vanilla-UI-Style-Guide.md 15; the same hex as tools/skyyui.py rowName / rowSub) -
+# lang <color> spans; a lang line break is the two characters backslash + n. Used only by build_assets(e1=True).
+TIP_NL = "\\n"
+TIP_NAME = "#d6e4ee"          # a line's label (stat NAME: soft white)
+TIP_GOOD = "#7ee08a"          # what helps (green)
+TIP_LEVEL = "#e8c25a"         # unlock / progress (gold)
+TIP_DIM = "#7f93a6"           # minor info (dim grey)
+
+
+def _tc(col, text):
+    return '<color is="%s">%s</color>' % (col, text)
+
 
 # (Key, input kind I = item / R = resource type, input id, collection id, default unlock tier, Void category, display name, look)
 # Unlock tiers = Gathering-Progression-Spec 3.2 grammar: tier III on the S / R / B curves, tier II on the E curve (Adamantite).
@@ -434,9 +457,10 @@ def _cube_model(z, SA):
     return json.dumps(m, indent=2).encode("utf-8")
 
 
-def build_assets(z, SA):
+def build_assets(z, SA, e1=False):
     """{jar path: bytes | str} for SkyyCollections (Server/... JSON as str, Common/... art as bytes) + the lang lines.
-    z = Assets.zip (read-only), SA = tools/skyyart.py."""
+    z = Assets.zip (read-only), SA = tools/skyyart.py. e1 (SkyyCollections 0.2.34+): the recipes also at the inventory crafting's
+    Compressing tab and the description says so + names the way back (the reverse recipes themselves come from e1_files)."""
     items = _items(z)
     files, lang = {}, []
     cube_rel = "Items/%s/EnchCube.blockymodel" % ART_DIR
@@ -492,7 +516,7 @@ def build_assets(z, SA):
             "DropOnDeath": True,
             "Recipe": {
                 "Input": [{"ItemId": inp, "Quantity": RATIO}] if kind == "I" else [{"ResourceTypeId": inp, "Quantity": RATIO}],
-                "BenchRequirement": [{"Type": "Crafting", "Id": BENCH_ID, "Categories": [TAB_ID]}],
+                "BenchRequirement": bench_req(e1),
                 "OutputQuantity": 1,
                 "TimeSeconds": 1,
                 "KnowledgeRequired": True,
@@ -506,6 +530,16 @@ def build_assets(z, SA):
         desc = ("%d %s pressed into one. Crafting it adds nothing to your collections. Saved for tool and gear upgrades (coming soon). "
                 "Workbench, Compressing tab - or /craft - once unlocked in /collections."
                 % (RATIO, base_label(key)))
+        if e1:      # E1: the tool / gear upgrades that spend them are live (SkyyGear tier-ups); inventory crafting + the way back
+            # ench1fix2: sectioned + colour coded (research/Vanilla-UI-Style-Guide.md 15, Skyy 2026-10-24): what it is first, then WHERE,
+            # then each direction on its own line with who may craft it, minor info dim last (a lang line break = the two characters \n)
+            desc = TIP_NL.join([
+                "%d %s pressed into one. Spent on tool and gear upgrades." % (RATIO, base_label(key)),
+                "",
+                _tc(TIP_NAME, "Where:") + " inventory (Compressing tab), Workbench (Compressing tab) or /craft",
+                _tc(TIP_NAME, "Make one:") + " " + _tc(TIP_LEVEL, "once unlocked in /collections"),
+                _tc(TIP_NAME, "Craft it back into %d:" % RATIO) + " " + _tc(TIP_GOOD, "anyone, no unlock needed"),
+                _tc(TIP_DIM, "Crafting adds nothing to your collections.")])
         lang += ["items.%s.name=%s" % (eid, name), "server.items.%s.name=%s" % (eid, name),
                  "items.%s.description=%s" % (eid, desc), "server.items.%s.description=%s" % (eid, desc)]
     files["Server/Item/Qualities/%s.json" % QUALITY] = json.dumps({
@@ -557,6 +591,95 @@ for _t in TABLE_C1:
     if _t[7][1].startswith("Wood_"):
         BASE_LABEL.setdefault(_t[0], _t[6][len("Enchanted "):] + "s")
 assert sorted(BASE_LABEL) == sorted(KEYS)
+
+# ================================================================================================================ round E1 (2026-10-25)
+# Pocket crafting + the reverse recipe (rules at the top). Every function takes the table it works on (default: TABLE) - SkyyCollections
+# passes its live table (TABLE + TABLE_ALLOYS), SkyyBazaar the same rows.
+FIELD_ID = "Fieldcraft"                     # the vanilla inventory crafting bench (Server/Item/Category/Fieldcraft/Tools.json = its one tab)
+FIELD_CAT = "SkyyCompressing"               # our own FieldcraftCategory asset: a "Compressing" tab in the inventory crafting
+FIELD_CAT_PATH = "Server/Item/Category/Fieldcraft/%s.json" % FIELD_CAT
+FIELD_CAT_ORDER = 1                         # after vanilla Tools (Order 0)
+REV_DIR = "Server/Item/Recipes/SkyyCollections/"
+REV_PREFIX = "SkyyCollections_Unpack_"      # + key: 1 Enchanted -> RATIO base
+PACK_PREFIX = "SkyyCollections_Pack_"       # + collection id: a VANILLA_ENCH pair's 100 -> 1 in the inventory / Compressing tab
+REV_SECONDS = 1
+
+
+def bench_req(e1=False):
+    """the BenchRequirement of every Enchanted recipe: the Workbench Compressing tab (+ E1: the inventory crafting's Compressing tab)"""
+    out = [{"Type": "Crafting", "Id": BENCH_ID, "Categories": [TAB_ID]}]
+    if e1:
+        out.append({"Type": "Crafting", "Id": FIELD_ID, "Categories": [FIELD_CAT]})
+    return out
+
+
+def rev_out(t):
+    """the item a row's reverse recipe gives: the input item; a resource-type row (any rubble / sand / crystal) gives its look's vanilla
+    item (Rubble_Stone, Soil_Sand, Ingredient_Crystal_Blue - the plain kind; the Bazaar loop check proves no colour pays)"""
+    return t[2] if t[1] == "I" else t[7][1]
+
+
+def reverse_rows(table=None):
+    """[(recipe id, input id, output id, output qty, knowledge required, forward recipe id)]: one per row + one per VANILLA_ENCH pair, plus
+    the vanilla pair's pocket 100 -> 1 (input = its base, output = the vanilla item). Every one is open (knowledge required False,
+    forward recipe id None: the spec 4.2 rule - anyone holding an Enchanted item can craft it back)."""
+    table = TABLE if table is None else table
+    out = []
+    for t in table:
+        eid = PREFIX + t[0]
+        out.append((REV_PREFIX + t[0], eid, rev_out(t), RATIO, False, None))
+    for coll in sorted(VANILLA_ENCH):
+        vid = VANILLA_ENCH[coll][0]
+        base = VANILLA_BASE[coll]
+        out.append((PACK_PREFIX + coll, base, vid, 1, False, None))
+        out.append((REV_PREFIX + coll, vid, base, RATIO, False, None))
+    return out
+
+
+# the vanilla pair's base (its vanilla recipe: 100 Ingredient_Life_Essence -> 1 at the Farmer's Workbench - e1_files checks it in Assets.zip)
+VANILLA_BASE = {"LifeEssence": "Ingredient_Life_Essence"}
+assert sorted(VANILLA_BASE) == sorted(VANILLA_ENCH)
+
+
+def _recipe_json(inp, qin, out, qout, kr):
+    return json.dumps({"Input": [{"ItemId": inp, "Quantity": qin}], "PrimaryOutput": {"ItemId": out, "Quantity": qout},
+                       "Output": [{"ItemId": out, "Quantity": qout}], "BenchRequirement": bench_req(True),
+                       "TimeSeconds": REV_SECONDS, "KnowledgeRequired": kr}, indent=2) + "\n"
+
+
+def e1_files(z, table=None):
+    """{jar path: str}: the inventory crafting category + every reverse_rows recipe (standalone, the vanilla Salvage format). z = Assets.zip
+    (read-only): the vanilla pair's recipe must still be 100 -> 1 (else the pocket copy / the reverse would change its ratio)."""
+    table = TABLE if table is None else table
+    names = set(z.namelist())
+    assert "Server/Item/Category/Fieldcraft/Tools.json" in names and FIELD_CAT_PATH not in names, "E1: the vanilla Fieldcraft categories moved"
+    tools = json.loads(z.read("Server/Item/Category/Fieldcraft/Tools.json").decode("utf-8-sig"))
+    assert set(tools) == set(["Name", "Icon", "Order"]) and tools["Order"] < FIELD_CAT_ORDER, ("E1: Fieldcraft/Tools changed", tools)
+    items = _items(z)
+    for coll in VANILLA_ENCH:
+        r = items[VANILLA_ENCH[coll][0]].get("Recipe") or {}
+        assert r.get("Input") == [{"ItemId": VANILLA_BASE[coll], "Quantity": RATIO}] and r.get("OutputQuantity", 1) == 1 and \
+            not r.get("KnowledgeRequired"), ("E1: the vanilla %s recipe is not %d -> 1 (open) any more" % (coll, RATIO), r)
+    files = {FIELD_CAT_PATH: json.dumps({"Name": TAB_NAME_KEY, "Icon": tab_icon_path(), "Order": FIELD_CAT_ORDER}, indent=2) + "\n"}
+    for rid, inp, out, q, kr, _fwd in reverse_rows(table):
+        qin = RATIO if q == 1 else 1
+        files[REV_DIR + rid + ".json"] = _recipe_json(inp, qin, out, q, kr)
+    return files
+
+
+def tab_order(table=None):
+    """the Compressing tabs' order (EnchRank): each forward recipe, then its reverse; the vanilla pair last"""
+    table = TABLE if table is None else table
+    out = []
+    for t in table:
+        out += [PREFIX + t[0] + RECIPE_SUFFIX, REV_PREFIX + t[0]]
+    for coll in sorted(VANILLA_ENCH):
+        out += [PACK_PREFIX + coll, REV_PREFIX + coll]
+    return out
+
+
+assert len(reverse_rows()) == len(TABLE) + 2 * len(VANILLA_ENCH) and len(set(r[0] for r in reverse_rows())) == len(reverse_rows())
+assert not [r for r in reverse_rows() if r[4]] and len(set(r[2] for r in reverse_rows() if r[1].startswith(PREFIX))) == len(TABLE),     "E1: a reverse recipe behind an unlock, or two Enchanted items would unpack into the same base item"
 # ench01fix: the Rubble recipe takes ResourceTypeId "Rubble" = Rubble_Stone and every Rubble_* whose Parent is Rubble_Stone, EXCEPT
 # Rubble_Ice(_Medium) (type Ice) and Rubble_Dawnstone(_Medium) (no parent, no type); the Rubble COLLECTION still counts all of them.
 # One recipe can take only one resource type and vanilla items are never overridden, so the label says so (a known gap).
@@ -607,7 +730,7 @@ def tab_icon_path():
     return "Icons/CraftingCategories/SkyyCollections/Compressing.png"
 
 
-def check_assets(files, z):
+def check_assets(files, z, e1=False):
     """build checks: every TABLE item (20 since tools01, 103 since C1, 107 since ores01), one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
     jar, no vanilla path replaced, the recipe = RATIO x the base, KnowledgeRequired, the Compressing tab, no reverse recipe in the jar"""
     names = set(z.namelist())
@@ -632,19 +755,41 @@ def check_assets(files, z):
         assert i0["Quantity"] == RATIO and (i0.get("ItemId") == inp if kind == "I" else i0.get("ResourceTypeId") == inp), key
         assert kind == "R" or inp in vitems or inp in EXTERNAL_INPUTS, (key, inp)          # ores01: the SkyyWorldGen ingots
         assert inp not in vitems or inp not in EXTERNAL_INPUTS, (key, inp, "an external input became a vanilla id")
-        assert r["BenchRequirement"] == [{"Type": "Crafting", "Id": BENCH_ID, "Categories": [TAB_ID]}], key
+        assert r["BenchRequirement"] == bench_req(e1), key
     q = json.loads(files["Server/Item/Qualities/%s.json" % QUALITY])
     for k in ("ItemTooltipTexture", "ItemTooltipArrowTexture", "SlotTexture", "BlockSlotTexture", "SpecialSlotTexture"):
         assert exists(q[k]), k
     assert q["ItemEntityConfig"]["ParticleSystemId"] in parts and q["QualityValue"] < 8
     clash = sorted(p for p in files if p in names)
     assert not clash, "an Enchanted asset would replace a vanilla file: %s" % clash
-    # no recipe in this jar makes a base item from an Enchanted one (no un-compress) - every recipe here makes an Enchanted item
+    # every ITEM recipe here makes an Enchanted item (no un-compress inside an item JSON)
     for p, t in files.items():
         if p.startswith("Server/") and p.endswith(".json") and '"Recipe"' in t:
             assert p.rsplit("/", 1)[1][:-5].startswith(PREFIX), p
-    return "%d Enchanted items (ratio %d, stack %d), quality %s, %d art files, Workbench tab '%s'" % (
-        len(its), RATIO, STACK, QUALITY, sum(1 for p in files if p.startswith("Common/")), TAB_TEXT)
+    rev = [p for p in files if p.startswith(REV_DIR) and p.rsplit("/", 1)[1].startswith((REV_PREFIX, PACK_PREFIX))]
+    if not e1:
+        assert not rev and FIELD_CAT_PATH not in files, "a reverse recipe / the inventory tab in a jar built without e1: %s" % rev[:3]
+        return "%d Enchanted items (ratio %d, stack %d), quality %s, %d art files, Workbench tab '%s'" % (
+            len(its), RATIO, STACK, QUALITY, sum(1 for p in files if p.startswith("Common/")), TAB_TEXT)
+    # E1: exactly the reverse_rows recipes of the shipped table: 1 -> RATIO of the forward's base (or RATIO -> 1 for the vanilla pair's
+    # pocket copy), both Compressing tabs, every one open (KnowledgeRequired false)
+    want = dict((rid, (inp, out, q, kr)) for rid, inp, out, q, kr, _f in reverse_rows(TABLE))
+    got = {}
+    for p in rev:
+        d = json.loads(files[p])
+        assert len(d["Input"]) == 1 and len(d["Output"]) == 1 and d["Output"][0] == d["PrimaryOutput"], p
+        assert d["BenchRequirement"] == bench_req(True) and d["KnowledgeRequired"] in (True, False), p
+        got[p.rsplit("/", 1)[1][:-5]] = (d["Input"][0]["ItemId"], d["Output"][0]["ItemId"], d["Output"][0]["Quantity"], d["KnowledgeRequired"])
+        assert (d["Input"][0]["Quantity"], d["Output"][0]["Quantity"]) in ((1, RATIO), (RATIO, 1)), p
+    assert got == want, "E1: the reverse recipes differ from reverse_rows: %s" % sorted(set(got.items()) ^ set(want.items()))[:4]
+    for (key, kind, inp, coll, tier, cat, name, look) in TABLE:
+        o = want[REV_PREFIX + key]
+        assert o[0] == PREFIX + key and o[2] == RATIO and o[3] is False and its[o[0]]["Recipe"]["KnowledgeRequired"] is True, key   # the way back: open
+        assert o[1] == inp if kind == "I" else (o[1] == look[1] and its[o[0]]["Recipe"]["Input"][0]["ResourceTypeId"] == inp), (key, o)
+    cat = json.loads(files[FIELD_CAT_PATH])
+    assert cat["Name"] == TAB_NAME_KEY and exists(cat["Icon"]) and FIELD_CAT_PATH not in names, cat
+    return "%d Enchanted items (ratio %d, stack %d), quality %s, %d art files, Workbench tab '%s' + inventory crafting tab %s; %d reverse / pocket recipes" % (
+        len(its), RATIO, STACK, QUALITY, sum(1 for p in files if p.startswith("Common/")), TAB_TEXT, FIELD_CAT, len(rev))
 
 
 # ================================================================================================================ the Compressing tab
@@ -664,8 +809,10 @@ LAE = "com.hypixel.hytale.assetstore.event.LoadedAssetsEvent"
 LOGT = "com.hypixel.hytale.logger.HytaleLogger"
 
 
-def emit_tab(pool, CtField, CtNewMethod, CtNewConstructor, pkg, mod):
-    """<pkg>.EnchRank (order), <pkg>.EnchTab (append + sort), <pkg>.EnchTabL (asset reloads). Returns the CtClass list."""
+def emit_tab(pool, CtField, CtNewMethod, CtNewConstructor, pkg, mod, e1=False):
+    """<pkg>.EnchRank (order), <pkg>.EnchTab (append + sort), <pkg>.EnchTabL (asset reloads). Returns the CtClass list.
+    e1 (SkyyCollections 0.2.34+): the order = tab_order() (each forward recipe, then its reverse) and sort() also orders the inventory
+    crafting's Compressing tab (bench Fieldcraft, category FIELD_CAT); without e1 the classes are byte-identical to before."""
     tok = {"@PKG@": pkg, "@CB@": CB, "@CBC@": CBC, "@BIC@": BIC, "@BEN@": BEN, "@BT@": BT, "@CRP@": CRP, "@BRR@": BRR, "@LAE@": LAE,
            "@LOGT@": LOGT, "@MOD@": mod}
 
@@ -685,7 +832,7 @@ def emit_tab(pool, CtField, CtNewMethod, CtNewConstructor, pkg, mod):
 
     def M(c, s):
         c.addMethod(CtNewMethod.make(T(s), c))
-    F(rank, "public static final String[] ORDER = %s;" % _jarr(RIDS))
+    F(rank, "public static final String[] ORDER = %s;" % _jarr(tab_order() if e1 else RIDS))
     rank.addConstructor(CtNewConstructor.make("public EnchRank() { }", rank))
     M(rank, """
 public static int rank(String id) {
@@ -708,6 +855,9 @@ public int compare(Object a, Object b) {
     F(tab, "public static final String ICON = \"%s\";" % tab_icon_path())
     F(tab, "public static final String BENCH = \"%s\";" % BENCH_ID)
     F(tab, "public static final String PROTO = \"%s\";" % ENCH_VERSION)
+    if e1:
+        F(tab, "public static final String FBENCH = \"%s\";" % FIELD_ID)
+        F(tab, "public static final String FCAT = \"%s\";" % FIELD_CAT)
     F(tab, "public static @LOGT@ LOG;")
     F(tab, "public static java.lang.reflect.Field CATS;")
     F(tab, "public static java.lang.reflect.Field REGS;")
@@ -823,7 +973,8 @@ public static int scanAll() {
     return -1;
   }
 }""")
-    M(tab, """
+    if not e1:
+        M(tab, """
 public static String sort() {
   if (!mapFields()) return "the engine's order (registry unavailable)";
   try {
@@ -843,6 +994,35 @@ public static String sort() {
     if (!WARN_SORT) { WARN_SORT = true; warn("Compressing tab: could not order the recipes (" + t + ") - they stay in the engine's own order"); }
     return "the engine's order";
   }
+}""")
+    else:
+        # E1: the same ordering for one (bench, tab) pair, applied to the Workbench tab and the inventory crafting tab
+        M(tab, """
+public static String sortIn(String bench, String cat) {
+  try {
+    java.util.Map regs = (java.util.Map) REGS.get(null);
+    Object reg = regs == null ? null : regs.get(bench);
+    if (reg == null) return "no " + bench + " recipes loaded yet";
+    java.util.Map cm = (java.util.Map) CMAP.get(reg);
+    Object cur = cm.get(cat);
+    if (cur instanceof java.util.TreeSet && ((java.util.TreeSet) cur).comparator() instanceof @PKG@.EnchRank)
+      return "table order, " + ((java.util.Set) cur).size() + " recipes";
+    java.util.TreeSet ts = new java.util.TreeSet(new @PKG@.EnchRank());
+    if (cur instanceof java.util.Collection) ts.addAll((java.util.Collection) cur);
+    cm.put(cat, ts);
+    if (cur instanceof java.util.Collection) ts.addAll((java.util.Collection) cur);
+    return "table order, " + ts.size() + " recipes";
+  } catch (Throwable t) {
+    if (!WARN_SORT) { WARN_SORT = true; warn("Compressing tab: could not order the recipes (" + t + ") - they stay in the engine's own order"); }
+    return "the engine's order";
+  }
+}""")
+        M(tab, """
+public static String sort() {
+  if (!mapFields()) return "the engine's order (registry unavailable)";
+  String a = sortIn(BENCH, ID);
+  String b = sortIn(FBENCH, FCAT);
+  return a + "; inventory crafting: " + b;
 }""")
     M(tab, """
 public static String start() {
