@@ -7,7 +7,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | Mod | Version | What it does |
 |---|---|---|
 | SkyyHud | 0.3.36 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
-| SkyySacks | 0.8.30 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void |
+| SkyySacks | 0.8.31 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void |
 | SkyyCoins | 0.1.11 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal |
 | SkyyCollections | 0.2.33 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.10 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
