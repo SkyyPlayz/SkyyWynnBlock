@@ -43,7 +43,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: TOTEM PAGE REDESIGN + RANGE AURA (Shards 0.4.13 after shbags 0.4.12; research/Totem-Page-Redesign.md - 3 questions to Skyy); UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
+QUEUE: TOTEM PAGE + BENCH REDESIGN (Shards 0.4.13, mockups APPROVED 10-25: art/ui-totem-page/*.html, research/Totem-Page-Redesign.md) - launch
+  the moment shbags (0.4.12) is pinned; UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
   switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
   Heart roll, Light zone guardians give), SkyyFishing (Void catch roll), SkyyCollections (Crystal reward give) via pets:fn:secretRoll / giveSecretEgg;
   AUGMENTS - research/Augments-Spec.md written, Skyy answered 8 questions 10-25 (docs/answered/gear.md, last 6 lines): REVISE the spec to
