@@ -44,7 +44,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: FARMING TREE AOE SEED BAGS node (docs/answered/skills.md 2026-10-25; 3x3 -> 5x5 planting); PET WIDGET (SkyyHud widget + SkyyPets bridge: pet + summon portraits in rarity frame, name + level, XP bar, summon health +
+QUEUE: ROUND E1 - Enchanted recipes in Pocket (inventory) crafting + reverse 1 -> 100 (SkyyCollections recipes + SkyyBazaar loop check;
+  tools/skyyench.py rules; docs/answered/bags.md 2026-10-25); FARMING TREE AOE SEED BAGS node (docs/answered/skills.md 2026-10-25; 3x3 -> 5x5 planting); PET WIDGET (SkyyHud widget + SkyyPets bridge: pet + summon portraits in rarity frame, name + level, XP bar, summon health +
   ability cooldown; docs/answered/pets.md 2026-10-25); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
    UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
   switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
