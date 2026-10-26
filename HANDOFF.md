@@ -6,7 +6,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 
 | Mod | Version | What it does |
 |---|---|---|
-| SkyyHud | 0.3.36 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
+| SkyyHud | 0.3.37 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
 | SkyySacks | 0.8.31 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void |
 | SkyyCoins | 0.1.11 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal |
 | SkyyCollections | 0.2.33 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
@@ -38,7 +38,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
 | SkyyFishing | 0.2.0 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2); tick early-out |
 | SkyyMerchants | 0.1.7 | roaming merchants (one per zone, move 20 min, rumours, special-weapon shop); floor: switch part.merchants off before removing; 0.7 port; private writer |
-| SkyyPets | 0.4.19 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
+| SkyyPets | 0.4.20 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
 | SkyyWardrobe | 0.2.12 | loadouts: armor + hotbar + pet / summon + abilities per profile, one-click write-ahead swap, /wardrobe; pre-warm, per-profile journal lock |
 | SkyyPetProbe | 0.1 | pet engine probes P1-P10, op only: /petprobe (results = [SkyyPetProbe] RESULT lines + mods/Skyy_SkyyPetProbe/probe.log); /petprobe clear at the end, then remove |
 | SkyyTownProbe | 0.2 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |

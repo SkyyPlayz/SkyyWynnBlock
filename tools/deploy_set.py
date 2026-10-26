@@ -35,6 +35,8 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-25, zones031): SkyyZones 0.3.1 - if scaffolding is the ONLY problem, do not roll back: set Server Setup -> Zones -> "Scaffolding in gathering areas" OFF (every scaffold goes at once, new ones refused). Before rolling back below 0.3.1: (1) players use up / drop all Scaffolding items (0.3.0 does not know Skyy_Scaffold - treat them as lost, unverified); (2) break by hand any Scaffolding placed in builder mode / by zones.opBypass admins; (3) /zones restore all, wait until /zones status shows "0 up now", stop the server. scaffold.properties / guard.properties may stay; region gate / placeAllow lines are kept verbatim by 0.3.0.
 # FLOOR (2026-10-25, drag5 secret dragons): SkyyPets 0.4.19 rolls back alone to 0.4.18 (new profile lines dsecret.<word> / dsecretw.<word> are ignored by 0.4.18 - an owed egg waits until 0.4.19 is back; no migration). NEVER roll SkyyPets below 0.4.19 once a DragonVoid / DragonBlood / DragonLight / DragonCrystal pet or a Skyy_PetEgg_Dragon_Void / _Blood / _Light / _Crystal item exists (unknown kind = gives nothing, unknown items). The 0.4.17 / 0.4.15 / 0.4.11 floors stand.
 # FLOOR (2026-10-25, ranch6): SkyySkills 0.4.66 rolls back alone (jar only; no saved data, no migration - 0.4.65 ignores the new ranching.* keys; taming / Capture Crate / milking stop paying Ranching XP).
+# FLOOR (2026-10-25, petwid): SkyyHud 0.3.37 (the Pets widget) rolls back alone to 0.3.36; no data step (the Pets layout line is ignored).
+# FLOOR (2026-10-25, petwid): SkyyPets 0.4.20 (bridge pets:fn:hud) rolls back alone to 0.4.19; no saved data, no migration (SkyyHud 0.3.37's Pets widget then hides itself). The 0.4.19 / 0.4.17 / 0.4.15 / 0.4.11 floors stand.
 # FLOOR (2026-10-25, compfix): SkyySacks 0.8.31 (sweep on SackPool.WRITER + SackBeat stall watchdog, Essence of Life -> Life Essence Concentrated compact pair, pd.compact.recheck 180 s, page names unlocked items) rolls back alone to 0.8.30. No saved-data change; pd.compact.recheck stays in config.properties (0.8.30 ignores it); Greater Essence already made stays (vanilla item).
 # FLOOR (2026-10-25, shbags): SkyyShards 0.4.12 (every Map-tab / Totem Bench / totem-page cost counts + pays inventory + Pocket Dimension via payInvBags) rolls back alone to 0.4.11 (no data or config change); after a rollback, costs read the inventory only again.
 # FLOOR (2026-10-25, r5combat2): SkyyShards 0.4.11 (Combat Shard zone islands + combat pace 1-1.5x of fighting via ShCfg.cbOut, rows combat.cagePct per zone + combat.cageGrowth) rolls back alone to 0.4.10 - no saved-data format change, no migration of its own (the 0.4.8 map migration now leaves Combat island types alone). Bought Zone 2-5 islands are then read as the one Combat type (Bone Fragments, old area-scaled Soul Cage pace); Zone 1 sub levels keep their numbers. Combat mobs alive at the rollback stay as ordinary mobs; 0.4.10 answers "hurt" no again. Needs SkyyIslands 0.5.8+ (shard:fn:allowed "hurt" with the attacker).
@@ -86,7 +88,7 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.36"), ("SkyySacks", "0.8.31"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.33"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.31"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.33"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.1"), ("SkyyGear", "0.3.47"), ("SkyySkills", "0.4.66"),
     ("SkyyAccessories", "0.5.32"), ("SkyyClasses", "0.1.50"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.6.4"),
@@ -146,7 +148,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.19"),
+    ("SkyyPets", "0.4.20"),
     ("SkyyWardrobe", "0.2.12"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
