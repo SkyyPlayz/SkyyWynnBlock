@@ -28,7 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-25) - PINNED (not deployed): Shards 0.4.12 bag fix. Building: totemui (Shards 0.4.13 totem page + bench
+## RUNNING (2026-10-25) - HOLD: Shards 0.4.12 pinned but DO NOT DEPLOY alone (Shards lock deadlock froze the island 02:38; 0.4.12 adds
+  sacks calls under ShStore.LOCK) - ship the fixed 0.4.13 (totemui: deadlock fix FIRST + place totems anywhere + redesign). Sacks 0.8.31 pinned. Building: totemui (Shards 0.4.13 totem page + bench
   redesign, lean), compfix (Sacks 0.8.31 auto-compact refresh on unlock + every 180 s, Essence of Life -> Life Essence Concentrated pair),
   ench1 (Collections 0.2.34 + Bazaar 0.2.2 Enchanted in Pocket crafting + reverse), petwid (Hud 0.3.37 pet widget), aoeseed (Trees 0.6.5).
   LIVE 11:46 (TEST 256, backup deploy-20261025-1146): Gear 0.3.47 first 28 UT (19 live, 9 wait for Armory).
