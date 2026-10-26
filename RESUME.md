@@ -46,7 +46,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: SHARED-EXECUTOR BLOCKER (which task holds HytaleServer.SCHEDULED_EXECUTOR - SkyyShards ShTick suspect; Sacks CraftTick / ProcTick still
+QUEUE: Trees Wide Sowing in CREATIVE may spend Pocket seeds (critic LOW, not fixed) - skip area plant or use free seeds in creative;
+  SHARED-EXECUTOR BLOCKER (which task holds HytaleServer.SCHEDULED_EXECUTOR - SkyyShards ShTick suspect; Sacks CraftTick / ProcTick still
   there; the 0.8.31 SackBeat WARN logs the time); Greater Essence opening (Sacks: crafting / Unpack for the vanilla pair); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
    UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
   switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
