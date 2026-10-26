@@ -368,3 +368,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Combat Shard zone islands (always night, mob pools, deep cavern, 1-1.5x of fighting) (DEPLOYED 2026-10-25, backup deploy-20261025-0934) | [2026-10](2026-10.md) |
 | Ranching XP + secret dragons + scaffolding / skill gates / fair play (DEPLOYED 2026-10-25, backup deploy-20261025-1131) | [2026-10](2026-10.md) |
 | First 28 Untiered items (19 live) (DEPLOYED 2026-10-25, backup deploy-20261025-1146) | [2026-10](2026-10.md) |
+| Auto-compact fix + pet widget + Wide Sowing + gathering everything (Zones 0.3.2) (DEPLOYED 2026-10-25, backup deploy-20261025-2104) | [2026-10](2026-10.md) |

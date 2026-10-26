@@ -63,3 +63,4 @@ tests always come first.
 254. BATCH 6 2026-10-25: Combat Shard - Zone 1-5 islands, always night, mob pools by size + Large deep cavern, mobs at once / level / spawn speed, maxed island ~1.25x fighting
 255. BATCH 7 2026-10-25: Ranching XP (taming / crate / milking), secret dragons Void / Blood / Light / Crystal (admin eggs only so far), Zones scaffolding + skill gates + anti-AFK
 256. BATCH 8 2026-10-25: first Untiered items - 12 UT armor sets + 7 UT weapons (incl. Ancient Bronze Daggers as Deepcave Shadow); 9 Armory UT weapons next
+257. BATCH 9 2026-10-25: auto-compact really works (+ Essence of Life), pet HUD widget, Wide Sowing 3x3/5x5 planting, gathering worlds regrow dirt/stone/plants/crystals, safe + town zones, wand outline, big tree fix
