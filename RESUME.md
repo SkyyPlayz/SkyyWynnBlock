@@ -28,6 +28,14 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
+## STOPPED AT USAGE LIMIT (2026-10-26 ~03:20, weekly 100%, resets 10-27 09:00 local) - Skyy: "stop at 98% usage, and update the files/repo".
+  NEXT SESSION (after the reset), in order: (1) Shards 0.4.13 totemui - built READY (harness 868/0, crosscheck READY); a Sonnet review was
+  running at the stop - if it has no report in tools/dev/scratch/resume/totemui-review.md, re-run the review (locks / payments / dx;dz / selector walk),
+  then pin (Shards 0.4.11 -> 0.4.13, FLOOR text in docs/log 2026-10-26 BUILT totemui line + below), ONE smoke, deploy, tell Skyy the totem UI is done
+  (Skyy: "lmk when the ui for the totems is done"). (2) Skills 0.4.67 forxp PINNED (not deployed) - deploy with (1).
+  (3) ench1 (Collections 0.2.34 + Bazaar 0.2.2) workflow was running at the stop - check its journal / files; finish + pin if READY.
+  totemui FLOOR: SkyyShards 0.4.13 rolls back alone to 0.4.12 - no migration; hand-placed totem entries carry an 8th part "dx;dz" 0.4.12 ignores -
+  pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
 ## RUNNING (2026-10-26) - LIVE 21:15 (TEST 258): Gear 0.3.48. LIVE 21:04 (TEST 257): Sacks 0.8.31, Hud 0.3.37 + Pets 0.4.20, Trees 0.6.5, Zones 0.3.2.
   HOLD: Shards 0.4.12 pinned but DO NOT DEPLOY alone (Shards lock deadlock froze the island 02:38; 0.4.12 adds
   sacks calls under ShStore.LOCK) - ship the fixed 0.4.13 (totemui: deadlock fix FIRST + place totems anywhere + redesign). Sacks 0.8.31 pinned. Building: totemui (Shards 0.4.13 totem page + bench
