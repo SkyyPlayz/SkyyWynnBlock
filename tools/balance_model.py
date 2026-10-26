@@ -3365,7 +3365,156 @@ def p11_main():
         sys.exit(1 if bad else 0)
 
 
+# ======================================================================================== FORXP (SkyySkills 0.4.67, 2026-10-25)
+# Skyy: "i think foraging levels too fast. i just reached lvl 50 in zone 1" + "just chopping some maple" + "id fix this by setting the xp per
+# log by the tier. and if that doesnt work, id do the less for big trees. and the steeper curve only if we need" (A:210).
+# The P3 model above counts LOGS_H 400 logs an hour (LOGS_PER_TREE 10, GUESS). Real trees (Assets.zip Server/Prefabs/Trees/*, counted
+# 2026-10-25: _Trunk / _Trunk_Full = T, _Branch_* = B, _Roots = R, Plant_Leaves_* = L, mean of the stage's prefabs) are much bigger - a grown
+# Maple is 250 trunks - and Tree Feller pays every one: Skyy's live log 2026-10-25 shows Foraging 24 -> 50 in 32 minutes (a tree every 1-2
+# minutes paying 50-100k XP with their multipliers; live NewBetaTest player file: Foraging 51k XP on 10-23 -> 1.1M on 10-25).
+FX_TREES = [  # (name, wood tier (tier_tags LOGS), T, B, R, L, zone)
+    ("small Oak (Stage 3)", 1, 23, 13, 0, 108, 1), ("Birch (Stage 3)", 1, 48, 48, 0, 301, 1), ("Beech (Stage 3)", 2, 35, 57, 0, 349, 1),
+    ("young Maple (Stage 1)", 3, 88, 17, 0, 387, 1), ("big Maple (Stage 3)", 3, 250, 45, 3, 1167, 1),
+    ("Amber giant (Stage 3)", 5, 1940, 149, 0, 1599, 2), ("Gumboab (Gum Stage 3)", 6, 106, 41, 0, 288, 2),
+    ("Fir (Stage 3)", 7, 27, 12, 1, 129, 3), ("Redwood (Stage 3)", 9, 172, 29, 0, 273, 3),
+    ("Burnt (Stage 3)", 10, 158, 53, 0, 276, 4), ("Sallow (Stage 2)", 12, 197, 10, 0, 518, 4),
+    ("Crystal (Stage 3)", 15, 198, 39, 3, 508, 5)]
+FX_P3_LOG = [35, 70, 120, 160, 245, 330, 400, 525, 650, 745, 915, 1050, 1200, 1400, 1600]   # SkyySkills 0.4.57 - 0.4.66 block.Wood_* rows (P3 3.2)
+FX_PCT = [10] * 3 + [14] * 6 + [19] * 3 + [31] * 3   # 0.4.67: each tier's log XP = this % of its P3 row (min 1); Zone 1 woods a tenth, later
+#   zones less cut so each zone's best tree still pays ~1.0x the XP/h its zone needs (the per-zone lines below; a flat tenth gave 0.3-0.7x)
+FX_NEW_LOG = [max(1, (x * p + 50) // 100) for x, p in zip(FX_P3_LOG, FX_PCT)]
+assert FX_NEW_LOG == [4, 7, 12, 22, 34, 46, 56, 74, 91, 142, 174, 200, 372, 434, 496], FX_NEW_LOG
+FX_FROM, FX_FALLOFF = 30, 2.0                    # 0.4.67 fell.bigTreeFrom / fell.bigTreeFalloff: log k > 30 pays (30 / k) ^ 2
+FX_LEAF_OLD, FX_LEAF_NEW = 1.0, 0.1              # fell.leafXpFactor (a felled leaf = 1 XP x this)
+FX_SEC_TREE, FX_SEC_BLOCK = 45.0, 0.1            # GUESS: walk + chop + fall 45 s a tree, + 0.1 s pickup a block (Skyy's log: big trees 1-2 min apart)
+FX_GATE_SEC = {0: 0.0, 1: 4.0, 2: 15.0}          # GUESS: the one chopped log one / two tiers above the hatchet (SkyyGear gate 2.5x / 10x hits)
+FX_SHARE = SHARE["Foraging"]                     # 15 % of play time (the focused player above)
+
+
+def fx_share(k, frm=FX_FROM, fall=FX_FALLOFF):
+    """SkyySkills 0.4.67 FellCfg.share: the k-th log of one tree (the chopped log = 1) pays this part of its XP"""
+    return 1.0 if (frm <= 0 or fall <= 0 or k <= frm) else (float(frm) / k) ** fall
+
+
+def fx_tree_xp(tr, new=True):
+    """base Foraging XP of one felled tree (before Wisdom / catch-up / rebirth multipliers, like the model above)"""
+    _n, t, T, Br, R, L, _z = tr
+    n = T + Br + R
+    log = (FX_NEW_LOG if new else FX_P3_LOG)[t - 1]
+    avg = (T * log + Br * 1 + R * 2) / float(n)       # branches 1, roots 2 (suffix rows); felling order mixes them
+    eff = sum(fx_share(k) for k in range(1, n + 1)) if new else float(n)
+    return avg * eff + L * (FX_LEAF_NEW if new else FX_LEAF_OLD)
+
+
+def fx_tree_secs(tr, tool_t):
+    up = tr[1] - tool_t
+    return None if up > 2 else FX_SEC_TREE + FX_SEC_BLOCK * (tr[2] + tr[3] + tr[4]) + FX_GATE_SEC[max(0, up)]
+
+
+def fx_rate(tr, tool_t, new=True):
+    s = fx_tree_secs(tr, tool_t)
+    return 0.0 if s is None else fx_tree_xp(tr, new) * 3600.0 / s
+
+
+def fx_best(level, zone, new=True):
+    """the best XP/h tree of this zone or below for a player whose lifelong hatchet is at the tier their Foraging level opened"""
+    tool = tier_at(max(1, level))
+    best = None
+    for tr in FX_TREES:
+        if tr[6] > zone:
+            continue
+        r = fx_rate(tr, tool, new)
+        if best is None or r > best[0]:
+            best = (r, tr[0])
+    return best
+
+
+def fx_sim(new=True, zones=(1, 2, 3), cap=CAP1, catch=0.0, pure=False):
+    """Foraging level at each zone's end: the zone's hours x the Foraging share (pure: all of it), always the best tree; catch = catch-up"""
+    curve, xp, lv, out = P9_LEVELS, 0.0, 0, []
+    for z, lo, hi, hrs, _src in ZONES:
+        if z not in zones:
+            continue
+        t, dt = 0.0, 0.01
+        while t < hrs * (1.0 if pure else FX_SHARE) - 1e-9:
+            if lv < cap:
+                xp += fx_best(lv, z, new)[0] * (1 + catch) * dt
+                while lv < cap and xp >= cum(curve, lv + 1):
+                    lv += 1
+            t += dt
+        out.append((z, lv))
+    return out
+
+
+def fx_hours_to(level, new=True, zone=1):
+    xp, lv, t = 0.0, 0, 0.0
+    while lv < level and t < 400:
+        xp += fx_best(lv, zone, new)[0] * 0.01
+        while xp >= cum(P9_LEVELS, lv + 1):
+            lv += 1
+        t += 0.01
+    return t
+
+
+def forxp_main():
+    print("### FORXP (SkyySkills 0.4.67): Foraging XP per felled tree, before (0.4.66) / after (0.4.67)")
+    print("New rows: log XP by wood tier T1-T15 = %s (%s %% of the P3 rows); logs past %d a tree pay (%d / k)^%g; felled leaves x%g (was x%g)."
+          % (",".join(str(x) for x in FX_NEW_LOG), ",".join(str(p) for p in FX_PCT), FX_FROM, FX_FROM, FX_FALLOFF, FX_LEAF_NEW, FX_LEAF_OLD))
+    print("No gathering pace boost (gather.boost.skills empty since 0.4.57 P3) and felled logs at 100 % (fell.otherLogsPercent since 0.4.62 P9):")
+    print("both are x1 in the live file, so the model leaves them out. Tree time: a big Maple = %.0f s (Skyy's log: big trees 1-2 min apart)."
+          % fx_tree_secs(FX_TREES[4], 3))
+    print("Base XP before Wisdom / catch-up / rebirth multipliers. Time a tree = %g s + %g s a block (GUESS), right-tier hatchet.\n" % (FX_SEC_TREE, FX_SEC_BLOCK))
+    print("| Tree | Zone | Tier | Logs (T+B+R) / leaves | XP a tree before | after | leaves' share after | XP/h before | after |\n|---|---|---|---|---|---|---|---|---|")
+    for tr in FX_TREES:
+        b, a = fx_tree_xp(tr, False), fx_tree_xp(tr, True)
+        print("| %s | %d | T%d | %d / %d | %s | %s | %.0f %% | %s | %s |" % (tr[0], tr[6], tr[1], tr[2] + tr[3] + tr[4], tr[5], fmt(b), fmt(a),
+              100.0 * tr[5] * FX_LEAF_NEW / a, fmt(fx_rate(tr, tr[1], False)), fmt(fx_rate(tr, tr[1], True))))
+    before, after = fx_sim(False), fx_sim(True)
+    after_c = fx_sim(True, catch=CATCHUP["max"])
+    tgt = {1: 20 - LAG["Foraging"], 2: 40 - LAG["Foraging"], 3: 50}
+    print("\n| Zone end (run 1, cap 50; %d %% of play time foraging, best tree) | Target Foraging Lv | Before | After | After + catch-up %d %% |\n|---|---|---|---|---|"
+          % (100 * FX_SHARE, 100 * CATCHUP["max"]))
+    for (z, lb), (_z, la), (_z2, lc) in zip(before, after, after_c):
+        print("| Zone %d (%g h) | ~%d%s | %d | %d | %d |" % (z, ZONES[z - 1][3], tgt[z], " (Skyy: about Lv 20 at Zone 1's end)" if z == 1 else "", lb, la, lc))
+    pure = fx_sim(True, zones=(1,), pure=True)[0][1]
+    print("\nOnly chopping in Zone 1 (12 h, no class play): Foraging %d after (before: %d). Hours of pure Zone 1 chopping to Foraging 20: %.1f h after, %.2f h before; to 50: %.0f h after, %.2f h before."
+          % (pure, fx_sim(False, zones=(1,), pure=True)[0][1], fx_hours_to(20), fx_hours_to(20, False), fx_hours_to(50), fx_hours_to(50, False)))
+    ratio = {}
+    for z, lo, hi, hrs, _s in ZONES:
+        lv = max(0, (hi if z > 1 else 20) - LAG["Foraging"] - 10)
+        need = (cum(P9_LEVELS, min(hi - LAG["Foraging"], 100)) - cum(P9_LEVELS, max(lo - LAG["Foraging"], 0))) / (hrs * FX_SHARE)
+        r = fx_best(lv, z, True)
+        ratio[z] = r[0] / need
+        print("Zone %d: best tree %s ~%s XP/h after vs ~%s needed (%.2fx)" % (z, r[1], fmt(r[0]), fmt(need), r[0] / need))
+    rows = []
+    z1 = after[0][1]
+    rows.append(("Zone 1 end: Foraging about Lv 20 (ok 15-22) with the time split, best tree", "Lv %d (+ catch-up: %d)" % (z1, after_c[0][1]), 15 <= z1 <= 22))
+    oak = FX_TREES[0]
+    rows.append(("Small trees still worth it: a small Oak pays >= 100 XP a tree and >= 20 % of a big Maple's XP/h", "%s a tree, %.0f %%" % (
+        fmt(fx_tree_xp(oak)), 100.0 * fx_rate(oak, 1) / fx_rate(FX_TREES[4], 3)), fx_tree_xp(oak) >= 100 and fx_rate(oak, 1) >= 0.2 * fx_rate(FX_TREES[4], 3)))
+    rows.append(("1-hour rule: a new player's first hour on small Oaks gives >= 3 Foraging levels", "%d levels" % sum(
+        1 for L in range(1, 20) if cum(P9_LEVELS, L) <= fx_rate(oak, 1)), cum(P9_LEVELS, 3) <= fx_rate(oak, 1)))
+    rows.append(("A big tree pays at most 2 x its first %d logs (bounded however big)" % FX_FROM, "%.2f x" % (sum(fx_share(k) for k in range(1, 5001)) / FX_FROM),
+                 sum(fx_share(k) for k in range(1, 5001)) <= 2.0 * FX_FROM + 1e-9))
+    rows.append(("Leaves stay a side income: <= 25 % of any tree's XP", "%.0f %% max" % max(100.0 * t[5] * FX_LEAF_NEW / fx_tree_xp(t) for t in FX_TREES),
+                 all(t[5] * FX_LEAF_NEW <= 0.25 * fx_tree_xp(t) for t in FX_TREES)))
+    rows.append(("Every zone's best tree pays 0.9-1.25x the XP/h its zone needs", " ".join("Z%d %.2fx" % (z, ratio[z]) for z in sorted(ratio)),
+                 all(0.9 <= ratio[z] <= 1.25 for z in ratio)))
+    rows.append(("Zone 2 end: Foraging within 3 of its target (~%d)" % tgt[2], "Lv %d" % after[1][1], abs(after[1][1] - tgt[2]) <= 3))
+    rows.append(("Higher tier pays more per log (T1 < T2 < ... < T15)", ",".join(str(x) for x in FX_NEW_LOG), all(a < b for a, b in zip(FX_NEW_LOG, FX_NEW_LOG[1:]))))
+    print("\n| FORXP check | Model | OK |\n|---|---|---|")
+    for g, m, ok in rows:
+        print("| %s | %s | %s |" % (g, m, "yes" if ok else "NO"))
+    bad = [r for r in rows if not r[2]]
+    print("FORXP check: %d rows, %d fail; step 3 (a steeper Foraging curve) %s" % (len(rows), len(bad), "NOT needed" if not bad else "maybe needed"))
+    if "--check" in sys.argv:
+        sys.exit(1 if bad else 0)
+
+
 def main():
+    if "--forxp" in sys.argv:         # SkyySkills 0.4.67 Foraging XP per tree (before / after, levels at each zone's end); --check: exit 1 on a failed row
+        forxp_main()
+        return
     if "--p11" in sys.argv:           # P11 starter archipelago (SkyyShards 0.4.8): the cheap-first ladder; --check: exit 1 on a failed row
         p11_main()
         return
