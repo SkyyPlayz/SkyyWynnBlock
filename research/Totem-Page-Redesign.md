@@ -44,3 +44,10 @@ Proposed:
 - BENCH tab: Bench I -> IV as a ladder of 4 cards, what each tier unlocks (totem cards shown small), the next tier's cost, Upgrade button.
 - A one-line "How totems work" strip on top: craft at the bench -> place on a pad -> it works the crops in range -> tier up + modifiers.
 Mockup: art/ui-totem-page/bench-mockup.html.
+
+### Vanilla bench layout (Skyy 2026-10-25: "make it look more like a vanilla bench with the upgrade on the side and stuff.")
+Supersedes the card-grid / tab idea above: copy the vanilla crafting bench page - left: category strip (Workers / Weather / Helpers);
+middle: recipe ICON grid (item slots, locked ones dimmed with a padlock + the bench tier); right: the selected recipe (big icon, name in
+rarity colour, what it does + how to use it, ingredient slots with have / need counts incl. the Pocket Dimension, quantity + CRAFT);
+far side: the BENCH UPGRADE panel (Bench I of IV, what the next tier unlocks, its cost slots, UPGRADE) like vanilla's bench-tier panel.
+"Make Pole" = a recipe in the grid that takes a hand-held Totem I. Check the real vanilla bench page JSON in Assets.zip for sizes / styles.
