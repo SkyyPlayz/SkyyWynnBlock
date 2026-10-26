@@ -28,7 +28,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-25 12:00) - building: shbags (Shards 0.4.12: Map-tab costs pay from the Pocket Dimension).
+## RUNNING (2026-10-25) - PINNED (not deployed): Shards 0.4.12 bag fix. Building: totemui (Shards 0.4.13 totem page + bench
+  redesign, lean), compfix (Sacks 0.8.31 auto-compact refresh on unlock + every 180 s, Essence of Life -> Life Essence Concentrated pair).
   LIVE 11:46 (TEST 256, backup deploy-20261025-1146): Gear 0.3.47 first 28 UT (19 live, 9 wait for Armory).
   LIVE 11:31 (TEST 255, backup deploy-20261025-1131): Skills 0.4.66 Ranching XP, Pets 0.4.19 secret dragons, Zones 0.3.1.
   USAGE: weekly 92% at 10:40 on 10-25 (resets 10-27 09:00) - Skyy: "stop at 98% usage, and update the files/repo". Launch NOTHING new;
@@ -45,8 +46,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
 QUEUE: FARMING TREE AOE SEED BAGS node (docs/answered/skills.md 2026-10-25; 3x3 -> 5x5 planting); PET WIDGET (SkyyHud widget + SkyyPets bridge: pet + summon portraits in rarity frame, name + level, XP bar, summon health +
   ability cooldown; docs/answered/pets.md 2026-10-25); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
-  TOTEM PAGE + BENCH REDESIGN (Shards 0.4.13, mockups APPROVED 10-25: art/ui-totem-page/*.html, research/Totem-Page-Redesign.md) - launch
-  the moment shbags (0.4.12) is pinned; UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
+   UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
   switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
   Heart roll, Light zone guardians give), SkyyFishing (Void catch roll), SkyyCollections (Crystal reward give) via pets:fn:secretRoll / giveSecretEgg;
   AUGMENTS - research/Augments-Spec.md written, Skyy answered 8 questions 10-25 (docs/answered/gear.md, last 6 lines): REVISE the spec to
