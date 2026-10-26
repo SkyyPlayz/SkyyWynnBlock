@@ -369,3 +369,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Ranching XP + secret dragons + scaffolding / skill gates / fair play (DEPLOYED 2026-10-25, backup deploy-20261025-1131) | [2026-10](2026-10.md) |
 | First 28 Untiered items (19 live) (DEPLOYED 2026-10-25, backup deploy-20261025-1146) | [2026-10](2026-10.md) |
 | Auto-compact fix + pet widget + Wide Sowing + gathering everything (Zones 0.3.2) (DEPLOYED 2026-10-25, backup deploy-20261025-2104) | [2026-10](2026-10.md) |
+| Upgrade rows + Enchanted tier-ups + weapons toggle + sectioned tooltips (DEPLOYED 2026-10-25, backup deploy-20261025-2115) | [2026-10](2026-10.md) |

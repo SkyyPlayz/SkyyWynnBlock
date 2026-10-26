@@ -28,7 +28,7 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-10-25 21:05) - LIVE 21:04 (TEST 257): Sacks 0.8.31, Hud 0.3.37 + Pets 0.4.20, Trees 0.6.5, Zones 0.3.2.
+## RUNNING (2026-10-26) - LIVE 21:15 (TEST 258): Gear 0.3.48. LIVE 21:04 (TEST 257): Sacks 0.8.31, Hud 0.3.37 + Pets 0.4.20, Trees 0.6.5, Zones 0.3.2.
   HOLD: Shards 0.4.12 pinned but DO NOT DEPLOY alone (Shards lock deadlock froze the island 02:38; 0.4.12 adds
   sacks calls under ShStore.LOCK) - ship the fixed 0.4.13 (totemui: deadlock fix FIRST + place totems anywhere + redesign). Sacks 0.8.31 pinned. Building: totemui (Shards 0.4.13 totem page + bench
   redesign, lean), compfix (Sacks 0.8.31 auto-compact refresh on unlock + every 180 s, Essence of Life -> Life Essence Concentrated pair),
@@ -47,7 +47,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: Trees Wide Sowing in CREATIVE may spend Pocket seeds (critic LOW, not fixed) - skip area plant or use free seeds in creative;
+QUEUE: Shards LOCK REFACTOR Full round (move sacks / coins / collections / islands calls out of ShStore.LOCK in addMod / addBooster / grow0 / buy* / decide / door / grant - 0.4.13 only made the lock timed);
+  Trees Wide Sowing in CREATIVE may spend Pocket seeds (critic LOW, not fixed) - skip area plant or use free seeds in creative;
   SHARED-EXECUTOR BLOCKER (which task holds HytaleServer.SCHEDULED_EXECUTOR - SkyyShards ShTick suspect; Sacks CraftTick / ProcTick still
   there; the 0.8.31 SackBeat WARN logs the time); Greater Essence opening (Sacks: crafting / Unpack for the vanilla pair); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
    UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
