@@ -65,3 +65,4 @@ tests always come first.
 256. BATCH 8 2026-10-25: first Untiered items - 12 UT armor sets + 7 UT weapons (incl. Ancient Bronze Daggers as Deepcave Shadow); 9 Armory UT weapons next
 257. BATCH 9 2026-10-25: auto-compact really works (+ Essence of Life), pet HUD widget, Wide Sowing 3x3/5x5 planting, gathering worlds regrow dirt/stone/plants/crystals, safe + town zones, wand outline, big tree fix
 258. BATCH 10 2026-10-25: one row per upgrade requirement, Enchanted items count for tier-ups + full set, Wands / Soul Orbs split + class toggle, STATS / UPGRADES / ABILITIES tooltips
+259. BATCH 11 2026-10-27: Foraging XP per tree way down (big Maple ~700-1,500), inventory Compressing tab + craft Enchanted back into 100, Greater Essence of Life both ways, Bazaar no loop
