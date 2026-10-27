@@ -28,11 +28,10 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## STOPPED AT USAGE LIMIT (2026-10-26 ~03:20, weekly 100%, resets 10-27 09:00 local) - Skyy: "stop at 98% usage, and update the files/repo".
-  NEXT SESSION (after the reset), in order: (1) Shards 0.4.13 totemui - built READY (harness 868/0, crosscheck READY); its review found 5 problems (2 HIGH: paid-then-lock-timeout loses items/coins; tier-up drops a hand-placed totem spot) - research/Shards-0.4.13-Review.md;
+## LIVE 2026-10-27 12:26 (TEST 259, backup deploy-20261027-1226): Skills 0.4.67 forxp, Collections 0.2.34 + Bazaar 0.2.2 ench1. Usage reset 10-27 (0%).
+  NOW: (1) Shards 0.4.13 totemui - fix builder RUNNING (research/Shards-0.4.13-Review.md problems 1-5) - built READY (harness 868/0, crosscheck READY); its review found 5 problems (2 HIGH: paid-then-lock-timeout loses items/coins; tier-up drops a hand-placed totem spot) - research/Shards-0.4.13-Review.md;
   fix them (lean Opus builder), re-review, then pin (Shards 0.4.11 -> 0.4.13, FLOOR text in docs/log 2026-10-26 BUILT totemui line + below), ONE smoke, deploy, tell Skyy the totem UI is done
-  (Skyy: "lmk when the ui for the totems is done"). (2) Skills 0.4.67 forxp PINNED (not deployed) - deploy with (1).
-  (3) ench1 Collections 0.2.34 + Bazaar 0.2.2 PINNED (not deployed; crosscheck READY) - deploy with (1); steps: inventory Compressing tab, craft Enchanted + back into 100, Greater Essence of Life both ways, no collection credit.
+  (Skyy: "lmk when the ui for the totems is done").
   totemui FLOOR: SkyyShards 0.4.13 rolls back alone to 0.4.12 - no migration; hand-placed totem entries carry an 8th part "dx;dz" 0.4.12 ignores -
   pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
 ## RUNNING (2026-10-26) - LIVE 21:15 (TEST 258): Gear 0.3.48. LIVE 21:04 (TEST 257): Sacks 0.8.31, Hud 0.3.37 + Pets 0.4.20, Trees 0.6.5, Zones 0.3.2.
