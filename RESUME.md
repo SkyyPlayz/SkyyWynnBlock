@@ -53,7 +53,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: Shards LOCK REFACTOR Full round (move sacks / coins / collections / islands calls out of ShStore.LOCK in addMod / addBooster / grow0 / buy* / decide / door / grant - 0.4.13 only made the lock timed);
+QUEUE: Shards owed / owedXp: hold the lock through ShPay.coll / xp + write-back (re-review 10-27 low: busy write-back + restart pays one Collect credit twice);
+  Shards LOCK REFACTOR Full round (move sacks / coins / collections / islands calls out of ShStore.LOCK in addMod / addBooster / grow0 / buy* / decide / door / grant - 0.4.13 only made the lock timed);
   Trees Wide Sowing in CREATIVE may spend Pocket seeds (critic LOW, not fixed) - skip area plant or use free seeds in creative;
   SHARED-EXECUTOR BLOCKER (which task holds HytaleServer.SCHEDULED_EXECUTOR - SkyyShards ShTick suspect; Sacks CraftTick / ProcTick still
   there; the 0.8.31 SackBeat WARN logs the time); Greater Essence opening (Sacks: crafting / Unpack for the vanilla pair); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
