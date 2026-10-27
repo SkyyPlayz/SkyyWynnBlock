@@ -371,3 +371,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Auto-compact fix + pet widget + Wide Sowing + gathering everything (Zones 0.3.2) (DEPLOYED 2026-10-25, backup deploy-20261025-2104) | [2026-10](2026-10.md) |
 | Upgrade rows + Enchanted tier-ups + weapons toggle + sectioned tooltips (DEPLOYED 2026-10-25, backup deploy-20261025-2115) | [2026-10](2026-10.md) |
 | Foraging XP by tier + Enchanted inventory crafting both ways (DEPLOYED 2026-10-27, backup deploy-20261027-1226) | [2026-10](2026-10.md) |
+| Totem page + Totem Bench redesign, hand-placed totems, shard freeze fix (DEPLOYED 2026-10-27, backup deploy-20261027-1245) | [2026-10](2026-10.md) |
