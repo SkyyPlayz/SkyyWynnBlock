@@ -522,6 +522,8 @@ def build_assets(z, SA, e1=False):
                 "KnowledgeRequired": True,
             },
         }
+        if e1:   # smoke 2026-10-27: the engine refuses a Fieldcraft (inventory) recipe with a delay - "should not have a delay (TimeSeconds)"
+            del node["Recipe"]["TimeSeconds"]
         if sound:
             node["ItemSoundSetId"] = sound
         files["Server/Item/Items/SkyyCollections/%s.json" % eid] = json.dumps(node, indent=2)
@@ -644,7 +646,7 @@ assert sorted(VANILLA_BASE) == sorted(VANILLA_ENCH)
 def _recipe_json(inp, qin, out, qout, kr):
     return json.dumps({"Input": [{"ItemId": inp, "Quantity": qin}], "PrimaryOutput": {"ItemId": out, "Quantity": qout},
                        "Output": [{"ItemId": out, "Quantity": qout}], "BenchRequirement": bench_req(True),
-                       "TimeSeconds": REV_SECONDS, "KnowledgeRequired": kr}, indent=2) + "\n"
+                       "KnowledgeRequired": kr}, indent=2) + "\n"   # no TimeSeconds: Fieldcraft refuses a delay (smoke 2026-10-27)
 
 
 def e1_files(z, table=None):

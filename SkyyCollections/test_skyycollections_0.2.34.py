@@ -162,7 +162,8 @@ def run_jar(out, jar, scratch, home):
         a, b = json.loads(za.read(p)), json.loads(zb.read(p))
         rb = b["Recipe"].pop("BenchRequirement")
         ra = a["Recipe"].pop("BenchRequirement")
-        if a != b or ra != rb[:1] or rb[1:] != [{"Type": "Crafting", "Id": "Fieldcraft", "Categories": ["SkyyCompressing"]}]:
+        a["Recipe"].pop("TimeSeconds", None)   # smoke 2026-10-27: Fieldcraft recipes may carry no delay
+        if a != b or "TimeSeconds" in b["Recipe"] or ra != rb[:1] or rb[1:] != [{"Type": "Crafting", "Id": "Fieldcraft", "Categories": ["SkyyCompressing"]}]:
             K.check(False, "J %s: only the inventory bench was added" % p)
             break
     else:
