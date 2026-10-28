@@ -43,7 +43,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyPetProbe | 0.1 | pet engine probes P1-P10, op only: /petprobe (results = [SkyyPetProbe] RESULT lines + mods/Skyy_SkyyPetProbe/probe.log); /petprobe clear at the end, then remove |
 | SkyyTownProbe | 0.2 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyKeyProbe | 0.2 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
-| SkyyMobs | 0.1.22 | mob levels + difficulty; level curves + level gap (mob:fn:info); 0.7 port, 280 roles |
+| SkyyMobs | 0.1.21 | mob levels + difficulty; level curves + level gap (mob:fn:info); 0.7 port, 280 roles |
 | SkyyWorldGen | 0.7.12 | Zone 1 test island (/zone 1, admin); 0.7 port |
 | SkyyArmory | 0.1.48 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile); built from source on 0.7, TravTick gating |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
