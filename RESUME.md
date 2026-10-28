@@ -28,6 +28,9 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
+## LIVE 2026-10-28 05:49 (TEST 264, backup deploy-20261028-0549): Gear 0.3.50 watering can progression, Mobs 0.1.21 more spawns. Also live since
+  22:55 (TEST 263): Skills 0.4.68 Farming low-tier falloff, Zones 0.3.3 zone-world chests. RUNNING: workflow variety1 wf_ecbe0f6c-d41 (Mobs 0.1.22
+  Armored / Veteran, research/Mob-Variety-Spec.md B + docs/answered/mobs.md). Ask Skyy: Ancient Steel armour now drops from Zone 4 wild Burnt Alchemists?
 ## LIVE 2026-10-27 22:50 (TEST 262, backup deploy-20261027-2242): hotfixes from Skyy's test - Shards 0.4.15 (javassist continue-in-finally lock leak
   = every click "busy"; replant every tilled cell), Gear 0.3.49 (tier-up 0-slot backpack), Sacks 0.8.33 (pocket ALL), WorldGen 0.7.12 (lead sheets).
   BUILT, in review: Skills 0.4.68 (Farming low-tier XP falloff, Skyy's pick), Zones 0.3.3 (chests open in the zone world). RUNNING: workflow can1
