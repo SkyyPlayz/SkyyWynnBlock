@@ -9,8 +9,8 @@ the class tree at Lv 50 (python tools/balance_model.py --p10) where the old Comb
 WHAT: the per-rank number (and its ceiling = per x max rank x top count, tools/trees_v3_effects.py natural()) of every Weaponcraft row
 that THIS round's mods apply and that no budget / cap holds back, x1.5 (ROWS): SkyyGear 5 (Hone Edge, Weak Spot, Crit Mastery, Gear
 Resonance, Weapon Tempering), SkyyMobs 5 (Scavenger, Coin Purse, Rare Drop, Boss Hunter, Lucky Kill), SkyyClasses 3 (Iron Will, Thick Skin,
-Reprisal). HELD (not raised, until Skyy answers): Accessory Plates (SkyyAccessories: Weaponcraft max Health 10 -> 13.75 % > TREE_HP_MAX
-10 %), the SkyyClasses hit rows (Combat Focus, Finisher, Trophy Hunter, Edge of the Legend: 34 -> 51 % > dmgCap 40) and Second Wind
+Reprisal); SkyyAccessories 1 (Accessory Plates, 0.5.33 - Skyy 2026-10-27 popup "Raise cap to 13.75%": the Weaponcraft max Health
+budget TREE_HP_BY Combat 13.75 %, tools/trees_v3_effects.py). HELD (not raised, until Skyy answers): the SkyyClasses hit rows (Combat Focus, Finisher, Trophy Hunter, Edge of the Legend: 34 -> 51 % > dmgCap 40) and Second Wind
 (15 -> 22.5 % > its 20 % limit). Rows of other builders' mods are not here: Pet Fang (SkyyPets, round bm1, held at x1.3 by TREE_XP_MAX),
 Toughness / Momentum (SkyyTrees), Rally / Battle Insight (SkyySkills). So 14 of the branch's 24 rows move (13 here + Fang): an even
 build's raised rows give ~60-70 % of their old Lv 50 share (40-47 % x 1.5), the rest stay at 40-47 %.
@@ -53,14 +53,14 @@ ROWS = {
         ("Combat", 2, "r3a", "drAll", 2.0, 3.0),        # Thick Skin: 2 -> 3 % damage reduction a rank (4: 8 -> 12; the class-tree sum stays under drCap 35)
         ("Combat", 2, "r3b", "thorns", 3.0, 4.5),       # Reprisal: 3 -> 4.5 % of a melee hit taken dealt back a rank (3: 9 -> 13.5; model row <= 15)
     ],
+    "SkyyAccessories": [   # 0.5.33 (2026-10-27): Skyy's popup answer "Raise cap to 13.75%" (was HELD; trees_v3_effects.py TREE_HP_BY Combat 0.1375)
+        ("Combat", 2, "r4a", "hpp", 0.005, 0.0075),     # Accessory Plates 0.5 -> 0.75 % a rank per accessory (3 x 5: 7.5 -> 11.25; Weaponcraft Health 10 -> 13.75)
+    ],
 }
 # HELD until Skyy answers (fixer 2, critic 3 finding 2): x1.5 would break a budget the spec set (research/Combat-Into-Class-Spec.md 7 +
 # tools/trees_v3_effects.py check(); the same care bm1 took holding Pet Fang inside TREE_XP_MAX). apply() refuses a HELD mod. To ship one:
 # Skyy's yes -> move the row into ROWS (+ VERSIONS) and lift the budget in trees_v3_effects.py + the balance_model.py row together.
 HELD = {
-    "SkyyAccessories": [
-        ("Combat", 2, "r4a", "hpp", 0.005, 0.0075),     # Accessory Plates 0.5 -> 0.75 %: Weaponcraft max Health 10 -> 13.75 % > TREE_HP_MAX 10 %
-    ],
     "SkyyClasses": [
         ("Combat", 1, "r1.free", "dmg", 3.0, 4.5),      # Combat Focus / Finisher / Trophy Hunter / Edge: the hit rows sum 34 -> 51 > dmgCap 40
         ("Combat", 1, "r3a", "dmgLow", 4.0, 6.0),
@@ -70,7 +70,7 @@ HELD = {
     ],
 }
 X = 1.5
-VERSIONS = {"SkyyGear": "0.3.45", "SkyyMobs": "0.1.19", "SkyyClasses": "0.1.48"}
+VERSIONS = {"SkyyGear": "0.3.45", "SkyyMobs": "0.1.19", "SkyyClasses": "0.1.48", "SkyyAccessories": "0.5.33"}
 MARK_ID = "wc15 Weaponcraft x1.5"
 
 

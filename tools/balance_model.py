@@ -3688,10 +3688,16 @@ def p10_rows():
                  "per-rank numbers are unchanged)" % (P10_LEVELS[0], 100 * min(x[3] for x in sh), 100 * max(x[3] for x in sh),
                                                       P10_LEVELS[1], 100 * min(x[4] for x in sh), 100 * max(x[4] for x in sh)), True))
     # the Combat part's budgets carried into Weaponcraft (spec 7): Health 10 %, XP 30 %, move 10 %; new power inside the caps
-    hp = V3E.tree_hp("Combat")
+    # wc15 (SkyyAccessories 0.5.33, Skyy 2026-10-27 "Raise cap to 13.75%"): Accessory Plates x1.5 counted here until the main session folds the
+    # wc15 numbers into tools/trees_v3_effects.py EFFECTS (then the swap below finds nothing to change)
+    import wc15 as WC15
+    _wcp = dict(((r[0], r[1], r[2], r[3]), r) for r in WC15.ROWS["SkyyAccessories"])
+    hp = sum(V3E.vmax(e if (e[0], e[1], e[2], e[4]) not in _wcp else e[:5] + (_wcp[(e[0], e[1], e[2], e[4])][5],) + e[6:])
+             for e in V3E.EFFECTS if e[0] == "Combat" and e[4] == "hpp")
     xp = V3E.tree_xp("Combat")
     mv = V3E.tree_move("Combat")
-    rows.append(("Weaponcraft (the Combat part): max Health <= 10 % (Toughness + Accessory Plates)", "%.1f %%" % (100 * hp), hp <= V3E.TREE_HP_MAX + 1e-9))
+    rows.append(("Weaponcraft (the Combat part): max Health <= %s %% (Toughness + Accessory Plates x1.5; Skyy 2026-10-27)" % V3E._n(100 * V3E.tree_hp_max("Combat")),
+                 "%.2f %%" % (100 * hp), hp <= V3E.tree_hp_max("Combat") + 1e-9))
     rows.append(("Weaponcraft: class XP <= 30 % (Pet Fang + Battle Insight)", "%.1f %%" % (100 * xp), xp <= V3E.TREE_XP_MAX + 1e-9))
     rows.append(("Weaponcraft: move speed <= 10 % (Momentum)", "%.1f %%" % mv, mv <= V3E.TREE_MOVE_MAX + 1e-9))
     low = sum(V3E.vmax(e) for e in V3E.EFFECTS if e[0] == "Combat" and e[4] == "dmgLow")

@@ -228,7 +228,7 @@ EFFECTS = [
 #   SkyyMobs' loot rows never make gear: an extra roll skips every Weapon_ / Armor_ / Tool_ / Skyy_ item, so SkyyGear's UT meter (kills
 #   of elites / mini bosses / dungeons) and Mythic roll (boss kills) see exactly the kills they saw before (SkyyMobs harness: 10,000 kills).
 # BUDGETS (spec 4.1, check()): Fortune incl. extra-drop chance (1 % = 1 Fortune) <= TREE_FORT_MAX 40, XP <= TREE_XP_MAX 30 %, move speed
-#   <= TREE_MOVE_MAX 10 %, max Health <= TREE_HP_MAX 10 % - each per skill tree, every applier's rows + SkyyTrees' own rows + the 0.3 XP node
+#   <= TREE_MOVE_MAX 10 %, max Health <= TREE_HP_MAX 10 % (TREE_HP_BY: Combat 13.75 %, wc15) - each per skill tree, every applier's rows + SkyyTrees' own rows + the 0.3 XP node
 #   aliases (P8B_OLD_PER: the 0.3 node's per a level; SkyyTrees 0.4.6 asserts its defaults). Heartwood (Foraging b1 r1b, the 0.3 FFortune
 #   alias, +6 double-log %) is NOT in the Fortune budget (P5 counted only Rich Seams; the spec's 37.5 -> 39.9 leaves it out) - P9 decides.
 
@@ -568,6 +568,13 @@ def tree_fort(sk):
 TREE_XP_MAX = 0.30      # the most XP % all rows of one skill tree add (fraction)
 TREE_MOVE_MAX = 10.0    # the most move speed % one tree adds (whole %)
 TREE_HP_MAX = 0.10      # the most max Health % one tree adds (fraction)
+TREE_HP_BY = {"Combat": 0.1375}   # per-tree lifts of TREE_HP_MAX. Combat = Weaponcraft: Toughness 2.5 + Accessory Plates 11.25 (wc15 x1.5,
+                                  # SkyyAccessories 0.5.33) - Skyy 2026-10-27 popup answer "Raise cap to 13.75%"; every other tree stays 10 %
+
+
+def tree_hp_max(tree):
+    """the max Health budget of one tree (fraction): TREE_HP_BY or TREE_HP_MAX"""
+    return TREE_HP_BY.get(tree, TREE_HP_MAX)
 P8B_OLD_PER = {"Mining.MWisdom": ("xp", 0.01), "Foraging.FWisdom": ("xp", 0.01), "Farming.AWisdom": ("xp", 0.01), "Cooking.CWisdom": ("xp", 0.01),
                "Alchemy.PWisdom": ("xp", 0.01), "Smithing.SWisdom": ("xp", 0.01), "Fishing.NWisdom": ("xp", 0.01)}   # the 0.3 XP nodes' per a level
 SKILL_OF = {"Combat": "combat"}   # a tree's XP key (class.xp = the Combat tree's XP too)
@@ -678,7 +685,7 @@ def check():
             continue
         assert tree_xp(t["name"]) <= TREE_XP_MAX + 1e-9, ("tree XP budget", t["name"], tree_xp(t["name"]))
         assert tree_move(t["name"]) <= TREE_MOVE_MAX + 1e-9, ("tree move budget", t["name"], tree_move(t["name"]))
-        assert tree_hp(t["name"]) <= TREE_HP_MAX + 1e-9, ("tree Health budget", t["name"], tree_hp(t["name"]))
+        assert tree_hp(t["name"]) <= tree_hp_max(t["name"]) + 1e-9, ("tree Health budget", t["name"], tree_hp(t["name"]))
     assert not [e for e in EFFECTS if e[4] in ("vein", "feller", "fall", "gem.mining", "coins.mining", "extra.foraging") and e[3] != "SkyyTrees"], "P8b: SkyyTrees' own effects"
     # P8d: the dodge rows are SkyyTrees' own Acrobatics rows, inside SkyySkills' tree-dodge clamp; every SkyyTrees own effect is one TreeSk
     # applies (xp. / dd. / dodge. through skill:bonus, spd / fall through the movement source, hpp / stam as stat modifiers, the gather rolls)
