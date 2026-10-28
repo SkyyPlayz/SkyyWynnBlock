@@ -68,3 +68,4 @@ tests always come first.
 259. BATCH 11 2026-10-27: Foraging XP per tree way down (big Maple ~700-1,500), inventory Compressing tab + craft Enchanted back into 100, Greater Essence of Life both ways, Bazaar no loop
 260. BATCH 12 2026-10-27: new totem page (3 columns) + range aura, vanilla-layout Totem Bench, place totems by hand, shard menu freeze fix
 261. no-freeze shard buys, Collect once, Greater Essence unpack, 9 Armory Untiered weapons, secret dragon eggs, Creative sowing, Accessory Plates 0.75
+262. shards no busy + replant everywhere, watering can tier-up, pocket craft ALL, lead veins
