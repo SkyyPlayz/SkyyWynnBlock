@@ -29,7 +29,8 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## LIVE 2026-10-27 12:45 (TEST 260, backup in backups/): Shards 0.4.13 totem UI + freeze fix (Skyy told). LIVE 12:26 (TEST 259): Skills 0.4.67 forxp, Collections 0.2.34 + Bazaar 0.2.2 ench1.
-  NEXT: the QUEUE below (usage reset 10-27, weekly ~0%).
+  RUNNING 10-27 (Skyy: "work through your whole que"): shlock (Shards 0.4.14), sacks32 (Sacks 0.8.32), ut9 (Armory 0.1.48 + Gear 0.3.49), eggs (Mobs 0.1.20 +
+  Fishing 0.2.1 + Collections 0.2.35), lean Trees 0.6.6, Augments spec revise - run ids in docs/log 10-27 LAUNCHED. Then: Shards adopts takeOpen, Augments A1 + A2.
 ## RUNNING (2026-10-26) - LIVE 21:15 (TEST 258): Gear 0.3.48. LIVE 21:04 (TEST 257): Sacks 0.8.31, Hud 0.3.37 + Pets 0.4.20, Trees 0.6.5, Zones 0.3.2.
   HOLD: Shards 0.4.12 pinned but DO NOT DEPLOY alone (Shards lock deadlock froze the island 02:38; 0.4.12 adds
   sacks calls under ShStore.LOCK) - ship the fixed 0.4.13 (totemui: deadlock fix FIRST + place totems anywhere + redesign). Sacks 0.8.31 pinned. Building: totemui (Shards 0.4.13 totem page + bench
