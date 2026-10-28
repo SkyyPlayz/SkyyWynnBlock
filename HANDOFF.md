@@ -15,7 +15,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBank | 0.1.16 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
 | SkyyIslands | 0.5.26 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.2.2 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products |
-| SkyyGear | 0.3.48 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
+| SkyyGear | 0.3.49 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.67 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.33 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
 | SkyyClasses | 0.1.50 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
@@ -32,7 +32,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyQuests | 0.4.4 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
 | SkyyRebirth | 0.5.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
 | SkyyZones | 0.3.2 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
-| SkyyShards | 0.4.14 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
+| SkyyShards | 0.4.15 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.8 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
