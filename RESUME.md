@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-24; archi1 re-launched - see STATE)
+# SkyWynn - RESUME HERE (updated 2026-10-27 night; TEST 261 live)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -28,9 +28,10 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Players' world: ZoneViewControl duplicate fixed (Skyy removed 1.1.1). Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while it is off; Skyy
   may delete 0.5.2). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## LIVE 2026-10-27 12:45 (TEST 260, backup in backups/): Shards 0.4.13 totem UI + freeze fix (Skyy told). LIVE 12:26 (TEST 259): Skills 0.4.67 forxp, Collections 0.2.34 + Bazaar 0.2.2 ench1.
-  RUNNING 10-27 (Skyy: "work through your whole que"): shlock (Shards 0.4.14), sacks32 (Sacks 0.8.32), ut9 (Armory 0.1.48 + Gear 0.3.49), eggs (Mobs 0.1.20 +
-  Fishing 0.2.1 + Collections 0.2.35), lean Trees 0.6.6, Augments spec revise - run ids in docs/log 10-27 LAUNCHED. Then: Shards adopts takeOpen, Augments A1 + A2.
+## LIVE 2026-10-27 21:09 (TEST 261, backup deploy-20261027-2109): Shards 0.4.14 (lock refactor, Collect once), Sacks 0.8.32 (Greater Essence,
+  sacks:fn:takeOpen, own ticker thread), Armory 0.1.48 (9 Untiered), Mobs 0.1.20 + Fishing 0.2.1 + Collections 0.2.35 (secret egg sources),
+  Trees 0.6.6 (Creative sowing free), Accessories 0.5.33 (Plates x1.5, Skyy "Raise cap to 13.75%"). Earlier today: TEST 259 + 260.
+  NEXT: the QUEUE below.
 ## RUNNING (2026-10-26) - LIVE 21:15 (TEST 258): Gear 0.3.48. LIVE 21:04 (TEST 257): Sacks 0.8.31, Hud 0.3.37 + Pets 0.4.20, Trees 0.6.5, Zones 0.3.2.
   HOLD: Shards 0.4.12 pinned but DO NOT DEPLOY alone (Shards lock deadlock froze the island 02:38; 0.4.12 adds
   sacks calls under ShStore.LOCK) - ship the fixed 0.4.13 (totemui: deadlock fix FIRST + place totems anywhere + redesign). Sacks 0.8.31 pinned. Building: totemui (Shards 0.4.13 totem page + bench
@@ -50,19 +51,15 @@ Older RESUME detail (10-18 .. 10-22): git history of this file.
 - Smoke: ONCE per batch by the main session; stop scratch test servers that block a deploy (Skyy 2026-10-24). tidy_local ran 13:10. DANGER: crosscheck scratch
   folders (xc-*) can hold JUNCTIONS into the real repo (tools/, art/) - unlink with `cmd /c rmdir` only, never a recursive delete;
   tools/dev/scratch/xc-sound1 still has 61 links (left alone).
-QUEUE: Shards owed / owedXp: hold the lock through ShPay.coll / xp + write-back (re-review 10-27 low: busy write-back + restart pays one Collect credit twice);
-  Shards LOCK REFACTOR Full round (move sacks / coins / collections / islands calls out of ShStore.LOCK in addMod / addBooster / grow0 / buy* / decide / door / grant - 0.4.13 only made the lock timed);
-  Trees Wide Sowing in CREATIVE may spend Pocket seeds (critic LOW, not fixed) - skip area plant or use free seeds in creative;
-  SHARED-EXECUTOR BLOCKER (which task holds HytaleServer.SCHEDULED_EXECUTOR - SkyyShards ShTick suspect; Sacks CraftTick / ProcTick still
-  there; the 0.8.31 SackBeat WARN logs the time); Greater Essence opening (Sacks: crafting / Unpack for the vanilla pair); SACKS sacks:fn:takeOpen bridge (take N of an id, loose first, open fewest Enchanted, change back) then Shards payInvBags uses it;
-   UT ARMORY 9 (SkyyArmory 0.1.48: the 9 Armory-family UT ids in tools/ut28.py - spellbook / fist / kunai / wand / staff / bo; rows wait
-  switched off in Gear 0.3.47); SECRET DRAGON EGG SOURCES (Pets 0.4.19 has only /petadmin secret): 3 lean rounds - SkyyMobs (Void kills roll, Blood night elites +
-  Heart roll, Light zone guardians give), SkyyFishing (Void catch roll), SkyyCollections (Crystal reward give) via pets:fn:secretRoll / giveSecretEgg;
-  AUGMENTS - research/Augments-Spec.md written, Skyy answered 8 questions 10-25 (docs/answered/gear.md, last 6 lines): REVISE the spec to
-  them (no removal / overwrite + fuse, elemental 10 tiers, zone-tier drops + zone primary elements Z1 Earth, Poison = weapon modifier, Attack Speed
-  live, gathering slots by rarity) + survey more elemental mob mods, then build A1 effects engine + A2 sockets. Powders dropped; Gear lane ( UT-28 incl. Ancient Bronze daggers +
-research/Vanilla-Gear-Audit.md, beta #12 / #17, Fishing B); Secret dragons (Pets); R6 Ranching XP; Zones 0.3.1; sig3 / sig5 after shield1; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
-
+QUEUE (2026-10-27 night): Shards adopts sacks:fn:takeOpen in payInvBags (Pocket part only; Sacks 0.8.32 live);
+  SkyyTrees /tree page text for Accessory Plates still says +0.5 % (tools/trees_v3_data.py R062_TEXT wc15 block -> +0.75 %) + fold the wc15
+  rows into trees_v3_effects EFFECTS; research/Combat-Into-Class-Spec.md still says the 10 % Combat Health budget;
+  SHARED-EXECUTOR holder still unknown - Shards (own thread since 0.4.13) + Sacks (own ticker since 0.8.32, measured cheap) are clean;
+  read the next play-session log for the SackBeat 'shared scheduler stalls' + 'tick max' lines, then check the other mods / pack jars;
+  AUGMENTS build: research/Augments-Spec.md REVISED 10-27 (rounds P0 probe, A0 Attack Speed, A1 effects engine, A2 sockets + items deploy
+  together; A3 drops + element mobs; defaults N1-N8 in its section 7 - fuse 2:1, Z2-Z5 Thunder / Water / Fire / Air); Slime Mobs! licence check;
+  Gear lane (Vanilla-Gear-Audit, beta #12 / #17, Fishing B); sig3 / sig5; RARITY + TOOLTIP PASS all mods; price tooltips; BetterMap.
+  Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 ## WAITING ON SKYY
 - `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
 - Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png (8 Home tiles) + research/cloud/page-emblems-art/sheet.png (4 page emblems).

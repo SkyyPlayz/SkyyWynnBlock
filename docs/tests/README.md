@@ -372,3 +372,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Upgrade rows + Enchanted tier-ups + weapons toggle + sectioned tooltips (DEPLOYED 2026-10-25, backup deploy-20261025-2115) | [2026-10](2026-10.md) |
 | Foraging XP by tier + Enchanted inventory crafting both ways (DEPLOYED 2026-10-27, backup deploy-20261027-1226) | [2026-10](2026-10.md) |
 | Totem page + Totem Bench redesign, hand-placed totems, shard freeze fix (DEPLOYED 2026-10-27, backup deploy-20261027-1245) | [2026-10](2026-10.md) |
+| Shards 0.4.14 lock refactor + Sacks 0.8.32 + Armory 0.1.48 UT 9 + secret egg sources (Mobs 0.1.20, Fishing 0.2.1, Collections 0.2.35) + Trees 0.6.6 + Accessories 0.5.33 Plates (DEPLOYED 2026-10-27, backup deploy-20261027-2109) | [2026-10](2026-10.md) |
