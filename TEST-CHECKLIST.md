@@ -71,3 +71,4 @@ tests always come first.
 262. shards no busy + replant everywhere, watering can tier-up, pocket craft ALL, lead veins
 263. Farming XP halves on low-tier crops, zone-world chests open
 264. watering can 6 upgrades + drying + fertilizer, ~4x skeletons in Zone 1
+265. Armored / Veteran mobs with zone armour, stats, drops, Server Setup rows

@@ -376,3 +376,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Hotfixes: Shards 0.4.15 (busy lock + replant whole island), Gear 0.3.49 (tool tier-up), Sacks 0.8.33 (pocket craft ALL), WorldGen 0.7.12 (lead veins) (DEPLOYED 2026-10-27, backup deploy-20261027-2242) | [2026-10](2026-10.md) |
 | Skills 0.4.68 Farming low-tier XP falloff + Zones 0.3.3 zone-world chests (DEPLOYED 2026-10-27, backup deploy-20261027-2255) | [2026-10](2026-10.md) |
 | Gear 0.3.50 watering can progression + Mobs 0.1.21 more spawns (DEPLOYED 2026-10-28, backup deploy-20261028-0549) | [2026-10](2026-10.md) |
+| Mobs 0.1.22 Armored / Veteran tougher mobs (DEPLOYED 2026-10-28, backup deploy-20261028-0714) | [2026-10](2026-10.md) |
