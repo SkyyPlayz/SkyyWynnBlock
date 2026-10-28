@@ -167,7 +167,7 @@ and the cooked-food switch. No bag needs to be carried.
 | Stack refill (Hotbar only / Full / Off) | unchanged, plus 0.7.17's reserved empty hotbar slots for Requip (`requip:pocket:<uuid>`) |
 | Crafting from bags: benches, inventory crafting, `/craft` | unchanged; the mirror offers every category (no longer only carried bag types) |
 | `/craft` class filter (`gear:fn:classShow`, 0.7.17) | unchanged |
-| Bazaar sell from bags, SkyyFishing / SkyyWardrobe takes | `sacks:fn:count / all / take / put / commit` unchanged in shape; "bag carried" gate gone |
+| Bazaar sell from bags, SkyyFishing / SkyyWardrobe takes | `sacks:fn:count / all / take / put / commit` unchanged in shape; "bag carried" gate gone; SkyySacks 0.8.32 (2026-10-27) adds `sacks:fn:takeOpen` `apply(Object[]{UUID, String itemId, Long qty}) -> Long` (qty, or 0 = nothing taken): Pocket part only (the caller takes the inventory part), loose first then the fewest Enchanted opened, change left loose, world thread only (off it = 0), settles through `put` / `commit` with the same 60 s ledger as `take` (full refund packs every opened item back, partial packs floor(returned / 100)) |
 | Requip deposit + craft bridges (0.7.17) | `sacks:fn:deposit` respects the category limit (answers what it accepted); `craftList / craftHave / craftPay / craftRefund / craftCommit` unchanged |
 | Furnace / Tannery queues, Campfire tab | unchanged |
 
