@@ -12,9 +12,9 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## NOW
-- LIVE up to TEST 267 (2026-10-30 11:50, backup deploy-20261030-1150): rarity pass (Cooking 0.1.17, Fishing 0.2.2, Shards 0.4.17,
-  Merchants 0.1.8, Bazaar 0.2.3, Armory 0.1.49, Collections 0.2.36, Wardrobe 0.2.13, Pets 0.4.21, Accessories 0.5.34) + augments A0 Gear 0.3.51
-  (Attack Speed, weight 0) + A1 Classes 0.1.51 / Mobs 0.1.23 (element states + reactions). Before: 266 Trees 0.6.7 / Shards 0.4.16 / UiProbe 0.9.
+- LIVE up to TEST 268 (2026-10-30 13:49, backup deploy-20261030-1349): augments A2 - Gear 0.3.52 (sockets, Anvil Augments tab, 120
+  Skyy_Aug_* items, Swift / Sage Mana % key), Sacks 0.8.34, Pets 0.4.22, Accessories 0.5.35, Skills 0.4.69. Skyy 10-30: "Allow x4.18".
+  TEST 267: rarity pass (10 mods) + Gear 0.3.51 Attack Speed + Classes 0.1.51 / Mobs 0.1.23 element engine.
 - Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push to main,
   copy the new jars into the base checkout, deploy from the base checkout.
 - Skyy 10-28: keep the wild Burnt Alchemist Ancient Steel drops. Running: see RUNNING.
@@ -30,11 +30,11 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
 ## RUNNING (2026-10-30)
-- aug2b wf_96e8b5b9-4a0: A2 Gear 0.3.52 + Sacks 0.8.34 (drafts, edited in place) + Swift / Sage Mana key -> Pets 0.4.22, Accessories
-  0.5.35, Skills 0.4.69. Skyy 10-30: "Allow x4.18", "Add them now" (docs/answered/gear.md). Uncommitted tools/tier_tags.py = A2's augment rows.
+- Nothing.
 
 ## NEXT (in order)
-1. Pin + smoke + deploy aug2b as one batch; FLOOR: never below Gear 0.3.52 once augments exist; refresh the Class Balance Workbench (x4.18 top line).
+1. Refresh the Class Balance Workbench (augments x4.18 top line). Follow-ups: salvage / sell confirm for items holding augments; ELEMENT POWER
+   tooltip shows socket tiers only (not rolled lines / Imbue); Tempo melee only until Armory gets caster hooks.
 2. SHARED-EXECUTOR holder (Shards + Sacks clean): after Skyy plays, read SackBeat 'shared scheduler stalls' + 'tick max', then other mods.
 3. Gear lane after A2 (Gear free): research/Vanilla-Gear-Audit.md section 8 LEFT (Ornate Bronze, Fishing B, UT-28 all live): Bronze weapon
    rung + recipes, Z2 Doomed / Z4 Saurian UT sets, Sword_Bronze_Ancient Z1 UT, Scythe_Void Berserker Mythic, Diving Crude out of combat bags,

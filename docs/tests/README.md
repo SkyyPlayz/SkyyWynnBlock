@@ -379,3 +379,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Mobs 0.1.22 Armored / Veteran tougher mobs (DEPLOYED 2026-10-28, backup deploy-20261028-0714) | [2026-10](2026-10.md) |
 | Trees Plates text, Shards Pocket Enchanted, price-tooltip probe + AH price index (DEPLOYED 2026-10-30, backup deploy-20261030-0809) | [2026-10](2026-10.md) |
 | Rarity pass (10 mods) + augments A0 Attack Speed + A1 element engine (DEPLOYED 2026-10-30, backup deploy-20261030-1150) | [2026-10](2026-10.md) |
+| Augments A2: sockets + 120 augment items (Gear 0.3.52) + Mana % key (DEPLOYED 2026-10-30, backup deploy-20261030-1349) | [2026-10](2026-10.md) |

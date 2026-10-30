@@ -74,3 +74,4 @@ tests always come first.
 265. Armored / Veteran mobs with zone armour, stats, drops, Server Setup rows
 266. Trees Plates text, Shards pays from Pocket Enchanted, price probes P1-P5 (/uiprobe tip)
 267. rarity colours + sectioned tooltips (10 mods), Gear Attack Speed, element states + reactions
+268. augment sockets (Anvil Augments tab, craft / add / replace / fuse, Swift + Sage Mana %)
