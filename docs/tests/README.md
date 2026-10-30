@@ -378,3 +378,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Gear 0.3.50 watering can progression + Mobs 0.1.21 more spawns (DEPLOYED 2026-10-28, backup deploy-20261028-0549) | [2026-10](2026-10.md) |
 | Mobs 0.1.22 Armored / Veteran tougher mobs (DEPLOYED 2026-10-28, backup deploy-20261028-0714) | [2026-10](2026-10.md) |
 | Trees Plates text, Shards Pocket Enchanted, price-tooltip probe + AH price index (DEPLOYED 2026-10-30, backup deploy-20261030-0809) | [2026-10](2026-10.md) |
+| Rarity pass (10 mods) + augments A0 Attack Speed + A1 element engine (DEPLOYED 2026-10-30, backup deploy-20261030-1150) | [2026-10](2026-10.md) |

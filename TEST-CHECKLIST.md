@@ -73,3 +73,4 @@ tests always come first.
 264. watering can 6 upgrades + drying + fertilizer, ~4x skeletons in Zone 1
 265. Armored / Veteran mobs with zone armour, stats, drops, Server Setup rows
 266. Trees Plates text, Shards pays from Pocket Enchanted, price probes P1-P5 (/uiprobe tip)
+267. rarity colours + sectioned tooltips (10 mods), Gear Attack Speed, element states + reactions
