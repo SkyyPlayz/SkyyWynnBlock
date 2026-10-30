@@ -42,7 +42,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
    rules, probes) -> sig5 (13 Mythic signatures; needs the sig3 probe PASS in game).
 4. Augments A3 (Mobs drops + element mobs; PACK Slime Mobs! 1.1.4 - MIT, Water / Fire / Ice slimes, docs/log 10-30) + A4 (Menu charts).
 5. Price tooltips R2 Bazaar 0.2.3 after Skyy runs P1-P5 (/uiprobe tip); R3 Gear if P3 passes. BetterMap shard-world listing.
-6. RARITY + TOOLTIP PASS all mods (when no other round holds those mods). Lint rule: no continue / break inside a lock try.
+6. RARITY + TOOLTIP PASS all mods (when no other round holds those mods).
 7. Older: UI R1b-R5 after /skyprobe tour; Dragon-Quest-Spec (research/cloud) needs Skyy's call; GlymeraSigns ask = Skyy sends it.
 
 ## Never forget
