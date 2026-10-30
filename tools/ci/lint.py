@@ -27,6 +27,10 @@ check and expensive to get wrong:
         kit (research/Menu-Pattern.md 3, kit 1.7 hub_page): the "< Menu" button, a hub page still on hub_shell / hub_big_shell, a back
         text ("< Back", "Go Back", "< <word>"), a pager or tab_row on a hub page; a line marked menu-pattern-ok is skipped (grid /
         storage pages that keep real slot pages)
+  FAIL  (lock_finally_jump, 2026-10-30; WARN if LOCK_JUMP_FAIL = False) a Java `try` whose `finally` releases a lock (unlock() / release()
+        / a lock or busy flag cleared) while the try body leaves through break / continue: javassist does not run that finally (SkyyShards
+        0.4.14 busy bug). Checked in every PINNED script (tools/deploy_set.py SET) and the newest scripts; // lock-jump-ok skips a line.
+        python tools/ci/lint.py --lockjump <scripts>  lists hits; --lockjump-selftest runs the rule's own test cases
 Exit code 1 on any FAIL.
 Files checked = tracked + untracked-but-not-ignored (what `git add -A` would commit), so a new, not yet committed build script counts.
 Extra: python tools/ci/lint.py --perm <build script> ...   runs only the permission-group check on the given files (old / pinned ones).
@@ -356,6 +360,155 @@ if "--perm" in sys.argv:
     sys.exit(1 if n else 0)
 
 
+# ---- lock_finally_jump (2026-10-30): javassist does NOT run a `finally` block when the try body leaves through `break` / `continue`
+# (return and throw do run it - SkyyShards 0.4.15 header). SkyyShards 0.4.14 had `LOCK.lock(); try { ... continue; ... } finally { LOCK.unlock(); }`
+# in ShParticles.run: every empty slot leaked one lock hold -> every click "busy". Flag a `try` whose `finally` releases a lock / clears a
+# busy flag when the try body (not inside a loop / switch of its own, not inside an anonymous class) contains `break` / `continue`.
+# Fix: decide with a flag inside the lock and continue AFTER the finally. A line marked  // lock-jump-ok  is skipped.
+LOCK_JUMP_FAIL = True       # 2026-10-30: no pinned / newest script hits it (SkyyShards 0.4.15 fixed the only one) -> FAIL; False = WARN
+_LJ_REL_RE = re.compile(r"\.\s*(?:unlock|unlockAll|release|releaseAll|releaseLock|tryRelease)\s*\("
+                        r"|\b[\w.@]*(?:lock|LOCK|Lock|busy|BUSY|Busy|held|HELD|Held|inFlight|IN_FLIGHT)\w*\s*=\s*(?:false|null|0)\s*;"
+                        r"|\b[\w.@]*(?:lock|LOCK|Lock|busy|BUSY|Busy|held|HELD|Held)\w*\s*\.\s*(?:set\s*\(\s*(?:false|0|null)|remove\s*\(|clear\s*\()"
+                        r"|LOCK[\w.)(@ ]*\.\s*fix\s*\(")
+_LJ_STR_RE = re.compile(r'"(?:\.|[^"\\n])*"|\'(?:\.|[^\'\\n])\'|//[^\n]*|/\*.*?\*/', re.S)
+
+
+def _lj_clean(text):
+    """The text with Java string / char literals and comments blanked (same length, newlines kept) so braces and keywords can be scanned."""
+    text = re.sub(r"(?m)^\s*#[^\n]*", lambda m: " " * len(m.group(0)), text)     # Python comment lines
+    return _LJ_STR_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+
+
+def _lj_close(s, i):
+    """Index of the } matching the { at s[i] (or -1)."""
+    d = 0
+    for j in range(i, len(s)):
+        c = s[j]
+        if c == "{":
+            d += 1
+        elif c == "}":
+            d -= 1
+            if d == 0:
+                return j
+    return -1
+
+
+def _lj_head(s, a, pos):
+    """The statement text before s[pos]: back to the previous ; { } that sits outside parentheses (a for header holds ;)."""
+    d = 0
+    k = pos - 1
+    while k >= a:
+        c = s[k]
+        if c == ")":
+            d += 1
+        elif c == "(":
+            d -= 1
+        elif d <= 0 and c in ";{}":
+            break
+        k -= 1
+    return s[k + 1:pos]
+
+
+_LJ_KW_RE = re.compile(r"\b(break|continue)\b|[{}]")
+
+
+def _lj_jumps(s, a, b):
+    """Offsets of break / continue in s[a:b] that leave the enclosing try (not inside their own loop / switch / anonymous class)."""
+    out, stack = [], []
+    for m in _LJ_KW_RE.finditer(s, a, b):
+        t = m.group(0)
+        if t == "{":
+            head = _lj_head(s, a, m.start())
+            if re.search(r"\b(?:for|while)\s*\(.*\)\s*$", head, re.S) or re.search(r"\bdo\s*$", head):
+                stack.append("loop")
+            elif re.search(r"\bswitch\s*\(.*\)\s*$", head, re.S):
+                stack.append("switch")
+            elif re.search(r"\bnew\s+[\w.@{}]+\s*\([^)]*\)\s*$", head, re.S):
+                stack.append("class")
+            else:
+                stack.append("blk")
+        elif t == "}":
+            if stack:
+                stack.pop()
+        else:
+            if "class" in stack or "loop" in stack:
+                continue
+            if t == "break" and "switch" in stack:
+                continue
+            if re.search(r"\b(?:for|while)\s*\(.*\)\s*$", _lj_head(s, a, m.start()), re.S):     # braceless loop body: for (...) continue;
+                continue
+            out.append(m.start())
+    return out
+
+
+def lock_finally_jumps(rel, text):
+    """Lines 'file:line message' for try blocks whose finally releases a lock while the try body leaves by break / continue."""
+    s = _lj_clean(text)
+    orig = text.splitlines()
+    out = []
+    for m in re.finditer(r"\btry\s*\{", s):
+        o = m.end() - 1
+        c = _lj_close(s, o)
+        if c < 0:
+            continue
+        j = c + 1
+        while True:     # skip catch clauses
+            cm = re.compile(r"\s*catch\s*\([^)]*\)\s*\{").match(s, j)
+            if not cm:
+                break
+            cc = _lj_close(s, cm.end() - 1)
+            if cc < 0:
+                break
+            j = cc + 1
+        fm = re.compile(r"\s*finally\s*\{").match(s, j)
+        if not fm:
+            continue
+        fe = _lj_close(s, fm.end() - 1)
+        if fe < 0 or not _LJ_REL_RE.search(s, fm.end(), fe):
+            continue
+        for p in _lj_jumps(s, o + 1, c):
+            ln = s.count("\n", 0, p) + 1
+            if "lock-jump-ok" in orig[ln - 1]:
+                continue
+            kw = re.match(r"\w+", s[p:]).group(0)
+            out.append("%s:%d `%s` inside a try whose finally (line %d) releases a lock - javassist does not run that finally on break / "
+                       "continue, so the lock is never released (SkyyShards 0.4.14 busy bug); set a flag inside the lock and %s after "
+                       "the finally" % (rel, ln, kw, s.count(chr(10), 0, fm.end()) + 1, kw))
+    return out
+
+
+def _lj_selftest():
+    bad = ('void run() { for (int i = 0; i < 3; i++) { ShStore.LOCK.lock(); try { if (x == null) continue; work(i); }'
+           ' finally { ShStore.LOCK.unlock(); } } }')
+    good = ('void run() { for (int i = 0; i < 3; i++) { boolean work = false; ShStore.LOCK.lock(); try { work = x != null; }'
+            ' finally { ShStore.LOCK.unlock(); } if (!work) continue; work(i); } }')
+    inner = 'void f() { LOCK.lock(); try { for (int i = 0; i < 3; i++) { if (i == 1) continue; if (i == 2) break; } return; } finally { LOCK.unlock(); } }'
+    cls = 'void g() { for (;;) { LOCK.lock(); try { String s = "continue; } finally {"; a(); } finally { LOCK.unlock(); } } }'
+    close = 'void h() { for (;;) { try { if (a) break; } finally { in.close(); } } }'
+    cases = ((bad, 1), (good, 0), (inner, 0), (cls, 0), (close, 0))
+    n = 0
+    for src, want in cases:
+        got = len(lock_finally_jumps("selftest", src))
+        if got != want:
+            print("FAIL  lock_finally_jump selftest: expected %d hit(s), got %d for: %s" % (want, got, src[:70]))
+            n += 1
+    print("lock_finally_jump selftest: %d case(s), %d fail(s)" % (len(cases), n))
+    return n
+
+
+if "--lockjump-selftest" in sys.argv:
+    sys.exit(1 if _lj_selftest() else 0)
+if "--lockjump" in sys.argv:
+    _n = 0
+    for p in sys.argv[sys.argv.index("--lockjump") + 1:]:
+        for x in lock_finally_jumps(p, open(p, encoding="utf8", errors="replace").read()):
+            print("HIT   " + x)
+            _n += 1
+    print("lock_finally_jump: %d hit(s)" % _n)
+    sys.exit(0)
+
+
+
 def tracked_files():
     # tracked files PLUS untracked ones that are not .gitignored = exactly what `git add -A` would commit, so a new build script
     # (e.g. an untracked build_<mod>_<newer>.py) is checked locally before its first commit; in CI (clean checkout) this is the same as
@@ -670,6 +823,28 @@ for mod, f in sorted(newest.items()):
     _src = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
     if KIT_IMPORT_RE.search(_src) and mod not in MP_EXEMPT_MODS:
         (fails if MENU_PATTERN_FAIL else warns).extend(menu_pattern_warnings(f, _src))
+
+# ---- lock_finally_jump over the PINNED scripts (tools/deploy_set.py SET) and the newest scripts (WARN, or FAIL once LOCK_JUMP_FAIL)
+def _pinned_scripts():
+    try:
+        src = open(os.path.join(ROOT, "tools", "deploy_set.py"), encoding="utf8", errors="replace").read()
+        src = re.sub(r"(?m)#.*$", "", src)
+        i = src.index("SET = [")
+        j = src.index(chr(10) + "]", i)
+        return ["%s/build_%s_%s.py" % (m.group(1), m.group(1).lower(), m.group(2))
+                for m in re.finditer(r'\(\s*"(Skyy[A-Za-z]+)"\s*,\s*"(\d+(?:\.\d+)*)"', src[i:j])]
+    except Exception as e:
+        warns.append("lock_finally_jump: could not read the pinned SET from tools/deploy_set.py (%s)" % e)
+        return []
+
+
+_lj_hits = {}
+for _f in sorted(set(_pinned_scripts()) | set(newest.values())):
+    _p = os.path.join(ROOT, _f)
+    if os.path.isfile(_p):
+        _lj_hits[_f] = lock_finally_jumps(_f, open(_p, encoding="utf8", errors="replace").read())
+for _f, _h in sorted(_lj_hits.items()):
+    (fails if LOCK_JUMP_FAIL else warns).extend("lock_finally_jump: " + x for x in _h)
 
 print("SkyWynn lint: %d files, newest build scripts: %s" % (len(files), ", ".join("%s %s" % (m, vkey(p)) for m, p in sorted(newest.items()))))
 if missing:
