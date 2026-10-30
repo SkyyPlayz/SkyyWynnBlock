@@ -7,8 +7,8 @@ before 2026-10-24). Everything here is the local session's.
 ## Open
 1. BETA BUGS (`docs/tests/2026-10-17-beta-bugs.md`; fixes from Skyy's tests come first, PROJECT-RULES 7). Tick each box + log it. Still open:
    - #4 partly fixed (Hud 0.3.34 / Islands 0.5.23 / WorldGen 0.7.6 - see the bug's line for what is left).
-   - #12 unidentified drops already show their weapon type - not started.
-   - #17 "Wooden Hoe" in the Anvil upgrade list - not started (check if it is on purpose).
+   - #12 unidentified drops show their weapon type - BUILT (Gear 0.3.28 / 0.3.35, live 10-22); waits for Skyy's check, then tick it.
+   - #17 "Wooden Hoe" in the Anvil upgrade list - BUILT (removed, same rounds); waits for Skyy's check, then tick it.
    - #11 off-hand torch refill: Sacks 0.8.25 built, NOT pinned (Skyy 2026-10-19 "skip for now").
    - #7, #8, #10, #14, #18 PARKED by Skyy 2026-10-18 - leave until Skyy un-parks them.
    - Its "Design notes" section needs Skyy's OK / a spec before building.

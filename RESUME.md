@@ -36,12 +36,14 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 ## NEXT (in order)
 1. Pin + smoke + deploy augments A0-A2 as one batch.
 2. SHARED-EXECUTOR holder (Shards + Sacks clean): after Skyy plays, read SackBeat 'shared scheduler stalls' + 'tick max', then other mods.
-3. Gear lane after A2 (Gear free): research/Vanilla-Gear-Audit.md section 8 (Skyy took all defaults 10-30: shields = own round, Trork set,
-   Ornate Bronze legs, UT picks) + beta #12 / #17 + Fishing B. Then sig3 -> sig5 (research/UT-Mythic-Signatures.md section 8).
+3. Gear lane after A2 (Gear free): research/Vanilla-Gear-Audit.md section 8 LEFT (Ornate Bronze, Fishing B, UT-28 all live): Bronze weapon
+   rung + recipes, Z2 Doomed / Z4 Saurian UT sets, Sword_Bronze_Ancient Z1 UT, Scythe_Void Berserker Mythic, Diving Crude out of combat bags,
+   Trork / Kweebec set (Gear + Mobs drops); shields = own round. Then sig3 (Revolving Door, Weighted Vortex, armory:fn:sigfx, C+ charge
+   rules, probes) -> sig5 (13 Mythic signatures; needs the sig3 probe PASS in game).
 4. Augments A3 (Mobs drops + element mobs; PACK Slime Mobs! 1.1.4 - MIT, Water / Fire / Ice slimes, docs/log 10-30) + A4 (Menu charts).
 5. Price tooltips R2 Bazaar 0.2.3 after Skyy runs P1-P5 (/uiprobe tip); R3 Gear if P3 passes. BetterMap shard-world listing.
 6. RARITY + TOOLTIP PASS all mods (when no other round holds those mods). Lint rule: no continue / break inside a lock try.
-7. Older: UI R1b-R5 after /skyprobe tour; Powders P1 / Fishing stage 2 / UT-28 / Secret dragons specs in research/cloud/; GlymeraSigns ask.
+7. Older: UI R1b-R5 after /skyprobe tour; Dragon-Quest-Spec (research/cloud) needs Skyy's call; GlymeraSigns ask = Skyy sends it.
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
