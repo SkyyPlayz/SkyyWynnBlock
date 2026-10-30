@@ -3525,7 +3525,8 @@ def forxp_main():
 # Spec 3.2 (stat augments, 5 tiers = the zones, T1-T4 by the tier scale), 4.1 (elemental, 10 tiers, fused 2:1 - N1 default; Poison = a weapon
 # MODIFIER, 5 tiers, D16), 2.5 (slots by rarity), 6.1 A0 (Attack Speed live, SkyyGear 0.3.51). PLACEHOLDER rows until Skyy signs off; the one
 # change from the spec (P0, 2026-10-30): Tempo T5 = Attack Speed 2.0 + Damage 2.4 (the spec's 3 + 3.6 gives +6.2 % a slot, 2 points over the
-# +4.2 % target - shown as an OPEN row). Kits = P5 rolled kits (p5_roll at full level, AUG_N rolls, P5_SEED). Augment lines are flat (no slot
+# +4.2 % target). Skyy 2026-10-30 (the A2 popup) "Allow x4.18": the augment numbers ship AS BUILT (Tempo 2.0 + 2.4 too) and the full augment
+# kit's DPS x4.18 is the new top line - both former OPEN rows are accepted rows now. Kits = P5 rolled kits (p5_roll at full level, AUG_N rolls, P5_SEED). Augment lines are flat (no slot
 # power) and summed with the rolled lines. python tools/balance_model.py --aug [--check]
 AUG_TIER_SCALE = (0.40, 0.55, 0.70, 0.85, 1.00)
 AUG_STAT_T5 = {   # kind: (fits: w weapon / s spell weapon / a armor / t tool, {stat: T5 value per slot})
@@ -3534,7 +3535,8 @@ AUG_STAT_T5 = {   # kind: (fits: w weapon / s spell weapon / a armor / t tool, {
     "Bulwark": ("a", {"def": 0.9, "hpp": 1.0}), "Warrior": ("a", {"str": 1.6, "def": 1.6}), "Swift": ("a", {"spd": 0.5, "manap": 2.0}),
     "Vital": ("a", {"hpp": 1.3, "hprp": 0.8}), "Sage": ("a", {"mp": 1.6, "manap": 2.0}),
     "Prospector": ("t", {"bspeed": 4.0, "fort": 25.0}), "Scholar": ("t", {"wis": 3.0, "fort": 15.0}), "Delver": ("t", {"power": 6.0, "bspeed": 3.0})}
-AUG_TEMPO_SPEC = {"as": 3.0, "dmg": 3.6}          # spec 3.2 as written (OPEN: Skyy / the A2 round picks)
+AUG_TEMPO_SPEC = {"as": 3.0, "dmg": 3.6}          # spec 3.2 as written (not shipped: Skyy 2026-10-30 "Allow x4.18" = ship as built, 2.0 + 2.4)
+AUG_TOP_LINE = 4.18          # Skyy 2026-10-30 "Allow x4.18": the P5 best kit + the full Mythic augment kit (DPS) - the accepted top line
 AUG_POISON = (0.4, 0.8, 1.2, 1.6, 2.0)          # % Poison per slot, weapons only (the live "poison" key; not in p5_dps)
 AUG_ELEM_DMG = (0.3, 0.5, 0.7, 0.9, 1.2, 1.5, 1.9, 2.3, 2.6, 3.0)          # weapon: % of the hit as the element (joins f<E>)
 AUG_ELEM_POWER = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)          # Element Power = the tier (spec 4.2, cap AUG_POWER_CAP)
@@ -3643,8 +3645,9 @@ def aug_rows():
             rows.append(("One T5 %s slot on a %s kit: EHP +%.1f %% +- %.1f (spec 3.1)" % (kind, rar, AUG_TARGET_A[0], AUG_TARGET_A[1]), "%+.2f %%" % g,
                          abs(g - AUG_TARGET_A[0]) <= AUG_TARGET_A[1]))
     gs = aug_gain(AUG_TEMPO_SPEC, "mythic")
-    rows.append(("OPEN (Skyy / round A2): Tempo T5 as the spec wrote it (Attack Speed +3, Damage +3.6)", "%+.2f %% DPS (the model uses 2.0 + 2.4 = %+.2f %%)" % (
-        gs, aug_gain(AUG_STAT_T5["Tempo"][1], "mythic")), True))
+    rows.append(("Tempo T5 ships as built: Attack Speed +2, Damage +2.4 (Skyy 2026-10-30 'Allow x4.18' = the A2 numbers as built; the spec's 3 / 3.6 is not used)",
+                 "%+.2f %% DPS a slot (the spec's 3 / 3.6 would be %+.2f %%)" % (aug_gain(AUG_STAT_T5["Tempo"][1], "mythic"), gs),
+                 AUG_STAT_T5["Tempo"][1] == {"as": 2.0, "dmg": 2.4}))
     sc = [aug_gain(aug_value("Brute", t_), "mythic") for t_ in range(1, 6)]
     rows.append(("Stat tiers T1 < T2 < ... < T5 (the tier scale 40 / 55 / 70 / 85 / 100 %)", " / ".join("%+.2f" % x for x in sc), all(a < b for a, b in zip(sc, sc[1:]))))
     fe = [aug_gain(aug_elem("Fire", t_), "mythic") for t_ in range(1, 11)]
@@ -3672,10 +3675,17 @@ def aug_rows():
     rows.append(("[report] the same kit with 4 Warrior + 4 Bulwark + 4 Vital armor slots (Strength on armor = DPS)", "DPS x%.3f, EHP x%.3f" % (
         1 + aug_gain(aug_add(wk, am), "mythic") / 100.0, 1 + aug_gain(aug_add(wk, am), "mythic", ehp=True) / 100.0), True))
     k0d, k0e = p5_kit()
-    rows.append(("OPEN (Skyy: spec 3.1 / D8 'inside the gear shares'): the P5 best / plain kit with that augment kit on the best side",
-                 "DPS x%.2f -> x%.2f, EHP x%.2f -> x%.2f (P5_KIT_SPEC x%.1f / x%.1f +- 15 %%: DPS %s, EHP %s)" % (
-                     k0d, k0d * kd, k0e, k0e * ke, P5_KIT_SPEC[0], P5_KIT_SPEC[1],
-                     "inside" if abs(k0d * kd / P5_KIT_SPEC[0] - 1) <= 0.15 else "OUTSIDE", "inside" if abs(k0e * ke / P5_KIT_SPEC[1] - 1) <= 0.15 else "OUTSIDE"), True))
+    rows.append(("ACCEPTED (Skyy 2026-10-30 'Allow x4.18'): the P5 best kit + the full augment kit = the new top line DPS x%.2f (the kit without augments "
+                  "keeps x%.1f +- 15 %%; EHP stays inside x%.1f +- 15 %%)" % (AUG_TOP_LINE, P5_KIT_SPEC[0], P5_KIT_SPEC[1]),
+                 "DPS x%.2f -> x%.2f, EHP x%.2f -> x%.2f (without augments: DPS %s, EHP %s)" % (
+                     k0d, k0d * kd, k0e, k0e * ke,
+                     "inside" if abs(k0d / P5_KIT_SPEC[0] - 1) <= 0.15 else "OUTSIDE", "inside" if abs(k0e / P5_KIT_SPEC[1] - 1) <= 0.15 else "OUTSIDE"),
+                 abs(k0d * kd - AUG_TOP_LINE) <= 0.02 and abs(k0d / P5_KIT_SPEC[0] - 1) <= 0.15 and abs(k0e * ke / P5_KIT_SPEC[1] - 1) <= 0.15))
+    sw5, sg5 = aug_value("Swift", 5), aug_value("Sage", 5)
+    rows.append(("[report] Swift / Sage (ship with SkyyGear 0.3.52, Skyy 2026-10-30 'Add them now'): Mana % per T5 armor slot = the modifier "
+                 "skyygear_mana, a % of the FLAT max (Pets / Accessories / Skills Mana % layers never feed on it)",
+                 "Swift V +%.1f Speed + %.1f %% Mana, Sage V +%.1f Magical Power + %.1f %% Mana; 12 armor slots of Sage V = +%.0f %% Mana" % (
+                     sw5["spd"], sw5["manap"], sg5["mp"], sg5["manap"], 12 * sg5["manap"]), sw5["manap"] == 2.0 and sg5["manap"] == 2.0))
     # ---- Attack Speed live (SkyyGear 0.3.51 / round A0)
     rows.append(("Attack Speed: DPS x (1 + as) exactly on melee swings, the swing in %d %% steps up to %d %% (cap %g)" % (AS_STEP, AS_STEP * AS_K, AS_CAP),
                  "as 7 -> step %d %%, x%.2f; as 40 -> x%.2f" % (AS_STEP * aug_as_step(7), aug_as_dps(7), aug_as_dps(40)),

@@ -91,9 +91,9 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.33"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.3"), ("SkyyGear", "0.3.51"), ("SkyySkills", "0.4.68"),
-    ("SkyyAccessories", "0.5.34"), ("SkyyClasses", "0.1.51"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.34"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.3"), ("SkyyGear", "0.3.52"), ("SkyySkills", "0.4.69"),
+    ("SkyyAccessories", "0.5.35"), ("SkyyClasses", "0.1.51"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -151,7 +151,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.21"),
+    ("SkyyPets", "0.4.22"),
     ("SkyyWardrobe", "0.2.13"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -167,6 +167,7 @@ SET = [
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
     # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
     # FLOOR (2026-10-27, totemui): SkyyShards 0.4.13 (card totem page + range aura, vanilla-layout Totem Bench, totem poles placed by hand, timed ShStore lock + own tick thread, pay-under-lock fixes) rolls back alone to 0.4.12 - no migration; a hand-placed totem's entry carries an extra 8th part "dx;dz" that 0.4.12 ignores (it then draws that totem on a pad and its hand-placed block stays as a plain block) - pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
+    # FLOOR (2026-10-30, augments A2 + aug2b): SkyyGear 0.3.52 + SkyySacks 0.8.34 + SkyyPets 0.4.22 + SkyyAccessories 0.5.35 + SkyySkills 0.4.69 (+ SkyyClasses >= 0.1.51) pin + roll back TOGETHER. NEVER roll SkyyGear below 0.3.52 once any Skyy_Aug_* item or socketed augment exists (older Gear does not know the aug / augAdd doc keys: unknown items, dropped sockets). Before a Gear rollback switch part.augments off for one session (removes the saved skyygear_mana modifier from online players). Older Pets / Accessories / Skills with Gear 0.3.52 = a small Mana double count for Swift / Sage wearers (no data loss). Sacks 0.8.34 alone may roll back only while no augment sits in a Combat bag.
     # FLOOR (2026-10-30, augments A0): SkyyGear 0.3.51 (Attack Speed live: hidden SkyyGear_Speed_As* swing-step effects, stats.as migration 10,0 with Undo, as.cap row) rolls back alone to 0.3.50 - no saved item fields; a player saved within 3 s of a swing may log one harmless unknown-effect line.
     # FLOOR (2026-10-30, augments A1): SkyyClasses 0.1.51 + SkyyMobs 0.1.23 (element states + reactions engine, classes:fn:elemHit) roll back together or alone to 0.1.50 / 0.1.22 - no saved-data change; turn elem.on off first or live Burning / Wet states end at the restart. A2 (Gear 0.3.52 + Sacks 0.8.34) needs Classes >= 0.1.51.
     # FLOOR (2026-10-30, rarity pass rar_*): SkyyCooking 0.1.17, SkyyFishing 0.2.2, SkyyShards 0.4.17, SkyyMerchants 0.1.8, SkyyBazaar 0.2.3, SkyyArmory 0.1.49, SkyyCollections 0.2.36, SkyyWardrobe 0.2.13, SkyyPets 0.4.21, SkyyAccessories 0.5.34 = looks only (rarity colour on icons / titles, sectioned Style Guide 15 tooltips, tier tags); each rolls back alone to its previous pin - no saved data, no config, no migration.

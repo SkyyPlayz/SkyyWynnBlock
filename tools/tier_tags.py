@@ -73,7 +73,7 @@ GEAR_INTERNAL = ("Crude", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "
 OLD_LADDER = GEAR_INTERNAL      # TT_VERSION 1: the number was internal + 1 (T1 Crude, T2 Copper, T3 Iron ... T8 Onyxium)
 CRUDE_WORDS = ("Crude", "Wood")    # T1 items of these words keep the word "Crude" in their tag ("T1 Crude"); every other T1 item says Copper
 SEP = " - "                      # format A: "T3 Iron - text"
-OWN_LADDERS = ("Totem", "Loot", "Bench", "Talisman", "Charm", "Fish")      # ores01: + Charm (the Furnace Charm line, SkyyAccessories 0.5.25); fish2: + Fish (SkyyFishing 0.2.0)
+OWN_LADDERS = ("Totem", "Loot", "Bench", "Talisman", "Charm", "Fish", "Augment")      # ores01: + Charm (the Furnace Charm line, SkyyAccessories 0.5.25); fish2: + Fish (SkyyFishing 0.2.0); aug2: + Augment (SkyyGear 0.3.52)
 OWNERS = ("SkyyCollections", "SkyyGear", "SkyyArmory", "SkyyWorldGen", "SkyyFishing")          # fish2: + SkyyFishing (its rods, reels and fish)
 # Hides + leathers are NOT tagged (coordinator 2026-10-15): the plan's Soft T1 ... Prismic T8 order was a PLACEHOLDER (economy.md price
 # order) and Skyy picked "Leave untagged" for things the design gives no real tier - a wrong tag is worse than none.
@@ -569,6 +569,20 @@ for _u28r in _UT28.rows():
     _add(_u28r[0], metal_tier(_UT28.ZONE_ALLOY[_u28r[3]]), "ut", "SkyyGear" if _u28r[4] == "gear" else "SkyyArmory")
 UT_IDS = tuple(_UT28.IDS)
 del _u28r
+
+# AUGMENTS (SkyyGear 0.3.52 round A2, research/Augments-Spec.md 2.2 / 2.3; Skyy 2026-10-25 "the buff augments are 5 tiers. one per zone. but
+# elemental ones have 10"): 120 items Skyy_Aug_<Kind>_<n> (Swift + Sage since aug2b: Skyy 2026-10-30 "Add them now"), own-ladder word "Augment" ("T3 Augment - Brute (stat)"), the tier = the number in the
+# id (stat kinds + Poison T1-T5, the five elements T1-T10). Family "augment", owner SkyyGear (its lang writes the tags). Not in Assets.zip.
+AUG_KINDS = ("Brute", "Edge", "Precision", "Arcane", "Tempo", "Bulwark", "Warrior", "Swift", "Vital", "Sage", "Prospector", "Scholar", "Delver",
+             "Earth", "Thunder", "Water", "Fire", "Air", "Poison")
+AUG_TIERS = dict((_k, 10 if _k in ("Earth", "Thunder", "Water", "Fire", "Air") else 5) for _k in AUG_KINDS)
+AUG_LATER = ()          # aug2 fix hid Swift / Sage; aug2b (Skyy 2026-10-30 "Add them now"): their Mana % ships (skyygear_mana) - every kind has rows
+AUG_IDS = tuple("Skyy_Aug_%s_%d" % (_k, _n) for _k in AUG_KINDS if _k not in AUG_LATER for _n in range(1, AUG_TIERS[_k] + 1))
+for _au in AUG_IDS:
+    _add(_au, int(_au.split("_")[-1]), "augment", "SkyyGear")
+    WORDS[_au] = "Augment"
+assert len(AUG_IDS) == 120 and tag_text(ROWS["Skyy_Aug_Fire_7"][0], WORDS["Skyy_Aug_Fire_7"]) == "T7 Augment"
+del _au
 
 
 def rarity_tag_for(item_id):
