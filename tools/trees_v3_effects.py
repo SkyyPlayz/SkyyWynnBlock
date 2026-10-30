@@ -60,6 +60,9 @@ keep their x1.5 ceiling (PET_FACTOR_MAX) although SkyyPets 0.4.8's Mythic rarity
 import trees_v3_data as V3D
 
 # (tree, branch, id, applier, effect, per rank, scale, cap)
+# wc15 FOLDED (SkyyTrees 0.6.7, 2026-10-30): the 14 Weaponcraft x1.5 rows of tools/wc15.py ROWS (SkyyGear 5, SkyyMobs 5, SkyyClasses 3,
+# SkyyAccessories 1) hold their NEW per-rank numbers here, so this table is the one source; wc15.apply() now swaps nothing (returns 0) and
+# only adds the run-once marker to that mod's fresh trees.properties. tools/wc15.py ROWS keeps the OLD numbers for the one-time updates.
 EFFECTS = [
     # ---------------- Mining (essential): tool tier, gear, accessory, pet rows + Pet Synergy
     ("Mining", 2, "r1a", "SkyyGear", "bp.mining", 0.02, "tool", 7),                # Tool Mastery: +2% mining speed per tool tier, per rank
@@ -75,11 +78,11 @@ EFFECTS = [
     ("Foraging", 2, "r4a", "SkyyPets", "xp.foraging", 0.02, "pet:Foraging", 6),    # Pet Companion: +2% Foraging XP ...
     ("Foraging", 2, "r4a", "SkyyPets", "dd.foraging", 0.01, "pet:Foraging", 6),    # ... and +1% yield x the Foraging pet's rarity bonus
     # ---------------- Combat (essential; points = the class level)
-    ("Combat", 1, "r1a", "SkyyGear", "dmg", 2, None, 0),                           # Hone Edge: +2% weapon damage per rank
-    ("Combat", 1, "r1b", "SkyyGear", "cc", 2, None, 0),                            # Weak Spot: +2% crit chance per rank
-    ("Combat", 1, "r4a", "SkyyGear", "cd", 3, None, 0),                            # Crit Mastery: +3% crit damage per rank
-    ("Combat", 1, "r4b", "SkyyGear", "dmg", 2, "armor:combat", 4),                 # Gear Resonance: +2% damage per combat armor piece
-    ("Combat", 2, "r4a", "SkyyAccessories", "hpp", 0.005, "acc", 5),               # Accessory Plates: +0.5 % max Health per accessory (Balance P5 4.2.2: was +2 FLAT; ceiling 7.5 %)
+    ("Combat", 1, "r1a", "SkyyGear", "dmg", 3.0, None, 0),                         # Hone Edge: +3% weapon damage per rank (wc15 x1.5: was 2)
+    ("Combat", 1, "r1b", "SkyyGear", "cc", 3.0, None, 0),                          # Weak Spot: +3% crit chance per rank (wc15 x1.5: was 2)
+    ("Combat", 1, "r4a", "SkyyGear", "cd", 4.5, None, 0),                          # Crit Mastery: +4.5% crit damage per rank (wc15 x1.5: was 3; SkyyGear rounds to whole %)
+    ("Combat", 1, "r4b", "SkyyGear", "dmg", 3.0, "armor:combat", 4),               # Gear Resonance: +3% damage per combat armor piece (wc15 x1.5: was 2)
+    ("Combat", 2, "r4a", "SkyyAccessories", "hpp", 0.0075, "acc", 5),              # Accessory Plates: +0.75 % max Health per accessory (Balance P5 4.2.2: was +2 FLAT; wc15 x1.5 SkyyAccessories 0.5.33: was 0.5 %; ceiling 11.25 %)
     ("Combat", 3, "r3a", "SkyyPets", "xp.combat", 0.02, "pet:Combat", 6),          # Pet Fang: +2% combat (class) XP ...
     ("Combat", 3, "r3a", "SkyyPets", "dmg", 1, "pet:Combat", 6),                   # ... and +1% damage x the Combat pet's rarity bonus
     ("Combat", 3, "r5b", "SkyySkills", "class.xp", 0.02, None, 0),                 # Combat Insight: +2% combat (class) XP per rank
@@ -99,7 +102,7 @@ EFFECTS = [
     ("Smithing", 2, "r3b", "SkyyPets", "xp.smithing", 0.02, "pet:Mining", 6),      # Pet Hammer: +2% Smithing XP x the Mining pet's rarity bonus
     # ---------------- R3c (2026-10-20, SkyyGear 0.3.33 / SkyyAccessories 0.5.29): the gear / weapon / accessory rows R3b left coming soon
     # (appended at the end: the R3b rows keep their indexes = their V3P<i> / V3X<i> fields). See R3C below for every number's reason.
-    ("Combat", 1, "r5b", "SkyyGear", "dmg", 1, "weapon", 5),                       # Weapon Tempering: +1% damage per weapon tier above Iron (at most 5), per rank (tree text 2: R3C)
+    ("Combat", 1, "r5b", "SkyyGear", "dmg", 1.5, "weapon", 5),                     # Weapon Tempering: +1.5% damage per weapon tier above Iron (at most 5), per rank (tree text 2: R3C; wc15 x1.5: was 1)
     ("Mining", 2, "r6", "SkyyGear", "bp.mining", 0.25, "pick", 2),                  # Masterwork Pick (capstone): +25% Breaking Power on a held pick, x2 on your own lifelong one
     ("Mining", 2, "r6", "SkyyGear", "dd.mining", 0.05, "pick", 2),                  # ... and +5 Mining Fortune, x2 = 10 (Balance P5 7.1: was 7.5 / 15 - the Mining tree budget with Rich Seams counted)
     ("Exploration", 2, "r3a", "SkyyAccessories", "spd", 0.5, "acc", 5),            # Accessory Compass: +0.5% move Speed per counting accessory per rank (tree text 2: R3C)
@@ -126,14 +129,14 @@ EFFECTS = [
     ("Combat", 1, "r3a", "SkyyClasses", "dmgLow", 4.0, None, 0),                    # Finisher: +4 % a rank vs enemies below 30 % Health
     ("Combat", 1, "r3b", "SkyyTrees", "spd", 1.0, None, 0),                         # Momentum: +1 % move speed a rank
     ("Combat", 1, "r5a", "SkyyClasses", "dmgBoss", 3.0, None, 0),                   # Trophy Hunter: +3 % a rank vs bosses + mini bosses
-    ("Combat", 2, "r1a", "SkyyTrees", "hpp", 0.005, None, 0),                       # Toughness: +0.5 % max Health a rank (Combat Health budget 10 with Plates 7.5)
-    ("Combat", 2, "r1b", "SkyyClasses", "kbRes", 3.0, None, 0),                     # Iron Will: +3 % knockback resistance a rank
-    ("Combat", 2, "r3a", "SkyyClasses", "drAll", 2.0, None, 0),                     # Thick Skin: +2 % damage reduction a rank (inside drCap)
-    ("Combat", 3, "r1a", "SkyyMobs", "drop", 2.0, None, 0),                         # Scavenger: +2 % a rank a kill drops 1 more item of its loot
-    ("Combat", 3, "r1b", "SkyyMobs", "coins", 3.0, None, 0),                        # Coin Purse: 3 % a rank a kill pays coins = the mob's level
-    ("Combat", 3, "r3b", "SkyyMobs", "rare", 1.0, None, 0),                         # Rare Drop: +1 % a rank 1 more of the kill's rarest loot
-    ("Combat", 3, "r4a", "SkyyMobs", "bossRoll", 3.0, None, 0),                     # Boss Hunter: +3 % a rank a boss / mini boss drops its loot again
-    ("Combat", 3, "r5a", "SkyyMobs", "dbl", 2.0, None, 0),                          # Lucky Kill: 2 % a rank a kill drops its whole loot twice
+    ("Combat", 2, "r1a", "SkyyTrees", "hpp", 0.005, None, 0),                       # Toughness: +0.5 % max Health a rank (Combat Health budget 13.75 with Plates 11.25, TREE_HP_BY)
+    ("Combat", 2, "r1b", "SkyyClasses", "kbRes", 4.5, None, 0),                     # Iron Will: +4.5 % knockback resistance a rank (wc15 x1.5: was 3)
+    ("Combat", 2, "r3a", "SkyyClasses", "drAll", 3.0, None, 0),                     # Thick Skin: +3 % damage reduction a rank (inside drCap; wc15 x1.5: was 2)
+    ("Combat", 3, "r1a", "SkyyMobs", "drop", 3.0, None, 0),                         # Scavenger: +3 % a rank a kill drops 1 more item of its loot (wc15 x1.5: was 2)
+    ("Combat", 3, "r1b", "SkyyMobs", "coins", 4.5, None, 0),                        # Coin Purse: 4.5 % a rank a kill pays coins = the mob's level (wc15 x1.5: was 3)
+    ("Combat", 3, "r3b", "SkyyMobs", "rare", 1.5, None, 0),                         # Rare Drop: +1.5 % a rank 1 more of the kill's rarest loot (wc15 x1.5: was 1)
+    ("Combat", 3, "r4a", "SkyyMobs", "bossRoll", 4.5, None, 0),                     # Boss Hunter: +4.5 % a rank a boss / mini boss drops its loot again (wc15 x1.5: was 3)
+    ("Combat", 3, "r5a", "SkyyMobs", "dbl", 3.0, None, 0),                          # Lucky Kill: 3 % a rank a kill drops its whole loot twice (wc15 x1.5: was 2)
     # ---------------- Balance P8c (2026-10-22, research/Balance-P8-Rebirth-Spec.md 4.4; SkyyPets 0.4.9, SkyySkills 0.4.60, SkyyTrees 0.4.7):
     # the Beastmastery tree (points = the Beastmastery skill level). SkyyPets applies every row: petxp.<kind> = more XP for that kind of pet
     # (combat / mining / green = Farming and Foraging pets / all), petsyn.<kind> = that kind of pet's stats + x % (the Mining tree's Pet
@@ -189,7 +192,7 @@ EFFECTS = [
     # ---------------- 0.6.0 COMBAT INTO CLASS (research/Combat-Into-Class-Spec.md 3.2; SkyyTrees 0.6.0 + SkyyClasses 0.1.47 + SkyySkills
     # 0.4.64): the Combat tree's four never-wired nodes, now in every class's Weaponcraft branch (keys unchanged; trees_v3_data C060_COMBAT).
     # Reprisal + Edge of the Legend add to damage INSIDE SkyyClasses' class-tree damage cap; Second Wind / Rally are healing (no max Health).
-    ("Combat", 2, "r3b", "SkyyClasses", "thorns", 3.0, None, 0),                    # Reprisal: 3 % of the melee damage taken dealt back a rank
+    ("Combat", 2, "r3b", "SkyyClasses", "thorns", 4.5, None, 0),                    # Reprisal: 4.5 % of the melee damage taken dealt back a rank (wc15 x1.5: was 3)
     ("Combat", 2, "r3c", "SkyyClasses", "lowHeal", 5.0, None, 0),                   # Second Wind: once a fight, below 20 % Health heal 5 % of max a rank
     ("Combat", 1, "r6", "SkyyClasses", "dmgLow", 10.0, None, 0),                    # Edge of the Legend (capstone): +10 % vs enemies below 30 % Health
     ("Combat", 2, "r4b", "SkyySkills", "hpregen", 3.0, None, 0),                    # Rally: +3 % out-of-combat Health regen a rank (SkyySkills HpRegen)

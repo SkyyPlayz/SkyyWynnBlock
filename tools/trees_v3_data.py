@@ -5608,8 +5608,9 @@ R062_TEXT = {"Combat.b3.r3a": (("+2% combat XP and +1% damage per equipped Comba
                                 "+2% Combat XP and +1% damage/rank, x your Combat pet's rarity bonus"),       # after p052_apply (SkyyTrees)
                                "+2.6% class XP and +1.5% damage/rank, x your Combat pet's rarity bonus")}
 #  3. WEAPONCRAFT x1.5, wc15 PART (round wc15: SkyyGear 0.3.45 / SkyyMobs 0.1.19 / SkyyClasses 0.1.48 apply the numbers, tools/wc15.py ROWS;
-#     they ship in the same set as SkyyTrees 0.6.2): the /tree texts of those 13 rows follow the new numbers. Accessory Plates and the
-#     SkyyClasses hit rows / Second Wind are HELD in tools/wc15.py, so their texts stay.
+#     they ship in the same set as SkyyTrees 0.6.2): the /tree texts of those 13 rows follow the new numbers. The SkyyClasses hit rows /
+#     Second Wind are HELD in tools/wc15.py, so their texts stay. SkyyTrees 0.6.7 (2026-10-30): + Accessory Plates (0.5 -> 0.75 % a rank, ceiling
+#     11.25 %; SkyyAccessories 0.5.33 applies it - Skyy's 2026-10-27 popup answer "Raise cap to 13.75%", docs/answered/classes.md).
 R062_TEXT.update({
     "Combat.b1.r1a": (("+2% weapon damage/rank",), "+3% weapon damage/rank"),                                        # Hone Edge
     "Combat.b1.r1b": (("+2% crit chance/rank",), "+3% crit chance/rank"),                                            # Weak Spot
@@ -5631,6 +5632,9 @@ R062_TEXT.update({
                       "+4.5% chance/rank a boss or mini boss drops its loot once more (never gear)"),                # Boss Hunter
     "Combat.b3.r5a": (("2% chance/rank a kill drops its whole loot twice (never gear)",),
                       "3% chance/rank a kill drops its whole loot twice (never gear)"),                              # Lucky Kill
+    "Combat.b2.r4a": (("+0.5% max health per filled accessory slot, per rank",                   # the table's own text
+                       "+0.5% max Health/rank per counting accessory (max 5)"),                  # after p052_apply (SkyyTrees)
+                      "+0.75% max Health/rank per counting accessory (max 5)"),                  # Accessory Plates (SkyyTrees 0.6.7)
 })
 
 
