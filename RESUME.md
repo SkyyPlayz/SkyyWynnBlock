@@ -30,11 +30,11 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
 ## RUNNING (2026-10-30)
-- Nothing. A2 Gear 0.3.52 + Sacks 0.8.34 (sockets, 120 augment items) BUILT + READY in the worktree, NOT pinned: waits on Skyy's
-  balance call (full kit DPS x4.18 vs x3.2 +-15 %; tools/balance_model.py --aug --check). Uncommitted tools/tier_tags.py = A2's augment rows.
+- aug2b wf_96e8b5b9-4a0: A2 Gear 0.3.52 + Sacks 0.8.34 (drafts, edited in place) + Swift / Sage Mana key -> Pets 0.4.22, Accessories
+  0.5.35, Skills 0.4.69. Skyy 10-30: "Allow x4.18", "Add them now" (docs/answered/gear.md). Uncommitted tools/tier_tags.py = A2's augment rows.
 
 ## NEXT (in order)
-1. After Skyy's balance answer: retune / pin A2 (Gear 0.3.52 + Sacks 0.8.34 + tier_tags), FLOOR: never below Gear 0.3.52 once augments exist.
+1. Pin + smoke + deploy aug2b as one batch; FLOOR: never below Gear 0.3.52 once augments exist; refresh the Class Balance Workbench (x4.18 top line).
 2. SHARED-EXECUTOR holder (Shards + Sacks clean): after Skyy plays, read SackBeat 'shared scheduler stalls' + 'tick max', then other mods.
 3. Gear lane after A2 (Gear free): research/Vanilla-Gear-Audit.md section 8 LEFT (Ornate Bronze, Fishing B, UT-28 all live): Bronze weapon
    rung + recipes, Z2 Doomed / Z4 Saurian UT sets, Sword_Bronze_Ancient Z1 UT, Scythe_Void Berserker Mythic, Diving Crude out of combat bags,
