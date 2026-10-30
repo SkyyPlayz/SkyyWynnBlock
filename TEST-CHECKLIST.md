@@ -72,3 +72,4 @@ tests always come first.
 263. Farming XP halves on low-tier crops, zone-world chests open
 264. watering can 6 upgrades + drying + fertilizer, ~4x skeletons in Zone 1
 265. Armored / Veteran mobs with zone armour, stats, drops, Server Setup rows
+266. Trees Plates text, Shards pays from Pocket Enchanted, price probes P1-P5 (/uiprobe tip)

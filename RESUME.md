@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-30; TEST 265 live, 4 workflows running)
+# SkyWynn - RESUME HERE (updated 2026-10-30; TEST 266 live, augments running)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -12,9 +12,11 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## NOW
-- LIVE up to TEST 265 (2026-10-28 07:14, backup deploy-20261028-0714): Mobs 0.1.22 Armored / Veteran (full vanilla role copies - Variant
-  Modify only takes the parent's own Parameters). Before it: TEST 264 Gear 0.3.50 watering can + Mobs 0.1.21 spawns; TEST 263 Skills 0.4.68
-  Farming falloff + Zones 0.3.3; TEST 262 hotfixes (Shards 0.4.15, Gear 0.3.49, Sacks 0.8.33, WorldGen 0.7.12). Full list: docs/log.
+- LIVE up to TEST 266 (2026-10-30 08:09, backup deploy-20261030-0809): Trees 0.6.7 (Plates text, wc15 EFFECTS fold), Shards 0.4.16 (costs open
+  Pocket Enchanted), UiProbe 0.9 (price-tooltip probes P1-P5 - Skyy runs them, decides Bazaar R2), Auctions 0.1.16 (AH price index).
+  Before: TEST 265 Mobs 0.1.22 Armored / Veteran; 264 Gear 0.3.50 watering can + Mobs 0.1.21; 263 Skills 0.4.68 + Zones 0.3.3. Full list: docs/log.
+- Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push to main,
+  copy the new jars into the base checkout, deploy from the base checkout.
 - Skyy 10-28: keep the wild Burnt Alchemist Ancient Steel drops. Running: see RUNNING.
 - Starter archipelago R1-R6 all live (Shards 0.4.8-0.4.11, Islands 0.5.25-0.5.26, Quests 0.4.4, Skills 0.4.66). Old untracked drafts
   (tools/shards_0_4_8_patch.py, SkyyShards/*_0.4.8.py, ...) are leftovers - leave them / tidy later.
@@ -27,14 +29,12 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST lines still open.
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
-## RUNNING (2026-10-30, launched by the main session; journals: docs/log 10-30 LAUNCHED line)
-- trees067 (Trees 0.6.7 Plates text, wc15 EFFECTS fold, Beastmastery bridge check), shtake (Shards 0.4.16 Pocket Enchanted via takeOpen),
-  price tooltips tip0 (UiProbe 0.9 R0 probes) + tip1 (Auctions 0.1.16 R1 sales index), augments chain (P0 -> A0 Gear 0.3.51 Attack Speed
-  + A1 Classes 0.1.51 / Mobs 0.1.23 effects engine -> A2 Gear 0.3.52 + Sacks 0.8.34 sockets; A0-A2 deploy together).
-- If a session restart cuts them off: reports / drafts are in tools/dev/scratch/<tag>*; re-launch skywynn-round with the same tag + task.
+## RUNNING (2026-10-30)
+- augments wf_7fbdb3aa-699: P0 -> A0 Gear 0.3.51 Attack Speed + A1 Classes 0.1.51 / Mobs 0.1.23 effects engine -> A2 Gear 0.3.52 + Sacks
+  0.8.34 sockets; A0-A2 deploy together. If cut off: drafts in the worktree + tools/dev/scratch/aug*; re-launch skywynn-round per round.
 
 ## NEXT (in order)
-1. Pin + smoke + deploy what the running rounds finish (augments A0-A2 as one batch).
+1. Pin + smoke + deploy augments A0-A2 as one batch.
 2. SHARED-EXECUTOR holder (Shards + Sacks clean): after Skyy plays, read SackBeat 'shared scheduler stalls' + 'tick max', then other mods.
 3. Gear lane after A2 (Gear free): research/Vanilla-Gear-Audit.md section 8 (Skyy took all defaults 10-30: shields = own round, Trork set,
    Ornate Bronze legs, UT picks) + beta #12 / #17 + Fishing B. Then sig3 -> sig5 (research/UT-Mythic-Signatures.md section 8).
