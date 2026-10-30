@@ -154,7 +154,7 @@ capstone). Added = 3 small passives wired for the first time (their Combat keys 
 
 Combat part = 79 ranks + 1 capstone = 80, plus the class's own B3 passives. Names: Combat Insight -> **Battle Insight**, Combat Bulwark
 branch name gone (Warrior and Priest already have a "Bulwark"). None of these is modifier-named; none multiplies (all add into
-existing sums: UpFx `dmgCap 40`, `drCap 35`; SkyyGear dmg / cc / cd; Combat Health budget 10 % = Toughness 2.5 + Plates 7.5 unchanged).
+existing sums: UpFx `dmgCap 40`, `drCap 35`; SkyyGear dmg / cc / cd; Combat Health budget 13.75 % since 2026-10-27 = Toughness 2.5 + Plates 11.25, Skyy "Raise cap to 13.75%"; other trees stay 10 %).
 Same-effect pairs inside one B3 (e.g. Assassin Power `dmgWeapon` vs Hone Edge; Priest Bastion vs Toughness) stay separate nodes with
 different names (question 10.8).
 
@@ -235,7 +235,7 @@ The Adventure page becomes a 3-tree page (Acrobatics, Exploration, Beastmastery)
 - **Branch 3 spans all four sources** as the Combat tree did: weapon (Hone Edge, Weapon Tempering, crit rows), armor (Gear Resonance),
   accessories (Accessory Plates), pets (Pet Fang).
 - **New power only inside existing caps**: Reprisal + Edge of the Legend inside `dmgCap 40`; Second Wind / Rally are healing (no max HP);
-  Combat Health budget stays 10 %, XP 30 % (Pet Fang 10 + Battle Insight 10 = 20), move 10 % (Momentum 4).
+  Combat Health budget 13.75 % (Skyy 2026-10-27; was 10 %), XP 30 % (Pet Fang 10 + Battle Insight 10 = 20), move 10 % (Momentum 4).
 - Builder runs `python tools\trees_v3_effects.py` check(), `python tools\balance_model.py` (no flag = read only) and adds a `--p10`
   section: AP per class, full-tree level per class (table 2.1), per-branch capstone reach, the moved budgets. `--p9 --check` must stay
   35 / 0 (note: `--p9` REWRITES `research\balance\targets.md` - run it in the round, not in a spec).
