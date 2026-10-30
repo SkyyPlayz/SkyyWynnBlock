@@ -91,10 +91,10 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.33"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.35"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.2"), ("SkyyGear", "0.3.50"), ("SkyySkills", "0.4.68"),
-    ("SkyyAccessories", "0.5.33"), ("SkyyClasses", "0.1.50"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.16"), ("SkyyTrees", "0.6.7"),
+    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.33"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.3"), ("SkyyGear", "0.3.50"), ("SkyySkills", "0.4.68"),
+    ("SkyyAccessories", "0.5.34"), ("SkyyClasses", "0.1.50"), ("SkyyMenu", "0.3.47"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -137,7 +137,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.2.1"),
+    ("SkyyFishing", "0.2.2"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -146,20 +146,20 @@ SET = [
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1.7"),
+    ("SkyyMerchants", "0.1.8"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.20"),
-    ("SkyyWardrobe", "0.2.12"),
+    ("SkyyPets", "0.4.21"),
+    ("SkyyWardrobe", "0.2.13"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.4.4"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.5.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyZones", "0.3.3"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
-    ("SkyyShards", "0.4.16"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    ("SkyyShards", "0.4.17"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-20, Skill Trees 3): SkyyTrees 0.4.0 + SkyyClasses 0.1.42 + SkyySkills 0.4.55 + SkyyMenu 0.3.41 deploy TOGETHER. Once treesV3 ran on a player file never roll SkyyTrees below 0.4.0 (0.3.x reads a v=3 file as empty trees and its next save rewrites it as v=2, wiping ranks + grandfathered abilities; rolling forward re-runs the update but pays NO second Dust refund - history/treesv3/<pkey>.done; old file in history/treesv3/<pkey>.properties - restore by hand with the server stopped; refunded Dust coins are not taken back). SkyyClasses below 0.1.42 only together with SkyyTrees below 0.4.0.
     # FLOOR (2026-10-20, per-profile chests): never roll SkyyExploration below 0.3.0 (or switch chests.perProfile off) once players opened world chests - shared containers stay empty and each profile's leftovers live only in Skyy_SkyyExploration/chestloot/ (keep it + _cleared/ as recovery).
     # FLOOR (2026-10-20, Skill Trees R3): SkyyTrees 0.4.1 + SkyyClasses 0.1.43 + SkyyArmory 0.1.41 deploy + roll back TOGETHER (class tree effects; gates41 marker raises class gates, History in history/gates041/); the R3b readers (Skills 0.4.56, Gear 0.3.32, Cooking 0.1.14, Exploration 0.3.1, Fishing 0.1.11, Pets 0.4.5, Accessories 0.5.28) need SkyyTrees 0.4.1 (0.4.0 answers rank 0). Skills 0.4.56 adds Alchemy,Smithing to bridge.bonus.xpSkills once (Undo in Server Setup).
@@ -167,6 +167,7 @@ SET = [
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
     # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
     # FLOOR (2026-10-27, totemui): SkyyShards 0.4.13 (card totem page + range aura, vanilla-layout Totem Bench, totem poles placed by hand, timed ShStore lock + own tick thread, pay-under-lock fixes) rolls back alone to 0.4.12 - no migration; a hand-placed totem's entry carries an extra 8th part "dx;dz" that 0.4.12 ignores (it then draws that totem on a pad and its hand-placed block stays as a plain block) - pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
+    # FLOOR (2026-10-30, rarity pass rar_*): SkyyCooking 0.1.17, SkyyFishing 0.2.2, SkyyShards 0.4.17, SkyyMerchants 0.1.8, SkyyBazaar 0.2.3, SkyyArmory 0.1.49, SkyyCollections 0.2.36, SkyyWardrobe 0.2.13, SkyyPets 0.4.21, SkyyAccessories 0.5.34 = looks only (rarity colour on icons / titles, sectioned Style Guide 15 tooltips, tier tags); each rolls back alone to its previous pin - no saved data, no config, no migration.
     # FLOOR (2026-10-30, shtake): SkyyShards 0.4.16 (shard / totem costs open Enchanted items from the Pocket via sacks:fn:takeOpen, counted 100 each; booster opens a Greater Essence only after loose essence) rolls back alone to 0.4.15 - no saved data, no migration.
     # FLOOR (2026-10-30, tip1): SkyyAuctions 0.1.16 (price tooltips R1: in-memory sales index rebuilt from the archive on its own thread, auction:fn:priceTable + auction:prices:version) rolls back alone to 0.1.15 - no saved-data change.
     # FLOOR (2026-10-30, trees067): SkyyTrees 0.6.7 (Accessory Plates /tree text +0.75 %, wc15 rows folded into trees_v3_effects EFFECTS - behaviour-identical) rolls back alone to 0.6.6 (text only; no saved data, no migration).
@@ -211,7 +212,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.48"),
+    ("SkyyArmory", "0.1.49"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll

@@ -1222,6 +1222,18 @@ def phase_kit13(samples):
     check("Left: 6, Top: 16" in samples["icon cell wide"] and "Width: 158, Height: 76" in samples["icon cell wide"], "icon_cell wide")
     check("Sounds" not in samples["icon cell silent"], "icon_cell sound=None")
     check("ItemId" not in samples["icon cell no item"] and "ItemIcon #SkyyTIcnIc" in samples["icon cell no item"], "icon_cell item=None")
+    # 2026-10-30 (SkyyBazaar 0.2.3 rarity frames): icon_bg = a square (icon + 4) right behind the icon; None = byte-identical
+    check(UI.icon_cell(P + "Icb", "Weapon_Sword_Iron", 74, icon_bg=None) == UI.icon_cell(P + "Icb", "Weapon_Sword_Iron", 74)
+          and UI.icon_cell(P + "Icb", "Food_Bread", 74, "static", qty="12", icon_bg=None) == samples["k14 icon cell static"].replace("Ics14", "Icb"),
+          "icon_cell icon_bg=None: the output byte for byte")
+    _icb = UI.icon_cell(P + "Icb", "Weapon_Sword_Iron", 74, icon_bg="#8b339e(0.4)")
+    check("Group #SkyyTIcbIf { Anchor: (Width: 68, Height: 68, Left: 3, Top: 3); Background: #8b339e(0.4); } ItemIcon #SkyyTIcbIc" in _icb,
+          "icon_cell icon_bg: a 68 px square 2 px around the 64 px icon, drawn before it")
+    _icj = UI.java_expr(UI.icon_cell(P + "Icb", "Weapon_Sword_Iron", 96, "static", icon=80, icon_bg=UI.J("ibg", "#8b339e(0.4)")))
+    check('+ (ibg) + "' in _icj and "Width: 84, Height: 84, Left: 6, Top: 6" in _icj, "icon_cell icon_bg=J(): a runtime colour (static 96 / 80)")
+    check("If {" not in UI.icon_cell(P + "Icb", None, 74, "empty", icon_bg="#8b339e(0.4)"), "icon_cell empty: no frame either")
+    raises(lambda: UI.icon_cell(P + "Icb", "Weapon_Sword_Iron", 74, icon_bg="purple-ish"), ValueError, "icon_cell icon_bg must be a colour")
+    raises(lambda: UI.icon_cell(P + "Icb", "Weapon_Sword_Iron", 74, icon=74, icon_bg="#8b339e(0.4)"), ValueError, "icon_cell icon_bg needs 2 px room")
     rj = UI.java_expr(samples["icon cell runtime"])
     check('"Button #SkyyTIcr" + (i) + " {' in rj and 'ItemId: \\"" + (ids[i]) + "\\"' in rj, "icon_cell runtime id + item")
     raises(lambda: UI.icon_cell(P + "A", "X", state="hot"), ValueError, "icon_cell state")
@@ -1581,6 +1593,20 @@ def phase_kit14(samples):
                       look="normal", icon_item="Weapon_Sword_Iron", action=UI.state_word(None, "Active", "success"))
     check(lc.sets == [("SkyyTLcNm", "Text", "Warrior, level 3")] and lc[-1] == ("SkyyTLcAct", UI.state_word(None, "Active", "success"))
           and "String cardBg" not in lc.java(), "list_card: a static look, a punctuated text, action= appended")
+    # 2026-10-30 (SkyyCooking 0.1.17 rarity squares): icon_bg = the item cell's 64 px square colour (None = byte-identical)
+    _lcl = [{"id": "Nm", "text": "Warrior, level 3", "kind": "rowName", "h": 24, "col": "rowName"}]
+    lc0 = UI.list_card("SkyyTList", "SkyyTLc", 900, _lcl, look="normal", icon_item="Weapon_Sword_Iron", icon_bg=None)
+    lcb = UI.list_card("SkyyTList", "SkyyTLc", 900, _lcl, look="normal", icon_item="Weapon_Sword_Iron", icon_bg="#8b339e(0.4)")
+    lcj = UI.list_card("SkyyTList", "SkyyTLc", 900, _lcl, look="normal", icon_item=J("ric", "Weapon_Sword_Iron"), icon_bg=J("ibg", "#8b339e(0.4)"),
+                       on="ok")
+    _lcn = UI.list_card("SkyyTList", "SkyyTLc", 900, _lcl, look="normal", icon_item="Weapon_Sword_Iron")
+    check(list(lc0) == list(_lcn) and lc0.java() == _lcn.java(), "list_card icon_bg=None: the output byte for byte")
+    _lct = "\n".join(UI.render(m_) for _p, m_ in lcb)
+    check("Group #SkyyTLcF0 { Anchor: (Width: 64, Height: 64" in _lct and _lct.count("Background: #8b339e(0.4)") == 1
+          and UI.COLOR["slotBorder"] not in _lct and len(lcb) == len(lc0), "list_card icon_bg: the 64 px item square carries the colour")
+    _lcjj = lcj.java()
+    check(_lcjj.count('+ (ibg) + "') == 2 and "(ok) ?" in _lcjj, "list_card icon_bg=J(): a runtime colour on both looks (on / cover)")
+    raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 900, _lcl, icon_item="Weapon_Sword_Iron", icon_bg="purple-ish"), ValueError, "list_card icon_bg must be a colour")
     raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 400, []), ValueError, "list_card too narrow")
     raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 900, [], look="glowing"), ValueError, "list_card look name")
     raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 900, [], icons="a; b"), ValueError, "list_card icons expression")

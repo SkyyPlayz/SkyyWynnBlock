@@ -2227,7 +2227,7 @@ def _cell_style(look, state, sound):
 
 
 def icon_cell(ident, item=None, size=74, state="normal", icon=None, qty=False, look="row", w=None, h=None, sound="light",
-              icon_left=None, anchor=None, extra=""):
+              icon_left=None, anchor=None, extra="", icon_bg=None):
     """A compact clickable item cell (Bazaar product cells, Auctions picker cells, Accessories rows, Trees nodes, Menu launcher) in
     the cell pattern the deployed pages already use (SkyyBazaar / SkyyAuctions / SkyyTrees / SkyySacks: a Button with a ButtonStyle
     holding an ItemIcon and a quantity Label, children placed by Anchor) with vanilla state looks from kit colours:
@@ -2242,7 +2242,10 @@ def icon_cell(ident, item=None, size=74, state="normal", icon=None, qty=False, l
     or static digits ("64"). w / h override size for a wide cell. sound=None = silent. A runtime state: choose(J("i == sel"),
     icon_cell(..., state="selected"), icon_cell(...)).
     state "static" (kit 1.4) = a NON-clickable cell: a Group (not a Button, no style, no sound) in the static row colour (look
-    "row") or with no back (look "plain"), with the icon and the quantity - a display cell (a reward, an ingredient)."""
+    "row") or with no back (look "plain"), with the icon and the quantity - a display cell (a reward, an ingredient).
+    icon_bg (2026-10-30, SkyyBazaar 0.2.3 rarity frames; additive - None = the output above, byte for byte) = a colour (kit name,
+    literal or J() runtime colour, e.g. the rarity colour at 0.4 as static_row(icon_bg=)) for a square #<ident>If (icon + 4) right
+    behind the icon: the icon sits 2 px in, so the square shows as a 2 px frame + tint around it (plain Group Background)."""
     check_id(ident)
     if state not in ICON_CELL_STATES:
         raise ValueError("icon_cell state %s" % " / ".join(ICON_CELL_STATES))
@@ -2259,6 +2262,10 @@ def icon_cell(ident, item=None, size=74, state="normal", icon=None, qty=False, l
     top = (ch - ic) // 2
     left = icon_left if icon_left is not None else ((cw - ic) // 2 if cw == ch else top)
     kids = []
+    if icon_bg is not None and state != "empty":
+        if left < 2 or top < 2:
+            raise ValueError("icon_cell icon_bg: the icon needs 2 px room for its frame (left %d, top %d)" % (left, top))
+        kids.append(group(ident + "If", None, w=ic + 4, h=ic + 4, anchor={"left": left - 2, "top": top - 2}, bg=icon_bg))
     if state != "empty":
         kids.append(item_icon(ident + "Ic", item, ic, anchor={"left": left, "top": top}))
     if state == "disabled":
@@ -3449,13 +3456,14 @@ def _card_look(look, var):
     return decl, J(var + "Bg", color(first[0])), J(var + "Bar", color(first[1]))
 
 
-def _card_cell(fid, item, on):
+def _card_cell(fid, item, on, icon_bg=None):
     cell = group(None, None, w=LIST_CARD_CELL, h=LIST_CARD_H)
     anc = {"left": LIST_CARD_CELL - LIST_CARD_FRAME, "top": (LIST_CARD_H - LIST_CARD_FRAME) // 2}
-    live = _inside(cell, [item_frame(fid, LIST_CARD_FRAME, anchor=anc, item=item, icon_anchor={"left": 0, "top": 0})])
+    bd = "slotBorder" if icon_bg is None else icon_bg    # 2026-10-30 icon_bg: the rarity tint IS the 64 px square (static_row's look)
+    live = _inside(cell, [item_frame(fid, LIST_CARD_FRAME, border=bd, anchor=anc, item=item, icon_anchor={"left": 0, "top": 0})])
     if on is None:
         return live
-    return choose(J(on), live, _inside(cell, [item_frame(fid, LIST_CARD_FRAME, anchor=anc, item=item, icon_anchor={"left": 0, "top": 0},
+    return choose(J(on), live, _inside(cell, [item_frame(fid, LIST_CARD_FRAME, border=bd, anchor=anc, item=item, icon_anchor={"left": 0, "top": 0},
                                                          cover=True)]))
 
 
@@ -3480,7 +3488,7 @@ class Card(Part):
 
 
 def list_card(parent, ident, w, lines, look="normal", icons=None, icon_item=None, icon_max=1, on=None, ids=None, var="card",
-              k="k", action=None):
+              k="k", action=None, icon_bg=None):
     """Kit 1.4: ONE list card (the SKYY CARD of SkyyClasses 0.1.8 / SkyyProfiles 0.1.3; research/Skyy-UI-Inventory.md section 6):
     a row of a list_well (Group #ident, LayoutMode Left, 84 high + 4) = the 4 px status bar #<ident>Bar + the card body #<ident>In
     (the look's background) holding the item cells #<icons> (the vanilla slot border with an ItemIcon, 72 px each), the text column
@@ -3496,6 +3504,9 @@ def list_card(parent, ident, w, lines, look="normal", icons=None, icon_item=None
               icon_item = one item id (static or J()): one cell
       on      a Java boolean: false = the coming-later look (grey text, the sold-out cover over the icons); None = always on
       ids     {"icons", "text", "act"} (defaults <ident>Ics / <ident>Txt / <ident>Act) - a restyled page's old ids
+      icon_bg (2026-10-30, SkyyCooking 0.1.17 rarity squares; additive - None = the output above, byte for byte) = a colour (kit name,
+              literal or J() runtime colour, e.g. the rarity colour at 0.4 as static_row(icon_bg=)) drawn as the item cell's 64 px
+              square in place of the slot border colour: a 2 px frame + tint around the icon (Style Guide 15 RARITY ON ICONS)
     Returns a Card; emit it with card.java(b)."""
     ids = dict(ids or {})
     card = check_id(ident)
@@ -3512,14 +3523,14 @@ def list_card(parent, ident, w, lines, look="normal", icons=None, icon_item=None
     part.append((card, group(body, "Left", w=w - LIST_CARD_BAR, h=LIST_CARD_H, bg=bg)))
     part.append((body, group(icons_id, "Left", w=icon_max * LIST_CARD_CELL, h=LIST_CARD_H)))
     if icons is None:
-        part.append((icons_id, _card_cell(card + "F0", icon_item, on)))
+        part.append((icons_id, _card_cell(card + "F0", icon_item, on, icon_bg)))
     else:
         if not isinstance(icons, str) or not icons.strip() or ";" in icons or has_j(icons):
             raise ValueError("list_card icons: a Java String[] expression (no ';'), or None + one icon_item")
         if not isinstance(k, str) or not _JAVA_NAME_OK.fullmatch(k):
             raise ValueError("list_card k: a lower-case Java loop variable")
         part.loop_index = len(part)
-        part.append((icons_id, _card_cell(card + "F" + J(k), icon_item, on)))
+        part.append((icons_id, _card_cell(card + "F" + J(k), icon_item, on, icon_bg)))
     top = fit([ln["h"] for ln in lines], LIST_CARD_H, "card text lines") // 2
     part.append((body, group(text, "Top", w=tw, h=LIST_CARD_H, pad={"top": top} if top else None)))
     for ln in lines:
