@@ -12,6 +12,9 @@
                                              on a failed row; never writes research/balance/targets.md)
     python tools/balance_model.py --p10      P10 class tree rebuild (Combat into Class, SkyyTrees 0.6.0): points a level, reach, per-branch capstones,
                                              the class-tree damage share vs the old tree, the Combat part's budgets (--p10 --check: exit 1 on a failed row)
+    python tools/balance_model.py --aug      Augments (research/Augments-Spec.md 3.2 / 4.1) + Attack Speed live (SkyyGear 0.3.51, round A0): the stat /
+                                             elemental / Poison tables, the fuse ratio, one slot's gain, the DPS change per class (--aug --check: exit 1
+                                             on a failed row; never writes research/balance/targets.md)
     python tools/balance_model.py --econ     P7 economy (coin curve, Bazaar prices by tier, costs on the curve, loop routes) -> targets.md section 9
                                              (--econ --check: exit 1 unless the gathering skills are within 0.85-1.15 of each other and on G
                                              in every zone, every tier step >= 1.2x, and all 17 loop routes lose money)
@@ -1242,6 +1245,10 @@ P5_STATS = {   # key: (max at 100 %, weight, slots) = SkyyGear STATS (live rows;
     "tdmg": (5, 5, "w"), "fEarth": (6, 4, "w"), "fThunder": (6, 4, "w"), "fWater": (6, 4, "w"), "fFire": (6, 4, "w"), "fAir": (6, 4, "w"),
     "rThunder": (6, 3, "w"), "rWater": (6, 3, "w"), "rElem": (3, 3, "w"), "msteal": (3, 5, "s"), "lsteal": (5, 5, "wa"), "hpr": (2, 5, "wa"),
     "hprp": (20, 5, "wa"), "def": (25, 10, "a"), "spd": (5, 10, "ae"), "stam": (2, 5, "a"), "hpp": (30, 0, "a")}
+# SkyyGear 0.3.51 (Augments round A0, Skyy 2026-10-25 "Build Attack Speed now"): Attack Speed is live on melee swings - DPS x (1 + as %), 5 % swing
+# steps up to the cap (= SkyyGear AS_STEP / AS_K / as.cap; its build asserts these); stats.as weight 0 = it never rolls (not in P5_STATS: the
+# rolled P5 tables are unchanged); augments (round A2) bring it
+AS_LIVE, AS_STEP, AS_K, AS_CAP, AS_MAX, AS_ROLL_W = True, 5, 5, 25.0, 10, 0
 P5_POOL_ARMOR = {"def": 120, "hpp": 120, "str": 1, "mp": 1, "cc": 1, "cd": 1, "chg": 8, "hprp": 32, "lsteal": 16, "hpr": 16, "spd": 32, "stam": 20}   # P5 2.2.2
 P5_RARITY = {"normal": (1, 40, 70), "unique": (2, 45, 75), "rare": (3, 50, 85), "legendary": (4, 55, 95), "fabled": (5, 60, 105),
              "mythic": (6, 70, 110), "set": (3, 55, 100)}                                  # P5 2.2.5 (fix round 2: mythic 75-120 -> 70-110 = spec 2.3's Mythic row 1.85 / 2.33; kit DPS x3.9 -> x3.6)
@@ -1316,8 +1323,11 @@ def p5_dps(t, caster=False):
     g = t.get
     cc = min(g("cc", 0.0), 100.0) / 100.0
     pct = sum(g(k, 0.0) for k in P5_PCT_LINES) + 5.0 * g("rElem", 0.0)
-    return ((1 + g("dmg", 0.0) / 100.0) * (1 + g("mp" if caster else "str", 0.0) / 100.0) * (1 + P5_CHARGED_SHARE * g("chg", 0.0) / 100.0)
-            * (1 + cc * (2.0 * (1 + g("cd", 0.0) / 100.0) - 1.0)) * (1 + pct / 100.0))
+    out = ((1 + g("dmg", 0.0) / 100.0) * (1 + g("mp" if caster else "str", 0.0) / 100.0) * (1 + P5_CHARGED_SHARE * g("chg", 0.0) / 100.0)
+           * (1 + cc * (2.0 * (1 + g("cd", 0.0) / 100.0) - 1.0)) * (1 + pct / 100.0))
+    if AS_LIVE and not caster and g("as", 0.0):          # SkyyGear 0.3.51 (A0): melee taps x (1 + as %), capped (casters: no Attack Speed yet)
+        out = out * (1 + min(max(g("as", 0.0), 0.0), AS_CAP) / 100.0)
+    return out
 
 
 def p5_ehp(t):
@@ -3511,7 +3521,205 @@ def forxp_main():
         sys.exit(1 if bad else 0)
 
 
+# ======================================================================================== AUG augments + Attack Speed (research/Augments-Spec.md)
+# Spec 3.2 (stat augments, 5 tiers = the zones, T1-T4 by the tier scale), 4.1 (elemental, 10 tiers, fused 2:1 - N1 default; Poison = a weapon
+# MODIFIER, 5 tiers, D16), 2.5 (slots by rarity), 6.1 A0 (Attack Speed live, SkyyGear 0.3.51). PLACEHOLDER rows until Skyy signs off; the one
+# change from the spec (P0, 2026-10-30): Tempo T5 = Attack Speed 2.0 + Damage 2.4 (the spec's 3 + 3.6 gives +6.2 % a slot, 2 points over the
+# +4.2 % target - shown as an OPEN row). Kits = P5 rolled kits (p5_roll at full level, AUG_N rolls, P5_SEED). Augment lines are flat (no slot
+# power) and summed with the rolled lines. python tools/balance_model.py --aug [--check]
+AUG_TIER_SCALE = (0.40, 0.55, 0.70, 0.85, 1.00)
+AUG_STAT_T5 = {   # kind: (fits: w weapon / s spell weapon / a armor / t tool, {stat: T5 value per slot})
+    "Brute": ("w", {"str": 4.0, "cd": 4.8}), "Edge": ("w", {"dmg": 2.8, "cc": 1.4}), "Precision": ("w", {"cc": 2.8, "cd": 5.7}),
+    "Arcane": ("s", {"mp": 4.0, "cd": 4.8}), "Tempo": ("w", {"as": 2.0, "dmg": 2.4}),
+    "Bulwark": ("a", {"def": 0.9, "hpp": 1.0}), "Warrior": ("a", {"str": 1.6, "def": 1.6}), "Swift": ("a", {"spd": 0.5, "manap": 2.0}),
+    "Vital": ("a", {"hpp": 1.3, "hprp": 0.8}), "Sage": ("a", {"mp": 1.6, "manap": 2.0}),
+    "Prospector": ("t", {"bspeed": 4.0, "fort": 25.0}), "Scholar": ("t", {"wis": 3.0, "fort": 15.0}), "Delver": ("t", {"power": 6.0, "bspeed": 3.0})}
+AUG_TEMPO_SPEC = {"as": 3.0, "dmg": 3.6}          # spec 3.2 as written (OPEN: Skyy / the A2 round picks)
+AUG_POISON = (0.4, 0.8, 1.2, 1.6, 2.0)          # % Poison per slot, weapons only (the live "poison" key; not in p5_dps)
+AUG_ELEM_DMG = (0.3, 0.5, 0.7, 0.9, 1.2, 1.5, 1.9, 2.3, 2.6, 3.0)          # weapon: % of the hit as the element (joins f<E>)
+AUG_ELEM_POWER = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)          # Element Power = the tier (spec 4.2, cap AUG_POWER_CAP)
+AUG_ELEM_DEF = (0.8, 1.4, 2.0, 2.6, 3.2, 3.8, 4.4, 5.0, 5.5, 6.0)          # armor: element Defence (joins d<E>, S / (S + D))
+AUG_DEF_SCALE, AUG_POWER_CAP, AUG_FUSE_N = 100.0, 10, 2          # elem.defScale; Power 10 = double; N1 default 2 : 1
+AUG_SLOTS = {"normal": (1, 0), "unique": (1, 1), "rare": (2, 1), "legendary": (2, 2), "fabled": (3, 2), "mythic": (3, 3), "set": (1, 1), "untiered": (2, 1)}
+AUG_TARGET_W, AUG_TARGET_A = (4.2, 0.6), (1.2, 0.4)          # spec 3.1: one T5 weapon slot +4.2 % DPS, one T5 armor slot ~+1.2 % EHP (+- band)
+AUG_N = 1500
+# the P4 classes' main weapon and whether its swing is one of SkyyGear's 9 melee roots (Attack Speed works there; bows / staffs / wands: not yet)
+AUG_CLASS_WEAPON = {"Warrior": ("Sword", True), "Berserker": ("Battleaxe", True), "Spellblade": ("Longsword", True), "Assassin": ("Daggers", True),
+                    "Monk": ("Bo staff (SkyyArmory)", False), "Archer": ("Bow", False), "Mage": ("Wand / staff (SkyyArmory)", False),
+                    "Priest": ("Wand / staff (SkyyArmory)", False)}
+_AUG_KITS = {}
+
+
+def aug_value(kind, tier):
+    """one slot's lines: {stat: value} of a stat kind at tier 1-5 (the tier scale) or 'Poison' 1-5"""
+    if kind in AUG_STAT_T5:
+        return dict((k, v * AUG_TIER_SCALE[tier - 1]) for k, v in AUG_STAT_T5[kind][1].items())
+    if kind == "Poison":
+        return {"poison": AUG_POISON[tier - 1]}
+    raise KeyError(kind)
+
+
+def aug_elem(element, tier, on="w"):
+    """one elemental slot at tier 1-10: on a weapon the element's damage line, on armor its Defence line"""
+    return {"f" + element: AUG_ELEM_DMG[tier - 1]} if on == "w" else {"d" + element: AUG_ELEM_DEF[tier - 1]}
+
+
+def aug_kits(rarity, n=AUG_N, seed=P5_SEED):
+    """n P5 kits (weapon + 4 armor pieces, full level) as summed totals - cached"""
+    key = (rarity, n, seed)
+    if key not in _AUG_KITS:
+        rng = random.Random(seed)
+        out = []
+        for _ in range(n):
+            t = dict(p5_weapon_totals(p5_roll("w", rarity, rng)))
+            for k, v in p5_armor_totals([(s_, p5_roll("a", rarity, rng)) for s_ in ("Head", "Chest", "Legs", "Hands")]).items():
+                t[k] = t.get(k, 0.0) + v
+            out.append(t)
+        _AUG_KITS[key] = out
+    return _AUG_KITS[key]
+
+
+def aug_add(t, d, times=1):
+    u = dict(t)
+    for k, v in d.items():
+        u[k] = u.get(k, 0.0) + v * times
+    return u
+
+
+def aug_gain(d, rarity="mythic", caster=False, ehp=False, times=1):
+    """mean % gain of DPS (or EHP) over the rolled kits when slot lines d are added `times` times"""
+    ks = aug_kits(rarity)
+    if ehp:
+        return 100.0 * statistics.mean(p5_ehp(aug_add(t, d, times)) / p5_ehp(t) - 1 for t in ks)
+    return 100.0 * statistics.mean(p5_dps(aug_add(t, d, times), caster) / p5_dps(t, caster) - 1 for t in ks)
+
+
+def aug_fuse_cost(tier, n=AUG_FUSE_N):
+    """T1 augments one tier-t elemental costs (n : 1 fusing)"""
+    return n ** (tier - 1)
+
+
+def aug_elem_def_cut(D, S=AUG_DEF_SCALE):
+    """% less element damage (and state time) with element Defence D: 1 - S / (S + D)"""
+    return 100.0 * (1 - S / (S + D))
+
+
+def aug_as_step(pct):
+    """SkyyGear GearSpeed.asStep: whole AS_STEP steps (floor), at most AS_K"""
+    if not pct > 0:
+        return 0
+    return min(AS_K, int(math.floor(pct / AS_STEP + 1e-9)))
+
+
+def aug_as_dps(pct, melee=True):
+    """the DPS factor of a counted Attack Speed % (GearSpeed.hitWeight: cycle x (1 + as) a tap = x (1 + as) a second); 1 off SkyyGear's melee roots"""
+    return 1.0 + min(max(pct, 0.0), AS_CAP) / 100.0 if melee else 1.0
+
+
+def aug_as_rolled(weight, n=3000, seed=P5_SEED):
+    """what-if: the P5 weapon roll table with Attack Speed in the pool at `weight` (stats.as max AS_MAX, weapon + armor + Equipment): mean
+    weapon DPS per rarity (the live default is weight 0 = the P5 table exactly)"""
+    P5_STATS["as"] = (AS_MAX, weight, "wae")
+    try:
+        rng = random.Random(seed)
+        out = {}
+        for r in P5_RARS:
+            out[r] = statistics.mean(p5_dps(p5_weapon_totals(p5_roll("w", r, rng))) for _ in range(n))
+        return out
+    finally:
+        del P5_STATS["as"]
+
+
+def aug_rows():
+    """(target, model text, ok) for --aug; OPEN rows (Skyy's call) are shown, never failed"""
+    rows = []
+    for rar in ("legendary", "mythic"):
+        for kind in ("Brute", "Edge", "Precision", "Tempo", "Arcane"):
+            g = aug_gain(aug_value(kind, 5), rar, caster=(kind == "Arcane"))
+            rows.append(("One T5 %s slot on a %s kit: DPS +%.1f %% +- %.1f (spec 3.1)" % (kind, rar, AUG_TARGET_W[0], AUG_TARGET_W[1]), "%+.2f %%" % g,
+                         abs(g - AUG_TARGET_W[0]) <= AUG_TARGET_W[1]))
+        for kind in ("Bulwark", "Warrior", "Vital"):
+            g = aug_gain(aug_value(kind, 5), rar, ehp=True)
+            rows.append(("One T5 %s slot on a %s kit: EHP +%.1f %% +- %.1f (spec 3.1)" % (kind, rar, AUG_TARGET_A[0], AUG_TARGET_A[1]), "%+.2f %%" % g,
+                         abs(g - AUG_TARGET_A[0]) <= AUG_TARGET_A[1]))
+    gs = aug_gain(AUG_TEMPO_SPEC, "mythic")
+    rows.append(("OPEN (Skyy / round A2): Tempo T5 as the spec wrote it (Attack Speed +3, Damage +3.6)", "%+.2f %% DPS (the model uses 2.0 + 2.4 = %+.2f %%)" % (
+        gs, aug_gain(AUG_STAT_T5["Tempo"][1], "mythic")), True))
+    sc = [aug_gain(aug_value("Brute", t_), "mythic") for t_ in range(1, 6)]
+    rows.append(("Stat tiers T1 < T2 < ... < T5 (the tier scale 40 / 55 / 70 / 85 / 100 %)", " / ".join("%+.2f" % x for x in sc), all(a < b for a, b in zip(sc, sc[1:]))))
+    fe = [aug_gain(aug_elem("Fire", t_), "mythic") for t_ in range(1, 11)]
+    rows.append(("Elemental tiers I < II < ... < X (weapon, one slot, DPS %)", " / ".join("%.2f" % x for x in fe), all(a < b for a, b in zip(fe, fe[1:]))))
+    f3, b3 = aug_gain(aug_elem("Fire", 10), "mythic", times=3), aug_gain(aug_value("Brute", 5), "mythic", times=3)
+    rows.append(("3 x Fire X weapon < 3 x Brute V (raw damage; the element pays back in states - spec 4.1)", "%+.2f %% < %+.2f %%" % (f3, b3), f3 < b3))
+    rows.append(("T10 elemental = the old T5 row (3.0 %, Power 10 = the cap) - spec 4.1", "%.1f %%, Power %d" % (AUG_ELEM_DMG[-1], AUG_ELEM_POWER[-1]),
+                 AUG_ELEM_DMG[-1] == 3.0 and AUG_ELEM_POWER[-1] == AUG_POWER_CAP))
+    cut = aug_elem_def_cut(12 * AUG_ELEM_DEF[-1])
+    rows.append(("12 x Fire X armor: about 42 % less Fire damage (S / (S + D), S 100) - spec 4.1", "%.1f %% less" % cut, 40.0 <= cut <= 44.0))
+    rows.append(("Fusing %d : 1: one T10 = 512 T1 (3 : 1 would be %d) - N1" % (AUG_FUSE_N, aug_fuse_cost(10, 3)), ", ".join(str(aug_fuse_cost(t_)) for t_ in range(1, 11)),
+                 aug_fuse_cost(10) == 512))
+    rows.append(("Poison: weapons only, 5 tiers, rising (D16 / N4)", " / ".join("%.1f" % x for x in AUG_POISON), all(a < b for a, b in zip(AUG_POISON, AUG_POISON[1:]))))
+    rows.append(("Slots by rarity rise (weapon / armor piece; Mythic kit = 3 + 12)", ", ".join("%s %d/%d" % (r, a, b) for r, (a, b) in AUG_SLOTS.items()),
+                 AUG_SLOTS["mythic"] == (3, 3) and all(AUG_SLOTS[a][0] <= AUG_SLOTS[b][0] for a, b in zip(P5_RARS, P5_RARS[1:]))))
+    # the full Mythic kit (spec 3.1: "one T5 armor slot = +1.2 % EHP (or the same value split DPS / EHP)"): 3 weapon slots (Brute + 2 Precision)
+    # + 12 defensive armor slots (6 Bulwark + 6 Vital) = the x1.13 / x1.15 rule; a Warrior mix trades EHP for DPS (report)
+    wk = aug_add(aug_add({}, aug_value("Brute", 5)), aug_value("Precision", 5), 2)
+    ak = aug_add(aug_add({}, aug_value("Bulwark", 5), 6), aug_value("Vital", 5), 6)
+    kd = 1 + aug_gain(aug_add(wk, ak), "mythic") / 100.0
+    ke = 1 + aug_gain(aug_add(wk, ak), "mythic", ehp=True) / 100.0
+    rows.append(("Full Mythic kit (3 weapon + 12 defensive armor T5 slots): about one rarity step, DPS ~x1.13, EHP ~x1.15 (spec 3.1)", "DPS x%.3f, EHP x%.3f" % (kd, ke),
+                 1.10 <= kd <= 1.17 and 1.11 <= ke <= 1.20))
+    am = aug_add(aug_add(aug_add({}, aug_value("Bulwark", 5), 4), aug_value("Warrior", 5), 4), aug_value("Vital", 5), 4)
+    rows.append(("[report] the same kit with 4 Warrior + 4 Bulwark + 4 Vital armor slots (Strength on armor = DPS)", "DPS x%.3f, EHP x%.3f" % (
+        1 + aug_gain(aug_add(wk, am), "mythic") / 100.0, 1 + aug_gain(aug_add(wk, am), "mythic", ehp=True) / 100.0), True))
+    k0d, k0e = p5_kit()
+    rows.append(("OPEN (Skyy: spec 3.1 / D8 'inside the gear shares'): the P5 best / plain kit with that augment kit on the best side",
+                 "DPS x%.2f -> x%.2f, EHP x%.2f -> x%.2f (P5_KIT_SPEC x%.1f / x%.1f +- 15 %%: DPS %s, EHP %s)" % (
+                     k0d, k0d * kd, k0e, k0e * ke, P5_KIT_SPEC[0], P5_KIT_SPEC[1],
+                     "inside" if abs(k0d * kd / P5_KIT_SPEC[0] - 1) <= 0.15 else "OUTSIDE", "inside" if abs(k0e * ke / P5_KIT_SPEC[1] - 1) <= 0.15 else "OUTSIDE"), True))
+    # ---- Attack Speed live (SkyyGear 0.3.51 / round A0)
+    rows.append(("Attack Speed: DPS x (1 + as) exactly on melee swings, the swing in %d %% steps up to %d %% (cap %g)" % (AS_STEP, AS_STEP * AS_K, AS_CAP),
+                 "as 7 -> step %d %%, x%.2f; as 40 -> x%.2f" % (AS_STEP * aug_as_step(7), aug_as_dps(7), aug_as_dps(40)),
+                 aug_as_step(7) == 1 and abs(aug_as_dps(7) - 1.07) < 1e-12 and aug_as_dps(40) == 1 + AS_CAP / 100.0 and AS_CAP == AS_STEP * AS_K))
+    ast = p5_roll_table()
+    rows.append(("Attack Speed weight %d (stats.as): the P5 roll table is unchanged (it never rolls)" % AS_ROLL_W, "mythic weapon DPS mean %.4f" % ast["mythic"][0],
+                 AS_ROLL_W == 0 and "as" not in P5_STATS))
+    w5 = aug_as_rolled(5)
+    rows.append(("[report] what-if stats.as weight 5 (the 0.3.50 line, if it rolled): mean weapon DPS per rarity vs today",
+                 ", ".join("%s %+.2f %%" % (r, 100 * (w5[r] / ast[r][0] - 1)) for r in P5_RARS), True))
+    tempo = AUG_STAT_T5["Tempo"][1]
+    for cls in sorted(P4_CLASSES):
+        wpn, melee = AUG_CLASS_WEAPON[cls]
+        caster = cls in ("Mage", "Priest", "Monk")
+        if melee:
+            d1, d3 = aug_gain(tempo, "mythic"), aug_gain(tempo, "mythic", times=3)
+            txt = "+5 %% x%.2f, +10 %% x%.2f, cap +%g %% x%.2f; one Tempo T5 slot %+.2f %%, three %+.2f %%" % (aug_as_dps(5), aug_as_dps(10), AS_CAP, aug_as_dps(AS_CAP), d1, d3)
+        else:
+            d1, d3 = aug_gain({"dmg": tempo["dmg"]}, "mythic", caster), aug_gain({"dmg": tempo["dmg"]}, "mythic", caster, times=3)
+            txt = "none (its weapon has no Attack Speed yet - shown '(melee swings)'); Tempo's Damage part only: one slot %+.2f %%, three %+.2f %%" % (d1, d3)
+        rows.append(("[report] %s (%s): DPS change from Attack Speed" % (cls, wpn), txt, True))
+    return rows
+
+
+def aug_main():
+    rows = aug_rows()
+    print("| Augments + Attack Speed (research/Augments-Spec.md 3-4, SkyyGear 0.3.51 A0) | Model | OK |\n|---|---|---|")
+    for g, m, ok in rows:
+        print("| %s | %s | %s |" % (g, m, "OPEN" if g.startswith("OPEN") else ("yes" if ok else "NO")))          # an OPEN row = Skyy's call, never "yes"
+    bad = [r for r in rows if not r[2]]
+    for g, m, _ok in bad:
+        print("FAIL %s: %s" % (g, m))
+    for g, m, _ok in rows:
+        if g.startswith("OPEN"):
+            print("%s: %s" % (g, m))
+    print("augments check: %d rows, %d fail, %d open (Skyy's call)" % (len(rows), len(bad), sum(1 for r in rows if r[0].startswith("OPEN"))))
+    if "--check" in sys.argv:
+        sys.exit(1 if bad else 0)
+
+
 def main():
+    if "--aug" in sys.argv:           # Augments + Attack Speed (SkyyGear 0.3.51): the tables, one slot's gain, DPS per class; --check: exit 1 on a failed row
+        aug_main()
+        return
     if "--forxp" in sys.argv:         # SkyySkills 0.4.67 Foraging XP per tree (before / after, levels at each zone's end); --check: exit 1 on a failed row
         forxp_main()
         return
