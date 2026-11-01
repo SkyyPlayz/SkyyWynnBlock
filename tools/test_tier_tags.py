@@ -91,16 +91,19 @@ COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 15, "seed": 28, "spore": 2, "en
           "farming_armor": 60, "fishing_armor": 20, "tool": 34, "armory": 11,          # 0.3.29: + the Mushroom (crop, 2 spores, its Enchanted item), the gathering armor rows
           "can": 6 + 10, "harvester": 4 + 12, "forever_tool": 27, "armory_metal": 76 + 80, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5,
           "mining_armor": 32, "bucket": 1, "rod": 8, "reel": 7, "fish": 27,
-          "ut": 64}          # ut28 (SkyyGear 0.3.47): the first 28 Zone 1-5 Untiered items (tools/ut28.py; 55 SkyyGear + 9 SkyyArmory ids)          # fish2 (SkyyFishing 0.2.0): its rods / reels / fish (TT.FI_IDS); SkyyGear 0.3.31: + the Infinite Water Bucket (T4 Thorium, TT.OWN_IDS)
+          "ut": 64 + 10, "augment": 120}          # ut28 (SkyyGear 0.3.47): the first 28 Zone 1-5 Untiered items (tools/ut28.py; 55 SkyyGear + 9 SkyyArmory ids); gl1 (SkyyGear 0.3.53): + 10 vanilla-look UT weapons (tools/ut_vanilla.py; 9 SkyyGear + 1 SkyyArmory)          # fish2 (SkyyFishing 0.2.0): its rods / reels / fish (TT.FI_IDS); SkyyGear 0.3.31: + the Infinite Water Bucket (T4 Thorium, TT.OWN_IDS)
           #          # SkyyGear 0.3.23 (G2): + the forever tools of Bronze + the 8 zone metals (pickaxe / hatchet / multitool 27), cans Mithril + 9, Harvesters Cobalt / Adamantite / Mithril + 9 (TT.OWN_IDS); SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
 ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 15 + 28 + 2 + 56 + len(ENCH_ORES) + len(ENCH_ALLOYS), "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
 _GA = TT.ids_in("foraging_armor") + TT.ids_in("farming_armor") + TT.ids_in("fishing_armor")
-ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + TT.ids_in("bucket") + _GA + [i for i in TT.ids_in("ut") if TT.owner(i) == "SkyyGear"]) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal") + [i for i in TT.ids_in("ut") if TT.owner(i) == "SkyyArmory"]), "owners")
+ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + TT.ids_in("bucket") + _GA + TT.ids_in("augment") + [i for i in TT.ids_in("ut") if TT.owner(i) == "SkyyGear"]) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal") + [i for i in TT.ids_in("ut") if TT.owner(i) == "SkyyArmory"]), "owners")
 import ut28 as UT28          # ut28 (SkyyGear 0.3.47): the family = the table, the zone's alloy tag, owner by the copy's builder
-ok(sorted(TT.UT_IDS) == TT.ids_in("ut") == sorted(UT28.IDS) and all(TT.tag_for(r[0]) == "T%d %s" % (TT.metal_tier(UT28.ZONE_ALLOY[r[3]]), UT28.ZONE_ALLOY[r[3]])
+import ut_vanilla as UTV          # gl1 (SkyyGear 0.3.53): the vanilla-look UT weapons join the same family
+ok(sorted(TT.UT_IDS) == TT.ids_in("ut") == sorted(UT28.IDS + UTV.IDS) and not UTV.check() and all(TT.tag_for(r[0]) == "T%d %s" % (TT.metal_tier(UTV.ZONE_ALLOY[r[3]]), UTV.ZONE_ALLOY[r[3]])
+   and TT.owner(r[0]) == ("SkyyGear" if r[4] == "gear" else "SkyyArmory") for r in UTV.rows()) and TT.tag_for("Weapon_Daggers_UT_BarrowFangs") == "T3 Bronze"
+   and TT.tag_for("Weapon_Longsword_UT_SaurianSpine") == "T12 Cinder" and TT.owner("Weapon_Staff_UT_Doomcaller") == "SkyyArmory" and all(TT.tag_for(r[0]) == "T%d %s" % (TT.metal_tier(UT28.ZONE_ALLOY[r[3]]), UT28.ZONE_ALLOY[r[3]])
    and TT.owner(r[0]) == ("SkyyGear" if r[4] == "gear" else "SkyyArmory") for r in UT28.rows()) and TT.tag_for("Armor_UT_OasisWarden_Head") == "T6 Dusk"
    and TT.tag_for("Weapon_Longsword_UT_AzureArc") == "T3 Bronze" and TT.tag_for("Weapon_Bo_UT_CrushingTail") == "T15 Lumen" and not UT28.check(), "ut28: the 64 Untiered rows")
 ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool") + TT.ids_in("bucket") + _GA) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
@@ -277,7 +280,7 @@ if az:
     vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS and i not in TT.AR_IDS and i not in TT.CO_IDS and i not in TT.FI_IDS and i not in TT.UT_IDS]   # FI_IDS: SkyyFishing's build; AR_IDS: SkyyArmory's build   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
     missing = sorted(i for i in vanilla if i not in ids)
     ok(not missing, "not in Assets.zip: %s" % missing)
-    ok(not [i for i in TT.UT_IDS if i in ids] and not [r for r in UT28.rows() if r[4] == "gear" and r[5] not in ids], "ut28: no Untiered id in Assets.zip, every SkyyGear copy's base is")
+    ok(not [i for i in TT.UT_IDS if i in ids] and not [r for r in UT28.rows() + UTV.rows() if r[4] == "gear" and r[5] not in ids], "ut28 + gl1: no Untiered id in Assets.zip, every SkyyGear copy's base is")
     ok(not [i for i in TT.WG_IDS if i in ids], "ores01: no SkyyWorldGen id exists in Assets.zip")
     # the plan's family lists are complete: every vanilla trunk, bar (minus Silver / Gold / Prisma) and crop item is in the table
     for pat, skip in ((r"^Wood_[A-Za-z_]+_Trunk$", ()), (r"^Ingredient_Bar_", ("Silver", "Gold", "Prisma")),

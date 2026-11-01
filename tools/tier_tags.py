@@ -569,6 +569,13 @@ for _u28r in _UT28.rows():
     _add(_u28r[0], metal_tier(_UT28.ZONE_ALLOY[_u28r[3]]), "ut", "SkyyGear" if _u28r[4] == "gear" else "SkyyArmory")
 UT_IDS = tuple(_UT28.IDS)
 del _u28r
+# Vanilla-look UT weapons (SkyyGear 0.3.53 round gl1, research/Vanilla-Gear-Audit.md 8.3; tools/ut_vanilla.py): the same family "ut", the zone's
+# alloy tag, owner = the copy's builder (SkyyGear 9, SkyyArmory 1 - the Doomed staff). Not in Assets.zip.
+import ut_vanilla as _UTV        # pure Python table, no game files
+for _utvr in _UTV.rows():
+    _add(_utvr[0], metal_tier(_UTV.ZONE_ALLOY[_utvr[3]]), "ut", "SkyyGear" if _utvr[4] == "gear" else "SkyyArmory")
+UT_IDS = UT_IDS + tuple(_UTV.IDS)
+del _utvr
 
 # AUGMENTS (SkyyGear 0.3.52 round A2, research/Augments-Spec.md 2.2 / 2.3; Skyy 2026-10-25 "the buff augments are 5 tiers. one per zone. but
 # elemental ones have 10"): 120 items Skyy_Aug_<Kind>_<n> (Swift + Sage since aug2b: Skyy 2026-10-30 "Add them now"), own-ladder word "Augment" ("T3 Augment - Brute (stat)"), the tier = the number in the
