@@ -1701,8 +1701,9 @@ def phase_kit14(samples):
         for v, g in sorted(UI.PROVEN_LAYOUTS.items()):
             if g is None:
                 check(re.search(r"LayoutMode:\s*%s\b" % v, blob) is not None, "proven LayoutMode %s appears in a live build script" % v)
+        code = "\n".join(ln for ln in blob.splitlines() if not ln.lstrip().startswith("#"))    # 2026-11-01: a Python comment naming the key is not a page
         for k in ("FlexWeight", "WrapMaxLines", "LetterSpacing"):
-            check(re.search(r"(?<![A-Za-z])%s\s*:" % k, blob) is None, "base-gated %s is on no live page (still behind the probe)" % k)
+            check(re.search(r"(?<![A-Za-z])%s\s*:" % k, code) is None, "base-gated %s is on no live page (still behind the probe)" % k)
     # ---- probe pages 19-22 + Probe.summary + Probe.with_footer (the public footer hook) + PROBE_OPEN_FIRST
     pages = UI.probe_pages()
     check(UI.PROBE_OPEN_FIRST == ("base1", "base2", "base3", "base4") and all(len(p.summary) <= 95 and p.summary for p in pages),
