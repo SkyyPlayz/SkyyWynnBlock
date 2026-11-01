@@ -30,9 +30,9 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
 ## RUNNING (2026-11-01, Skyy: "work through the entire list of things you can do.")
-- aug3 wf_db158ac2-a15 (Mobs 0.1.25, Merchants 0.1.9, maybe Gear 0.3.55) | katana wf_b45a0ccb-398 (Classes 0.1.53).
-- PINNED, not deployed: gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets); sig3a Armory 0.1.50 (sigfx, probes, Doomcaller); aug4 Menu 0.3.49 (Elements charts).
-- Queue: PACK Slime Mobs! (PACK.md + deploy_set from aug3's report) -> sig3b Gear half (Doomed staff to ut_vanilla LOOKS, sig.ut, C+ charge, names, gear:fn:elemPower for Menu 0.3.49)
+- aug3 wf_db158ac2-a15 (Mobs 0.1.25, Merchants 0.1.9, maybe Gear 0.3.55).
+- PINNED, not deployed: gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets); sig3a Armory 0.1.50 (sigfx, probes, Doomcaller); aug4 Menu 0.3.49 (Elements charts); katana Classes 0.1.53.
+- Queue: PACK Slime Mobs! (PACK.md + deploy_set from aug3's report) -> sig3b Gear half (Doomed staff to ut_vanilla LOOKS, sig.ut, C+ charge, names, gear:fn:elemPower for Menu 0.3.49, leanHit full-family fix for the Katana; Armory: Crescent Rush Spellblade-only)
   -> augment salvage / sell confirm -> shields -> rarity Gear / Mobs / Sacks. sig5 after the sig3 probe PASSES in game (/armory debug sig probe).
 
 ## NEXT (in order)
