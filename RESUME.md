@@ -26,7 +26,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
   If this session reset before they reported: their drafts are in the worktree (git status); read each round's report with
   `python tools/dev/scratch/reports/dump.py <wfRunId> <name>` (worktree; journal under ~/.claude/projects/...worktrees-resume-review-87c362/
   <session>/subagents/workflows/<wfRunId>/), check the cross-check VERDICT, else re-run `skywynn-round` for that round.
-- PINNED, not deployed (deploy as ONE batch with aug3 + crescent): gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets); sig3a Armory 0.1.50
+- PINNED, not deployed (deploy as ONE batch with aug3; crescent Armory 0.1.51 also pinned): gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets); sig3a Armory 0.1.50
   (sigfx bridge, signature probes, Doomcaller); aug4 Menu 0.3.49 (Elements charts); katana Classes 0.1.53. Test steps for each: the
   docs/log/2026-11.md PINNED lines + tools/dev/scratch/reports/<tag>.md (gl2, sig3a, aug4, katana).
 - aug3 brings a PACK.md row + deploy_set pack-key change for Slime Mobs! (installed 1.1.3; 1.1.4 is out) - the main session applies it.
@@ -40,7 +40,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - After Skyy plays: skill `skywynn-logs` + the SHARED-EXECUTOR check (SackBeat 'shared scheduler stalls' + 'tick max').
 
 ## NEXT (in order; Gear / Mobs rounds one at a time)
-1. Pin aug3 + crescent, PACK Slime Mobs!, ONE smoke + deploy of the whole pinned batch.
+1. Pin aug3, PACK Slime Mobs!, ONE smoke + deploy of the whole pinned batch.
 2. sig3b Gear half: Weapon_Staff_Doomed into ut_vanilla LOOKS, sig.ut defaults (Paperweight -20, Ricochet +25), C+ charge rules, orange
    signature names, gear:fn:elemPower (apply(UUID) -> "Earth:0,Thunder:3,...", Menu 0.3.49 reads it), GearPool.leanHit full-family fix (Katana).
    Gear must check armory:fn:sigfx "owns:<id>" before calling sigfx (no double effects). research/UT-Mythic-Signatures.md section 8.
