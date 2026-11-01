@@ -76,3 +76,4 @@ tests always come first.
 267. rarity colours + sectioned tooltips (10 mods), Gear Attack Speed, element states + reactions
 268. augment sockets (Anvil Augments tab, craft / add / replace / fuse, Swift + Sage Mana %)
 269. Bronze weapons + spears, 10 vanilla-look UT weapons, Void Scythe Mythic, rune + Pets tile colours
+270. Trork / Kweebec sets, augment drops + merchant tab, slimes, /armory debug sig probe (unlocks sig5), Katana, Elements charts
