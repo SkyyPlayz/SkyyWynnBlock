@@ -30,11 +30,10 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
 ## RUNNING (2026-11-01, Skyy: "work through the entire list of things you can do.")
-- gl2 wf_7ff46195-797 (Gear 0.3.54 + Mobs 0.1.24: Trork + Kweebec sets, Trork drops) | sig3a wf_cc74ec0f-be4 (Armory 0.1.50: armory:fn:sigfx,
-  Second Opinion, Revolving Door, W / A probes, Doomcaller staff) | aug4 wf_feb7c746-502 (Menu 0.3.49: reaction matrix, states, Element Power).
-- Queue (Gear / Mobs one at a time): sig3b Gear half (sig.ut defaults, C+ charge rules, tooltips) -> A3 (augment drops, element mobs, PACK Slime
-  Mobs! 1.1.3; Skyy can update to 1.1.4) -> augment salvage / sell confirm -> shields -> rarity Gear / Mobs / Sacks. Classes: Katana Warrior-only.
-  sig5 after the sig3 probe PASSES in game. research/balance/targets.md has 2 regenerated pet-hour lines (someone ran a rewrite flag) - check after gl2.
+- sig3a wf_cc74ec0f-be4 (Armory 0.1.50) | aug4 wf_feb7c746-502 (Menu 0.3.49) | aug3 wf_db158ac2-a15 (Mobs 0.1.25 augment drops + element mobs +
+  Slime Mobs! tagging, Merchants 0.1.9 T1 augments, maybe Gear 0.3.55). PINNED, not deployed: gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets).
+- Queue: PACK Slime Mobs! (PACK.md + deploy_set from aug3's report) -> sig3b Gear half -> augment salvage / sell confirm -> shields -> rarity
+  Gear / Mobs / Sacks; Classes: Katana Warrior-only. sig5 after the sig3 probe PASSES in game.
 
 ## NEXT (in order)
 1. Refresh the Class Balance Workbench (augments x4.18 top line). Follow-ups: salvage / sell confirm for items holding augments; ELEMENT POWER
