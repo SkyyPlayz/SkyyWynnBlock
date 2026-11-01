@@ -30,11 +30,11 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
 ## RUNNING (2026-11-01, Skyy: "work through the entire list of things you can do.")
-- rarity part 2 wf_ec58fe02-f41 (Classes, Menu) | Gear lane gl1 wf_542223b4-7db (Gear 0.3.53: Bronze rung, UT rows, Scythe_Void, Diving Crude, ELEMENT
-  POWER total) | (Game Review v17 published 11-01).
-- Queue after gl1 (Gear / Mobs one at a time): gl2 Trork + Kweebec sets (Gear + Mobs drops) -> A3 (augment drops, element mobs per zone, PACK
-  Slime Mobs! 1.1.3 installed; Skyy can update to 1.1.4) -> augment salvage / sell confirm -> shields (own round) -> rarity Gear / Mobs / Sacks.
-  After rarity part 2: sig3 (Armory + Classes) and A4 Menu charts.
+- rarity part 2 wf_ec58fe02-f41 (Classes 0.1.52, Menu 0.3.48) | gl2 wf_7ff46195-797 (Gear 0.3.54 + Mobs 0.1.24: Trork + Kweebec sets, Trork drops).
+- PINNED, not deployed: gl1 Gear 0.3.53 (Bronze weapons, 10 vanilla-look UT weapons, Void Scythe Mythic) - deploy with rarity part 2.
+- Queue after gl2 (Gear / Mobs one at a time): A3 (augment drops, element mobs per zone, PACK Slime Mobs! 1.1.3 installed; Skyy can update to
+  1.1.4) -> augment salvage / sell confirm -> shields (own round) -> rarity Gear / Mobs / Sacks. After rarity part 2: sig3 (Armory + Classes),
+  Katana Warrior-only (Classes), Doomcaller staff (Armory), A4 Menu charts. Game Review v17 published 11-01.
 
 ## NEXT (in order)
 1. Refresh the Class Balance Workbench (augments x4.18 top line). Follow-ups: salvage / sell confirm for items holding augments; ELEMENT POWER
