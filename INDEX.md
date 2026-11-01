@@ -70,7 +70,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 |---|---|
 | HANDOFF.md sections 1 + gear locks / 3 / 4 / 5 / 6 | `docs/handoff/design-locks.md` / short table in `HANDOFF.md` + `docs/handoff/versions-history.md` / `docs/handoff/state-2026-09.md` / `docs/handoff/design-notes-2026-09.md` / `docs/log/` (section 2 + COMMAND RULES stayed in HANDOFF.md) |
 | OPEN-QUESTIONS.md (Q&A block, beta / round 8 / round 9 blocks, spec blocks) | `docs/answered/<topic>.md` (word for word, one line each); open ones stayed |
-| TEST-CHECKLIST.md sections | `docs/tests/2026-09-pre-beta.md`, `2026-09-beta.md`, `2026-10.md` |
+| TEST-CHECKLIST.md sections | `docs/tests/2026-09-pre-beta.md`, `2026-09-beta.md`, `2026-10.md`, `2026-11.md` |
 | `SkyWynn-*.md` (except the Mod-Roster), `Skyy<Mod>-Plan.md` (except SkyyGear-Plan) | `docs/plans/` |
 | `DESIGN-STATUS.md`, `BETA-TEST.md`, `SkyWynn-Mod-Roster.md`, the old `RESUME.md` | `docs/archive/` |
 

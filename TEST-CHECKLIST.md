@@ -75,3 +75,4 @@ tests always come first.
 266. Trees Plates text, Shards pays from Pocket Enchanted, price probes P1-P5 (/uiprobe tip)
 267. rarity colours + sectioned tooltips (10 mods), Gear Attack Speed, element states + reactions
 268. augment sockets (Anvil Augments tab, craft / add / replace / fuse, Swift + Sage Mana %)
+269. Bronze weapons + spears, 10 vanilla-look UT weapons, Void Scythe Mythic, rune + Pets tile colours

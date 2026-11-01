@@ -15,11 +15,11 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBank | 0.1.16 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
 | SkyyIslands | 0.5.26 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.2.3 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products |
-| SkyyGear | 0.3.52 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
+| SkyyGear | 0.3.53 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.69 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.35 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
-| SkyyClasses | 0.1.51 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
-| SkyyMenu | 0.3.47 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer |
+| SkyyClasses | 0.1.52 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
+| SkyyMenu | 0.3.48 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer |
 | SkyyEssentials | 0.1.16 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.18 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.17 | Cooking dishes + food Grade; XP by craft difficulty |

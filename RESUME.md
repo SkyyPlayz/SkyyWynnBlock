@@ -12,9 +12,9 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## NOW
-- LIVE up to TEST 268 (2026-10-30 13:49, backup deploy-20261030-1349): augments A2 - Gear 0.3.52 (sockets, Anvil Augments tab, 120
-  Skyy_Aug_* items, Swift / Sage Mana % key), Sacks 0.8.34, Pets 0.4.22, Accessories 0.5.35, Skills 0.4.69. Skyy 10-30: "Allow x4.18".
-  TEST 267: rarity pass (10 mods) + Gear 0.3.51 Attack Speed + Classes 0.1.51 / Mobs 0.1.23 element engine.
+- LIVE up to TEST 269 (2026-11-01 11:53, backup deploy-20261101-1153): Gear 0.3.53 (Bronze weapons + spear recipes, 10 vanilla-look UT
+  weapons - names unconfirmed, Void Scythe Mythic, Diving Crude out of bags), Classes 0.1.52 + Menu 0.3.48 (rarity part 2). Before: 268 augments A2
+  (Gear 0.3.52, Sacks 0.8.34, Pets 0.4.22, Accessories 0.5.35, Skills 0.4.69); 267 rarity pass (10 mods) + Gear 0.3.51 + Classes 0.1.51 / Mobs 0.1.23.
 - Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push to main,
   copy the new jars into the base checkout, deploy from the base checkout.
 - Skyy 10-28: keep the wild Burnt Alchemist Ancient Steel drops. Running: see RUNNING.
@@ -30,10 +30,9 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
 
 ## RUNNING (2026-11-01, Skyy: "work through the entire list of things you can do.")
-- rarity part 2 wf_ec58fe02-f41 (Classes 0.1.52, Menu 0.3.48) | gl2 wf_7ff46195-797 (Gear 0.3.54 + Mobs 0.1.24: Trork + Kweebec sets, Trork drops).
-- PINNED, not deployed: gl1 Gear 0.3.53 (Bronze weapons, 10 vanilla-look UT weapons, Void Scythe Mythic) - deploy with rarity part 2.
+- gl2 wf_7ff46195-797 (Gear 0.3.54 + Mobs 0.1.24: Trork + Kweebec sets, Trork drops).
 - Queue after gl2 (Gear / Mobs one at a time): A3 (augment drops, element mobs per zone, PACK Slime Mobs! 1.1.3 installed; Skyy can update to
-  1.1.4) -> augment salvage / sell confirm -> shields (own round) -> rarity Gear / Mobs / Sacks. After rarity part 2: sig3 (Armory + Classes),
+  1.1.4) -> augment salvage / sell confirm -> shields (own round) -> rarity Gear / Mobs / Sacks. Now free: sig3 (Armory + Classes),
   Katana Warrior-only (Classes), Doomcaller staff (Armory), A4 Menu charts. Game Review v17 published 11-01.
 
 ## NEXT (in order)
