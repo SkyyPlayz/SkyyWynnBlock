@@ -1,7 +1,7 @@
-# SkyWynn - RESUME HERE (updated 2026-10-30; TEST 266 live, augments running)
+# SkyWynn - RESUME HERE (updated 2026-11-01; TEST 269 live, a batch pinned + 2 rounds running)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
-Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
+Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-11.md` (October: `2026-10.md`). Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
 Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git history of this file.
 
 ## START HERE (new session)
@@ -15,38 +15,41 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - LIVE up to TEST 269 (2026-11-01 11:53, backup deploy-20261101-1153): Gear 0.3.53 (Bronze weapons + spear recipes, 10 vanilla-look UT
   weapons - names unconfirmed, Void Scythe Mythic, Diving Crude out of bags), Classes 0.1.52 + Menu 0.3.48 (rarity part 2). Before: 268 augments A2
   (Gear 0.3.52, Sacks 0.8.34, Pets 0.4.22, Accessories 0.5.35, Skills 0.4.69); 267 rarity pass (10 mods) + Gear 0.3.51 + Classes 0.1.51 / Mobs 0.1.23.
-- Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push to main,
-  copy the new jars into the base checkout, deploy from the base checkout.
-- Skyy 10-28: keep the wild Burnt Alchemist Ancient Steel drops. Running: see RUNNING.
-- Starter archipelago R1-R6 all live (Shards 0.4.8-0.4.11, Islands 0.5.25-0.5.26, Quests 0.4.4, Skills 0.4.66). Old untracked drafts
-  (tools/shards_0_4_8_patch.py, SkyyShards/*_0.4.8.py, ...) are leftovers - leave them / tidy later.
+- Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push with
+  `git push origin HEAD:main`; in the base checkout `git pull --rebase --autostash`, copy the new jars in (git-ignored), deploy + record_deploy there.
+- Old untracked drafts (tools/shards_0_4_8_patch.py, SkyyShards/*_0.4.8.py, ...) are leftovers - leave them / tidy later.
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
+## RUNNING / PINNED (2026-11-01, Skyy: "work through the entire list of things you can do.")
+- Running: aug3 wf_db158ac2-a15 (Mobs 0.1.25 augment drops by zone / element / rank + element mobs + Slime Mobs! roles tagged, Merchants 0.1.9
+  T1 augments, maybe Gear 0.3.55) | crescent wf_e90d39f4-dff (Armory 0.1.51: Crescent Rush + sword guard Spellblade-only).
+  If this session reset before they reported: their drafts are in the worktree (git status); read each round's report with
+  `python tools/dev/scratch/reports/dump.py <wfRunId> <name>` (worktree; journal under ~/.claude/projects/...worktrees-resume-review-87c362/
+  <session>/subagents/workflows/<wfRunId>/), check the cross-check VERDICT, else re-run `skywynn-round` for that round.
+- PINNED, not deployed (deploy as ONE batch with aug3 + crescent): gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets); sig3a Armory 0.1.50
+  (sigfx bridge, signature probes, Doomcaller); aug4 Menu 0.3.49 (Elements charts); katana Classes 0.1.53. Test steps for each: the
+  docs/log/2026-11.md PINNED lines + tools/dev/scratch/reports/<tag>.md (gl2, sig3a, aug4, katana).
+- aug3 brings a PACK.md row + deploy_set pack-key change for Slime Mobs! (installed 1.1.3; 1.1.4 is out) - the main session applies it.
+
 ## WAITING ON SKYY
-- `/skyprobe tour` (TEST-CHECKLIST 231, SkyyUiProbe 0.8, 15 cases, ~5 min) -> unlocks UI rounds R1b-R5; afterwards RETIRE SkyyUiProbe.
-- Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png (8 Home tiles) + research/cloud/page-emblems-art/sheet.png (4 page emblems).
-- Tell joszza: River Bridges' guard role needs MajorDungeons' Mb_Bandit group (fails to load without it).
-- Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons (OPEN-QUESTIONS), TEST-CHECKLIST lines still open.
-- Sacks question [default: leave it]: the Farmer's Workbench 100 Essence -> 1 Greater recipe can be paid by opening a Greater (net zero).
+- TEST 266-269 (TEST-CHECKLIST). After the next deploy: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
+- UiProbe P1-P5 (`/uiprobe tip`) -> decides price tooltips R2 Bazaar 0.2.4. `/skyprobe tour` (TEST 231) -> UI rounds R1b-R5, then retire UiProbe.
+- Art review (sent 10-23): research/cloud/ui-tiles-art/sheet.png + research/cloud/page-emblems-art/sheet.png.
+- The 10 vanilla-look UT names (tools/ut_vanilla.py) are placeholders - Skyy may rename. Tell joszza: River Bridges' guard role needs Mb_Bandit.
+- Feel tests: caster Mana (P9 F5), Zone-1 wild adult dragons. Sacks [default: leave it]: Farmer's Workbench Essence recipe net zero.
+- After Skyy plays: skill `skywynn-logs` + the SHARED-EXECUTOR check (SackBeat 'shared scheduler stalls' + 'tick max').
 
-## RUNNING (2026-11-01, Skyy: "work through the entire list of things you can do.")
-- aug3 wf_db158ac2-a15 (Mobs 0.1.25, Merchants 0.1.9, maybe Gear 0.3.55) | crescent wf_e90d39f4-dff (Armory 0.1.51: Crescent Rush Spellblade-only).
-- PINNED, not deployed: gl2 Gear 0.3.54 + Mobs 0.1.24 (Trork / Kweebec sets); sig3a Armory 0.1.50 (sigfx, probes, Doomcaller); aug4 Menu 0.3.49 (Elements charts); katana Classes 0.1.53.
-- Queue: PACK Slime Mobs! (PACK.md + deploy_set from aug3's report) -> sig3b Gear half (Doomed staff to ut_vanilla LOOKS, sig.ut, C+ charge, names, gear:fn:elemPower for Menu 0.3.49, leanHit full-family fix for the Katana)
-  -> augment salvage / sell confirm -> shields -> rarity Gear / Mobs / Sacks. sig5 after the sig3 probe PASSES in game (/armory debug sig probe).
-
-## NEXT (in order)
-1. Refresh the Class Balance Workbench (augments x4.18 top line). Follow-ups: salvage / sell confirm for items holding augments; ELEMENT POWER
-   tooltip shows socket tiers only (not rolled lines / Imbue); Tempo melee only until Armory gets caster hooks.
-2. SHARED-EXECUTOR holder (Shards + Sacks clean): after Skyy plays, read SackBeat 'shared scheduler stalls' + 'tick max', then other mods.
-3. Gear lane after A2 (Gear free): research/Vanilla-Gear-Audit.md section 8 LEFT (Ornate Bronze, Fishing B, UT-28 all live): Bronze weapon
-   rung + recipes, Z2 Doomed / Z4 Saurian UT sets, Sword_Bronze_Ancient Z1 UT, Scythe_Void Berserker Mythic, Diving Crude out of combat bags,
-   Trork / Kweebec set (Gear + Mobs drops); shields = own round. Then sig3 (Revolving Door, Weighted Vortex, armory:fn:sigfx, C+ charge
-   rules, probes) -> sig5 (13 Mythic signatures; needs the sig3 probe PASS in game).
-4. Augments A3 (Mobs drops + element mobs; PACK Slime Mobs! 1.1.4 - MIT, Water / Fire / Ice slimes, docs/log 10-30) + A4 (Menu charts).
-5. Price tooltips R2 Bazaar 0.2.4 after Skyy runs P1-P5 (/uiprobe tip); R3 Gear if P3 passes. BetterMap shard-world listing.
-6. RARITY + TOOLTIP PASS part 2: Gear, Classes, Mobs, Sacks, Menu (after augments frees them).
-7. Older: UI R1b-R5 after /skyprobe tour; Dragon-Quest-Spec (research/cloud) needs Skyy's call; GlymeraSigns ask = Skyy sends it.
+## NEXT (in order; Gear / Mobs rounds one at a time)
+1. Pin aug3 + crescent, PACK Slime Mobs!, ONE smoke + deploy of the whole pinned batch.
+2. sig3b Gear half: Weapon_Staff_Doomed into ut_vanilla LOOKS, sig.ut defaults (Paperweight -20, Ricochet +25), C+ charge rules, orange
+   signature names, gear:fn:elemPower (apply(UUID) -> "Earth:0,Thunder:3,...", Menu 0.3.49 reads it), GearPool.leanHit full-family fix (Katana).
+   Gear must check armory:fn:sigfx "owns:<id>" before calling sigfx (no double effects). research/UT-Mythic-Signatures.md section 8.
+3. Augment salvage / sell confirm ("this item has N augments") - Gear + Wardrobe (Requip) + the sale path.
+4. Shields = Warrior off-hand gear (Skyy 10-30 yes): own full round (research/Vanilla-Gear-Audit.md 8.5).
+5. Rarity + tooltip pass for Gear, Mobs, Sacks (Classes / Menu + 10 others done).
+6. sig4 (7 base family signatures + Loophole Lance) and sig5 (13 Mythic signatures, after the probe PASS).
+7. Small: other 11 Bronze weapon families (Armory); Void Scythe boss source (boss round); Tempo caster hooks (Armory); Game Review Pack area.
+8. Older: price tooltips R2 / R3, BetterMap shard-world listing, UI R1b-R5, Dragon-Quest-Spec (Skyy's call), GlymeraSigns ask (Skyy sends).
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
