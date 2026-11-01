@@ -31,7 +31,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 
 ## RUNNING (2026-11-01, Skyy: "work through the entire list of things you can do.")
 - rarity part 2 wf_ec58fe02-f41 (Classes, Menu) | Gear lane gl1 wf_542223b4-7db (Gear 0.3.53: Bronze rung, UT rows, Scythe_Void, Diving Crude, ELEMENT
-  POWER total) | Game Review page refresh (Sonnet, scratch gamereview/; then republish artifact NgcvPphvjdrHdyrJrgCKfG).
+  POWER total) | (Game Review v17 published 11-01).
 - Queue after gl1 (Gear / Mobs one at a time): gl2 Trork + Kweebec sets (Gear + Mobs drops) -> A3 (augment drops, element mobs per zone, PACK
   Slime Mobs! 1.1.3 installed; Skyy can update to 1.1.4) -> augment salvage / sell confirm -> shields (own round) -> rarity Gear / Mobs / Sacks.
   After rarity part 2: sig3 (Armory + Classes) and A4 Menu charts.
