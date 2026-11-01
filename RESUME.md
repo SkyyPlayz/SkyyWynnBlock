@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 
 ## RUNNING / PINNED (2026-11-01, Skyy: "work through the entire list of things you can do.")
 - Running: aug3 wf_db158ac2-a15 (Mobs 0.1.25 augment drops by zone / element / rank + element mobs + Slime Mobs! roles tagged, Merchants 0.1.9
-  T1 augments, maybe Gear 0.3.55) | crescent wf_e90d39f4-dff (Armory 0.1.51: Crescent Rush + sword guard Spellblade-only).
+  T1 augments, maybe Gear 0.3.55); crescent Armory 0.1.51 PINNED (Crescent Rush Spellblade-only).
   If this session reset before they reported: their drafts are in the worktree (git status); read each round's report with
   `python tools/dev/scratch/reports/dump.py <wfRunId> <name>` (worktree; journal under ~/.claude/projects/...worktrees-resume-review-87c362/
   <session>/subagents/workflows/<wfRunId>/), check the cross-check VERDICT, else re-run `skywynn-round` for that round.

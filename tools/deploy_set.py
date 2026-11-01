@@ -167,6 +167,7 @@ SET = [
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
     # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
     # FLOOR (2026-10-27, totemui): SkyyShards 0.4.13 (card totem page + range aura, vanilla-layout Totem Bench, totem poles placed by hand, timed ShStore lock + own tick thread, pay-under-lock fixes) rolls back alone to 0.4.12 - no migration; a hand-placed totem's entry carries an extra 8th part "dx;dz" that 0.4.12 ignores (it then draws that totem on a pad and its hand-placed block stays as a plain block) - pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
+    # FLOOR (2026-11-01, crescent): SkyyArmory 0.1.51 (Katana left out of Crescent Rush + sword guard: vanilla charged stab for the Warrior) needs SkyyClasses >= 0.1.53 (with Classes 0.1.52 a Spellblade's Katana loses the rush); rolls back alone to 0.1.50, nothing to undo.
     # FLOOR (2026-11-01, katana): SkyyClasses 0.1.53 (Weapon_Longsword_Katana = Warrior 'katanas'; other longswords Spellblade) rolls back alone to 0.1.52 - static table, no saved data.
     # FLOOR (2026-11-01, aug4): SkyyMenu 0.3.49 (Your Stats: reaction matrix, element states list, Element Power row - reads gear:fn:elemPower when Gear publishes it) = display only, rolls back alone to 0.3.48.
     # FLOOR (2026-11-01, sig3a): SkyyArmory 0.1.50 (armory:fn:sigfx bridge, Second Opinion, Revolving Door, W / A probes, Weighted Vortex, Seven Cuts, Grave Chill, Doomcaller staff, 21 sig.* rows). Before a rollback switch sig.a.enabled OFF for one session (Ghost Sword skyyarmory_sig modifier); NEVER roll below 0.1.50 once a Weapon_Staff_UT_Doomcaller exists (unknown item). No saved-data change.
@@ -221,7 +222,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.50"),
+    ("SkyyArmory", "0.1.51"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
