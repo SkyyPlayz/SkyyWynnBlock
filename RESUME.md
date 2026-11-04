@@ -22,8 +22,9 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Old untracked drafts (tools/shards_0_4_8_patch.py, SkyyShards/*_0.4.8.py, ...) are leftovers - leave them / tidy later.
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING
-- Nothing running, nothing pinned-but-undeployed (2026-11-01 evening). Round reports: tools/dev/scratch/reports/<tag>.md (worktree, local).
+## RUNNING (2026-11-03, Skyy's test fixes come first)
+- cave wf_7313a449-f57 (Shards 0.4.18: Mining caves look like caves, mouth lines up with the bridge, one-time rebuild marker cave=2).
+- Dragon riding: Skyy "i cant ride the dragon" (docs/answered/pets.md 11-03) - diagnosis agent running; then a Pets fix round.
 
 ## WAITING ON SKYY
 - TEST 266-270 (TEST-CHECKLIST). TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
