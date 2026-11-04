@@ -24,7 +24,8 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 
 ## RUNNING (2026-11-03, Skyy's test fixes come first)
 - cave = plain Agent builder (the workflow refused, newer dragon message relayed) (Shards 0.4.18: Mining caves look like caves, mouth lines up with the bridge, one-time rebuild marker cave=2).
-- Dragon riding: Skyy "i cant ride the dragon" (docs/answered/pets.md 11-03) - diagnosis agent running; then a Pets fix round.
+- Dragon riding (Skyy 11-03 "i cant ride the dragon"): cause = pets.passthrough=all makes pets Intangible (F cannot target); plain builder Pets 0.4.23 running.
+- Check: Slime Mobs! Spawns_Zone1_Mountains_Animal_Slime duplicates the Goat rule of our Spawns_Zone1_Mountains_Animal (one config dropped, SEVERE).
 
 ## WAITING ON SKYY
 - TEST 266-270 (TEST-CHECKLIST). TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
