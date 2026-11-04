@@ -151,7 +151,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.22"),
+    ("SkyyPets", "0.4.23"),
     ("SkyyWardrobe", "0.2.13"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -167,6 +167,7 @@ SET = [
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
     # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
     # FLOOR (2026-10-27, totemui): SkyyShards 0.4.13 (card totem page + range aura, vanilla-layout Totem Bench, totem poles placed by hand, timed ShStore lock + own tick thread, pay-under-lock fixes) rolls back alone to 0.4.12 - no migration; a hand-placed totem's entry carries an extra 8th part "dx;dz" that 0.4.12 ignores (it then draws that totem on a pad and its hand-placed block stays as a plain block) - pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
+    # FLOOR (2026-11-03, ride): SkyyPets 0.4.23 (passthrough 'all' = ProjectilePassthrough + player hits on pets cancelled, Intangible only 'ghost' during the owner's fights, never on a rideable summon; row pets.passthrough.fight 8 s) rolls back alone to 0.4.22 (F / riding broken again) - no saved data.
     # FLOOR (2026-11-01, aug3): SkyyMobs 0.1.25 (MobAug augment drops by zone / element / rank, aug.zoneElement.1-5, elem.zoneVariants, more elem.mobs bodies incl. Slime Mobs! roles) and SkyyMerchants 0.1.9 (Augments tab, T1 augments) each roll back alone (0.1.24 / 0.1.8) - no saved data; dropped augments stay Gear items. Pack: lizard:Slime Mobs! ON.
     # FLOOR (2026-11-01, crescent): SkyyArmory 0.1.51 (Katana left out of Crescent Rush + sword guard: vanilla charged stab for the Warrior) needs SkyyClasses >= 0.1.53 (with Classes 0.1.52 a Spellblade's Katana loses the rush); rolls back alone to 0.1.50, nothing to undo.
     # FLOOR (2026-11-01, katana): SkyyClasses 0.1.53 (Weapon_Longsword_Katana = Warrior 'katanas'; other longswords Spellblade) rolls back alone to 0.1.52 - static table, no saved data.
