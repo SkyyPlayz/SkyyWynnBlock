@@ -23,7 +23,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING (2026-11-03, Skyy's test fixes come first)
-- cave wf_7313a449-f57 (Shards 0.4.18: Mining caves look like caves, mouth lines up with the bridge, one-time rebuild marker cave=2).
+- cave = plain Agent builder (the workflow refused, newer dragon message relayed) (Shards 0.4.18: Mining caves look like caves, mouth lines up with the bridge, one-time rebuild marker cave=2).
 - Dragon riding: Skyy "i cant ride the dragon" (docs/answered/pets.md 11-03) - diagnosis agent running; then a Pets fix round.
 
 ## WAITING ON SKYY
