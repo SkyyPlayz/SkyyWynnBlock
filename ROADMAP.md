@@ -36,6 +36,7 @@ Each phase is a playable step.
 | P3 Economy | coins, bank, Bazaar, auction house | Live as 4 mods; Bazaar search is in; SkyyEconomy merge still waits for Skyy's tests |
 | P4 Combat depth | 7 classes, class weapons, class trees, abilities, slayers | In progress: 7 classes playable, Monk moves live, trees live; Spellblade is a draft; abilities are designed, not built; slayers not started |
 | P5 Gear game | levels, rarity, identify, reforge, armor types, gathering gear | In progress: SkyyGear live, including mystery bags; own Light sets dropped; pack armor waits for Hytale 0.7; tool levels next |
+| Gear/Combat | Wynn elements and powders on gear | In now (current build, locked 2026-10-15) |
 | P6 Island chain | zone islands, Zone 1 town (the hub), mob levels, quests | Started: test island + mob levels live; Zone 1 town planned (probe out); each zone is a far-apart island group |
 | P7 Capstone + side content | endgame dungeon, raids, events, guild territory | Not started (specs only) |
 
@@ -59,7 +60,6 @@ Each phase is a playable step.
 - Pets and dragons (`research/cloud/Pets-Spec.md`).
 - Minions on the private island (`docs/plans/SkyyMinions-Plan.md`).
 - Dungeons + the endgame capstone (`docs/plans/SkyyDungeons-Plan.md`).
-- Wynn elements and powders on gear.
 - NPC shops (`research/cloud/NPC-Shops-Spec.md`).
 - Shaman class (maybe; Monk took its slot).
 - Replace the third-party mods in `PACK.md` with our own.
