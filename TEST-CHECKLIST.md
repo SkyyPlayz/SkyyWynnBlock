@@ -77,3 +77,4 @@ tests always come first.
 268. augment sockets (Anvil Augments tab, craft / add / replace / fuse, Swift + Sage Mana %)
 269. Bronze weapons + spears, 10 vanilla-look UT weapons, Void Scythe Mythic, rune + Pets tile colours
 270. Trork / Kweebec sets, augment drops + merchant tab, slimes, /armory debug sig probe (unlocks sig5), Katana, Elements charts
+271. F pets / ride the dragon, Iron + Copper caves (mouth on the bridge, natural look)

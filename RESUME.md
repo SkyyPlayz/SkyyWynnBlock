@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-11-01 evening; TEST 270 live, nothing running)
+# SkyWynn - RESUME HERE (updated 2026-11-03; TEST 271 live, nothing running)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-11.md` (October: `2026-10.md`). Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -12,22 +12,20 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## NOW
-- LIVE up to TEST 270 (2026-11-01 14:31, backup deploy-20261101-1431): Gear 0.3.54 (Trork 2/4 + Kweebec 2-piece sets), Mobs 0.1.25 (augment
-  drops by zone / element / rank, zone elements, Slime Mobs! roles tagged), Merchants 0.1.9 (Augments tab), Armory 0.1.51 (sigfx bridge, signature
-  probes, Second Opinion, Revolving Door, Doomcaller; Katana keeps the vanilla stab), Classes 0.1.53 (Katana = Warrior), Menu 0.3.49 (Elements
-  reaction chart + states). Pack: + Slime Mobs! (lizard, MIT). Before: 269 Gear 0.3.53 Bronze weapons + vanilla UT weapons, Classes 0.1.52 / Menu
-  0.3.48 rarity; 268 augments A2; 267 rarity pass (10 mods). Game Review artifact v17 (2026-11-01).
+- LIVE up to TEST 271 (2026-11-03 21:44, backup deploy-20261103-2144): Skyy's test fixes - Pets 0.4.23 (pets targetable again: F pets /
+  rides the Lv 10+ dragon; player hits on pets cancelled; other pets ghost 8 s after you fight) + Shards 0.4.18 (natural Mining caves, mouth on
+  the bridge lane, one-time rebuild cave=2). Before: 270 Gear 0.3.54 Trork / Kweebec sets, Mobs 0.1.25 augment drops + element mobs, Merchants
+  0.1.9, Armory 0.1.51 signatures + probes, Classes 0.1.53 Katana, Menu 0.3.49 Elements; + Slime Mobs! pack. Game Review v17 (11-01).
 - Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push with
   `git push origin HEAD:main`; in the base checkout `git pull --rebase --autostash`, copy the new jars in (git-ignored), deploy + record_deploy there.
 - Old untracked drafts (tools/shards_0_4_8_patch.py, SkyyShards/*_0.4.8.py, ...) are leftovers - leave them / tidy later.
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
-## RUNNING (2026-11-03, Skyy's test fixes come first)
-- cave = plain Agent builder (the workflow refused, newer dragon message relayed) (Shards 0.4.18: Mining caves look like caves, mouth lines up with the bridge, one-time rebuild marker cave=2).
-- Dragon riding (Skyy 11-03 "i cant ride the dragon"): cause = pets.passthrough=all made pets Intangible; Pets 0.4.23 PINNED (reviewed READY), deploy with the cave fix.
+## RUNNING
+- Nothing (2026-11-03). Round reports: tools/dev/scratch/reports/<tag>.md (worktree, local).
 
 ## WAITING ON SKYY
-- TEST 266-270 (TEST-CHECKLIST). TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
+- TEST 266-271 (TEST-CHECKLIST). TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
 - Zone 2 element mix [default: leave]: its commons are Earth sand skeletons, so Thunder there comes only from Yellow slimes, Spirit_Thunder and
   the x2 zone drop. No hostile Air flyer / Zone 4 lake mob exists (needs new bodies). Slime Mobs!: Mods has the 1.1.4 zip (manifest 1.1.3).
 - UiProbe P1-P5 (`/uiprobe tip`) -> decides price tooltips R2 Bazaar 0.2.4. `/skyprobe tour` (TEST 231) -> UI rounds R1b-R5, then retire UiProbe.
