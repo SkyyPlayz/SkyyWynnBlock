@@ -391,3 +391,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shard caps, true compression, XP 20 %, Mining ingots (DEPLOYED 2026-11-08, backup deploy-20261108-0930) | [2026-11](2026-11.md) |
 | Furnace list ingots first (DEPLOYED 2026-11-08, backup deploy-20261108-0948) | [2026-11](2026-11.md) |
 | Dragon circles, aggressive mode (DEPLOYED 2026-11-08, backup deploy-20261108-1007) | [2026-11](2026-11.md) |
+| Combat Shard: bigger walled arenas, mobs level with you, bags apart (DEPLOYED 2026-11-08, backup deploy-20261108-1102) | [2026-11](2026-11.md) |

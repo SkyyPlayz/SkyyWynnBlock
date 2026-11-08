@@ -86,3 +86,4 @@ tests always come first.
 277. Storage caps, Compactor compression, Mining costs ingots
 278. Furnace list ingots first by tier
 279. Dragon circles and hunts hostile mobs
+280. Combat Shard bigger, walls, mob levels, bags
