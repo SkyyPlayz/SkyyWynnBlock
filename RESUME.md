@@ -22,6 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
+- Workflow skywynn-round tag shoff: SkyyShards 0.4.19 (offline limit by Offline Harvest + Sell half / all / amount on Collect rows). Then FIRST in Next: SkyyShards 0.4.20 = Storage I-V 1k / 3k / 8k / 20k / 50k per island + Auto-Compactor TRUE compression (100 stored items = 1 Enchanted in the store; Sell must sell it, XP paid per 100) - Skyy's words + popups in docs/answered/world.md 2026-11-08.
 - Nothing (2026-11-03). Round reports: tools/dev/scratch/reports/<tag>.md (worktree, local).
 
 ## WAITING ON SKYY
