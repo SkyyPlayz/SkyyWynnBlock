@@ -12,30 +12,20 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 4. After Skyy plays: skill `skywynn-logs`. Skyy shares a mod: skill `skywynn-mod-check`. Art: skill `skywynn-art`.
 
 ## NOW
-- LIVE up to TEST 271 (2026-11-03 21:44, backup deploy-20261103-2144): Skyy's test fixes - Pets 0.4.23 (pets targetable again: F pets /
-  rides the Lv 10+ dragon; player hits on pets cancelled; other pets ghost 8 s after you fight) + Shards 0.4.18 (natural Mining caves, mouth on
-  the bridge lane, one-time rebuild cave=2). Before: 270 Gear 0.3.54 Trork / Kweebec sets, Mobs 0.1.25 augment drops + element mobs, Merchants
-  0.1.9, Armory 0.1.51 signatures + probes, Classes 0.1.53 Katana, Menu 0.3.49 Elements; + Slime Mobs! pack. Game Review v17 (11-01).
+- LIVE up to TEST 280 (2026-11-08 11:02, backup deploy-20261108-1102). The 11-08 batch of Skyy's test requests is all deployed, none seen in game yet:
+  272 Shards 0.4.19 offline limit; 273 Bazaar 0.2.4 + Skills 0.4.70 + Sacks 0.8.35 + Gear 0.3.55 (shard Sell, how-to-level lines, shard XP class limit, Furnace All + button);
+  274 Pets 0.4.24 mounting; 275 Accessories 0.5.36 Enchanted costs; 276 Sacks 0.8.36 metals in Smithing + Pocket Sell; 277 Shards 0.4.20 caps + compression + 20 % XP + ingots;
+  278 Sacks 0.8.37 Furnace sort; 279 Pets 0.4.25 dragon circles + aggressive; 280 Shards 0.4.21 Combat arenas + walls + level with owner + bags. Hytale 0.7.6.
 - Builders write in the worktree .claude/worktrees/resume-review-87c362 (a hook blocks the base checkout): commit / pin there, push with
   `git push origin HEAD:main`; in the base checkout `git pull --rebase --autostash`, copy the new jars in (git-ignored), deploy + record_deploy there.
 - Old untracked drafts (tools/shards_0_4_8_patch.py, SkyyShards/*_0.4.8.py, ...) are leftovers - leave them / tidy later.
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- Nothing running. DEPLOYED 11-08: Shards 0.4.19 (TEST 272); Bazaar 0.2.4, Skills 0.4.70, Sacks 0.8.35, Gear 0.3.55 (TEST 273); Pets 0.4.24 (TEST 274); Accessories 0.5.36 (TEST 275); Sacks 0.8.36 (TEST 276); Shards 0.4.20 (TEST 277); Sacks 0.8.37 (TEST 278); Pets 0.4.25 (TEST 279); Shards 0.4.21 (TEST 280). Skyy: tell them when all these big fixes are deployed.
-- Queued after Pets 0.4.24 (ride2): Pets 0.4.25 = summoned dragon circles / keeps away from the owner unless fighting, targets hostile mobs aggressively (docs/answered/pets.md 2026-11-08).
-- Workflow skywynn-round tag shoff: SkyyShards 0.4.19 (offline limit by Offline Harvest + Sell half / all / amount on Collect rows). Then FIRST in Next: SkyyShards 0.4.20 = Storage I-V 1k / 3k / 8k / 20k / 50k per island + Auto-Compactor TRUE compression (100 stored items = 1 Enchanted in the store; Sell must sell it, XP paid per 100) - Skyy's words + popups in docs/answered/world.md 2026-11-08.
-- Shards 0.4.21 = the combat half if 0.4.20 is too big: arena size + walls (next line), mobs level with the player (class level; the Mob level upgrade adds on top), the store holds every drop kind, unidentified bags stored + collected apart (docs/answered/world.md 2026-11-08).
-- Shards 0.4.20 also: combat arenas bigger (default half 12 / 18 / 25, Server Setup rows) + wall 4 high of the zone's stone brick; placed islands rebuilt once, Soul Cages kept (like the cave=2 marker).
-- Queued after the Sacks 0.8.35 round (furnall): Sacks 0.8.36 = Enchanted metals (Skyy_Ench_<metal>, EN.TABLE_ALLOYS / ORES_ENCH) in the Smithing bag, existing Mining-bag stock moved once; fix the raw 'Skyy Ench <name>' title on the Pocket page; Pocket Sell button for the selected item (AMOUNT box, bazaar:fn:sell, needs Bazaar 0.2.4) (docs/answered/bags.md 2026-11-08).
-- Bazaar next rebuild MUST move the 18 Enchanted metals from its Mining tab to Smithing (it asserts BAG_OF == EN.cat_of against the pinned Sacks; fails after Sacks 0.8.36).
-- Sacks 0.8.37 after sk836: Furnace list = ingots first by tier, then the rest (RecipeCmp; docs/answered/ui.md 2026-11-08).
-- Shards 0.4.20 also: every Mining shard upgrade / craft cost that takes an ore takes the matching ingot, same amount (Quarry Spirit recipe Ore_Copper:128 + any island / sub-upgrade ore cost; one-time migration of untouched rows).
-- Also queued 11-08 (docs/answered/skills.md): Shards 0.4.20 adds shard.xpPercent 50 -> 20 (one-time migration, Sell pays it too); SkyySkills round: shard:* XP past the class level pays x0.5 for 5 levels, then x0.1 (rows under Skills -> Levels; pets / Beastmastery follow). Same Skills round: pack check PACK_MAX 6 -> ~18 (boot race, docs/log 11-08); Armory ArmoryCheck same retry; Trees 0.6.8 DefaultOk on the sickle Replace.
-- Nothing (2026-11-03). Round reports: tools/dev/scratch/reports/<tag>.md (worktree, local).
+- Nothing running.
 
 ## WAITING ON SKYY
-- TEST 266-271 (TEST-CHECKLIST). TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
+- TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
 - Zone 2 element mix [default: leave]: its commons are Earth sand skeletons, so Thunder there comes only from Yellow slimes, Spirit_Thunder and
   the x2 zone drop. No hostile Air flyer / Zone 4 lake mob exists (needs new bodies). Slime Mobs!: Mods has the 1.1.4 zip (manifest 1.1.3).
 - UiProbe P1-P5 (`/uiprobe tip`) -> decides price tooltips R2 Bazaar 0.2.4. `/skyprobe tour` (TEST 231) -> UI rounds R1b-R5, then retire UiProbe.
@@ -45,6 +35,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - After Skyy plays: skill `skywynn-logs` + the SHARED-EXECUTOR check (SackBeat 'shared scheduler stalls' + 'tick max').
 
 ## NEXT (in order; Gear / Mobs rounds one at a time; launch with Workflow `skywynn-round`, Skyy's own words in quotes)
+0. From 11-08: next Bazaar rebuild MUST move the 18 Enchanted metals from its Mining tab to Smithing (it asserts BAG_OF == EN.cat_of against the pinned Sacks). Trees 0.6.8: DefaultOk on the sickle Replace (Skyy_Tree_HarvR_HE SEVERE, docs/log 11-08). Armory ArmoryCheck one-shot boot check needs the same retry as Skills PACK_MAX. Economy check: Bazaar Enchanted sell price vs 100x base, for compressed shard stock. Gear SX_PACK row for DualRuneBlade (The Armory 1.25.1 removed its Ability 1).
 1. sig3b Gear half: Weapon_Staff_Doomed into ut_vanilla LOOKS, sig.ut defaults (Paperweight -20, Ricochet +25), C+ charge rules, orange
    signature names, gear:fn:elemPower (apply(UUID) -> "Earth:0,Thunder:3,...", Menu 0.3.49 already reads it), GearPool.leanHit full-family fix
    (Katana). Gear must check armory:fn:sigfx "owns:<id>" before calling sigfx. research/UT-Mythic-Signatures.md section 8.
