@@ -78,3 +78,4 @@ tests always come first.
 269. Bronze weapons + spears, 10 vanilla-look UT weapons, Void Scythe Mythic, rune + Pets tile colours
 270. Trork / Kweebec sets, augment drops + merchant tab, slimes, /armory debug sig probe (unlocks sig5), Katana, Elements charts
 271. F pets / ride the dragon, Iron + Copper caves (mouth on the bridge, natural look)
+272. Offline limit by Offline Harvest; Sell waits for Bazaar 0.2.4

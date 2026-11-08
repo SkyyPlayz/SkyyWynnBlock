@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- 11-08 running: skywynn-round sk070 (Skills 0.4.70), furnall (Sacks 0.8.35 + Gear 0.3.55), ride2 (Pets 0.4.24), bz024 (Bazaar 0.2.4 bazaar:fn:sell), sh020 (Shards 0.4.20). Shards 0.4.19 is pinned, NOT deployed: it goes with Bazaar 0.2.4 (Sell is inert without it).
+- 11-08 running: skywynn-round sk070 (Skills 0.4.70), furnall (Sacks 0.8.35 + Gear 0.3.55), ride2 (Pets 0.4.24), bz024 (Bazaar 0.2.4 bazaar:fn:sell), sh020 (Shards 0.4.20). Shards 0.4.19 DEPLOYED 11-08 (TEST 272; Skyy: deploy what's ready); its Sell stays inert until Bazaar 0.2.4.
 - Queued after Pets 0.4.24 (ride2): Pets 0.4.25 = summoned dragon circles / keeps away from the owner unless fighting, targets hostile mobs aggressively (docs/answered/pets.md 2026-11-08).
 - Workflow skywynn-round tag shoff: SkyyShards 0.4.19 (offline limit by Offline Harvest + Sell half / all / amount on Collect rows). Then FIRST in Next: SkyyShards 0.4.20 = Storage I-V 1k / 3k / 8k / 20k / 50k per island + Auto-Compactor TRUE compression (100 stored items = 1 Enchanted in the store; Sell must sell it, XP paid per 100) - Skyy's words + popups in docs/answered/world.md 2026-11-08.
 - Shards 0.4.21 = the combat half if 0.4.20 is too big: arena size + walls (next line), mobs level with the player (class level; the Mob level upgrade adds on top), the store holds every drop kind, unidentified bags stored + collected apart (docs/answered/world.md 2026-11-08).

@@ -383,3 +383,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Gear lane 1 (Bronze weapons, vanilla UT weapons) + rarity part 2 (Classes, Menu) (DEPLOYED 2026-11-01, backup deploy-20261101-1153) | [2026-11](2026-11.md) |
 | Trork + Kweebec sets, augment drops + element mobs + Slime Mobs!, signature probes, Elements charts, Katana Warrior (DEPLOYED 2026-11-01, backup deploy-20261101-1431) | [2026-11](2026-11.md) |
 | Dragon riding fix (pets targetable) + natural Mining caves lined up with bridges (DEPLOYED 2026-11-03, backup deploy-20261103-2144) | [2026-11](2026-11.md) |
+| Shards 0.4.19 offline limit (DEPLOYED 2026-11-08, backup deploy-20261108-0820) | [2026-11](2026-11.md) |
