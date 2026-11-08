@@ -23,7 +23,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 
 ## RUNNING
 - Workflow skywynn-round tag shoff: SkyyShards 0.4.19 (offline limit by Offline Harvest + Sell half / all / amount on Collect rows). Then FIRST in Next: SkyyShards 0.4.20 = Storage I-V 1k / 3k / 8k / 20k / 50k per island + Auto-Compactor TRUE compression (100 stored items = 1 Enchanted in the store; Sell must sell it, XP paid per 100) - Skyy's words + popups in docs/answered/world.md 2026-11-08.
-- Also queued 11-08 (docs/answered/skills.md): Shards 0.4.20 adds shard.xpPercent 50 -> 20 (one-time migration, Sell pays it too); SkyySkills round: shard:* XP past the class level pays x0.5 for 5 levels, then x0.1 (rows under Skills -> Levels; pets / Beastmastery follow). Combine with the Mana / Spell cost override fix if that lands in Skills.
+- Also queued 11-08 (docs/answered/skills.md): Shards 0.4.20 adds shard.xpPercent 50 -> 20 (one-time migration, Sell pays it too); SkyySkills round: shard:* XP past the class level pays x0.5 for 5 levels, then x0.1 (rows under Skills -> Levels; pets / Beastmastery follow). Same Skills round: pack check PACK_MAX 6 -> ~18 (boot race, docs/log 11-08); Armory ArmoryCheck same retry; Trees 0.6.8 DefaultOk on the sickle Replace.
 - Nothing (2026-11-03). Round reports: tools/dev/scratch/reports/<tag>.md (worktree, local).
 
 ## WAITING ON SKYY
