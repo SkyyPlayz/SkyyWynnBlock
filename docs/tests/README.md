@@ -388,3 +388,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Riding fix (DEPLOYED 2026-11-08, backup deploy-20261108-0856) | [2026-11](2026-11.md) |
 | Charm costs open Enchanted items (DEPLOYED 2026-11-08, backup deploy-20261108-0909) | [2026-11](2026-11.md) |
 | Enchanted metals in Smithing, Pocket Sell (DEPLOYED 2026-11-08, backup deploy-20261108-0917) | [2026-11](2026-11.md) |
+| Shard caps, true compression, XP 20 %, Mining ingots (DEPLOYED 2026-11-08, backup deploy-20261108-0930) | [2026-11](2026-11.md) |

@@ -83,3 +83,4 @@ tests always come first.
 274. Horse and dragon mount first time
 275. Furnace Charm II counts Enchanted Lead
 276. Enchanted metals in Smithing, Pocket Sell, real names
+277. Storage caps, Compactor compression, Mining costs ingots
