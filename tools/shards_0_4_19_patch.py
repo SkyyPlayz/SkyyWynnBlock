@@ -1,0 +1,835 @@
+"""Derive SkyyShards/build_skyyshards_0.4.19.py from the GENERATED SkyyShards 0.4.18 (build_skyyshards_0.4.18.py = the tools/deploy_set.py SET
+pin, made by tools/shards_0_4_18_patch.py - edit the patch, never the generated file). Every anchor is asserted once; at the end every change
+is undone on a copy and compared with 0.4.18 (tools/soundpass_gen.Patch). Line endings kept.
+Run:   python tools/shards_0_4_19_patch.py   then   python SkyyShards/build_skyyshards_0.4.19.py   (never --deploy)
+Check: python SkyyShards/test_skyyshards_0.4.19.py
+
+0.4.19 (2026-11-08) = THE OFFLINE LIMIT + SELL FROM THE STORE (round shoff; Skyy 2026-11-08: "we need to limit offline gain ... start smaller then
+  upgrade offline gain. and next to collect add a sell button. sell half, sell all and custom amount." + "and you still get the xp from it if
+  you sell" + popup "Start small, upgrade" - docs/answered/world.md).
+  A. OFFLINE. ShMath.ONLINE = the profile keys whose owner is logged in on that profile. ShTick compares it with the server's players every
+     second (ShMath.sync): a profile that left (disconnect, switched away) -> settled at full speed, <kind>.offAt = now, saved; a profile that
+     arrived (join, switched back) -> settled with the offline window, offAt cleared, saved. A world change is not a logout (a PlayerRef stays
+     in Universe.getPlayers() across worlds); no event listener, so nothing runs on the network thread. A graceful stop logs everybody out.
+     settle() itself knows the window: while the owner is away each stretch of time counts at speed up.offline.pct[level] up to up.offline.hours
+     [level] after offAt (the manual ceiling shard.manualOfflineSec before Automation), then 0. Because the window is a function of the clock and
+     `last` only moves by the time the made items took, settling again - a co-op member, a page, the login - never pays twice, and boosters
+     that end inside the window count exactly (settle splits at them as before; a booster still running at logout counts at the offline
+     speed). WHY NOT the suggested "move last at login": a co-op member's menu settles an offline owner's shard, which would have paid full
+     speed; and a moved `last` applies the login-time boosters to the whole window.
+     NO offAt while the owner is away (a crash, a shard saved by 0.4.18, the first login after this update) = each island's window starts at that
+     island's own `last` (kept as <kind>.i<n>.offAt until the login, so re-settling cannot restart it): everything since counts as offline - a crash
+     never gives extra, and a long-idle island cannot use up the window of the others.
+     Online: full speed; up.offline.hours no longer clips it (limits: storage, shard.maxOfflineSec, before Automation shard.manualOfflineSec).
+     At login the fraction of an item in progress is carried over at full-speed time (ShMath.rebase), so it is neither lost nor multiplied.
+     Ladder 0..5: 25,30,35,40,45,50 % (new row up.offline.pct, live) and 8,10,12,16,20,24 h (up.offline.hours, new default; ShMig0419 moves
+     only the untouched old default 12,18,24,36,48,72). A shard with no <kind>.offline key = level 5.
+  B. SELL. Collect tab rows: Sell next to Collect (no Sell on Combat rows: one count = several drop kinds, no per-kind cap / partial answer is
+     safe - Collect them), the full 'stored / cap' always shows (220 wide). Sell opens the right panel's Sell view (half / all / typed amount,
+     Enter in the field = preview). ShCore.sell: settle, debit + save FIRST, the Bazaar's bazaar:fn:sell (apply(Object[]{UUID, itemId, Long qty})
+     -> Long coins, or long[]{coins, sold} for a partial sale) with the lock released, whatever it did not take goes back; XP + collection go
+     through ShCore.payCred, the code Collect now uses too. Row sell.enabled (live).
+     SkyyBazaar 0.2.3 does NOT publish bazaar:fn:sell (only the planning note names it: jar scan = closeall / open / wouldclose): until a Bazaar
+     round adds it, Sell answers in the status line and nothing moves.
+  SAVED DATA: new keys <kind>.offAt, and <kind>.i<n>.offAt while an owner with no offAt is away (cleared at the login). ROLLBACK 0.4.19 -> 0.4.18 alone: Undo the ShMig0419 row first (0.4.18 would read 8..24 as hours between
+  visits); 0.4.18 ignores both offAt keys, up.offline.pct, sell.enabled.
+  A later roll forward can find an old <kind>.offAt: it only under-credits (counted as offline since then), never pays extra, and clears at the next login.
+"""
+import os, re, sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import soundpass_gen as G
+
+HERE = os.path.join(ROOT, "SkyyShards")
+P = G.Patch(os.path.join(HERE, "build_skyyshards_0.4.18.py"), os.path.join(HERE, "build_skyyshards_0.4.19.py"))
+if "--out" in sys.argv:
+    P.dst = os.path.abspath(sys.argv[sys.argv.index("--out") + 1])
+assert P.has('VERSION = "0.4.18"\n') and P.has("GENERATED by tools/shards_0_4_18_patch.py") and not P.has("ShMig0419"), "not the generated SkyyShards 0.4.18"
+REG0, SYS0 = P.s.count("registerCommand("), P.s.count("registerSystem(")
+HEAD = open(__file__, encoding="utf8").read().split('"""')[1]
+NOTE = HEAD[HEAD.index("0.4.19 (2026-11-08)"):].rstrip() + "\n"
+
+# ---------------------------------------------------------------------------------------------------- 0. header + version
+P.rep('''"""SkyyShards 0.4.18 - build script (javassist via jpype). GENERATED by tools/shards_0_4_18_patch.py from build_skyyshards_0.4.17.py
+(generated by tools/shards_0_4_17_patch.py from 0.4.16, ... back to tools/shards_0_4_patch.py from 0.3.2; edit the patch, never this file).
+Changes are marked "0.4.18" /''', '''"""SkyyShards 0.4.19 - build script (javassist via jpype). GENERATED by tools/shards_0_4_19_patch.py from build_skyyshards_0.4.18.py
+(generated by tools/shards_0_4_18_patch.py from 0.4.17, ... back to tools/shards_0_4_patch.py from 0.3.2; edit the patch, never this file).
+Changes are marked "0.4.19" / "0.4.18" /''')
+P.rep('''Run:   python SkyyShards/build_skyyshards_0.4.18.py   -> SkyyShards/SkyyShards-0.4.18.jar   (never --deploy: tools/deploy_set.py installs the set)
+Check: python SkyyShards/test_skyyshards_0.4.18.py
+0.4.18 (2026-11-03) = THE MINING CAVE''', '''Run:   python SkyyShards/build_skyyshards_0.4.19.py   -> SkyyShards/SkyyShards-0.4.19.jar   (never --deploy: tools/deploy_set.py installs the set)
+Check: python SkyyShards/test_skyyshards_0.4.19.py
+''' + NOTE + '''
+0.4.18 notes:
+0.4.18 (2026-11-03) = THE MINING CAVE''')
+P.rep('VERSION = "0.4.18"\n', 'VERSION = "0.4.19"\n')
+
+# ---------------------------------------------------------------------------------------------------- 1. the ladder + the migration's numbers
+P.rep('''MIG049_LINE = "# ---------- SkyyShards 0.4.9 (marker''', '''# 0.4.19 THE OFFLINE LIMIT (Skyy popup 2026-11-08 "Start small, upgrade": level 0 = 25 % speed for 8 hours, level 5 = 50 % speed for 24 hours, then it stops)
+OFF_H419 = [8, 10, 12, 16, 20, 24]
+OFF_PCT419 = [25, 30, 35, 40, 45, 50]
+MIG0419 = [("up.offline.hours", ",".join(str(_x) for _x in OFF_H49), ",".join(str(_x) for _x in OFF_H419), "t")]
+MIG0419_MK = "skyyshards-0.4.19-offline"
+MIG0419_LINE = "# ---------- SkyyShards 0.4.19 (marker %s, runs once): shards make less while the owner is offline - Offline Harvest hours 8..24 (were 12..72); only an untouched old default line was changed ----------" % MIG0419_MK
+MIG049_LINE = "# ---------- SkyyShards 0.4.9 (marker''')
+P.rep('''    "# up.offline.hours = 0.4.9 OFFLINE HARVEST: hours production counts between two visits at Offline Harvest level 0..5 (6 numbers; a",
+    "# shard owned before 0.4.9 is level 5; shard.maxOfflineSec stays the ceiling, shard.manualOfflineSec before Automation).",''',
+      '''    "# up.offline.hours = 0.4.19 OFFLINE HARVEST: hours production goes on after the owner logs out at Offline Harvest level 0..5, then it stops",
+    "# (6 numbers; a shard owned before 0.4.9 is level 5; shard.maxOfflineSec stays the ceiling, shard.manualOfflineSec before Automation).",
+    "# up.offline.pct = 0.4.19: production speed in % while the owner is logged out, at Offline Harvest level 0..5 (6 numbers).",''')
+P.rep('''    "up.offline.hours=" + ",".join(str(_x) for _x in OFF_H49), "up.offline.steps="''',
+      '''    "up.offline.hours=" + ",".join(str(_x) for _x in OFF_H419), "up.offline.pct=" + ",".join(str(_x) for _x in OFF_PCT419), "up.offline.steps="''')
+P.rep('''    "shard.ui.keepScroll=true",
+''', '''    "shard.ui.keepScroll=true",
+    "# sell.enabled = 0.4.19: the Sell button on the Collect tab (false hides it).",
+    "sell.enabled=true",
+    "# SkyyShards 0.4.19 defaults (marker %s): the offline limit - keep this line." % MIG0419_MK,
+''')
+P.rep('''          "public static final double[] DEF_OFF_H = new double[] { %s };" % ", ".join("%r" % float(_x) for _x in OFF_H49),''',
+      '''          "public static final double[] DEF_OFF_H = new double[] { %s };" % ", ".join("%r" % float(_x) for _x in OFF_H419),
+          "public static final int[] DEF_OFF_PCT = new int[] { %s };" % ", ".join(str(_x) for _x in OFF_PCT419),   # 0.4.19
+          "public static volatile int[] OFF_PCT = new int[] { %s };" % ", ".join(str(_x) for _x in OFF_PCT419),
+          "public static volatile boolean SELL_ON = true;",''')
+P.rep('''          "public static volatile double[] OFF_H = new double[] { %s };" % ", ".join("%r" % float(_x) for _x in OFF_H49),''',
+      '''          "public static volatile double[] OFF_H = new double[] { %s };" % ", ".join("%r" % float(_x) for _x in OFF_H419),''')
+P.rep('''         ("up.offline.hours", "Offline Harvest: hours, level 0-5", "ladder", "text", ",".join(str(_x) for _x in OFF_H49), "", "80", "", "", "live",
+          "6 numbers: hours production counts between visits at Offline Harvest 0..5.", "reload@config.properties:up.offline.hours"),''',
+      '''         ("up.offline.hours", "Offline Harvest: hours, level 0-5", "ladder", "text", ",".join(str(_x) for _x in OFF_H419), "", "80", "", "", "live",
+          "6 numbers: hours shards keep working after the owner logs out, level 0..5. Then they stop.", "reload@config.properties:up.offline.hours"),
+         ("up.offline.pct", "Offline Harvest: speed %, level 0-5", "ladder", "text", ",".join(str(_x) for _x in OFF_PCT419), "", "40", "", "", "live",
+          "6 numbers: production speed in % while the owner is logged out, at Offline Harvest 0..5.", "reload@config.properties:up.offline.pct"),
+         ("sell.enabled", "Sell button on the Collect tab", "shards", "bool", "true", "", "", "", "", "live",
+          "ON: each Collect row can sell its store to the Bazaar. OFF: the buttons are hidden.", "reload@config.properties:sell.enabled"),''')
+P.rep('''          "  OFF_H = decsOf(p.getProperty(\\"up.offline.hours\\"), DEF_OFF_H, 0.0, 720.0, \\"up.offline.hours\\");",   # 0.4.9''',
+      '''          "  OFF_H = decsOf(p.getProperty(\\"up.offline.hours\\"), DEF_OFF_H, 0.0, 720.0, \\"up.offline.hours\\");",   # 0.4.9
+          "  OFF_PCT = intsOf(p.getProperty(\\"up.offline.pct\\"), DEF_OFF_PCT, 0, 100, \\"up.offline.pct\\");",   # 0.4.19
+          "  SELL_ON = bool(p.getProperty(\\"sell.enabled\\"), true);",''')
+
+# ---------------------------------------------------------------------------------------------------- 2. ShMig0419 (ShMig049's reviewed machinery)
+_A = P.s.index("smig49 = mk(\"ShMig049\")")
+_B = P.s.index('M(cfg, r"""\npublic static int stacks(int tier) {')
+MIG_SRC = P.s[_A:_B]
+assert MIG_SRC.count("public static synchronized String run(") == 1 and MIG_SRC.count("MIG049") >= 6, MIG_SRC.count("MIG049")
+MIG_NEW = (MIG_SRC.replace("smig49", "smig419").replace("ShMig049", "ShMig0419").replace("MIG049", "MIG0419").replace("SkyyShards 0.4.9", "SkyyShards 0.4.19")
+           .replace("the 0.4.9 default", "the 0.4.19 default").replace("before the 0.4.9 update", "before the 0.4.19 update")
+           .replace("(+3 % a sub-upgrade level)", "(the offline limit)").replace("(+3 % a level; the file is used as it is)", "(the offline limit; the file is used as it is)")
+           .replace("(shards are the primary late-game source: +3 % output a sub-upgrade level, was 0.5 %)", "(shards make less while the owner is offline: Offline Harvest hours 8..24, were 12..72)"))
+assert "0.4.9" not in MIG_NEW and "+3 %" not in MIG_NEW, re.findall(r".{40}0\.4\.9.{20}", MIG_NEW)[:5]
+P.rep('M(cfg, r"""\npublic static int stacks(int tier) {', '''# ================= 0.4.19 ShMig0419 (PROJECT-RULES 4; ShMig049's reviewed machinery): up.offline.hours, only while the line still holds its old default
+for _k, _o, _n, _t in MIG0419:
+    assert ("\\n%s=%s\\n" % (_k, _n)) in "\\n" + CONFIG_TEXT + "\\n", _k
+    assert _o != _n
+assert CONFIG_TEXT.count(MIG0419_MK) == 1
+''' + MIG_NEW + 'M(cfg, r"""\npublic static int stacks(int tier) {')
+P.rep('''  catch (Throwable t) { @PKG@.ShCfg.warn("the 0.4.9 settings update was skipped: " + t); }
+''', '''  catch (Throwable t) { @PKG@.ShCfg.warn("the 0.4.9 settings update was skipped: " + t); }
+  try { @PKG@.ShMig0419.run(@PKG@.ShCfg.FILE); }   // 0.4.19: untouched Offline Harvest hours 12..72 -> 8..24, once (History first; Undo)
+  catch (Throwable t) { @PKG@.ShCfg.warn("the 0.4.19 settings update was skipped: " + t); }
+''')
+P.rep("ALLC = [busyc, lockc, thrc, aura, clr] + [cfg, smig, smig45, smig46, smig48, smig49, st,", "ALLC = [busyc, lockc, thrc, aura, clr] + [cfg, smig, smig45, smig46, smig48, smig49, smig419, st,")
+
+# ---------------------------------------------------------------------------------------------------- 3. ShIsl: speed, online ceiling, words
+P.rep('''# ---- costs (spec 13): coins = round7(hours x 8,333 x curve(level)); the island's level = its tier band (T1 Lv 1, T2 Lv 8 ... T15 Lv 95)
+M(isl48, r"""
+public static int band(int tier) {''', '''# 0.4.19: production speed while the owner is away (0..1), the ceiling on ONLINE time (Offline Harvest hours no longer clip it)
+M(isl48, r"""
+public static int offPct(int lv) {
+  return @PKG@.ShCfg.OFF_PCT[lv < 0 ? 0 : (lv > 5 ? 5 : lv)];
+}""")
+M(isl48, r"""
+public static double offSpd(int kd, java.util.Properties p) {
+  return (double) offPct(offLv(kd, p)) / 100.0;
+}""")
+M(isl48, r"""
+public static long onMs(int kd, java.util.Properties p) {
+  long a = (long) @PKG@.ShCfg.MAX_OFF_SEC;
+  if (auto(kd, p)) return 1000L * a;
+  long m = (long) @PKG@.ShCfg.MAN_OFF_SEC;
+  return 1000L * (m < a ? m : a);
+}""")
+# 0.4.19: the hours level lv really gives on this shard (the ceilings counted), in plain words for the menus
+M(isl48, r"""
+public static double offHrs(int kd, java.util.Properties p, int lv) {
+  double h = offH(lv);
+  double c = (double) @PKG@.ShCfg.MAX_OFF_SEC / 3600.0;
+  if (h > c) h = c;
+  if (!auto(kd, p)) { double m = (double) @PKG@.ShCfg.MAN_OFF_SEC / 3600.0; if (h > m) h = m; }
+  return h;
+}""")
+M(isl48, r"""
+public static String offWords(int kd, java.util.Properties p, int lv) {
+  double h = offHrs(kd, p, lv);
+  return offPct(lv) + " % speed for " + @PKG@.ShCfg.dec(h) + (h == 1.0 ? " hour" : " hours");
+}""")
+# ---- costs (spec 13): coins = round7(hours x 8,333 x curve(level)); the island's level = its tier band (T1 Lv 1, T2 Lv 8 ... T15 Lv 95)
+M(isl48, r"""
+public static int band(int tier) {''')
+
+# 0.4.19 (critic): the file's pkey is the key it is read under, so a file restored or copied to another profile is seen as online there
+P.rep('''  if (p.getProperty("pkey") == null) p.setProperty("pkey", k);   // 0.2:''', '''  if (!k.equals(p.getProperty("pkey"))) p.setProperty("pkey", k);   // 0.4.19: always the key it is read under; 0.2:''')
+# ---------------------------------------------------------------------------------------------------- 4. ShMath: who is online, settle's window, login / logout
+P.rep('''M(mth, r"""
+public static double xpCapOf() {''', '''# 0.4.19 THE OFFLINE WINDOW. ONLINE = the profile keys whose owner is logged in on that profile right now (ShTick -> sync, every second)
+F(mth, "public static final java.util.concurrent.ConcurrentHashMap ONLINE = new java.util.concurrent.ConcurrentHashMap();")
+F(mth, "public static volatile boolean ALL_ON_TEST = false;")   # older harness phases: everybody counts as online (0.4.18's production maths)
+M(mth, r"""
+public static boolean isOn(java.util.Properties p) {
+  if (ALL_ON_TEST || p == null) return true;
+  String k = p.getProperty("pkey");
+  return k != null && ONLINE.containsKey(k);
+}""")
+# when this island's offline window began; 0 = the owner is online. No <kind>.offAt while away (a crash, a shard saved by 0.4.18, the first login after
+# this update) = the island's own `last`, kept as <kind>.i<n>.offAt because `last` moves as items are made (re-settling must not restart the window)
+M(mth, r"""
+public static long offStart(int kd, java.util.Properties p, int slot, long now) {
+  if (isOn(p)) return 0L;
+  long a = @PKG@.ShStore.lng(p, @PKG@.ShIsl.kk(kd, "offAt"), 0L);
+  if (a > 0L) return a > now ? now : a;
+  String key = ik(kd, slot, "offAt");
+  long s = @PKG@.ShStore.lng(p, key, 0L);
+  if (s > 0L) return s > now ? now : s;
+  long l = @PKG@.ShStore.lng(p, ik(kd, slot, "last"), now);
+  if (l <= 0L || l > now) l = now;
+  p.setProperty(key, String.valueOf(l));
+  return l;
+}""")
+M(mth, r"""
+public static double spd(long t, long oa, long oe, double os) {
+  if (oa <= 0L || t < oa) return 1.0;
+  return t < oe ? os : 0.0;
+}""")
+M(mth, r"""
+public static long brk(int kd, java.util.Properties p, int slot, long t, long now, long oa, long oe) {
+  long b = @PKG@.ShTotem.nextBreak(kd, p, slot, t, now);
+  if (oa > 0L) { if (t < oa && oa < b) b = oa; if (t < oe && oe < b) b = oe; }
+  return b;
+}""")
+# items made between `from` and now: every stretch at its own rate (a booster end splits it) x the offline speed (0 after the window)
+M(mth, r"""
+public static double winAcc(int kd, java.util.Properties p, int slot, long from, long now, long oa, long oe, double os) {
+  double acc = 0.0;
+  long t = from;
+  int guard = 0;
+  while (t < now && guard < 64) {
+    long b = brk(kd, p, slot, t, now, oa, oe);
+    acc += (double) (b - t) * rate(kd, p, slot, t) * spd(t, oa, oe, os) / 60000.0;
+    t = b;
+    guard++;
+  }
+  return acc;
+}""")
+M(mth, r"""
+public static double xpCapOf() {''')
+P.rep('''  long maxOff = @PKG@.ShIsl.offMs(kd, p);   // 0.4.8: shard.manualOfflineSec (2 h) until the shard's Automation, then shard.maxOfflineSec
+  if (now - last > maxOff) last = now - maxOff;
+  long made = 0L;''', '''  // 0.4.19: online = full speed under the storage / shard.maxOfflineSec / manual ceilings; owner away = the offline window (speed, then 0)
+  long oa = offStart(kd, p, slot, now);
+  long oe = 0L;
+  double os = 1.0;
+  long maxOn = @PKG@.ShIsl.onMs(kd, p);
+  if (oa > 0L) {
+    oe = oa + @PKG@.ShIsl.offMs(kd, p);
+    os = @PKG@.ShIsl.offSpd(kd, p);
+    if (last < oa && oa - last > maxOn) last = oa - maxOn;
+  } else if (now - last > maxOn) last = now - maxOn;
+  long made = 0L;''')
+P.rep('''    double acc = 0.0;
+    long t = last;
+    int guard = 0;
+    while (t < now && guard < 64) {
+      long b = @PKG@.ShTotem.nextBreak(kd, p, slot, t, now);
+      acc += (double) (b - t) * rate(kd, p, slot, t) / 60000.0;
+      t = b;
+      guard++;
+    }
+    made = (long) Math.floor(acc + 0.000000001);''', '''    double acc = winAcc(kd, p, slot, last, now, oa, oe, os);
+    int guard = 0;
+    made = (long) Math.floor(acc + 0.000000001);''')
+P.rep('''        long b = @PKG@.ShTotem.nextBreak(kd, p, slot, u, now);
+        double r = rate(kd, p, slot, u);
+        double seg = (double) (b - u) * r / 60000.0;''', '''        long b = brk(kd, p, slot, u, now, oa, oe);
+        double r = rate(kd, p, slot, u) * spd(u, oa, oe, os);
+        double seg = (double) (b - u) * r / 60000.0;''')
+P.rep('''M(mth, r"""
+public static long stored(int kd, java.util.Properties p, int slot) {''', '''# 0.4.19 login: the window ends. The part of an item in progress (under 1 item, still in offline time) is carried over as the same part in
+# full-speed time, so the next online settle neither loses it nor multiplies it
+M(mth, r"""
+public static void rebase(int kd, java.util.Properties p, int slot, long now, long oa, long oe, double os) {
+  long l = @PKG@.ShStore.lng(p, ik(kd, slot, "last"), now);
+  if (l > now) l = now;
+  double acc = winAcc(kd, p, slot, l, now, oa, oe, os);
+  double r = rate(kd, p, slot, now);
+  long n = now;
+  if (acc > 0.0 && acc < 1.0 && r > 0.0) { long b = now - (long) Math.floor(acc * 60000.0 / r); n = b > l ? b : l; }
+  p.setProperty(ik(kd, slot, "last"), String.valueOf(n));
+}""")
+M(mth, r"""
+public static boolean anyIsland(int kd, java.util.Properties p) {
+  for (int i = 0; i < SLOTS; i++) if (hasIsland(kd, p, i)) return true;
+  return false;
+}""")
+# items made in this kind's closing window; -1 = the kind has no island (nothing to write)
+M(mth, r"""
+public static long closeOff(int kd, java.util.Properties p, long now) {
+  boolean any = anyIsland(kd, p);
+  long made = 0L;
+  if (any && !isOn(p)) {
+    long ms = @PKG@.ShIsl.offMs(kd, p);
+    double os = @PKG@.ShIsl.offSpd(kd, p);
+    for (int i = 0; i < SLOTS; i++) {
+      if (hasIsland(kd, p, i)) { long oa = offStart(kd, p, i, now); made += settle(kd, p, i, now); rebase(kd, p, i, now, oa, oa + ms, os); }
+    }
+  }
+  p.remove(@PKG@.ShIsl.kk(kd, "offAt"));
+  for (int j = 0; j < SLOTS; j++) p.remove(ik(kd, j, "offAt"));
+  return any ? made : -1L;
+}""")
+# the owner arrived on this profile (join, switched back). A second call is nothing. Busy = ShBusy, the next tick tries again.
+M(mth, r"""
+public static void logIn(String k, long now) {
+  if (k == null || ONLINE.containsKey(k)) return;
+  java.util.Properties p = @PKG@.ShStore.get(k);
+  if (p == null) { ONLINE.put(k, Boolean.TRUE); return; }
+  @PKG@.ShTotem.moonBlade(k);   // critic: warm the Moon Blade cache outside the lock (settle reads only the cache), or a login settles at x1
+  @PKG@.ShStore.LOCK.lock(); try {
+    if (!ONLINE.containsKey(k)) {
+      boolean dirty = false;
+      long made = 0L;
+      for (int kd = 0; kd < @PKG@.ShKind.N; kd++) {
+        long m = closeOff(kd, p, now);
+        if (m >= 0L) { dirty = true; made += m; }
+      }
+      ONLINE.put(k, Boolean.TRUE);
+      if (dirty) {
+        String e = @PKG@.ShStore.save(k, p);
+        if (e != null) @PKG@.ShCfg.warn("shard login: the file could not be saved (the numbers are in memory): " + e);
+        if (made > 0L) @PKG@.ShStore.log(k + " back online: " + made + " items made while away");
+      }
+    }
+  } finally { @PKG@.ShStore.LOCK.unlock(); }
+}""")
+# the owner left this profile (disconnect, switched away, the server stops): settled at full speed, then the window opens
+M(mth, r"""
+public static void logOut(String k, long now) {
+  if (k == null || !ONLINE.containsKey(k)) return;
+  java.util.Properties p = @PKG@.ShStore.get(k);
+  if (p == null) { ONLINE.remove(k); return; }
+  @PKG@.ShTotem.moonBlade(k);   // critic: as at the login
+  @PKG@.ShStore.LOCK.lock(); try {
+    if (ONLINE.containsKey(k)) {
+      settleEvery(p, now);
+      boolean dirty = false;
+      for (int kd = 0; kd < @PKG@.ShKind.N; kd++) {
+        if (anyIsland(kd, p)) { p.setProperty(@PKG@.ShIsl.kk(kd, "offAt"), String.valueOf(now)); dirty = true; }
+      }
+      ONLINE.remove(k);
+      if (dirty) {
+        String e = @PKG@.ShStore.save(k, p);
+        if (e != null) @PKG@.ShCfg.warn("shard logout: the file could not be saved (a restart then counts all of it as offline): " + e);
+      }
+    }
+  } finally { @PKG@.ShStore.LOCK.unlock(); }
+}""")
+M(mth, r"""
+public static void outSafe(String k, long now) {
+  try { logOut(k, now); } catch (Throwable t) { if (!(t instanceof @PKG@.ShBusy)) @PKG@.ShCfg.warnOnce("logout", "a shard logout failed (logged once): " + t); }
+}""")
+M(mth, r"""
+public static void inSafe(String k, long now) {
+  try { logIn(k, now); } catch (Throwable t) { if (!(t instanceof @PKG@.ShBusy)) @PKG@.ShCfg.warnOnce("login", "a shard login failed (logged once): " + t); }
+}""")
+# the set of profile keys that are online now -> who left, who came (leaving first: a profile switch closes the old shard before the new one)
+M(mth, r"""
+public static void sync(java.util.Set keys, long now) {
+  java.util.Iterator it = ONLINE.keySet().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    if (!keys.contains(k)) outSafe(k, now);
+  }
+  java.util.Iterator in = keys.iterator();
+  while (in.hasNext()) inSafe((String) in.next(), now);
+}""")
+M(mth, r"""
+public static void allOff(long now) {
+  java.util.Iterator it = ONLINE.keySet().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    try { logOut(k, now); }
+    catch (Throwable t) { @PKG@.ShCfg.warnOnce("logoutstop", "a shard logout could not finish while the server stopped (logged once; that profile's time since its last save counts as offline): " + t); }
+  }
+}""")
+M(mth, r"""
+public static long stored(int kd, java.util.Properties p, int slot) {''')
+
+# ---------------------------------------------------------------------------------------------------- 5. ShCore: the one payout code, Sell
+_A = P.s.index('''  String extra = "";
+  int bm1 = @PKG@.ShKind.BMULT[kd];
+  if (baseGiven + gBonus > 0L) {''')
+_B = P.s.index('''  if (baseGiven + gBonus <= 0L) return kd == @PKG@.ShCombat.CK ? "-Not enough room''')
+OLD_PAY = P.s[_A:_B]
+assert OLD_PAY.count("owedXp(u, skill, xp)") == 1 and OLD_PAY.count("owed(u, bon, gBonus)") == 1, "the Collect payout block"
+P.rep(OLD_PAY, '''  String extra = "";
+  if (baseGiven + gBonus > 0L) extra = payCred(u, kd, baseGiven, gBonus, xpD, cred);   // 0.4.19: the one payout code (Sell uses it too)
+''')
+_body = OLD_PAY[OLD_PAY.index("    String skill = @PKG@.ShKind.SKILL[kd];"):OLD_PAY.rindex("  }\n")]
+_xpline = '''      long xp = fx ? (long) Math.floor(xpD * (double) @PKG@.ShCfg.XP_PCT / 100.0 + 0.000000001) : (baseGiven * per + gBonus * bxp) * (long) @PKG@.ShCfg.XP_PCT / 100L;'''
+assert _body.count(_xpline) == 1
+_body = _body.replace(_xpline, "      long xp = xpTotal(kd, baseGiven, gBonus, xpD);")
+P.rep('''# Collect `slot` (-1 = every island) of shard kd for player u from profile k.''', '''# 0.4.19: what a Collect pays beyond the items - skill XP and collections - in one place. Collect and Sell both come here (Skyy: "and you still
+# get the xp from it if you sell"). No lock held; base = stored items delivered / sold, xpD = their XP before the percent.
+M(core, r"""
+public static long xpTotal(int kd, long base, long bonus, double xpD) {
+  long per = (long) @PKG@.ShCfg.xpOf(kd);
+  int bm = @PKG@.ShKind.BMULT[kd];
+  long bxp = bm > 1 ? (long) bm * per : (long) @PKG@.ShKind.BXP[kd];
+  if (kd == FK) return (long) Math.floor(xpD * (double) @PKG@.ShCfg.XP_PCT / 100.0 + 0.000000001);
+  return (base * per + bonus * bxp) * (long) @PKG@.ShCfg.XP_PCT / 100L;
+}""")
+M(core, r"""
+public static String payCred(java.util.UUID u, int kd, long baseGiven, long gBonus, double xpD, java.util.LinkedHashMap cred) {
+  String extra = "";
+  String bon = @PKG@.ShKind.BONUS[kd];
+  int bm1 = @PKG@.ShKind.BMULT[kd];
+''' + _body + '''  return extra;
+}""")
+# Collect `slot` (-1 = every island) of shard kd for player u from profile k.''')
+P.rep('''M(core, "public static String collect(java.util.UUID u, String k, int slot, @IC@[] cs) { return collect(u, k, FK, slot, cs); }")
+''', '''M(core, "public static String collect(java.util.UUID u, String k, int slot, @IC@[] cs) { return collect(u, k, FK, slot, cs); }")
+# 0.4.19 SELL FROM THE STORE (Skyy: "next to collect add a sell button. sell half, sell all and custom amount."). The Collect pattern: settle, debit
+# + save first (a refused save pays nothing), then the Bazaar with the shard lock released; what it did not take goes back; XP + collection
+# through payCred for the amount sold. bazaar:fn:sell = apply(Object[]{ UUID, itemId, Long qty }) -> Long coins (0 = nothing sold) or
+# long[]{ coins, sold } when it took only part. Bazaar sale prices: bazaar:sell:<id> (a Long for 1).
+# THE CONTRACT for the Bazaar round that publishes it: all or nothing under the Market lock, never throws after crediting the wallet (a throw here = the
+# items go back), a bare Number means every item was sold (anything less = long[]{ coins, sold }), no inventory touched, price impact + trades.log, MAXQ.
+F(core, "public static final java.util.concurrent.ConcurrentLinkedQueue SELLQ = new java.util.concurrent.ConcurrentLinkedQueue();")
+M(core, r"""
+public static long priceOf(String id) {
+  try {
+    Object o = id == null ? null : @PKG@.ShCfg.bridge().get("bazaar:sell:" + id);
+    return o instanceof Number ? ((Number) o).longValue() : 0L;
+  } catch (Throwable t) { return 0L; }
+}""")
+# the item a sale takes from this island (ingots when it smelts = what Collect would give); under the lock
+M(core, r"""
+public static String sellItem(int kd, java.util.Properties p, int slot) {
+  int t = @PKG@.ShIsl.ty(kd, p, slot);
+  boolean sm = @PKG@.ShTotem.smelts(kd, p, slot) && @PKG@.ShIsl.SMELT[t].length() > 0;
+  return sm ? @PKG@.ShIsl.SMELT[t] : @PKG@.ShIsl.PROD[t];
+}""")
+# null = the Bazaar can buy id, else the status line (no lock held)
+M(core, r"""
+public static String sellNo(String id) {
+  if (@PKG@.ShPay.f("bazaar:fn:sell") == null) return "-The Bazaar cannot buy from shards yet - nothing was sold.";
+  if (priceOf(id) <= 0L) return "-The Bazaar does not buy " + @PKG@.ShTotem.pretty(id) + " - nothing was sold.";
+  return null;
+}""")
+M(core, r"""
+public static String sellOpenNo(String k, int kd, int slot) {
+  java.util.Properties p = @PKG@.ShStore.get(k);
+  if (p == null) return "-This shard's file could not be read - ask an admin to look at the server log.";
+  String id = null;
+  @PKG@.ShStore.LOCK.lock(); try {
+    if (@PKG@.ShMath.hasIsland(kd, p, slot)) id = sellItem(kd, p, slot);
+  } finally { @PKG@.ShStore.LOCK.unlock(); }
+  if (id == null) return "-That island is gone - the page is up to date now.";
+  return sellNo(id);
+}""")
+# mode 0 = half, 1 = all, 2 = the typed amount. > 0 = how many; -1 not a number, -2 more than stored, -3 half of 1
+M(core, r"""
+public static long sellQty(int mode, String txt, long s) {
+  if (mode == 0) return s < 2L ? -3L : s / 2L;
+  if (mode == 1) return s;
+  String v = txt == null ? "" : txt.replace(",", "").replace(" ", "");
+  if (v.length() == 0 || v.length() > 18) return -1L;
+  for (int i = 0; i < v.length(); i++) { char c = v.charAt(i); if (c < '0' || c > '9') return -1L; }
+  long n = Long.parseLong(v);
+  if (n <= 0L) return -1L;
+  return n > s ? -2L : n;
+}""")
+M(core, r"""
+public static String sellQtyWhy(long q, long s) {
+  if (q == -3L) return "-Half of 1 is nothing - use Sell all.";
+  if (q == -2L) return "-Only " + @PKG@.ShCfg.num(s) + " stored there - nothing was sold.";
+  return "-Type a whole number above 0.";
+}""")
+# back into the store (what the Bazaar did not take): a busy lock queues it, the tick writes it within a second
+# the island changed while the sale ran (ci = the item that was debited): the items wait as <kind>.i<n>.legacy, the retype mechanism Collect already pays out
+# (this slot first, then any slot with the same item or a free key - Collect all reads every slot)
+M(core, r"""
+public static boolean legIn(int kd, java.util.Properties p, int slot, String ci, long n) {
+  int tries = @PKG@.ShMath.SLOTS + 1;
+  for (int j = 0; j < tries; j++) {
+    int i = j == 0 ? slot : j - 1;
+    String key = @PKG@.ShIsl.ik(kd, i, "legacy");
+    String lg = @PKG@.ShStore.str(p, key);
+    long have = 0L;
+    if (lg.length() > 0) {
+      int c = lg.lastIndexOf(':');
+      if (c <= 0 || !ci.equals(lg.substring(0, c))) continue;
+      try { have = Long.parseLong(lg.substring(c + 1).trim()); } catch (Throwable t) { continue; }
+    }
+    p.setProperty(key, ci + ":" + (have + n));
+    return true;
+  }
+  return false;
+}""")
+M(core, r"""
+public static void sellBack(String k, int kd, int slot, long n, double xa, String ci) {
+  if (n <= 0L) return;
+  java.util.Properties p = @PKG@.ShStore.get(k);
+  if (p == null) throw new IllegalStateException("the shard file could not be read");
+  @PKG@.ShStore.LOCK.lock(); try {
+    if (@PKG@.ShMath.hasIsland(kd, p, slot) && ci.equals(@PKG@.ShIsl.PROD[@PKG@.ShIsl.ty(kd, p, slot)])) {
+      long s0 = @PKG@.ShMath.stored(kd, p, slot);
+      @PKG@.ShMath.xpSet(kd, p, slot, s0 + n, (double) s0 * @PKG@.ShMath.xpAvg(kd, p, slot, now()) + (double) n * xa);   // what was made meanwhile keeps its own XP
+      p.setProperty(@PKG@.ShMath.ik(kd, slot, "stored"), String.valueOf(s0 + n));
+    } else if (!legIn(kd, p, slot, ci, n)) {
+      @PKG@.ShCfg.warn("Sell: " + n + " " + ci + " could not go back: the island changed and every Collect waiting slot is taken (" + k + ").");
+      @PKG@.ShStore.log(k + " " + @PKG@.ShKind.KEYS[kd] + " slot " + slot + " SELL back FAILED " + n + " " + ci);
+      return;
+    }
+    String e = @PKG@.ShStore.save(k, p);
+    if (e != null) @PKG@.ShCfg.warn("Sell: " + n + " items that were not sold are back in memory but not on disk yet: " + e);
+  } finally { @PKG@.ShStore.LOCK.unlock(); }
+}""")
+M(core, r"""
+public static void sellBackQ(String k, int kd, int slot, long n, double xa, String ci) {
+  try { sellBack(k, kd, slot, n, xa, ci); }
+  catch (Throwable t) {
+    boolean busy = t instanceof @PKG@.ShBusy;
+    if (!busy) @PKG@.ShCfg.warnOnce("sellback", "Sell: unsold items could not go back yet, trying again every minute (logged once): " + t);
+    SELLQ.add(new Object[] { k, Integer.valueOf(kd), Integer.valueOf(slot), Long.valueOf(n), Double.valueOf(xa), ci, Long.valueOf(busy ? 0L : now() + 60000L) });   // a busy lock: the next tick; else no disk read every second (never dropped: that would lose the items)
+  }
+}""")
+M(core, r"""
+public static void flushSellAt(long at) {
+  int left = SELLQ.size();
+  while (left > 0) {
+    left--;
+    Object[] a = (Object[]) SELLQ.poll();
+    if (a != null) {
+      if (((Long) a[6]).longValue() > at) SELLQ.add(a);
+      else sellBackQ((String) a[0], ((Integer) a[1]).intValue(), ((Integer) a[2]).intValue(), ((Long) a[3]).longValue(), ((Double) a[4]).doubleValue(), (String) a[5]);
+    }
+  }
+}""")
+M(core, "public static void flushSell() { flushSellAt(now()); }")
+M(core, r"""
+public static String sell0(java.util.UUID u, String k, int kd, int slot, int mode, String txt) {
+  if (!@PKG@.ShCfg.ON) return "-Shards are switched off on this server.";
+  if (!@PKG@.ShCfg.SELL_ON) return "-Selling from the store is switched off on this server.";
+  if (kd == @PKG@.ShCombat.CK) return "-Combat shards cannot sell from the store - Collect the drops.";
+  java.util.Properties p = @PKG@.ShStore.get(k);
+  if (p == null) return "-This shard's file could not be read - ask an admin to look at the server log.";
+  String no = gate(u, k, kd, p);
+  if (no != null) return no;
+  String id0 = null;
+  @PKG@.ShStore.LOCK.lock(); try {
+    if (@PKG@.ShMath.hasIsland(kd, p, slot)) id0 = sellItem(kd, p, slot);
+  } finally { @PKG@.ShStore.LOCK.unlock(); }
+  if (id0 == null) return "-That island is gone - the page is up to date now.";
+  String nb = sellNo(id0);
+  if (nb != null) return nb;
+  long qty = 0L;
+  double xi = 0.0;
+  String ci = "";
+  @PKG@.ShStore.LOCK.lock(); try {
+    long now = now();
+    @PKG@.ShMath.settleAll(kd, p, now);
+    if (!@PKG@.ShMath.hasIsland(kd, p, slot) || !id0.equals(sellItem(kd, p, slot))) return "=That island changed - the page is up to date now.";
+    long s = @PKG@.ShMath.stored(kd, p, slot);
+    if (s <= 0L) return "=Nothing is stored there yet.";
+    qty = sellQty(mode, txt, s);
+    if (qty <= 0L) return sellQtyWhy(qty, s);
+    ci = @PKG@.ShIsl.PROD[@PKG@.ShIsl.ty(kd, p, slot)];
+    xi = @PKG@.ShMath.xpAvg(kd, p, slot, now);   // read before the debit, as Collect
+    java.util.Properties old = new java.util.Properties();
+    old.putAll(p);
+    @PKG@.ShMath.xpSet(kd, p, slot, s - qty, (double) (s - qty) * xi);
+    p.setProperty(@PKG@.ShMath.ik(kd, slot, "stored"), String.valueOf(s - qty));
+    String err = @PKG@.ShStore.save(k, p);
+    if (err != null) { p.clear(); p.putAll(old); @PKG@.ShCfg.warn("Sell refused (debit not written): " + err); return "-Sale failed: the shard file could not be saved. Nothing was taken."; }
+    @PKG@.ShStore.log(u + " " + k + " " + @PKG@.ShKind.KEYS[kd] + " slot " + slot + " SELL debit " + qty + " " + id0 + " of " + s);
+  } finally { @PKG@.ShStore.LOCK.unlock(); }
+  long coins = 0L;
+  long sold = 0L;
+  try {
+    java.util.function.Function fn = @PKG@.ShPay.f("bazaar:fn:sell");
+    Object r = fn == null ? null : fn.apply(new Object[] { u, id0, Long.valueOf(qty) });
+    if (r instanceof Number) { coins = ((Number) r).longValue(); sold = qty; }
+    else if (r instanceof long[] && ((long[]) r).length >= 2) { coins = ((long[]) r)[0]; sold = ((long[]) r)[1]; }
+  } catch (Throwable t) { coins = 0L; sold = 0L; @PKG@.ShCfg.warnOnce("sellfn", "bazaar:fn:sell failed (logged once): " + t); }
+  if (coins <= 0L || sold <= 0L) { coins = 0L; sold = 0L; }
+  if (sold > qty) sold = qty;
+  long back = qty - sold;
+  if (back > 0L) sellBackQ(k, kd, slot, back, xi, ci);
+  @PKG@.ShStore.log(u + " " + k + " " + @PKG@.ShKind.KEYS[kd] + " slot " + slot + " SELL paid " + coins + " coins for " + sold + " " + id0 + " back " + back);
+  if (sold <= 0L) return "-The Bazaar bought nothing - your items are still in the shard.";
+  java.util.LinkedHashMap cred = new java.util.LinkedHashMap();
+  cred.put(ci, Long.valueOf(sold));
+  String extra = payCred(u, kd, sold, 0L, (double) sold * xi, cred);
+  return "+Sold " + @PKG@.ShCfg.num(sold) + " " + @PKG@.ShTotem.pretty(id0) + " for " + @PKG@.ShCfg.num(coins) + " coins" + extra + (back > 0L ? ". The Bazaar took only part - " + @PKG@.ShCfg.num(back) + " stay in the shard." : ".");
+}""")
+M(core, "public static String sell(java.util.UUID u, String k, int kd, int slot, int mode, String txt) { String r = sell0(u, k, kd, slot, mode, txt); @PKG@.ShSnd.ok(u, r, 0); return r; }")
+''')
+P.rep('''return "-Buy Automation first - before it this shard harvests only " + @PKG@.ShCfg.dec((double) @PKG@.ShCfg.MAN_OFF_SEC / 3600.0) + " h while nobody visits.";''',
+      '''return "-Buy Automation first - before it this shard harvests only " + @PKG@.ShCfg.dec((double) @PKG@.ShCfg.MAN_OFF_SEC / 3600.0) + " h while you are offline.";''')
+P.rep('''  return "+Offline Harvest " + nl + "/5: this " + @PKG@.ShKind.NAMES[kd] + " Shard keeps harvesting " + @PKG@.ShCfg.dec(@PKG@.ShIsl.offH(nl)) + " h while nobody visits.";''',
+      '''  return "+Offline Harvest " + nl + "/5: this " + @PKG@.ShKind.NAMES[kd] + " Shard now runs at " + @PKG@.ShIsl.offWords(kd, p, nl) + " while you are offline.";''')
+
+# ---------------------------------------------------------------------------------------------------- 6. the tick + the stop
+P.rep('''M(tick, r"""
+public void runIn() {
+  try {
+    this.n++;''', '''# 0.4.19: who is logged in on which profile - our own tick thread (file work is fine here); Universe.getPlayers() keeps a player across world changes
+M(tick, r"""
+public static void syncOn() {
+  java.util.HashSet keys = new java.util.HashSet();
+  java.util.Iterator it = @UNI@.get().getPlayers().iterator();
+  while (it.hasNext()) {
+    @PR@ pr = (@PR@) it.next();
+    if (pr != null && pr.getUuid() != null) keys.add(@PKG@.ShCfg.pkey(pr.getUuid()));
+  }
+  @PKG@.ShMath.sync(keys, @PKG@.ShCore.now());
+}""")
+M(tick, r"""
+public void runIn() {
+  try {
+    this.n++;''')
+P.rep('''    try { @PKG@.ShCore.flushOwed(); } catch (Throwable t0) { @PKG@.ShCfg.warnOnce("flushowed", "moving waiting Collect credits into their files failed (logged once): " + t0); }   // 0.4.14
+''', '''    try { @PKG@.ShCore.flushOwed(); } catch (Throwable t0) { @PKG@.ShCfg.warnOnce("flushowed", "moving waiting Collect credits into their files failed (logged once): " + t0); }   // 0.4.14
+    try { @PKG@.ShCore.flushSell(); syncOn(); } catch (Throwable t1) { @PKG@.ShCfg.warnOnce("syncon", "the shard login check failed (logged once): " + t1); }   // 0.4.19
+''')
+P.rep('''  try { @PKG@.ShCore.flushOwed(); } catch (Throwable t) { }   // 0.4.14: memory credits into their files before the server stops
+''', '''  try { @PKG@.ShMath.allOff(@PKG@.ShCore.now()); } catch (Throwable t) { }   // 0.4.19: a stop logs everybody out (a crash = no offAt = the safe direction)
+  try { @PKG@.ShCore.flushSellAt(Long.MAX_VALUE); } catch (Throwable t) { }   // the stop tries every entry now
+  try { @PKG@.ShCore.flushOwed(); } catch (Throwable t) { }   // 0.4.14: memory credits into their files before the server stops
+''')
+P.rep('''log("[SkyyShards] @VERSION@ ready (@KITID@) - 0.4.18: natural Mining caves''', '''log("[SkyyShards] @VERSION@ ready (@KITID@) - 0.4.19: offline harvest limit, Sell on the Collect tab; 0.4.18: natural Mining caves''')
+
+# ---------------------------------------------------------------------------------------------------- 7. the Collect tab: rows + the Sell view
+P.rep('''c0.text(L0, P + "CCap", "Your islands make items while you are away. Collect them here.", "caption", h=24)''',
+      '''c0.text(L0, P + "CCap", J_("this.cCap", "Rates below are online. Offline: 25 % speed for 8 hours, then it stops."), "caption", h=24, w=ROWW)   # 0.4.19''')
+P.rep('''CTX_W = CRW - 16 - 40 - 10 - 150 - 10 - 100
+''', '''CAMT_W, CSEL_W = 220, 80                          # 0.4.19: the full 'stored / cap' always shows (Skyy's screenshot: '48,874 / 192,...'); the Sell button
+CTX_W = CRW - 16 - 40 - 10 - CAMT_W - 10 - CSEL_W - 10 - 100
+''')
+P.rep('''        for _vo in (False, True):
+            a = seg(("crowv%d_%d" if _vo else "crow%d_%d") % (i, k_))
+            rid = P + "CRow%d" % i
+''', '''        if True:                                  # 0.4.19: the row (crowv), then its buttons in their own segments (crowS Sell or crowN its gap, crowC Collect)
+            a = seg("crowv%d_%d" % (i, k_))
+            rid = P + "CRow%d" % i
+''')
+P.rep('''            a.text("#" + rid, rid + "Am", J_("this.cAmt[%d]" % i, "1,200 / 2,400"), "bold", size=as_, h=rh, w=150, align="End")
+            if not _vo:
+                a.append(("#" + rid, SUI.spacer(w=10)))
+                a.append(("#" + rid, SUI.button(rid + "Btn", "Collect", "secondary", "small", w=100, anchor={"top": (rh - SUI.BTN_SMALL_H) // 2})))
+''', '''            a.text("#" + rid, rid + "Am", J_("this.cAmt[%d]" % i, "1,200 / 2,400"), "bold", size=as_, h=rh, w=CAMT_W, align="End")
+            a_s = seg("crowS%d_%d" % (i, k_))
+            a_s.append(("#" + rid, SUI.spacer(w=10)))
+            a_s.append(("#" + rid, SUI.button(rid + "Sell", "Sell", "secondary", "small", w=CSEL_W, anchor={"top": (rh - SUI.BTN_SMALL_H) // 2})))
+            a_n = seg("crowN%d_%d" % (i, k_))
+            a_n.append(("#" + rid, SUI.spacer(w=10 + CSEL_W)))
+            a_c = seg("crowC%d_%d" % (i, k_))
+            a_c.append(("#" + rid, SUI.spacer(w=10)))
+            a_c.append(("#" + rid, SUI.button(rid + "Btn", "Collect", "secondary", "small", w=100, anchor={"top": (rh - SUI.BTN_SMALL_H) // 2})))
+''')
+P.rep('''c1b.append((R0, SUI.button(P + "CAll", "Collect all", "secondary", w=RW - 24)))          # 0.4.2: Secondary (Enter Shard is the Primary)
+''', '''c1b.append((R0, SUI.button(P + "CAll", "Collect all", "secondary", w=RW - 24)))          # 0.4.2: Secondary (Enter Shard is the Primary)
+# 0.4.19 THE SELL VIEW (the right panel, instead of Collect all, until Back / another row / another tab). Skyy: "sell half, sell all and custom amount."
+sv = seg("sv")
+SV_W = RW - 24
+SV_BW = (SV_W - 12) // 2
+sv.append((R0, SUI.label(P + "SvHead", "Sell from the store", "panelTitle", h=30)))
+sv.text(R0, P + "SvNm", J_("this.sv[0]", "Wheat"), "bold", size=18, h=30, w=SV_W, col=GOLD)
+sv.text(R0, P + "SvIs", J_("this.sv[1]", "Wheat Island - Small"), "caption", size=13, h=24, w=SV_W)
+sv.text(R0, P + "SvSt", J_("this.sv[2]", "Stored: 48,874"), "default", size=15, h=28, w=SV_W)
+sv.text(R0, P + "SvPr", J_("this.sv[3]", "Coins each: 5 (Bazaar instant sell)"), "default", size=15, h=28, w=SV_W, col=J_("this.sv3c", GOOD))
+sv.text(R0, P + "SvEn", J_("this.sv[4]", "40 bonus finds stay here - use Collect for them."), "caption", size=13, h=26, w=SV_W)
+sv.append((R0, SUI.group(P + "SvR1", layout="Left", w=SV_W, h=SUI.BTN_H, anchor={"top": 8})))
+sv.append(("#" + P + "SvR1", SUI.button(P + "SHalf", "Sell half", "secondary", w=SV_BW)))
+sv.append(("#" + P + "SvR1", SUI.spacer(w=12)))
+sv.append(("#" + P + "SvR1", SUI.button(P + "SAll", "Sell all", "secondary", w=SV_BW)))
+sv.append((R0, SUI.group(P + "SvR2", layout="Left", w=SV_W, h=SUI.BTN_H, anchor={"top": 8})))
+sv.append(("#" + P + "SvR2", SUI.text_field(P + "SAmtBox", P + "SAmt", w=SV_BW, h=SUI.BTN_H, placeholder="Amount - Enter shows it", max_length=14)))
+sv.append(("#" + P + "SvR2", SUI.spacer(w=12)))
+sv.append(("#" + P + "SvR2", SUI.button(P + "SSell", "Sell amount", "secondary", w=SV_BW)))
+sv.append((R0, SUI.label(P + "SvPv", "You get", "section", h=30, anchor={"top": 12})))
+for j_, (samp_, kind_, sz_, col_) in enumerate((("Half (24,437): about 122,185 coins", "default", 15, GOLD), ("+48,874 Farming XP - Wheat collection +24,437", "caption", 13, GOOD),
+                                                ("All (48,874): about 244,370 coins", "default", 15, GOLD), ("+97,748 Farming XP - Wheat collection +48,874", "caption", 13, GOOD),
+                                                ("Type an amount and press Enter to see it here.", "default", 15, GOLD), ("", "caption", 13, GOOD))):
+    sv.text(R0, P + "SvP%d" % j_, J_("this.sv[%d]" % (5 + j_), samp_), kind_, size=sz_, h=26, w=SV_W, col=col_)
+sv.text(R0, P + "SvNote", "Big sales can pay less than the price shown.", "caption", size=13, h=26, w=SV_W)
+sv.append((R0, SUI.button(P + "SBack", "Done selling", "secondary", w=SV_W, anchor={"top": 8})))
+''')
+P.rep('''for k_ in ["c0"] + ["crow%d_0" % i for i in range(SLOTS)] + ["c1", "c1b"]:
+    v.extend(SEG[k_])
+VARIANTS.append(_foot(v))''', '''for k_ in ["c0"] + [_n % (i, 0) for i in range(SLOTS) for _n in ("crowv%d_%d", "crowS%d_%d", "crowC%d_%d")] + ["c1", "c1b"]:
+    v.extend(SEG[k_])
+VARIANTS.append(_foot(v))
+v = _menu("tabs0")   # 0.4.19: a row without Sell (Combat / switched off) + the Sell view
+for k_ in ["c0"] + [_n % (i, 0) for i in range(SLOTS) for _n in ("crowv%d_%d", "crowN%d_%d", "crowC%d_%d")] + ["sv"]:
+    v.extend(SEG[k_])
+VARIANTS.append(_foot(v))''')
+P.rep('''    for _vo in (False, True):
+        v = _menu("tabs0"); v.extend(SEG["c0"])
+        for i in range(SLOTS):
+            v.extend(SEG[("crowv%d_%d" if _vo else "crow%d_%d") % (i, k_)])
+        v.extend(SEG["c1"]); v.extend(SEG["c1b"]); VARIANTS.append(_foot(v))''', '''    for _vo in (False, True):
+        v = _menu("tabs0"); v.extend(SEG["c0"])
+        for i in range(SLOTS):
+            v.extend(SEG["crowv%d_%d" % (i, k_)])
+            if not _vo:
+                v.extend(SEG["crowS%d_%d" % (i, k_)]); v.extend(SEG["crowC%d_%d" % (i, k_)])
+        v.extend(SEG["c1"]); v.extend(SEG["c1b"]); VARIANTS.append(_foot(v))''')
+P.rep('''] + ["    if (growC == %d) {\\n%s\\n    }" % (k_, "\\n".join("    if (this.cN > %d && this.manage) {\\n%s\\n%s\\n    } else if (this.cN > %d) {\\n%s\\n    }" % (
+    i, jseg("crow%d_%d" % (i, k_)), binds([(P + "CRow%dBtn" % i, "col%d" % i)]), i, jseg("crowv%d_%d" % (i, k_))) for i in range(SLOTS)))
+     for k_ in range(len(CHS))] + [
+    jseg("c1"), "    if (this.manage) {", jseg("c1b"), binds([(P + "CAll", "colall")]), "    }",
+''', '''] + ["    if (growC == %d) {\\n%s\\n    }" % (k_, "\\n".join("    if (this.cN > %d) {\\n%s\\n    if (this.manage) {\\n    if (this.cSell) {\\n%s\\n%s\\n    } else {\\n%s\\n    }\\n%s\\n%s\\n    }\\n    }" % (
+    i, jseg("crowv%d_%d" % (i, k_)), jseg("crowS%d_%d" % (i, k_)), binds([(P + "CRow%dSell" % i, "sopen%d" % i)]), jseg("crowN%d_%d" % (i, k_)),
+    jseg("crowC%d_%d" % (i, k_)), binds([(P + "CRow%dBtn" % i, "col%d" % i)])) for i in range(SLOTS)))
+     for k_ in range(len(CHS))] + [
+    "    if (this.svOn) {", jseg("sv"), binds([(P + "SHalf", "shalf"), (P + "SAll", "sall"), (P + "SBack", "sback")]),
+    '  ev.addEventBinding(@BT@.Activating, "#%sSSell", @EVD@.of("a", "samt").append("@SAmt", "#%sSAmt.Value"));' % (P, P),
+    '  ev.addEventBinding(@BT@.Validating, "#%sSAmt", @EVD@.of("a", "sprev").append("@SAmt", "#%sSAmt.Value"), false);' % (P, P),
+    '  if (this.sellTxt != null && this.sellTxt.length() > 0) b.set("#%sSAmt.Value", this.sellTxt);' % P,
+    "    } else {",
+    jseg("c1"), "    if (this.manage) {", jseg("c1b"), binds([(P + "CAll", "colall")]), "    }",
+    "    }",
+''')
+
+# 0.4.19 (critic): the row's sub-line lost width to Sell: the long FULL advice only while nothing else shares the line
+P.rep('''(full ? "FULL - collect to restart it" : (tf < 0L''', '''(full ? (bonus.length() > 0 || @PKG@.ShTotem.smelts(kd, p, i) ? "FULL" : "FULL - collect to restart it") : (tf < 0L''')
+# ---------------------------------------------------------------------------------------------------- 8. the page: state, fill, clicks
+P.rep('''          "public String stText;", "public String stCol;", "public long pickArm;", "public String lastAction;",
+''', '''          "public String stText;", "public String stCol;", "public long pickArm;", "public String lastAction;",
+          "public int sellSlot;", "public String sellTxt;", "public long sPrev;", "public boolean svOn;", "public boolean cSell;", "public String cCap;", "public String[] sv;", "public String sv3c;",   # 0.4.19
+''')
+P.rep('''_PAGE_INIT = ("this.tab = 0; this.sel = 0; this.stText = \\"\\";''', '''_PAGE_INIT = ("this.sellSlot = -1; this.sellTxt = \\"\\"; this.sPrev = -1L; this.tab = 0; this.sel = 0; this.stText = \\"\\";''')
+P.rep('''M(page, r"""
+public void fill(String k, @IC@[] cs) {''', '''# 0.4.19: the Sell view's lines (no lock held; the numbers were read under it)
+M(page, r"""
+public void svTwo(int at, String head, long n, long pr, double xi, String ci) {
+  int kd = this.kind;
+  this.sv[at] = head + " (" + @PKG@.ShCfg.num(n) + "): about " + @PKG@.ShCfg.num(n * pr) + " coins";
+  long xp = @PKG@.ShCore.xpTotal(kd, n, 0L, (double) n * xi);
+  this.sv[at + 1] = (xp > 0L ? "+" + @PKG@.ShCfg.num(xp) + " " + @PKG@.ShKind.SKILL[kd] + " XP - " : "") + @PKG@.ShTotem.pretty(ci) + " collection +" + @PKG@.ShCfg.num(n);
+}""")
+M(page, r"""
+public void fillSell(boolean has, long s, long en, double xi, String it, String ci, String nm) {
+  if (this.sellSlot >= 0 && (!has || !this.cSell)) { this.sellSlot = -1; this.sPrev = -1L; }
+  if (this.sellSlot < 0 || this.tab != 0 || this.view != 0) return;
+  this.svOn = true;
+  long pr = @PKG@.ShCore.priceOf(it);
+  this.sv[0] = @PKG@.ShTotem.pretty(it);
+  this.sv[1] = nm;
+  this.sv[2] = "Stored: " + @PKG@.ShCfg.num(s);
+  this.sv[3] = pr > 0L ? "Coins each: " + @PKG@.ShCfg.num(pr) + " (Bazaar instant sell)" : "The Bazaar does not buy this item.";
+  this.sv3c = pr > 0L ? "@GOOD@" : "@BAD@";
+  this.sv[4] = en > 0L ? @PKG@.ShCfg.num(en) + " bonus finds stay here - use Collect for them." : "";
+  if (s >= 2L) svTwo(5, "Half", s / 2L, pr, xi, ci); else this.sv[5] = "Half: too few stored";
+  if (s >= 1L) svTwo(7, "All", s, pr, xi, ci); else this.sv[7] = "Nothing stored yet";
+  if (this.sPrev > s) this.sv[9] = "That is more than is stored.";
+  else if (this.sPrev > 0L) svTwo(9, "Amount", this.sPrev, pr, xi, ci);
+  else this.sv[9] = "Type an amount and press Enter to see it here.";
+}""".replace("@GOOD@", GOOD).replace("@BAD@", BAD))
+M(page, r"""
+public void fill(String k, @IC@[] cs) {''')
+P.rep('''  this.manage = k != null && @PKG@.ShRole.mayManage(this.me, k);''', '''  this.sv = new String[11]; this.sv3c = "@GOOD@"; this.svOn = false; this.cCap = "";
+  for (int sv0 = 0; sv0 < 11; sv0++) this.sv[sv0] = "";
+  this.manage = k != null && @PKG@.ShRole.mayManage(this.me, k);
+  this.cSell = this.manage && @PKG@.ShCfg.SELL_ON && kd != @PKG@.ShCombat.CK;   // 0.4.19''')
+P.rep('''  long total = 0L; long cap; int islands = 0; int totems = 0; double rate = 0.0; long minFull = -1L; boolean anyFull = false;''',
+      '''  long total = 0L; long cap; int islands = 0; int totems = 0; double rate = 0.0; long minFull = -1L; boolean anyFull = false;
+  boolean svHas = false; long svS = 0L; long svEn = 0L; double svXi = 0.0; String svIt = ""; String svCi = ""; String svNm = "";   // 0.4.19''')
+P.rep('''      this.cAmt[c] = @PKG@.ShCfg.num(s) + " / " + @PKG@.ShCfg.num(icap);
+      this.cN = c + 1;
+''', '''      this.cAmt[c] = @PKG@.ShCfg.num(s) + " / " + @PKG@.ShCfg.num(icap);
+      this.cN = c + 1;
+      if (i == this.sellSlot) { svHas = true; svS = s; svEn = en; svXi = @PKG@.ShMath.xpAvg(kd, p, i, now); svIt = @PKG@.ShCore.sellItem(kd, p, i); svCi = @PKG@.ShIsl.PROD[@PKG@.ShIsl.ty(kd, p, i)]; svNm = this.cName[c]; }
+''')
+P.rep('''    int tier = @PKG@.ShMath.storageTier(kd, p);
+    this.uTx[0] = "Tier " + tier + " of 5";''', '''    this.cCap = "Rates below are online. Offline: " + @PKG@.ShIsl.offWords(kd, p, @PKG@.ShIsl.offLv(kd, p)) + ", then it stops.";   // 0.4.19
+    int tier = @PKG@.ShMath.storageTier(kd, p);
+    this.uTx[0] = "Tier " + tier + " of 5";''')
+P.rep('''  else { this.sto2 = minFull < 0L ? "" : "First island full in " + @PKG@.ShMath.fmtMs(minFull); this.sto2c = "@GOOD@"; }
+''', '''  else { this.sto2 = minFull < 0L ? "" : "First island full in " + @PKG@.ShMath.fmtMs(minFull); this.sto2c = "@GOOD@"; }
+  fillSell(svHas, svS, svEn, svXi, svIt, svCi, svNm);   // 0.4.19
+''')
+P.rep('''  if (ol >= 5) { this.mCol[@@ROffN@@] = "@GOLD@"; this.mTx[@@ROffA@@] = "Harvests " + hrs(oh) + " while nobody visits"; this.mCol[@@ROffA@@] = "@GOLD@"; }''',
+      '''  if (ol >= 5) { this.mCol[@@ROffN@@] = "@GOLD@"; this.mTx[@@ROffA@@] = @PKG@.ShIsl.offWords(kd, p, ol) + " offline"; this.mCol[@@ROffA@@] = "@GOLD@"; }''')
+P.rep('''    this.mTx[@@ROffA@@] = (au || !ownedNow ? "Harvests " + hrs(oh) : "Manual: " + hrs((double) @PKG@.ShCfg.MAN_OFF_SEC / 3600.0) + " (Automation: " + hrs(oh) + ")") + " -> next " + hrs(nh);''',
+      '''    this.mTx[@@ROffA@@] = au || !ownedNow ? "Now " + @PKG@.ShIsl.offPct(ol) + " % speed for " + hrs(oh) + " -> next " + @PKG@.ShIsl.offPct(ol + 1) + " % for " + hrs(nh) : "Manual: " + @PKG@.ShIsl.offPct(ol) + " % speed for " + hrs(Math.min(oh, (double) @PKG@.ShCfg.MAN_OFF_SEC / 3600.0)) + " (Automation: " + hrs(oh) + ")";   // 0.4.19''')
+P.rep('''if (t == 2) t = 1; if (t >= 0 && t <= 3) this.tab = t; return ""; }   // 0.4.9: 1 = the Map''',
+      '''if (t == 2) t = 1; if (t >= 0 && t <= 3) this.tab = t; this.sellSlot = -1; this.sPrev = -1L; return ""; }   // 0.4.9: 1 = the Map''')
+P.rep('''    if (a.equals("colall")) return @PKG@.ShCore.collect(u, k, kd, -1, invOf(ref, st));
+''', '''    if (a.startsWith("sopen")) {   // 0.4.19: a row's Sell - the Sell view (or the status line says why not; nothing moves)
+      int r = -1;
+      try { r = Integer.parseInt(a.substring(5)); } catch (Throwable x) { r = -1; }
+      fill(k, invOf(ref, st));
+      if (!this.cSell) return "-Selling is not available here.";
+      if (r < 0 || r >= this.cN) return "-That island is gone - the page is up to date now.";
+      String no9 = @PKG@.ShCore.sellOpenNo(k, kd, this.cSlot[r]);
+      if (no9 != null) { this.sellSlot = -1; return no9; }
+      this.sellSlot = this.cSlot[r]; this.sPrev = -1L; this.sellTxt = "";
+      return "";
+    }
+    if (a.equals("sback")) { this.sellSlot = -1; this.sPrev = -1L; this.sellTxt = ""; return ""; }
+    if (a.equals("sprev")) {
+      long pq = @PKG@.ShCore.sellQty(2, this.sellTxt, Long.MAX_VALUE);
+      this.sPrev = pq;
+      return pq > 0L ? "" : "-Type a whole number above 0.";
+    }
+    if (a.equals("shalf") || a.equals("sall") || a.equals("samt")) {
+      if (this.sellSlot < 0) return "-Pick an island's Sell button first.";
+      String r9 = @PKG@.ShCore.sell(u, k, kd, this.sellSlot, a.equals("shalf") ? 0 : (a.equals("sall") ? 1 : 2), this.sellTxt);
+      if (r9.startsWith("+")) { this.sellTxt = ""; this.sPrev = -1L; }
+      return r9;
+    }
+    if (a.equals("colall")) return @PKG@.ShCore.collect(u, k, kd, -1, invOf(ref, st));
+''')
+P.rep('''M(page, r"""
+public void handleDataEventIn(@REF@ ref, @ST@ st, String data) {
+  String a = jsonA(data);
+  if (a.equals("close")) { if (!this.testMode) close(); return; }
+  if (a.length() == 0) return;
+''', '''# 0.4.19: one text value out of the event JSON (the Sell amount field)
+M(page, r"""
+public static String jsonStr(String data, String key) {
+  if (data == null) return "";
+  int i = data.indexOf("\\"" + key + "\\"");
+  if (i < 0) return "";
+  i = data.indexOf(':', i + key.length() + 2);
+  if (i < 0) return "";
+  int q = data.indexOf('"', i + 1);
+  if (q < 0) return "";
+  int e = data.indexOf('"', q + 1);
+  if (e < 0) return "";
+  return data.substring(q + 1, e);
+}""")
+M(page, r"""
+public void handleDataEventIn(@REF@ ref, @ST@ st, String data) {
+  String a = jsonA(data);
+  if (a.equals("close")) { if (!this.testMode) close(); return; }
+  if (a.length() == 0) return;
+  if (a.equals("samt") || a.equals("sprev")) this.sellTxt = jsonStr(data, "@SAmt");
+''')
+
+# ---------------------------------------------------------------------------------------------------- 9. the words that still said "between visits" + the engine audit
+P.rep('''"# shard.maxOfflineSec = production counts at most this long between two visits to the menu (259200 = 3 days).",''',
+      '''"# shard.maxOfflineSec = the longest stretch between visits that counts at full speed while the owner is online; also the top limit for the Offline Harvest hours (259200 = 3 days).",''')
+P.rep('''"# shard.manualOfflineSec = before Automation, production counts at most this long between visits (7200 = 2 h).",''',
+      '''"# shard.manualOfflineSec = before Automation, the longest stretch between visits that counts while the owner is online; also the top limit for the Offline Harvest hours (7200 = 2 h).",''')
+P.rep('''"The Offline Harvest ceiling: production never counts longer between visits (259200 = 3 days)."''',
+      '''"Longest online gap that counts. Also caps Offline Harvest hours (259200 = 3 days)."''')
+P.rep('''"Before Automation, production counts at most this long between visits (7200 = 2 h)."''',
+      '''"Before Automation: longest online gap that counts. Also caps Offline Harvest hours (7200 = 2 h)."''')
+P.rep('''# the most ms production counts between two visits: Offline Harvest hours (shard.maxOfflineSec the ceiling); before Automation also''',
+      '''# the most ms production counts after the owner logs out: Offline Harvest hours (shard.maxOfflineSec the ceiling); before Automation also''')
+P.rep('''(T["EVD"], "of"), (T["BT"], "Activating"),''', '''(T["EVD"], "of"), (T["EVD"], "append"), (T["BT"], "Activating"), (T["BT"], "Validating"),''')   # 0.4.19: the Sell amount field
+
+assert P.s.count("registerCommand(") == REG0 and P.s.count("registerSystem(") == SYS0, "command / system registrations changed"
+P.finish()
