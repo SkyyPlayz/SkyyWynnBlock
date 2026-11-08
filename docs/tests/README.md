@@ -387,3 +387,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shard Sell, how to level lines, shard XP limit, Furnace All (DEPLOYED 2026-11-08, backup deploy-20261108-0850) | [2026-11](2026-11.md) |
 | Riding fix (DEPLOYED 2026-11-08, backup deploy-20261108-0856) | [2026-11](2026-11.md) |
 | Charm costs open Enchanted items (DEPLOYED 2026-11-08, backup deploy-20261108-0909) | [2026-11](2026-11.md) |
+| Enchanted metals in Smithing, Pocket Sell (DEPLOYED 2026-11-08, backup deploy-20261108-0917) | [2026-11](2026-11.md) |

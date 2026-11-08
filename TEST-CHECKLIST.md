@@ -82,3 +82,4 @@ tests always come first.
 273. Shard Sell works, how to level lines, shard XP limit, Furnace All, Furnace button
 274. Horse and dragon mount first time
 275. Furnace Charm II counts Enchanted Lead
+276. Enchanted metals in Smithing, Pocket Sell, real names
