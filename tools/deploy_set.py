@@ -151,7 +151,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.24"),
+    ("SkyyPets", "0.4.25"),
     ("SkyyWardrobe", "0.2.13"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -167,7 +167,8 @@ SET = [
     # FLOOR (2026-10-20, SkyyRebirth 0.4.0 Void Particles): old per-arm rebirth points migrate to VP 1:1 on first read (backup vp-backup/, undo in vp-migration.log); rolling back to 0.3.x ignores VP - restore vp-backup/ by hand with the server stopped.
     # FLOOR (2026-10-20, st3fix): SkyyTrees 0.4.2 + SkyyRebirth 0.4.1 roll back TOGETHER (Head Start points + the Nexus respec check tree:fn:headUsed); SkyyTrees 0.4.3 + SkyyGear 0.3.33 + SkyyAccessories 0.5.29 pin + roll back TOGETHER (4 R3c upgrade keys; rollback item-safe, no saved data); Pets 0.4.6 needs Rebirth 0.4.1+ for petecho (older = pet XP x1). The 0.4.2 skill gates assume Gear 0.3.32+, Accessories 0.5.28+, Pets 0.4.5+, Skills 0.4.56+, Cooking 0.1.14+.
     # FLOOR (2026-10-27, totemui): SkyyShards 0.4.13 (card totem page + range aura, vanilla-layout Totem Bench, totem poles placed by hand, timed ShStore lock + own tick thread, pay-under-lock fixes) rolls back alone to 0.4.12 - no migration; a hand-placed totem's entry carries an extra 8th part "dx;dz" that 0.4.12 ignores (it then draws that totem on a pad and its hand-placed block stays as a plain block) - pick hand-placed totems up before rolling back; the three totem.range* config rows are ignored by 0.4.12.
-    # FLOOR (2026-11-08, sk837): SkyySacks 0.8.37 (Furnace list ingots first by tier) rolls back alone to 0.8.36: no saved data, migration, row or command.
+    # FLOOR (2026-11-08, drg025): SkyyPets 0.4.25 (dragon circles the owner when idle, Fly controller on Skyy_Pet_Dragon, aggressive fight mode, PetsMigDrg) rolls back alone to 0.4.24: older jars read fight.mode=aggressive as follow, so no Undo is needed (the PetsMigDrg row restores follow if wanted). Earlier Pets floors stand.
+# FLOOR (2026-11-08, sk837): SkyySacks 0.8.37 (Furnace list ingots first by tier) rolls back alone to 0.8.36: no saved data, migration, row or command.
 # FLOOR (2026-11-08, sh020): SkyyShards 0.4.20 (storage caps 1k-50k, Auto-Compactor true compression in <kind>.i<n>.legacy, shard.xpPercent 20, Mining costs take ingots) rolls back alone to 0.4.19. Undo the ShMig0420 rows first (Server Setup > Shards > Changes). Compressed stock stays readable: 0.4.19's Collect pays it as that many Enchanted items, with XP / collection once per item instead of x100 (under-credit, nothing lost or duplicated).
 # FLOOR (2026-11-08, sk836): SkyySacks 0.8.36 (Enchanted metals -> Smithing bag, Pocket Sell, real names on the Pocket page) rolls back alone to 0.8.35: no saved data, migration, row or command; the metals show in Mining again (one pool keyed by id, nothing moved), the Sell button goes.
 # FLOOR (2026-11-08, acc036): SkyyAccessories 0.5.36 (craft / upgrade costs count Enchanted items and open them through sacks:fn:takeOpen) rolls back alone to 0.5.35: no saved data; rows go back to loose items only. The augment A2 floor stands.
