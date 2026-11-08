@@ -80,3 +80,4 @@ tests always come first.
 271. F pets / ride the dragon, Iron + Copper caves (mouth on the bridge, natural look)
 272. Offline limit by Offline Harvest; Sell waits for Bazaar 0.2.4
 273. Shard Sell works, how to level lines, shard XP limit, Furnace All, Furnace button
+274. Horse and dragon mount first time
