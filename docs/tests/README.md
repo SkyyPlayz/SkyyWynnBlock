@@ -386,3 +386,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shards 0.4.19 offline limit (DEPLOYED 2026-11-08, backup deploy-20261108-0820) | [2026-11](2026-11.md) |
 | Shard Sell, how to level lines, shard XP limit, Furnace All (DEPLOYED 2026-11-08, backup deploy-20261108-0850) | [2026-11](2026-11.md) |
 | Riding fix (DEPLOYED 2026-11-08, backup deploy-20261108-0856) | [2026-11](2026-11.md) |
+| Charm costs open Enchanted items (DEPLOYED 2026-11-08, backup deploy-20261108-0909) | [2026-11](2026-11.md) |

@@ -81,3 +81,4 @@ tests always come first.
 272. Offline limit by Offline Harvest; Sell waits for Bazaar 0.2.4
 273. Shard Sell works, how to level lines, shard XP limit, Furnace All, Furnace button
 274. Horse and dragon mount first time
+275. Furnace Charm II counts Enchanted Lead
