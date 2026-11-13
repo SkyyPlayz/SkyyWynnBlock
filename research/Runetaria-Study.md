@@ -56,8 +56,26 @@ Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it
 - Borrow: one hub with a top tab bar + an always-visible currency / shortcut strip; character + stats with a combat-stats toggle; pocket crafting
   in the inventory screen; key-hint strip; skills as an icon grid with a total level; public dungeon stats. Avoid: 12 tabs (our rule: merge menus).
 
-## 3. How the screen is made on Hytale 0.7
-(pending - research agent, 2026-11-12)
+## 3. How the screen is made on Hytale 0.7 (engine research on the cached 0.7.6 jar, 2026-11-12)
+- The vanilla inventory is drawn by the CLIENT from client-only .ui files (not in Assets.zip, not moddable per hytalemodding.dev).
+- Tab sends ClientOpenWindow(WindowType.PocketCrafting) -> GamePacketHandler.handleClientOpenWindow -> Window.CLIENT_REQUESTABLE_WINDOW_TYPES
+  (a public static map; CraftingPlugin registers PocketCrafting). A plugin can catch it with PacketAdapters.registerInbound(PlayerPacketFilter)
+  (true = drop) or replace that map entry, then open its own page: PageManager.openCustomPage / openCustomPageWithWindows.
+- Real item moves are plain packets (MoveItemStack, SmartMoveItemStack, DropItemStack, InventoryAction, SetActiveSlot) that do not check which
+  page is open; a page ItemGrid with InventorySectionId (-1 hotbar, -2 storage, -5 utility, -8 tools) may let the client draw and move real
+  slots - UNPROVEN on 0.7 (our 10-02 probes P1 / P2 on 0.6 drew nothing: docs/log/2026-10.md:23, :32).
+- Most likely Runeteria method (~65 %): catch Tab, open one big custom page, real ItemGrids bound to inventory sections; ~25 % page + window
+  pair; ~10 % client .ui override (unlikely).
+- PRECEDENT: CurseForge "CORE - Custom Inventory" (SupremoSama, All Rights Reserved; source on GitHub SupremoSama/Hytale-CustomInventory)
+  replaces the inventory-key screen with one unified screen and has a page / button / tooltip registry. Rule: check it before building
+  (skill skywynn-mod-check: licence, fit, learn-only if not packable).
+- Our known risks: ItemGridSlot with item METADATA disconnects the client (HANDOFF.md:84-86; strip for display), one page answer per click,
+  no updates from MouseEntered / Exited, InfoDisplay None on grids (stuck tooltips), Esc / Tab fights, losing vanilla Pocket Crafting unless
+  we give our own, re-test every game update.
+- Proposed probe (SkyyUiProbe 0.10, op-only, one session): log ClientOpenWindow on Tab; drop it and open a page; grids bound to sections
+  -1 / -2 / -5 with drag, shift-click, 1-9, drop keys, sort; a server-slot control grid; record any flash of the vanilla screen, Esc / Tab behaviour
+  and client WARNs.
 
 ## 4. Still to study
+- Mod check of CORE - Custom Inventory (reuse or learn), then the probe above.
 - Skyy's screenshots of every tab (Races, Professions, Classes, Party, Dungeons, Claims, Quest, Events, Collection, Settings, Help) and a short video of using the screen.
