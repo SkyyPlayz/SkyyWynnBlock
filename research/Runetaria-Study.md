@@ -76,6 +76,9 @@ Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it
   -1 / -2 / -5 with drag, shift-click, 1-9, drop keys, sort; a server-slot control grid; record any flash of the vanilla screen, Esc / Tab behaviour
   and client WARNs.
 
+## 3b. Video notes
+- Skyy's recordings, studied frame by frame: research/Runetaria-Video-Notes.md (video 1 = tutorial, 13 min; video 2 pending).
+
 ## 4. Still to study
 - Skyy's videos 2026-11-12 18:47 (1.1 GB, tutorial) and 19:02 (3.6 GB) in Videos/skyywynn vids: too big for tools/llm.py --video (40 MB); notes via Skyy's Grok bot, or frames once a video tool (ffmpeg) is allowed.
 - Mod check of CORE - Custom Inventory (reuse or learn), then the probe above.
