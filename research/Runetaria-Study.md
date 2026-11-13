@@ -24,6 +24,20 @@ Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it
 - The crest also shows on the player's chest in the scene; FINISH is greyed until a class is picked; note "Race choices are unavailable" (races are a later step).
 - Lesson for us: one calm, readable picker with a live preview beats a list; SkyWynn has 8 classes + profiles (SkyyClasses / SkyyProfiles first-join flow).
 
+## 1c. Their HUD right after the class pick (Skyy's screenshot, 2026-11-12)
+- Top left: round portrait frame (player head, level badge 1) + name + a class icon.
+- Top centre: compass bar with icons; under it the objective with an arrow and distance ("40m - Go down the cave stairs and speak to Warden Aldous"),
+  then a title banner "You are a Rogue" with a small line above ("Your path begins. Warden Aldous waits below.").
+- Right: quest tracker (quest name + checkbox objective). Top right: currencies, mail, server name (NA01-HUB), online count, clock; Social + Discord link.
+- Left edge: a narrow column of numbered chat / channel buttons.
+- Bottom: ability bar above the hotbar - a big round ultimate (Lv 10, Q) and three smaller ability slots locked with their unlock level + key
+  (Lv 2 E, Lv 5 R, Lv 8 H); an "Attribute point available" prompt; two quick slots (weapon / consumable); Health 105/105 left and Mana 100/100
+  right as long bars meeting at a centre ornament; hotbar 1-9 plus a separate Z utility slot; a full-width class XP bar at the very bottom
+  ("Level 1 Rogue 0 / 156 XP 0%").
+- Onboarding: class pick leads straight into a guided first quest with an in-world waypoint (statue + NPC below).
+- Lessons for us: locked abilities show their unlock level + key on the bar (teaches progression at a glance); one bottom XP bar for the class;
+  objective + distance under the compass. Compare with SkyyHud (minimap, skills widget, quest tracker) before copying any idea.
+
 ## 2. Public information
 (pending - research agent, 2026-11-12)
 
