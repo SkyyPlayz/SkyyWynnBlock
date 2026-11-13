@@ -81,3 +81,61 @@ text was hard to read; centre crops (`c_<video>`) were made for a second look. I
 ### Avoid
 - Small grey text (our bigger flavour text rule), too many tabs + drop-downs, pocket crafting fighting the inventory for space, a full-size
   locked panel, 4 minutes of menus before any combat, spammy "protected land" toasts, unthemed popups.
+
+## Video 2 - 2026-11-12 19:02 (26.5 min, after the tutorial start). Frame n = (n-1) x 6 s.
+
+### Timeline
+- 0:00-2:00 farm village at night: fishing from a dock (progress bar named after the water, "FISHING Level 2" medallion pops up mid-screen,
+  catch + pickup toasts). 2:06 the Overview screen again.
+- 2:24-3:00 pick a carrot, cook Fish Stew at the cooking bench; "CRAFT COMPLETE" shows a Rare stew with rolled stats; "this tool is
+  protected" red toast for the wrong tool.
+- 3:18 right-click another player: Trade, Whisper, Add Friend, Duel, Invite to Party; guild / title tags over names.
+- 3:54-7:12 NPC says a Rogue wants leather: hunt rabbits for Soft Hide (a "Hunting" skill), Tannery (Leatherworking) crafts a Rare chest piece.
+- 7:48-8:54 trail to a quartermaster whose dialogue teaches "press Tab, open Classes, click an ability, press R"; the player does it.
+- 9:00-13:48 "The Catacombs Below": temple portal -> loading screen -> instanced tutorial dungeon with a timer + objectives (0/4 -> 4/4),
+  chests with a big bobbing arrow, a brazier mini-puzzle, boss with a boss bar and comic "Get Out!" bubble, "Boss Slain!" banner,
+  reward chest, "DUNGEON CLEARED" results (time vs best, 3 stars, scoreboard, party loot, Return Home / Leave with auto-leave countdown).
+- 14:06-16:00 loading, vanilla map with their player list, quest "Wings to Torin": airship "Line 1" transit with a toast (next stop).
+- 16:12-22:48 Torin Town (autumn): a player shop "<name> by <owner>", NPC chain (forge, stables, farmer), a World Portal, crowded global chat,
+  "Chapter 1 complete!" banner.
+- 23:24-26:30 World Map / realm picker, "Memories" collection, vanilla map, Random Teleport window, a crab fight, stock Esc menu.
+
+### More screens (beyond video 1)
+- **Classes "Your Build":** class-coloured header (crest, name, description naming the weapon, Switch class with 4 crests); LOADOUT column
+  (Signature, 2, 3, 4 = Utility, key + name + one-line stats, selected row gold with a tail); centre list "Abilities for <slot>" (cards with
+  icon, name, stat line; locked = dim with a red level pill; click to slot); TALENTS locked teaser; footer recommended attributes + set bonus.
+  Ability tooltip = mini table: damage, cooldown, cost (mana in blue), key, unlocks at level, weapons.
+- **Station window (Cooking, Leatherworking):** banner (profession crest + level, big serif title, "Progress to level N", next unlock,
+  Mastery); a quest-style hint bar; left: search + filter, collapsible categories, recipe icon grid ("Learn..." on locked), side tabs
+  Crafting / Refining; centre: big result, description, rarity chance row (~50 / 10 / 4 / 0.9 / 0.01 %), required materials have / need,
+  amount stepper + slider + Max, XP line ("first craft +50 % XP"), green "Ready" or red "Learn this later" bar, full-width gold Craft;
+  right: possible bonus rolls with ranges (gear) or buffs by rarity (food) + "Your materials" (only relevant items); "free bench / locked
+  bench (unlocks at level 6)". Recipe hover: "You can make 2" in green.
+- **Craft popup:** small card, item in a rarity-tinted frame, the rarity word huge in its colour, a 6-node rarity track filled to the roll,
+  "N bonuses" + a stat table with the best row highlighted.
+- **Dungeon results:** green "DUNGEON CLEARED", time + best, stars, scoreboard, party loot, two buttons + countdown.
+- **Player shop:** banner (icon, name by owner, greeting, rating + Rate), item list with search (rarity edge, icon, stock / price, green buy),
+  product details + wallet line (three coins).
+- **World Map / realms:** painted continent, tabs Realms / Events / Map Key, "Recommended for you" card with Play + player count,
+  open realms list with counts, "Coming soon" locked list, zones highlighted on hover.
+- **Memories (collection):** 6-wide card grid by creature family, unlocked = teal gradient + tick + "5/10", milestone progress bar at the bottom.
+- **Random Teleport:** free random teleport row + zone cards (picture, name, one line, 4 danger diamonds, price) and the coin balance.
+- **Loading screens:** painted art, progress bar, a hint line, Cancel.
+- **HUD extras:** a second portrait frame for the targeted player; skill level-up medallions mid-screen; dungeon timer + objective banner +
+  boss bar; airship transit toast. Vanilla map and Esc menu are NOT themed.
+
+### Systems
+- Separate gathering / combat skills level on their own (Fishing, Hunting, Defense); food buffs set by rarity; crafted gear and food roll a
+  rarity (6 steps) with bonuses, odds shown before crafting, better with skill; first-craft XP bonus.
+- Story in chapters; instanced dungeons with stars and best times; airship lines; realms via a portal and a world map; RTP with zone danger
+  and price; player shops with ratings; three coin types; a creature "Memories" collection.
+
+### Borrow (new)
+- An NPC line that names the tab to open, and the quest waits until you do it. Station banner + three-column body for EVERY crafter.
+- Rarity odds before a craft + a rarity-track popup after (our colour code). "You can make N" + first-craft bonus.
+- Locked abilities with a red level pill; loadout + ability list + talents in one tab; ability tooltip as a mini table.
+- Dungeon results screen (stars, best time, party loot). RTP / travel as cards with danger + price. Realm picker with "recommended".
+- Collection grid with family cards + milestone bar. Hint lines on loading screens. Right-click player menu.
+### Clunky (new)
+- Pocket Crafting squeezed above the inventory, an unfinished-looking empty state; short item tooltips; skills grid without names until
+  hover; the same side quests stuck in the tracker; easy-to-miss step toasts; two loading screens a minute on dungeon trips.
