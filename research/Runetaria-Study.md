@@ -1,5 +1,7 @@
 # Runetaria study (input for SkyWynn's own inventory screen)
 
+Spelling: the server is **Runeteria** (runeteria.com, play.runeteria.com, discord.gg/runeteria); this file keeps the name Skyy first typed.
+
 Skyy 2026-11-12: "lets do our own version of that. but before we do, we need a full plan on how to work everything in right. lets start by studying there server more."
 (Their words + the screenshot note: docs/answered/ui.md 2026-11-12.)
 
@@ -38,8 +40,21 @@ Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it
 - Lessons for us: locked abilities show their unlock level + key on the bar (teaches progression at a glance); one bottom XP bar for the class;
   objective + distance under the compass. Compare with SkyyHud (minimap, skills widget, quest tracker) before copying any idea.
 
-## 2. Public information
-(pending - research agent, 2026-11-12)
+## 2. Public information (web research, 2026-11-12; public info is thin)
+- "Hytale Vanilla+ RPG SMP", custom coded, no client mod (content sent on connect). Launched 2026-01-17, run by an unnamed team; NA + EU realms;
+  ~120 online, peak 159 (hytale.game, hytaletopservers.net: game 0.7.7). Hypixel's Simon praised it publicly on X.
+- Site sections: Rules, Wiki, Dungeons, Guilds, Leaderboards, Market, Store, Tickets, Discord linking (runeteria.com).
+- News: 2026-11-01 "Changelog: Professions, Classes, Events, Tutorial Isle and more" (biggest update: classes + abilities, professions overhaul,
+  Halloween events, reworked new-player start = the Tutorial Isle / Statue of Gaia flow Skyy saw). Earlier: guild system, skills menu, townhall.
+- Dungeons page (runeteria.com/dungeons): Zombie Ruins, Hollow Crypts, Boomshroom Plague - runs, clear rate, best time, drops, recent runs /
+  leaderboard. A good model for public dungeon stats.
+- Claims = "Homesteads" (wiki title only). Player market (Bravewinds Market). Vote reward every 3 h.
+- NOT found publicly: the inventory screen, pocket crafting, backpacks, the profession list / 99 cap, party, quests, collection, how the UI is made.
+  Unverified third-party claim of 20 classes / 12 races / 84 augments - do not trust.
+- Sources: runeteria.com (/, /news, /dungeons, /wiki), hytale.game/en/servers/runeteria, hytaletopservers.net/servers/runeteria,
+  mmohuts.com news article, x.com/Simon_Hypixel posts. Best remaining sources: their Discord announcements, YouTube / TikTok, the full 11-01 changelog.
+- Borrow: one hub with a top tab bar + an always-visible currency / shortcut strip; character + stats with a combat-stats toggle; pocket crafting
+  in the inventory screen; key-hint strip; skills as an icon grid with a total level; public dungeon stats. Avoid: 12 tabs (our rule: merge menus).
 
 ## 3. How the screen is made on Hytale 0.7
 (pending - research agent, 2026-11-12)
