@@ -68,10 +68,10 @@ Respect the rollback floors in `tools/deploy_set.py`.
 - **Patch scripts:** a new version is derived from the CURRENT version (the SET pin) by `tools/<mod>_<ver>_patch.py`; edit the patch,
   never the generated script - except the four generated scripts Skyy hand-edited (commit ab75b6c, listed in RESUME.md).
 - Build and test all mods together as one set (`tools/deploy_set.py` SET).
-- **One menu pattern** (Skyy 2026-10-16: "lets try to reduce and compress the menus together to reduce clutter. then make sure its consistent
+- **One menu pattern** (top level: the 12 tabs of the new screen, Skyy 2026-11-12) (Skyy 2026-10-16: "lets try to reduce and compress the menus together to reduce clutter. then make sure its consistent
   across the board, then follow the pattern when making new or adding to existing menus."): fewer, merged menus; every page follows
   `research/Menu-Pattern.md` (layout, sizes, tab rows, scroll lists) - new menus and changes to old ones alike.
-- **UI looks and feels vanilla:** shared kit `tools/skyyui.py` + `research/Vanilla-UI-Style-Guide.md`; inline pages only; HANDOFF section 2.
+- **UI looks and feels vanilla - CHANGING (Skyy 2026-11-12 popups: "Custom look" for "Every SkyWynn menu"; one custom SkyWynn theme replaces the vanilla look screen by screen, starting with the new inventory screen - research/Inventory-Screen-Plan.md; until a page is moved, the vanilla kit stays):** shared kit `tools/skyyui.py` + `research/Vanilla-UI-Style-Guide.md`; inline pages only; HANDOFF section 2.
 - **Tooltips / flavor text bigger + colour coded** (Skyy 2026-10-18: "make all the flavor text use a slightly bigger font, and color code
   everything. so you can see what stats it gives at a glance"): one colour code everywhere, Style Guide section 15; every new or changed tooltip follows it.
 - **Rarity colours + tooltip layout everywhere** (Skyy 2026-10-24: "make that the global default. if it has a rarity, it gets color coded.   if it

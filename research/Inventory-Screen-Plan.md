@@ -91,10 +91,17 @@ first page, and every SkyWynn system one tab away - so the separate SkyWynn Menu
 - Page size: the 0.7 radial probe showed ~1,600 elements open fine (docs/log/2026-10.md:1025-1031), so one big page is OK.
 - Pack mods that add inventory UI (none packed today) would clash; check at P0.
 
-## 8. Questions for Skyy (defaults in brackets)
-1. Tab opens the new screen and fully replaces the vanilla inventory? [yes, with a Server Setup switch to turn it off]
-2. Keep our 8 hub sections as the top tabs (not Runeteria's 12)? [yes - merged menus rule]
-3. Quick panel on the first page: Crafting, Skills grid, Pets - which by default? [Crafting]
-4. ALT keeps opening Home, or also the Inventory page? [Home]
-5. Vanilla look (our kit) or a custom look like Runeteria's gold? [vanilla look - standing rule; art pass later if you want]
-6. HUD ideas and the class picker: after this, in that order? [yes]
+## 8. Decisions (Skyy 2026-11-12 popups, docs/answered/ui.md) - these OVERRIDE sections 3-6 where they differ
+1. Tab opens the new screen and fully replaces the vanilla inventory - "Yes, with off switch".
+2. Top tabs: SPLIT, 12 tabs (replaces the 8-section hub row): **Inventory, Skills, Class (trees + abilities), Pets, Collections,
+   Storage (bags, vault, bank), Crafting, Market, Quests, World (island, shards, teleport, explore), Social, Settings.**
+   Each tab keeps today's pages as its sub-tabs (Skills and Collections leave Character; Class = Trees + Class; Quests leaves World;
+   Storage = Pocket / Supplies / Requip / Vault / Bank; Crafting = Gear / Recipes / Reforge / Upgrade / Multitool; World = Teleport /
+   Island / Shards / Explore; Home's big tiles become the Inventory tab's "Menu" view or Settings > Menu layout - decide in P1).
+3. Quick panel default: Crafting.
+4. LOOK: a CUSTOM SkyWynn theme for EVERY SkyWynn menu (not the vanilla kit) - replaces the vanilla-look rule (PROJECT-RULES 4 updated).
+   Needs an art round first: theme spec (frame, tab bar, buttons, fonts available to custom UI, colours, rarity colours kept), drawn and
+   approved before P1 (skill skywynn-art; our own art, never Runeteria's). Pages move to the theme screen by screen; the kit gets the theme.
+5. Still open (defaults): ALT opens Home / the Inventory tab? [the Inventory tab - one screen]; HUD ideas and class picker after this [yes].
+
+New phase order: P0 check + probe (unchanged) -> P0b theme art + kit theme -> P1 shell with the 12 tabs -> P2-P5 as above -> P6 HUD -> P7 class picker.

@@ -77,6 +77,6 @@ Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it
   and client WARNs.
 
 ## 4. Still to study
-- Skyy's video 2026-11-12 18:47 of the tutorial (1.1 GB, too big for tools/llm.py --video at 40 MB): notes via Skyy's Grok bot or a trimmed clip.
+- Skyy's videos 2026-11-12 18:47 (1.1 GB, tutorial) and 19:02 (3.6 GB) in Videos/skyywynn vids: too big for tools/llm.py --video (40 MB); notes via Skyy's Grok bot, or frames once a video tool (ffmpeg) is allowed.
 - Mod check of CORE - Custom Inventory (reuse or learn), then the probe above.
 - Skyy's screenshots of every tab (Races, Professions, Classes, Party, Dungeons, Claims, Quest, Events, Collection, Settings, Help) and a short video of using the screen.
