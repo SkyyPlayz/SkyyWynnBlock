@@ -6,7 +6,7 @@ Skyy 2026-11-12: "lets do our own version of that. but before we do, we need a f
 (Their words + the screenshot note: docs/answered/ui.md 2026-11-12.)
 
 What goes here: what we learn about the Runetaria server (features, screens, how their inventory screen was made) - ideas and layout only,
-never their art, text or code. The plan for our own screen comes after this study, in research/Inventory-Screen-Plan.md (not written yet).
+never their art, text or code. The plan for our own screen comes after this study, in research/Inventory-Screen-Plan.md (draft 2026-11-12).
 Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it shows); images stay out of git.
 
 ## 1. Their inventory-key screen (Skyy's screenshot, 2026-11-12)
@@ -77,5 +77,6 @@ Screenshots / videos Skyy sends of Runetaria: describe them here (date + what it
   and client WARNs.
 
 ## 4. Still to study
+- Skyy's video 2026-11-12 18:47 of the tutorial (1.1 GB, too big for tools/llm.py --video at 40 MB): notes via Skyy's Grok bot or a trimmed clip.
 - Mod check of CORE - Custom Inventory (reuse or learn), then the probe above.
 - Skyy's screenshots of every tab (Races, Professions, Classes, Party, Dungeons, Claims, Quest, Events, Collection, Settings, Help) and a short video of using the screen.
