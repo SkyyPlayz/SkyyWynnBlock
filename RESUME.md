@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- Nothing running.
+- 11-12 research agents: Runetaria online study + how a Hytale server replaces the inventory screen -> research/Runetaria-Study.md (Skyy: study their server, then a full plan, then our own inventory screen).
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
