@@ -87,3 +87,4 @@ tests always come first.
 278. Furnace list ingots first by tier
 279. Dragon circles and hunts hostile mobs
 280. Combat Shard bigger, walls, mob levels, bags
+281. UiProbe 0.10: our own inventory page with real items + Tab hook + probe bag (one session, then /uiprobe tab off)
