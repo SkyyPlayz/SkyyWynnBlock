@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-11-03; TEST 271 live, nothing running)
+# SkyWynn - RESUME HERE (updated 2026-11-14; TEST 281 live, nothing running)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-11.md` (October: `2026-10.md`). Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
