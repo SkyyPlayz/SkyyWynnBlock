@@ -58,6 +58,10 @@ Hytale 0.7 server can do it). Ideas and layout only - never Runeteria's art, tex
 - **Crafting tab = processing and gear work only**: Smithing (Gear), Cooking, Smelting (Furnace), Tanning (Tannery), Upgrade, Identify,
   Reforge, Anvil, Multitool, Collections recipes - each a page in the ONE station layout (section 4).
 - **Skills column**: Runeteria's professions column idea with names visible (their weak spot: icons only), total level, click = Skills tab.
+- **Right now panel** (Skyy 11-14: "i like this right now tab ... lets keep these in the empty space to the right of the inventory"): the
+  Home tab's Right now rows (current quest, unspent tree points ...) sit to the right of the inventory grid, under the Skills column.
+- **Teleport row** (Skyy 11-14: "below the hot bar, add buttons for teleports. by default have island and hub there with a way to edit it so
+  you can add more"): buttons under the hotbar, default Island + Hub, an Edit button adds / removes / reorders (like Edit shortcuts).
 
 ## 3. The 12 tabs and what each holds (nothing lost, as few windows as possible)
 | Tab | Pages inside (today's owner mod) |
@@ -124,4 +128,5 @@ Hytale 0.7 server can do it). Ideas and layout only - never Runeteria's art, tex
 - 2026-11-14: bag tabs = Pocket Dimension bags; crafting talismans add their bench's vanilla recipes to inventory crafting, one page per
   bench, Craftable-only kept; inventory crafting = ~99 %; Crafting tab = processing (smithing, cooking, smelting, tanning, upgrade,
   identify ...); simple, good-looking, full pages, fewest menus.
+- 2026-11-14: Right now panel right of the inventory; teleport row under the hotbar (Island + Hub, editable); P0 probe PASS (TEST 282); P0b art started.
 - Open (defaults): ALT opens the Inventory tab [yes]; Home tiles retire into the tabs [yes]; Supplies as a bag tab [if it fits].
