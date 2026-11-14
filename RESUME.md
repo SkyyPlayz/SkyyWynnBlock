@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- Nothing running. 11-12: Runeteria study done (research/Runetaria-Study.md); plan v2 research/Inventory-Screen-Plan.md (11-14: Void bags as inventory bag tabs, crafting talismans add their bench recipes to inventory crafting); next P0 = CORE mod check + SkyyUiProbe 0.10, then P0b theme art.
+- uip010 wf_fc4ec67b-80d: SkyyUiProbe 0.10 (inventory screen P0 probe; CORE mod check done 11-14, method in docs/answered/ui.md) -> deploy, Skyy tests one session, then P0b theme art. Plan: research/Inventory-Screen-Plan.md v2.
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
