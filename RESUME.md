@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-11-14; TEST 281 live, nothing running)
+# SkyWynn - RESUME HERE (updated 2026-11-14; TEST 282 live, nothing running)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-11.md` (October: `2026-10.md`). Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- Nothing running. SkyyUiProbe 0.11 PINNED, NOT YET DEPLOYED (0.10 disconnected on QualityOverride; deploy when the game closes) -> Skyy's one test session (TEST 281 steps; then retire the probe from SET); next P0b theme art. Plan: research/Inventory-Screen-Plan.md v2.
+- Nothing running. SkyyUiProbe 0.11 LIVE (TEST 282 = TEST 281 steps; 0.10 disconnected on QualityOverride) -> Skyy's one test session (then retire the probe from SET); next P0b theme art. Plan: research/Inventory-Screen-Plan.md v2.
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.

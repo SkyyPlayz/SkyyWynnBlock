@@ -393,3 +393,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Dragon circles, aggressive mode (DEPLOYED 2026-11-08, backup deploy-20261108-1007) | [2026-11](2026-11.md) |
 | Combat Shard: bigger walled arenas, mobs level with you, bags apart (DEPLOYED 2026-11-08, backup deploy-20261108-1102) | [2026-11](2026-11.md) |
 | SkyyUiProbe 0.10 - inventory screen P0 probe (DEPLOYED 2026-11-14, backup deploy-20261114-1207) | [2026-11](2026-11.md) |
+| SkyyUiProbe 0.11 - inventory probe disconnect fix (DEPLOYED 2026-11-14, backup deploy-20261114-1628) | [2026-11](2026-11.md) |

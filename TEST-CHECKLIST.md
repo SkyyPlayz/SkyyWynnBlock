@@ -88,3 +88,4 @@ tests always come first.
 279. Dragon circles and hunts hostile mobs
 280. Combat Shard bigger, walls, mob levels, bags
 281. UiProbe 0.10: our own inventory page with real items + Tab hook + probe bag (one session, then /uiprobe tab off)
+282. UiProbe 0.11: /uiprobe inv opens without the QualityOverride disconnect, then TEST 281 steps
