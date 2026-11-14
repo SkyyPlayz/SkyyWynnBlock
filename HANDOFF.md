@@ -84,6 +84,8 @@ ROLLBACK FLOORS + STEPS (each with its reason in the comments of `tools/deploy_s
    **Never put an ItemStack that may carry METADATA into an `ItemGridSlot`** (2026-09-25, SkyyAuctions 0.1 disconnect): the UI codec sends
    metadata as a JSON object and the client fails with "Failed to convert JSON value (Object) to specified type (ClientItemMetadata)" and
    disconnects. Use `new ItemGridSlot(new ItemStack(s.getItemId(), s.getQuantity()))` and show rolls/grades as text or via setName/setDescription.
+   `s.withMetadata(null)` is NOT enough (2026-11-14, SkyyUiProbe 0.10 disconnect "Property QualityOverride does not exist on ClientItemStack"): it keeps
+   the quality override (SkyyAccessories withQuality) - build a NEW stack (`new ItemStack(id, qty, durability, maxDurability, (BsonDocument) null)` keeps durability).
    Because nothing depends on `.ui` files any more, **Reconnect is enough after a redeploy** (no client restart).
    **Every bound click answers with exactly ONE page packet** (2026-10-22, SkyyUiProbe 0.7): `rebuild()` if the page changes, else one short `sendUpdate(b)` that changes something visible (or an empty `sendUpdate()`), plus a safety net at the end of `handleDataEvent` that sends the empty update if no path answered - a click handler that only logs / chats leaves the client stuck on "Loading..." until Esc.
 
