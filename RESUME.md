@@ -24,7 +24,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 ## RUNNING
 - LIVE (TEST 284, 2026-11-14 21:09): SkyyMenu 0.3.50 inventory screen P1 (Tab), SkyyShards 0.4.22 Collect grid, SkyyBazaar 0.2.5 simpler offers; SkyyUiProbe retired. Waiting on Skyy's test. Art waiting on review: skill page (Mining) + shard clicker mockups (research/ui-theme-art/, research/Shard-Clicker-Idea.md: quarry per zone, town defense, crop / wood clusters per zone).
 
-- RUNNING: SkyyMenu 0.3.51 hotfix (Craft crashed the client: no server-opened vanilla screen; Craft arms the next Tab).
+- LIVE TEST 285: SkyyMenu 0.3.51 Craft crash fix (Craft closes the page, next Tab = vanilla crafting).
 - RUNNING: round bank2 (wf_196e7129-58c): no coin death penalty (Coins 0.1.12), bank levels 1-10 = capacity + interest (Bank 0.1.17), vault pages limited by bank level, start with 1 (Vault 0.1.10).
 - RUNNING: art - compacted tab plan + Pets one-screen page (Skyy 11-14 "full ui redesign"; docs/answered/ui.md).
 
