@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- Nothing running. SkyyUiProbe 0.11 LIVE (TEST 282 = TEST 281 steps; 0.10 disconnected on QualityOverride) -> Skyy's one test session (then retire the probe from SET); next P0b theme art. Plan: research/Inventory-Screen-Plan.md v2.
+- Nothing running. Inventory screen: P0 probe PASS (TEST 282; retire SkyyUiProbe from SET when done); P0b art v2 in research/ui-theme-art/ waits on Skyy's typed notes (their 11-14 video has no voice), then v3 / approval -> P1 shell. Armory 0.1.52 LIVE (TEST 283 gauntlets visible). Plan: research/Inventory-Screen-Plan.md v2.
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
