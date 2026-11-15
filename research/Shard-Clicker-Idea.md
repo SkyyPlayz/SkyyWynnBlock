@@ -32,6 +32,15 @@ once built. Related: research/Inventory-Screen-Plan.md (12 tabs), research/ui-th
 7. The skill page merges Skills + Upgrade + Requip + Shards for that skill, so the top "Upgrade" tab can become "go to this skill's
    page". [Upgrade tab stays until the skill pages exist]
 
+## Combat = town defense (Skyy 2026-11-14, docs/answered/world.md)
+- A little town defended by spirit warriors; upgrade the warriors (strength, kill speed, move speed).
+- Upgrade the town to attract more monsters and more kinds: zone 1 easiest first (rats -> wolves + skeletons -> bears + big skeletons +
+  trolls ...); at max every kind attacks at once and all their loot is collected.
+- Unlocking zone 2 gives a zone 2 town / island farmed the same way.
+- ZONE LOCKS on every shard: zone 2 content (e.g. Thorium) only after zone 2 is unlocked.
+- Each of the first four skills has its own game: Foraging (tree clicker), Mining (rock / ore node), Farming (crop plots), Combat (town
+  defense). Others later.
+
 ## Steps
 1. Art round: the Farming skill page + the Foraging clicker island (small / grown / zoomed out) as mockups for Skyy.
 2. Probe: click speed and picture swaps in a test page (SkyyUiProbe), element count.
