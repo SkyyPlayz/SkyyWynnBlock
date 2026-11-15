@@ -13,6 +13,72 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## Tab pages: Market, World, Social, Settings + Charms + Requip (2026-11-14)
+Skyy approved the 7 tabs + pets-page.png ("Yes, both"), then: on Market "perfect.", on the Skills card "class is combat.", on pets-page.png
+"i like this! lets see a plan for a charms one too." and "and id like to see an upgraded/ improved reequip page too". Generator:
+`make_tab_pages.py` (deterministic; every older picture byte-identical; `tab-plan-v1.png` = the first tab plan, flag `V2 = False`).
+- **`tab-plan.png` (v2):** the Skills card now says "One page per skill - Combat = your class"; the COMBAT page holds your class
+  (loadout, abilities, class tree, combat gear). No separate Class card. The Inventory card names the 'Charms page' link.
+- **`market-page.png`:** one screen, no sub-tabs:
+  - LEFT: search + Bazaar categories.
+  - CENTRE: the category's items with buy / sell prices and the 24 h change, sorted by tier.
+  - RIGHT: the selected item with SkyyBazaar 0.2.5's 4 big buttons (BUY NOW / SELL NOW with prices, BUY ORDER / SELL OFFER). Below them
+    the one short step (Amount 1 / 64 / All / Type, Price Best / Beat best by 1 / Type, total, Back / Confirm) and your orders with Claim.
+  - BOTTOM: Auction House (search, ending soon, Bid / Buy, your listings, New listing, Claim); Merchants (travelling merchant + NPC
+    shops); the BANK mini-game. The bank shows the balance against capacity, interest a day and the next payout, Deposit / Withdraw,
+    UPGRADE Lv 4 -> 5 (capacity, interest, vault pages allowed, cost) and the vault pages (3 owned / 10 allowed = Lv 1 4 + 2 per level,
+    Buy page). The left category rail is the only "switcher"; no mode tabs were needed.
+- **`world-page.png`:**
+  - MAP: Hub, Your Island, Zone 1-5 as islands with level range + danger colour, warp pins, You, quest marker and filter chips. A
+    selected-warp card has Teleport / Set as home.
+  - YOUR ISLAND: visitors / chests / PvP toggles, Go home, Members, Rename.
+  - EXPLORE: discoveries per zone, title, bestiary + drops codex.
+  - QUESTS (right): the tracked story quest with steps, rewards and distance; dailies with reset timer + Claim; weeklies; story + side;
+    achievements.
+- **`social-page.png`:**
+  - PLAYERS ONLINE: search, All / Friends / Nearby, rows with class emblem, level and place, Trade / Whisper / Invite buttons.
+  - YOU: profile card with class, Combat level, Overall level and title; skills, stats with gear on, progress.
+  - PROFILES: Main (active), Ironman (Switch), New profile.
+  - PARTY: members with health bars, loot / XP share, Invite / Leave. GUILD: level, MOTD, online members, guild quest, Guild chat /
+    Manage.
+- **`settings-page.png`:**
+  - SETTINGS: search + Gameplay / Chat / Interface toggles.
+  - HUD LAYOUT: preview + Open HUD editor. TOP TAB ORDER: the 7 tabs with up / down, Settings always last, Reset order.
+  - MODS: list with Help. SERVER SETUP: admin badge, search, categories, Open Server Setup; locked for non-admins.
+- **`charms-page.png`:** VOID CHARMS on one screen.
+  - YOUR CHARM BAG: 13 / 23 slots with rarity frames, duplicates marked "not counting", locked slots.
+  - BAG UPGRADE: Rare x1.20 -> Legendary x1.35, needs + costs (research/Hubs-Spec.md 4.2).
+  - SELECTED CHARM: Unique Lantern, what it gives now, TIER UP Unique -> Rare (the charm + materials + coins), or MERGE 3, Take out.
+  - ALL CHARMS TOGETHER: summed stats.
+  - EVERY CHARM LINE: all 11 lines (Health, Stamina, Mana, Speed, Regeneration, Brawler, Runic, Stonehide, Razorfang, Feather,
+    Lantern) with the best rarity you own + Craft / Tier up.
+  - WHERE IT LIVES: in the Inventory tab. The Inventory's charm row 'Charms page' link (and a skill page's Charms page link) opens it.
+    A breadcrumb "INVENTORY > VOID CHARMS" is shown and the top tab row stays - no back button (Skyy 10-16).
+- **`requip-page.png`:** REQUIP on one screen (Inventory tab).
+  - PRESETS: Combat (Archer), Mining, Farming, Foraging, Fishing (keys 1-5) + custom presets (Boss fight, Night caves), each WORN /
+    ready / N missing, + New preset.
+  - THE SELECTED PRESET as a paper doll: 4 armor pieces, tool, off-hand, pet + mount, the 9-slot hotbar, charms in use, abilities.
+    Every slot is marked ON YOU / IN REQUIP STORAGE / MISSING.
+  - "When I equip this preset" options: store what comes off, pull missing gear from bags + Void, refill the hotbar, swap abilities.
+  - Equip / Save from what I wear / Rename / Delete.
+  - SMART HINTS: missing piece + where it was last seen (Pull it), better item in storage (Swap), out of food, mount in storage.
+  - REQUIP STORAGE grid (gear kept there, tagged by preset): Take out, Salvage, Auto-store.
+  - Reached from the Inventory preset buttons' pencil and each skill page's Requip button; breadcrumb, no back button.
+- Note: the earlier shard clicker pictures use a "<skill> page" BACK button; per Skyy's 10-16 "no back buttons" rule the build should use
+  the same breadcrumb (+ the top tab row) instead.
+
+Open questions (default in [brackets]):
+1. Market: one screen with the bottom row (Auctions | Merchants | Bank) always visible, or let the Bazaar list grow and open Auctions in
+   the centre on demand? [one screen as drawn]
+2. Bazaar tax shown as 1%? [use today's SkyyBazaar tax value]
+3. World map: hand-drawn island map art (one picture per zone) + pins drawn by the server? [yes, art round later]
+4. Quests: dailies 3 + weeklies 2 visible with Claim on the row? [yes]
+5. Social: show the profile card of the SELECTED player in the YOU spot when you click someone? [yes, with Trade / Party buttons]
+6. Settings: tab order editable by players (Settings always last)? [yes]
+7. Charms: crafting talismans / bench accessories (Furnace Charm etc.) sit in the same bag and list, marked "bench"? [yes]
+8. Requip: abilities swap with a preset only when the toggle is on? [off by default - your class loadout stays]
+9. Requip: keys 1-5 equip the skill presets from the Inventory screen? [yes]
+
 ## Full UI redesign: fewer tabs, one screen each (2026-11-14)
 Skyy (docs/answered/ui.md "FULL UI REDESIGN, ONE SCREEN PER TAB"): "clicking any button in the top bar of the inventory takes me to the old
 system, we are going to need a full ui redesign. while we are at it, lets try to do what we did with the farming and mining menus, and
@@ -31,8 +97,8 @@ it all on 1 screen." Generator: `make_tab_pages.py` (imports the kit; determinis
   The levels, buffs and egg costs are placeholders.
 
 Why these 7: the skill pages already hold each skill's tools / armor upgrades, collections, tree and shard. So Upgrade and Collections
-stop being tabs, and Class becomes one more card in the Skills grid (your class = your combat "skill" page: loadout, abilities, class
-tree). Everything you carry or wear lives in Inventory (pocket tabs, Vault, charms, Requip, crafting). Money goes to Market. Places
+stop being tabs, and Class lives on the COMBAT skill page (Skyy 11-14: "class is combat." - loadout, abilities, class tree, combat
+gear). Everything you carry or wear lives in Inventory (pocket tabs, Vault, charms, Requip, crafting). Money goes to Market. Places
 and tasks go to World. People and your own profile go to Social.
 
 | Old menu (today) | New home |
@@ -40,7 +106,7 @@ and tasks go to World. People and your own profile go to Social.
 | Inventory (grid, crafting benches, Furnace / Cooking / Tanning) | Inventory |
 | Character > Stats | Social (your profile card) + each skill page's stat column |
 | Character > Skills, Trees | Skills (one page per skill: tree included) |
-| Character > Class (loadout, abilities, class tree, switch) | Skills (Class card in the skill grid) |
+| Character > Class (loadout, abilities, class tree, switch) | Skills > Combat page (Combat = your class) |
 | Character > Pets (pets, eggs, hatchery, fusing, summon) | Pets (one screen) |
 | Character > Accessories / Void Charms | Inventory (charms row) + Upgrade on each skill page |
 | Character > Collections | Skills (each skill's collection path) + World (bestiary / drops codex) |
@@ -62,7 +128,7 @@ Every command (/pets, /bz, /quests, /stats ...) stays and opens the new tab at t
 
 Open questions for Skyy (default in [brackets]):
 1. 7 tabs: Inventory, Skills, Pets, Market, World, Social, Settings? [yes]
-2. Class as a card inside Skills instead of its own tab? [yes - it is the combat build page; a separate tab if Skyy prefers]
+2. ~~Class as a card inside Skills~~ ANSWERED 11-14: "class is combat." -> Class = the Combat skill page (tab-plan.png v2).
 3. Quests inside World (log beside the map) instead of their own tab? [yes]
 4. Bank under Market and Vault as an Inventory pocket tab? [yes]
 5. Egg FUSING (several eggs -> next rarity, answered 2026-10-16) is replaced by the 11-14 egg UPGRADE? [yes - fusing is for pets only]
@@ -329,9 +395,13 @@ What changed:
 | `inventory-mockup-mining.png` | v4. The Mining pocket in the top panel. |
 | `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
 | `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
-| `tab-plan.png` | 2026-11-14. The compacted top bar (12 -> 7 tabs): one card per tab, what it holds, what folds in. |
+| `market-page.png`, `world-page.png`, `social-page.png`, `settings-page.png` | 2026-11-14. The other tabs, one screen each. |
+| `charms-page.png` | 2026-11-14. Void Charms on one screen (reached from the Inventory charm row). |
+| `requip-page.png` | 2026-11-14. Requip loadouts on one screen (presets, paper doll with on you / storage / missing, hints, storage). |
+| `tab-plan-v1.png` | v1 of the tab plan (Class as its own card), kept. |
+| `tab-plan.png` | v2 2026-11-14. The compacted top bar (12 -> 7 tabs): one card per tab, what it holds, what folds in; Class = Combat page. |
 | `pets-page.png` | 2026-11-14. The Pets tab as one screen: slots, pets grid, selected pet, fusing, hatchery, eggs (craft + upgrade). |
-| `make_tab_pages.py` | 2026-11-14. Generator of the two pictures above (deterministic; imports the kit). |
+| `make_tab_pages.py` | 2026-11-14. Generator of the tab-plan and tab-page pictures (deterministic; imports the kit). |
 | `skill-page-mining.png` | v2 2026-11-14. One page per skill, Mining Lv 31: stats, gear + charms, the full metal path by zone with alloys marked, whole Mining tree, 4-skill grid, shard card with the Smithy. |
 | `skill-page-mining-v1.png`, `skill-page-mining-locked-v1.png` | v1 of the two skill pages (7 vanilla metals), kept. |
 | `shard-clicker-mining.png` | 2026-11-14. Mining shard = Zone 1 quarry: one block to click, miner spirits, the Smithy add-on (auto-smelt + alloy slider), storage, upgrades. |
