@@ -13,6 +13,62 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## v3 (2026-11-14, after Skyy's voice review)
+Skyy's review is in `skyy-review-1114.md`: the transcript, plus the 10-point reading. Skyy also added: "perfect but make the teleport row
+like a mini hot bar, with icons instead of names."
+
+Runeteria's screen gave the ideas only. No pixels, text or art came from it.
+
+- **Top tabs are compact.** Each tab is 70 px wide, with a 24 px icon over a 14 px label, so the 12 tabs take about half the bar.
+  Coins, bank, mail and close stay on the right.
+- **Crafting system: Skyy preferred Runeteria's.**
+  - A row of square icon tabs on top: Default (hand + Workbench), then one per equipped bench talisman.
+  - Craftable-only sits on the right of that row.
+  - Then the bench name ("DEFAULT", hand + Workbench, 24 recipes) and search.
+  - A paged recipe grid: 5 x 3 at the 76 px pitch, with "< Page 1 / 2 >".
+  - A preview: result slot, name, rarity and stats; NEEDS shown as ingredient icons with have / need under each; Ready + XP;
+    **Craft / 10x / MAX**.
+- **Skills: a compact icon grid**, 6 x 2 cells. Each cell has the icon, a thin XP line and "Lv N" underneath; the last cell is the total
+  level. The skill name shows on hover.
+- **Right now is a skinny list that holds the QUESTS.**
+  - First the tracked quest card: title, kind / chapter, steps with check / arrow, progress or distance, and the reward.
+  - Then the Daily / Weekly / Side rows with progress.
+  - Then a TO DO list: unspent points, egg, furnace, bazaar, mail.
+  - Every row is 28 px with a 24 px icon. The "Quests >" link opens the Quests tab.
+- **Grids are tight and uniform:** every real grid is the vanilla 74 + 2 (76 pitch).
+- **The inventory panel header has no "slots used" line.** It has small icon buttons top-right, in the vanilla pattern:
+  - **Sort**;
+  - **Quick-stack**: items that match go up into the open chest / pocket;
+  - **Put all**: everything goes up;
+  - **Stash to Void**: everything that has a Void bag goes there.
+  - A hint beside them says where "up" is: the chest, the selected pocket, or the Void when nothing is open.
+  - The chest / pocket panel has its own **Sort + Take all** (everything comes down). So the four vanilla actions are split the way
+    vanilla splits them: container buttons on the container, inventory buttons on the inventory.
+  - On a pocket, the same buttons move items to / from that Void bag.
+- **Character:** the column right of the preview is now the **off-hand slots**: "In hand" (accent, key cap F, ▾ = picker) and
+  Off-hand 2-4 (utility items you can swap to).
+  - The Craft image shows the "Pick off-hand" list open.
+  - Pet + mount cards and Void Charms stay. The Tool slot is gone.
+- **Teleport row = a mini hotbar.** It has 44 px icon slots:
+  - Island (our MyIsland icon) and Hub (our Hub icon), then empty slots, the first with a faint +;
+  - the edit (pencil) button at the right end;
+  - names show only in the hover tooltip (the Craft image shows "Island").
+  - The `art/warp-icons` set (Mining, Farming, Fishing ...) is ready for warps players add.
+- **New `inventory-mockup-chest.png`:** the same screen opened on a chest ("Farm Storage", large chest, 36 slots).
+  - The chest grid is in the top panel, with Sort + Take all (the hover tooltip is shown).
+  - The hanging row gets a **[Chest]** tab first; Craft and the pockets stay switchable.
+  - The inventory below is unchanged; its up-arrow buttons now aim at the chest.
+- **Inventory crafting holds normal items only** (Skyy: "lets keep the charm crafting in the charm page. same with the pets, and lets
+  get rid of the fishing table, and put that all in the crafting/ smithing instead.").
+  - No charm recipes (they stay on the Void Charms page), no pet recipes (Pets page), and no Fishing-table bench tab: fishing gear
+    moves to the Crafting tab's Smithing station.
+  - The bench row is Default / Armor / Weapon / Alchemy / Arcane / Farming. Arcane now uses our Mage node icon, not the amulet.
+  - The sample recipes are tools, blocks, gear and food, plus our Enchanted items and the Oak armor. The detail shows
+    **Iron Pickaxe** (T2 Iron) with Iron Ingot 7/3, Stick 12/2, Planks 4/1.
+  - Vanilla items are drawn as simple ORIGINAL 16 px placeholder shapes (`px_icon()`). They are stand-ins, not the game's icons; the
+    real page shows each item's own icon.
+- The v2 images are kept as `*-v2.png` (byte-identical to the committed v2) and v1 as `*-v1.png`. The generator draws them all.
+
 ## v2 (2026-11-14, after Skyy's review)
 Skyy's review, recorded in docs/answered/ui.md:
 - The accent was chosen: Sky Azure, LOCKED. The gold trim and "Stash to Void" stay.
@@ -64,8 +120,10 @@ What changed:
 ## Files
 | File | What it is |
 |---|---|
-| `inventory-mockup.png` | v2. 1920 x 1080. The Inventory tab with Craft selected (the off-hand picker open). |
-| `inventory-mockup-mining.png` | v2. The same screen with the Mining pocket selected in the top panel. |
+| `inventory-mockup.png` | v3. 1920 x 1080. The Inventory tab with Craft selected (off-hand picker + teleport tooltip shown). |
+| `inventory-mockup-mining.png` | v3. The Mining pocket in the top panel (Quick-stack tooltip shown). |
+| `inventory-mockup-chest.png` | v3. The screen opened on a chest (Take all tooltip shown). |
+| `inventory-mockup-v2.png`, `inventory-mockup-mining-v2.png` | v2, kept. |
 | `inventory-mockup-v1.png` | v1, kept for comparison. |
 | `theme-sheet.png` | The kit. Every part is labelled with its size in px. It shows the palette with hex codes, the window frame + 9-slice cut, the title plate, the tab bar, buttons (3 kinds x 4 states), slots, the rarity frames, the controls and the tooltip. |
 | `accent-options.png` | The same panel, tab bar, slot row and buttons in 3 accents, so Skyy can pick one. |
@@ -157,7 +215,7 @@ What changed:
 
 ## How to regenerate
 ```
-python research/ui-theme-art/make_ui_theme.py            # all five PNGs (needs Pillow; ~15 s)
+python research/ui-theme-art/make_ui_theme.py            # all eight PNGs (needs Pillow; ~25 s)
 python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
 ```
 - Pillow is not installed on Skyy's system Python. For this round it was installed into a scratch folder (`pip install --target`) and
@@ -182,7 +240,18 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
   accent is one line.
 - The page must stay under ~1,600 elements (plan section 7). The mockup has about 36 + 9 + 15 grid slots plus about 120 other parts.
 
-## Open questions for Skyy - v2 (default in [brackets])
+## Open questions for Skyy - v3 (default in [brackets])
+1. **Skill names only on hover** in the compact grid, as Skyy asked. Plan principle 2 said "nothing important only on hover". [Hover
+   only; the Skills tab shows names.]
+2. **Off-hand key:** the mockup shows F, a stand-in. The real vanilla utility-swap key needs checking. [Show whatever the client binds.]
+3. **How many off-hand slots:** 4 drawn (In hand + 3). The vanilla utility section size needs checking. [Match vanilla.]
+4. **Teleport strip length:** 10 icon slots (2 default + 8 to add). [10; more scroll.]
+5. **Chest buttons:** Sort + Take all on the chest, Quick-stack / Put all / Stash to Void on the inventory (as drawn), or all four on
+   both? [As drawn - the vanilla split.]
+6. **Recipe grid paged** (Page 1 / 2 arrows, as Skyy liked) instead of scrolling? [Paged.]
+7. **Big chests** (more than 36 slots) in the top panel: page arrows like the recipes? [Yes.]
+
+## Open questions for Skyy - v2 (default in [brackets]; mostly superseded by v3)
 1. **Bench tabs icon-only** (vanilla style, with the bench name in the title "CRAFTING > Armor bench" and a tooltip), or icon + name?
    [Icon-only, like vanilla.]
 2. **Where the Craft / pocket row sits:** between the top panel and the grid, hanging from the panel (as drawn), or on top of the
@@ -209,6 +278,7 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
    Void bag. Keep both.]
 
 ## UNVERIFIED
+- v3: an ItemGrid with SlotSize 44 for the teleport strip (vanilla grids use 74; the style sets SlotSize, so likely); opening our screen on a chest (catching the container window like the Tab hook in P0) - needs a probe.
 - The client fonts available to custom UI. The sheet uses stand-in fonts, and the game font is narrower.
 - That 12 tabs at 104 px (v2) fit with the game font ("Collections" is the longest label); v2 uses a condensed stand-in.
 - That an ItemGrid can be 4 wide (recipes) / 6 wide (pocket) with SlotsPerRow and scroll like vanilla's 3-wide recipe grid (vanilla does this, so likely).
