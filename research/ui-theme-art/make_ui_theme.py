@@ -2555,6 +2555,9 @@ def make_upgrade():
     bar(im, (tx + 152, ty + 58, TX1 - 14, ty + 66), 0.58, "xp")
     if V5:   # Skyy 11-14: "the pickaxe needs an apply sigils button too"
         button(im, (TX1 - 14 - 150, ty + 2, TX1 - 14, ty + 32), "Apply Sigil", "secondary", fsize=14, glyph=g_sigil(16))
+        # Skyy 11-14: "tools need reforge too."
+        button(im, (TX1 - 14 - 150 - 8 - 124, ty + 2, TX1 - 14 - 158, ty + 32), "Reforge", "secondary", fsize=14,
+               glyph=g_anvil(16, "#c2d1e2"))
     text(im, (TX1 - 14, ty + 46), "580 / 1,000 XP", font("bodyb", 13), PAL["xp"], "rs")
     # points
     uy = ty + 96
@@ -2574,17 +2577,18 @@ def make_upgrade():
         ry += 58
     # tool stats
     sy0 = uy + 248
-    panel(im, (tx, sy0, TX1 - 14, sy0 + (176 if V5 else 150)), inset=True, c=5)
+    panel(im, (tx, sy0, TX1 - 14, sy0 + (202 if V5 else 150)), inset=True, c=5)
     text(im, (tx + 12, sy0 + 20), "TOOL STATS", font("head", 14), PAL["text"], "lm", track=1.5)
     st_rows = [("Breaking power", "T1 Copper", "#e08a4a"), ("Mining Speed", "+15%", PAL["green"]),
                ("Mining Fortune", "+10", PAL["green"]), ("Durability", "Never breaks (lifelong)", PAL["row"])]
     if V5:
+        st_rows.append(("Reforge", "Sharp  +3 Mining Fortune", PAL["green"]))
         st_rows.append(("Sigil", "empty - from your Smithing pocket", PAL["dim"]))
     for j, (k_, v_, c_) in enumerate(st_rows):
         text(im, (tx + 14, sy0 + 50 + j * 26), k_, font("body", 14), PAL["row"], "lm")
         text(im, (TX1 - 30, sy0 + 50 + j * 26), v_, font("headb", 14), c_, "rm")
     # next tier
-    ny = sy0 + (192 if V5 else 166)
+    ny = sy0 + (218 if V5 else 166)
     panel(im, (tx, ny, TX1 - 14, CY1 - 14), inset=True, c=5)
     text(im, (tx + 12, ny + 20), "NEXT TIER", font("head", 14), PAL["text"], "lm", track=1.5)
     put_px(im, px_icon("pickaxe"), tx + 128, ny + 6, 32)
