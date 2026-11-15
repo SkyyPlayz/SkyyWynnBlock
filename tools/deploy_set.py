@@ -29,6 +29,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
 # FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
+# BANK2 (2026-11-14): SkyyCoins 0.1.12 (death penalty 0/0 + one-time migration, Undo in Server Setup) + SkyyBank 0.1.17 (bank levels; account file bank.level wins, levels/ mirror restores it after a 0.1.16 rollback) + SkyyVault 0.1.10 (freePages 1 migration; pages limited by bank level; owned pages kept) pin + roll back TOGETHER.
 # BZ1 (2026-11-14): SkyyBazaar 0.2.5 (4 big buttons + one short step; 18 Enchanted metals shown under Smithing) rolls back alone to 0.2.4 - no saved data; keep SkyySacks >= 0.8.36.
 # INV1 (2026-11-14): SkyyMenu 0.3.50 (inventory screen P1, Skyglass theme, Server Setup menu.inventory.replace default ON) rolls back alone to 0.3.49 - no saved data; if Tab misbehaves set menu.inventory.replace OFF first.
 # UI R1a (2026-10-22): SkyyHud 0.3.35 + SkyyMenu 0.3.44 + SkyyQuests 0.4.3 deploy together (ALT - Menu key cap, double-crouch folds the quest tracker, /quests widget hide|show|fold, Stats by source); each rolls back alone with no data step.
@@ -93,8 +94,8 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.37"), ("SkyyCoins", "0.1.11"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.5"), ("SkyyGear", "0.3.55"), ("SkyySkills", "0.4.70"),
+    ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.37"), ("SkyyCoins", "0.1.12"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.17"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.5"), ("SkyyGear", "0.3.55"), ("SkyySkills", "0.4.70"),
     ("SkyyAccessories", "0.5.36"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.51"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -109,7 +110,7 @@ SET = [
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
-    ("SkyyVault", "0.1.9"),
+    ("SkyyVault", "0.1.10"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
     ("SkyyAuctions", "0.1.16"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
