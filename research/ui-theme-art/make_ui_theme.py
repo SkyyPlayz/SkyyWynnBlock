@@ -447,7 +447,7 @@ def panel_title(im, x, y, title, x_end):
     return tx
 
 
-def tab(im, box, label, icon_rel=None, state="normal", fsize=16):
+def tab(im, box, label, icon_rel=None, state="normal", fsize=16, fkind="head", isz=24):
     x0, y0, x1, y1 = box
     d = ImageDraw.Draw(im, "RGBA")
     if state == "selected":
@@ -469,16 +469,17 @@ def tab(im, box, label, icon_rel=None, state="normal", fsize=16):
         col, ialpha = "#b9c9db", 0.85
     else:
         col, ialpha = "#93a7bf", 0.6
-    f = font("head", fsize)
-    tw_ = tw(label, f)
-    isz = 24 if icon_rel else 0
-    total = tw_ + (isz + 6 if icon_rel else 0)
+    f = font(fkind, fsize)
+    tw_ = tw(label, f) if label else 0
+    isz = isz if icon_rel else 0
+    total = tw_ + (isz + 6 if (icon_rel and label) else isz)
     cx = (x0 + x1) // 2 - total // 2
     cy = (y0 + y1) // 2 + 1
     if icon_rel:
-        paste_icon(im, icon_rel, cx, cy - 12, 24, ialpha, grey=(state == "normal"))
+        paste_icon(im, icon_rel, cx, cy - isz // 2, isz, ialpha, grey=(state == "normal"))
         cx += isz + 6
-    text(im, (cx, cy), label, f, col, "lm")
+    if label:
+        text(im, (cx, cy), label, f, col, "lm")
 
 
 def button(im, box, label, kind="primary", state="normal", fsize=16, glyph=None):
@@ -611,17 +612,19 @@ def toggle(im, x, y, on=True, label=None, w=44, h=24):
         text(im, (x + w + 10, y + h // 2), label, font("bodyb", 15), PAL["row"] if on else PAL["dim"], "lm")
 
 
-def search_box(im, box, placeholder="Search...", focused=False, value=None):
+def search_box(im, box, placeholder="Search...", focused=False, value=None, icon_on=True):
     x0, y0, x1, y1 = box
     panel(im, box, inset=True, c=4)
     outline(im, box, A["base"] if focused else "#2a3a55", c=4)
     if focused:
         glow(im, box, A["base"], 4, 90, 4, 2)
     cy = (y0 + y1) // 2
-    put(im, g_search(16, "#8ea3bd"), x0 + 10, cy - 8)
+    tx0 = x0 + 34 if icon_on else x0 + 10
+    if icon_on:
+        put(im, g_search(16, "#8ea3bd"), x0 + 10, cy - 8)
     if value:
-        text(im, (x0 + 34, cy), value, font("body", 15), "#ffffff", "lm")
-        cx = x0 + 34 + tw(value, font("body", 15)) + 2
+        text(im, (tx0, cy), value, font("body", 15), "#ffffff", "lm")
+        cx = tx0 + tw(value, font("body", 15)) + 2
         ImageDraw.Draw(im).line([(cx, cy - 9), (cx, cy + 8)], fill=rgb(A["hi"]), width=2)
     else:
         text(im, (x0 + 34, cy), placeholder, font("body", 15), PAL["placeholder"], "lm", shadow=False)
@@ -780,7 +783,7 @@ SKILLS = [("Mining", I_WARP % "Mining", 31), ("Foraging", I_WARP % "Foraging", 2
           ("Beastmastery", I_NODE % "Beastmastery_B1R1a", 11)]
 
 
-def bg_world(W, H):
+def bg_world(W, H, dim=165):
     """A dimmed sky behind the window (stands in for the game world)."""
     im = Image.new("RGB", (W, H))
     g = Image.linear_gradient("L").resize((W, H))
@@ -791,13 +794,13 @@ def bg_world(W, H):
         d.polygon([(cx - r // 2, cy), (cx + r // 2, cy), (cx + r // 6, cy + r // 2), (cx - r // 5, cy + r // 2)],
                   fill=(40, 52, 70, 200))
         d.rectangle((cx - r // 2, cy - 12, cx + r // 2, cy + 2), fill=(70, 120, 70, 220))
-    d.rectangle((0, 0, W, H), fill=(4, 7, 13, 165))
+    d.rectangle((0, 0, W, H), fill=(4, 7, 13, dim))
     return im
 
 
 # ----------------------------------------------------------------------------------------------------------------- inventory mockup
 
-def make_mockup():
+def make_mockup_v1():
     set_accent("Sky Azure")
     W, H = 1920, 1080
     im = bg_world(W, H)
@@ -1118,6 +1121,481 @@ def make_mockup():
     return im
 
 
+# ----------------------------------------------------------------------------------------------------------------- inventory mockup v2
+# v2 (Skyy 2026-11-14 review): labelled slot column + off-hand picker; inventory crafting in the VANILLA crafting layout (icon bench
+# tabs over the panel, "Crafting > <bench>" title, search + Craftable only, recipe grid | ingredients | preview + Craft / x10 / All);
+# the row between the top panel and the grid = [Craft][Mining]...[Smithing] (Craft = crafting, a pocket = that Void bag's contents);
+# compact Skills + Right now. Real grids use the vanilla ItemGrid metrics: slot 74 + spacing 2 = 76 pitch.
+P = 76          # ItemGrid pitch (InGame/Common.ui: DefaultItemSlotSize 74, DefaultItemSlotSpacing 2)
+I_MENU = "art/menu-icons/Common/Icons/ItemsGenerated/Skyy_Menu_Icon_%s.png"
+
+BENCHES = [("Default (hand + Workbench)", I_MENU % "Crafting"), ("Armor bench", I_HUB % "smithing_gear"),
+           ("Weapon bench", I_HUB % "character_class"), ("Alchemy bench", I_NODE % "Alchemy_B1R1a"),
+           ("Arcane bench", I_HUB % "character_accessories"), ("Farming bench", I_WARP % "Farming")]
+POCKETS = [("Craft", I_MENU % "Crafting"), ("Mining", I_WARP % "Mining"), ("Foraging", I_WARP % "Foraging"),
+           ("Farming", I_WARP % "Farming"), ("Fishing", I_WARP % "Fishing"), ("Combat", I_WARP % "Combat"),
+           ("Smithing", I_NODE % "Smithing_B1R1a")]
+
+
+def clipped(im, box, fn):
+    """Draw fn(sub) on a copy of the box region and paste it back: content is cut at the box edge (a scrolling list)."""
+    x0, y0, x1, y1 = box
+    sub = im.crop((x0, y0, x1 + 1, y1 + 1))
+    fn(sub)
+    im.paste(sub, (x0, y0))
+
+
+def caption(im, cx, y, s, col=None, f=None):
+    text(im, (cx, y), s, f or font("bodyb", 13), col or PAL["dim"], "mt")
+
+
+def bench_tab(im, x, y, w, h, icon_rel, selected):
+    """Vanilla-style icon-only top tab sitting on the panel's top edge (vanilla 82 x 62, icon 44; ours 72 x 52, icon 36)."""
+    if selected:
+        grad_fill(im, (x, y, x + w - 1, y + h + 2), "#1c2d4a", PAL["panel2"], c=0)
+        d = ImageDraw.Draw(im, "RGBA")
+        d.line([(x, y + h + 2), (x, y + 4), (x + 4, y), (x + w - 5, y), (x + w - 1, y + 4), (x + w - 1, y + h + 2)],
+               fill=rgb(PAL["lineHi"]))
+        glow(im, (x + 4, y, x + w - 5, y + 2), A["base"], 5, 170, 0, 2)
+        d.rectangle((x + 4, y, x + w - 5, y + 2), fill=rgb(A["base"]))
+        paste_icon(im, icon_rel, x + (w - 36) // 2, y + (h - 36) // 2 + 2, 36)
+    else:
+        grad_fill(im, (x, y + 6, x + w - 1, y + h - 1), "#131e31", "#0e1727", c=4)
+        outline(im, (x, y + 6, x + w - 1, y + h - 1), "#24344d", c=4)
+        paste_icon(im, icon_rel, x + (w - 32) // 2, y + 6 + (h - 6 - 32) // 2, 32, 0.85, grey=True)
+
+
+def hang_tabs(im, x0, y0, x1, h, items, sel, fsize=16):
+    """The Craft / pocket row: tabs hanging from the top panel's bottom edge (the selected one is part of the panel)."""
+    n = len(items)
+    w = (x1 - x0 + 1 - (n - 1) * 3) // n
+    d = ImageDraw.Draw(im, "RGBA")
+    for i, (nm, ic) in enumerate(items):
+        x = x0 + i * (w + 3)
+        if i == sel:
+            grad_fill(im, (x, y0 - 2, x + w - 1, y0 + h), PAL["panel"], "#16243c", c=0)
+            d.line([(x, y0 - 1), (x, y0 + h - 5), (x + 4, y0 + h - 1), (x + w - 5, y0 + h - 1), (x + w - 1, y0 + h - 5),
+                    (x + w - 1, y0 - 1)], fill=rgb(PAL["lineHi"]))
+            glow(im, (x + 4, y0 + h - 3, x + w - 5, y0 + h - 1), A["base"], 5, 170, 0, 2)
+            d.rectangle((x + 4, y0 + h - 3, x + w - 5, y0 + h - 1), fill=rgb(A["base"]))
+            col, alpha, grey = PAL["title"], 1.0, False
+        else:
+            grad_fill(im, (x, y0 + 1, x + w - 1, y0 + h - 6), "#0e1727", "#131e31", c=4)
+            outline(im, (x, y0 + 1, x + w - 1, y0 + h - 6), "#24344d", c=4)
+            col, alpha, grey = "#9fb2c8", 0.75, True
+        f = font("head", fsize)
+        tot = 24 + 6 + tw(nm, f)
+        cx = x + (w - tot) // 2
+        cy = y0 + (h - (0 if i == sel else 6)) // 2
+        paste_icon(im, ic, cx, cy - 12, 24, alpha, grey)
+        text(im, (cx + 30, cy + 1), nm, f, col, "lm")
+
+
+def craft_section(im, X0, X1, Y0, Y1):
+    """Inventory crafting in the vanilla crafting layout."""
+    th = 52
+    tx = X0 + 10
+    for i, (nm, ic) in enumerate(BENCHES):
+        bench_tab(im, tx, Y0, 72, th, ic, i == 0)
+        tx += 76
+    text(im, (tx + 8, Y0 + 30), "one tab per equipped bench talisman", font("body", 13), PAL["dim"], "lm")
+    PY0 = Y0 + th
+    grad_fill(im, (X0, PY0, X1, Y1), PAL["panel2"], PAL["panel"], c=6)
+    outline(im, (X0, PY0, X1, Y1), PAL["line"], c=6)
+    # re-open the selected tab into the panel
+    grad_fill(im, (X0 + 11, PY0 - 1, X0 + 10 + 70, PY0 + 2), "#16233a", PAL["panel2"], c=0)
+    # header: Crafting > bench   [search] [Craftable only]
+    hy = PY0 + 22
+    put(im, g_diamond(9, A["base"], A["hi"]), X0 + 14, hy - 4)
+    f = font("head", 16)
+    text(im, (X0 + 30, hy), "CRAFTING", f, PAL["title"], "lm", track=1.5)
+    ax = X0 + 30 + tw("CRAFTING", f, 1.5) + 8
+    put(im, g_chev(14, A["hi"]), ax, hy - 7)
+    text(im, (ax + 18, hy), "Default", font("headb", 17), "#ffffff", "lm")
+    text(im, (ax + 18 + tw("Default", font("headb", 17)) + 8, hy + 1), "hand + Workbench", font("body", 13), PAL["dim"], "lm")
+    toggle(im, X1 - 180, hy - 12, True)
+    text(im, (X1 - 128, hy), "Craftable only", font("bodyb", 14), PAL["row"], "lm")
+    search_box(im, (X1 - 420, hy - 15, X1 - 196, hy + 15), "Search...")
+    taper_line(im, X0 + 12, X1 - 12, PY0 + 42, PAL["gold"], 150, 0.8)
+    # content: recipe grid (4 wide, scrolls) | ingredients | preview + buttons
+    cy0, cy1 = PY0 + 52, Y1 - 10
+    gx = X0 + 12
+    recipes = [(I_ACC % "mana-rare", "Rare"), (I_ACC % "health-unique", "Unique"), (I_ACC % "speed-normal", "Normal"),
+               (I_ACC % "stamina-rare", "Rare"), (I_ACC % "lantern-unique", "Unique"), (I_GEAR % "rod-t2-iron", "Normal"),
+               (I_GEAR % "rod-t3-thorium", "Normal"), (I_GEAR % "reel-t2-iron", "Normal"), (I_GEAR % "barbed-hook-II", "Normal"),
+               (I_ACC % "regeneration-normal", "Normal"), (I_ENCH % "iron-ingot", None), (I_ENCH % "copper-ingot", None),
+               (I_ENCH % "oak-log", None), (I_ENCH % "wheat", None), (I_ENCH % "cobblestone", None), (I_ENCH % "sand", None)]
+    gw = 4 * P - 2
+
+    def grid(sub):
+        for i, (ic, r) in enumerate(recipes):
+            slot(sub, 0 + (i % 4) * P, 0 + (i // 4) * P, "selected" if i == 0 else "empty", RAR.get(r), ic)
+    clipped(im, (gx, cy0, gx + gw + 8, cy1), lambda sub: grid_offset(sub, grid))
+    scrollbar(im, gx + gw + 6, cy0, cy1, cy0 + 2, cy0 + 150)
+    # ingredients column (vanilla: item name as the panel title, then 72 px ingredient rows)
+    ix0, ix1 = gx + gw + 22, X1 - 196
+    panel(im, (ix0, cy0, ix1, cy1), inset=True, c=5)
+    text(im, ((ix0 + ix1) // 2, cy0 + 18), "Mana Charm", font("headb", 18), RAR["Rare"], "mm")
+    text(im, ((ix0 + ix1) // 2, cy0 + 38), "Charm  -  Rare  -  +12 Max Mana", font("body", 13), PAL["text"], "mm")
+    iy = cy0 + 54
+    for ic, nm, have, need in ((I_ACC % "mana-unique", "Mana Charm (Unique)", 1, 1),
+                               (I_ENCH % "cobalt-ingot", "Enchanted Cobalt Ingot", 7, 4), (I_ENCH % "sap", "Enchanted Sap", 9, 8)):
+        slot(im, ix0 + 8, iy, "empty", None, ic, size=56)
+        text(im, (ix0 + 74, iy + 18), nm, font("body", 14), PAL["row"], "lm")
+        text(im, (ix0 + 74, iy + 39), "%d / %d" % (have, need), font("headb", 15), PAL["green"] if have >= need else PAL["red"], "lm")
+        iy += 62
+    # preview column (vanilla: big item preview on a soft energy glow, progress bar, Craft, then Craft x10 | Craft All)
+    px0, px1 = X1 - 184, X1 - 12
+    pcx = (px0 + px1) // 2
+    layer = Image.new("RGBA", (px1 - px0, 150), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).ellipse((24, 20, px1 - px0 - 24, 130), fill=rgb(A["base"], 120))
+    layer = layer.filter(ImageFilter.GaussianBlur(16))
+    reg = im.crop((px0, cy0, px1, cy0 + 150)).convert("RGBA")
+    im.paste(Image.alpha_composite(reg, layer).convert("RGB"), (px0, cy0))
+    big = icon(I_ACC % "mana-rare", 64).resize((128, 128), Image.NEAREST)
+    im.paste(big, (pcx - 64, cy0 + 8), big)
+    bar(im, (px0 + 6, cy0 + 146, px1 - 6, cy0 + 150), 0.0, "accent")
+    put(im, g_check(14, PAL["green"]), px0 + 6, cy0 + 158)
+    text(im, (px0 + 24, cy0 + 165), "Ready  +40 Alchemy XP", font("bodyb", 13), PAL["green"], "lm")
+    button(im, (px0 + 4, cy1 - 76, px1 - 4, cy1 - 40), "Craft", "primary")
+    hw = (px1 - px0 - 14) // 2
+    button(im, (px0 + 4, cy1 - 32, px0 + 4 + hw, cy1), "x10", "secondary", "disabled", fsize=15)
+    button(im, (px1 - 4 - hw, cy1 - 32, px1 - 4, cy1), "All", "secondary", fsize=15)
+
+
+def grid_offset(sub, fn):
+    fn(sub)
+
+
+MINING = [("copper-ingot", "1,284"), ("iron-ingot", "912"), ("silver-ingot", "88"), ("gold-ingot", "141"),
+          ("thorium-ingot", "356"), ("cobalt-ingot", "47"), ("adamantite-ingot", "12"), ("mithril-ingot", "3"),
+          ("onyxium-ingot", "1"), ("cobblestone", "4.2k"), ("rubble", "2.9k"), ("basalt", "640"), ("slate", "515"),
+          ("sandstone", "233"), ("sand", "1.1k"), ("clay", "77")]
+
+
+def pocket_section(im, X0, X1, Y0, Y1):
+    """A Void (Pocket Dimension) bag shown in the top panel: its grid, space bar and the condensed actions."""
+    panel(im, (X0, Y0, X1, Y1))
+    hy = Y0 + 22
+    paste_icon(im, I_WARP % "Mining", X0 + 12, hy - 14, 28)
+    f = font("head", 16)
+    text(im, (X0 + 46, hy), "MINING POCKET", f, PAL["title"], "lm", track=1.5)
+    sx = X0 + 46 + tw("MINING POCKET", f, 1.5) + 18
+    text(im, (sx, hy), "Space", font("bodyb", 14), PAL["dim"], "lm")
+    bar(im, (sx + 50, hy - 4, sx + 230, hy + 4), 12264 / 20000, "accent", segs=4)
+    text(im, (sx + 240, hy), "12,264 / 20,000", font("headb", 15), PAL["row"], "lm")
+    text(im, (X1 - 30, hy), "Upgrades", font("head", 15), A["hi"], "rm")
+    put(im, g_chev(14, A["hi"]), X1 - 28, hy - 7)
+    taper_line(im, X0 + 12, X1 - 12, Y0 + 42, PAL["gold"], 150, 0.8)
+    # filter row
+    fy = Y0 + 52
+    search_box(im, (X0 + 12, fy, X0 + 254, fy + 30), "Search this pocket...")
+    x = X0 + 262
+    for i, nm in enumerate(("All", "Ingots", "Stone")):
+        x += chip(im, x, fy, nm, i == 0, 30, fsize=14) + 5
+    # bag grid (server-drawn, 6 wide, scrolls)
+    gy0, gy1 = fy + 42, Y1 - 10
+    gx = X0 + 12
+    gw = 6 * P - 2
+
+    def grid(sub):
+        for i in range(24):
+            if i < len(MINING):
+                nm, n = MINING[i]
+                slot(sub, (i % 6) * P, (i // 6) * P, "selected" if i == 1 else "empty", None, I_ENCH % nm, n)
+            else:
+                slot(sub, (i % 6) * P, (i // 6) * P)
+    clipped(im, (gx, gy0, gx + gw + 8, gy1), grid)
+    scrollbar(im, gx + gw + 6, gy0, gy1, gy0 + 2, gy0 + 170)
+    # action panel: selected item, ONE amount box above the buttons (Skyy 10-10), Withdraw / Deposit / Sell / Unpack
+    ax0, ax1 = gx + gw + 22, X1 - 12
+    panel(im, (ax0, fy, ax1, gy1), inset=True, c=5)
+    slot(im, ax0 + 10, gy0 - 32, "empty", None, I_ENCH % "iron-ingot")
+    text(im, (ax0 + 96, gy0 - 14), "Enchanted Iron", font("headb", 17), "#ffffff", "lm")
+    rich(im, ax0 + 96, gy0 + 9, [("In pocket ", font("body", 14), PAL["dim"]), ("912", font("headb", 15), PAL["row"]),
+                                 ("   In bag ", font("body", 14), PAL["dim"]), ("12", font("headb", 15), PAL["row"])])
+    rich(im, ax0 + 96, gy0 + 30, [("Sells for ", font("body", 14), PAL["dim"]), ("640", font("headb", 15), "#ffd76a"),
+                                  (" each", font("body", 14), PAL["dim"])])
+    ay = gy0 + 58
+    text(im, (ax0 + 12, ay + 15), "Amount", font("bodyb", 14), PAL["text"], "lm")
+    search_box(im, (ax0 + 80, ay, ax1 - 70, ay + 30), "", focused=True, value="64", icon_on=False)
+    button(im, (ax1 - 62, ay, ax1 - 10, ay + 30), "Max", "secondary", fsize=14)
+    bw = (ax1 - ax0 - 30) // 2
+    by = ay + 42
+    button(im, (ax0 + 10, by, ax0 + 10 + bw, by + 36), "Withdraw", "primary")
+    button(im, (ax1 - 10 - bw, by, ax1 - 10, by + 36), "Deposit", "secondary")
+    button(im, (ax0 + 10, by + 44, ax0 + 10 + bw, by + 80), "Sell 64", "secondary")
+    button(im, (ax1 - 10 - bw, by + 44, ax1 - 10, by + 80), "Unpack", "secondary")
+    ny = by + 96
+    rich(im, ax0 + 12, ny, [("Sell 64: ", font("body", 13), PAL["dim"]), ("40,960 coins", font("bodyb", 13), "#ffd76a")])
+    rich(im, ax0 + 12, ny + 20, [("Unpack 64: ", font("body", 13), PAL["dim"]), ("6,400 Iron Ingot", font("bodyb", 13), PAL["row"])])
+    toggle(im, ax0 + 12, gy1 - 34, True, "Auto-compact")
+
+
+def make_mockup(mode="craft"):
+    set_accent("Sky Azure")
+    W, H = 1920, 1080
+    im = bg_world(W, H, 205)
+    WX0, WY0, WX1, WY1 = 138, 12, 1781, 1067
+    window_frame(im, (WX0, WY0, WX1, WY1))
+    # ---- top tab bar (12 tabs, condensed labels) + coins / bank / mail / close
+    TB0, TB1 = WY0 + 8, WY0 + 62
+    grad_fill(im, (WX0 + 5, TB0, WX1 - 5, TB1), "#0a111e", "#0c1525", c=4)
+    hline(im, WX0 + 6, WX1 - 6, TB1, PAL["lineHi"])
+    taper_line(im, WX0 + 20, WX1 - 20, TB1 + 1, PAL["gold"], 120, 0.8)
+    tx = WX0 + 16
+    for i, (nm, ic) in enumerate(TABS):
+        tab(im, (tx, TB0 + 4, tx + 103, TB1 - 1), nm, ic, "selected" if i == 0 else "normal", 16, "headc")
+        tx += 105
+    rx = WX1 - 18
+    button(im, (rx - 40, TB0 + 9, rx, TB0 + 49), "", "secondary", glyph=g_x(18, "#d6e4ee"))
+    rx -= 48
+    button(im, (rx - 40, TB0 + 9, rx, TB0 + 49), "", "secondary", glyph=g_envelope(20, "#c2d1e2"))
+    put(im, ss_glyph(18, 18, lambda d, s: d.ellipse((0, 0, 18 * s - 1, 18 * s - 1), fill=rgb(PAL["red"]))), rx - 12, TB0 + 3)
+    text(im, (rx - 3, TB0 + 12), "2", font("headb", 13), "#ffffff", "mm", shadow=False)
+    rx -= 50
+    fv, fk = font("headb", 16), font("head", 13)
+    panel(im, (rx - 104, TB0 + 9, rx, TB0 + 49), inset=True, c=4)
+    paste_icon(im, I_HUB % "storage_bank", rx - 98, TB0 + 17, 24)
+    text(im, (rx - 68, TB0 + 21), "BANK", fk, PAL["dim"], "lm", track=1)
+    text(im, (rx - 68, TB0 + 38), "3.2M", fv, "#e9eef7", "lm")
+    rx -= 112
+    panel(im, (rx - 128, TB0 + 9, rx, TB0 + 49), inset=True, c=4)
+    put(im, g_coin(22), rx - 120, TB0 + 18)
+    text(im, (rx - 90, TB0 + 21), "COINS", fk, PAL["dim"], "lm", track=1)
+    text(im, (rx - 90, TB0 + 38), "1,245,210", fv, "#ffd76a", "lm")
+
+    CY0, CY1 = 86, 1020
+    LX0, LX1 = WX0 + 16, WX0 + 16 + 420
+    CX0, CX1 = LX1 + 16, LX1 + 16 + 760
+    RX0, RX1 = CX1 + 16, WX1 - 16
+
+    # ================= LEFT: character
+    panel(im, (LX0, CY0, LX1, CY1), "Character")
+    text(im, (LX1 - 14, CY0 + 18), "Islander", font("bodyb", 15), PAL["text"], "rm")
+    ey = CY0 + 42
+    pitch = 92
+    left = [("Head", I_ARM % "Foraging_Maple_Head", "Rare"), ("Chest", I_ARM % "Foraging_Maple_Chest", "Rare"),
+            ("Hands", I_ARM % "Foraging_Maple_Hands", "Unique"), ("Legs", I_ARM % "Foraging_Maple_Legs", "Unique")]
+    lx = LX0 + 14
+    for i, (nm, ic, r) in enumerate(left):
+        slot(im, lx, ey + i * pitch, "empty", RAR[r], ic)
+        caption(im, lx + 37, ey + i * pitch + 76, nm)
+    rxs = LX1 - 14 - 74
+    offhand = None if mode == "craft" else I_ACC % "lantern-unique"
+    slot(im, rxs, ey, "selected" if mode == "craft" else "empty", None if offhand is None else RAR["Unique"], offhand,
+         ghost=g_shield(30, "#3a5070"))
+    put(im, ss_glyph(20, 20, lambda d, s: (d.rectangle((0, 0, 20 * s, 20 * s), fill=rgb("#0c1422")),
+                                          d.polygon([(5 * s, 7 * s), (15 * s, 7 * s), (10 * s, 14 * s)], fill=rgb(A["hi"])))),
+        rxs + 52, ey + 52)
+    caption(im, rxs + 37, ey + 76, "Off-hand", A["hi"])
+    right = [("Utility", I_GEAR % "reel-t3-thorium", "Normal", g_diamond(24, "#2c3c57", "#36486a", "#1a2538")),
+             ("Utility", None, None, g_diamond(24, "#2c3c57", "#36486a", "#1a2538")),
+             ("Tool", I_GEAR % "rod-t3-thorium", "Normal", g_sword(30, "#2c3c57"))]
+    for i, (nm, ic, r, gh) in enumerate(right):
+        slot(im, rxs, ey + (i + 1) * pitch, "empty", RAR.get(r), ic, ghost=gh)
+        caption(im, rxs + 37, ey + (i + 1) * pitch + 76, nm)
+    # preview
+    px0, px1 = lx + 74 + 12, rxs - 12
+    py0, py1 = ey, ey + 4 * pitch - 20
+    panel(im, (px0, py0, px1, py1), inset=True, c=5)
+    pcx = (px0 + px1) // 2
+    gl = Image.new("RGBA", (px1 - px0, py1 - py0), (0, 0, 0, 0))
+    ImageDraw.Draw(gl).ellipse((30, py1 - py0 - 70, px1 - px0 - 30, py1 - py0 - 20), fill=rgb(A["base"], 110))
+    gl = gl.filter(ImageFilter.GaussianBlur(12))
+    reg = im.crop((px0, py0, px1, py1)).convert("RGBA")
+    im.paste(Image.alpha_composite(reg, gl).convert("RGB"), (px0, py0))
+    d = ImageDraw.Draw(im, "RGBA")
+    base_y = py1 - 46
+    fig = [((-22, -150), (22, -108), "#d9a87e"), ((-26, -106), (26, -40), "#3a6b45"), ((-40, -104), (-28, -46), "#d9a87e"),
+           ((28, -104), (40, -46), "#d9a87e"), ((-24, -40), (-2, 8), "#4a3a2a"), ((2, -40), (24, 8), "#4a3a2a"),
+           ((-26, -154), (26, -136), "#5a3b22"), ((-26, -64), (26, -56), "#7a5a2a")]
+    for (ax, ay), (bx, by), col in fig:
+        d.rectangle((pcx + ax, base_y + ay, pcx + bx, base_y + by), fill=rgb(col), outline=rgb("#05080e"))
+    d.rectangle((pcx - 12, base_y - 132, pcx - 6, base_y - 126), fill=rgb("#1a1a2a"))
+    d.rectangle((pcx + 6, base_y - 132, pcx + 12, base_y - 126), fill=rgb("#1a1a2a"))
+    text(im, (pcx, py0 + 16), "Player preview", font("body", 13), PAL["dim"], "mm", shadow=False)
+    if mode == "craft":
+        # the off-hand picker, open (click the off-hand slot): items you can hold in the off-hand, from bag + Void
+        bx1 = rxs - 8
+        bx0 = bx1 - 224
+        by0 = ey + 6
+        by1 = by0 + 166
+        shadow(im, (bx0, by0, bx1, by1), 8, 200, 3)
+        grad_fill(im, (bx0, by0, bx1, by1), "#16233a", "#0e1729", c=6)
+        outline(im, (bx0, by0, bx1, by1), PAL["edge"], c=6)
+        outline(im, (bx0 + 1, by0 + 1, bx1 - 1, by1 - 1), A["base"], c=5)
+        d.polygon([(bx1, ey + 30), (bx1 + 7, ey + 37), (bx1, ey + 44)], fill=rgb(A["base"]))
+        text(im, (bx0 + 12, by0 + 18), "Pick off-hand", font("headb", 16), "#ffffff", "lm")
+        text(im, (bx0 + 12, by0 + 38), "Items you can hold in it", font("body", 13), PAL["dim"], "lm")
+        opts = [(I_ACC % "lantern-unique", "Unique", "Lantern"), (I_ACC % "lantern-normal", "Normal", "Lantern"),
+                (None, None, "Empty")]
+        for i, (ic, r, nm) in enumerate(opts):
+            sx = bx0 + 12 + i * 70
+            slot(im, sx, by0 + 54, "hover" if i == 0 else "empty", RAR.get(r), ic, size=64,
+                 ghost=g_x(20, "#3a5070") if ic is None else None)
+            caption(im, sx + 32, by0 + 122, nm, PAL["row"])
+        text(im, (bx0 + 12, by1 - 14), "Key: swap off-hand", font("body", 13), PAL["action"], "lm")
+    # Void Charms
+    vy = ey + 4 * pitch + 2
+    text(im, (lx, vy + 10), "VOID CHARMS", font("head", 14), PAL["text"], "lm", track=1.2)
+    text(im, (lx + 118, vy + 10), "9 / 18", font("bodyb", 14), PAL["dim"], "lm")
+    text(im, (LX1 - 30, vy + 10), "All charms", font("head", 14), A["hi"], "rm")
+    put(im, g_chev(13, A["hi"]), LX1 - 28, vy + 4)
+    charms = [("mana-rare", "Rare"), ("health-unique", "Unique"), ("speed-legendary", "Legendary"),
+              ("stamina-normal", "Normal"), ("feather-unique", "Unique")]
+    for i, (ic, r) in enumerate(charms):
+        slot(im, lx + i * P, vy + 24, "empty", RAR[r], I_ACC % ic)
+    # pet + mount
+    py = vy + 24 + 74 + 12
+    half = (LX1 - LX0 - 28 - 10) // 2
+    for i, (cap, ic, nm, lv, r) in enumerate((("PET", I_PET % "Hawk", "Hawk", "Lv 42", "Legendary"),
+                                                ("MOUNT", I_PET % "Horse", "Horse", "Lv 18", "Rare"))):
+        bx = lx + i * (half + 10)
+        panel(im, (bx, py, bx + half, py + 84), inset=True, c=4)
+        slot(im, bx + 5, py + 5, "empty", RAR[r], ic)
+        text(im, (bx + 88, py + 18), cap, font("head", 13), PAL["dim"], "lm", track=1.2)
+        text(im, (bx + 88, py + 40), nm, font("bodyb", 16), RAR[r], "lm")
+        text(im, (bx + 88, py + 62), lv + "  " + r, font("body", 13), PAL["text"], "lm")
+    cy = py + 94
+    panel(im, (lx, cy, LX1 - 14, cy + 80), inset=True, c=4)
+    paste_icon(im, I_EMB % "Archer", lx + 8, cy + 8, 64)
+    text(im, (lx + 84, cy + 20), "Archer", font("headb", 20), "#a8e07a", "lm")
+    level_pill(im, lx + 84 + tw("Archer", font("headb", 20)) + 10, cy + 9, "Lv 23")
+    bar(im, (lx + 84, cy + 58, LX1 - 26, cy + 68), 0.62, "xp", "Class XP", "1,240 / 2,000")
+    vy2 = cy + 90
+    vit = [("Health", g_heart(20, PAL["health"]), "412 / 412", "health", 1.0),
+           ("Mana", g_drop(20, PAL["mana"]), "96 / 140", "mana", 0.69),
+           ("Stamina", g_bolt(20, PAL["stamina"]), "100 / 100", "stamina", 1.0),
+           ("Defense", g_shield(20, PAL["defense"]), "184", "defense", 0.46)]
+    for i, (nm, g, val, k, fr) in enumerate(vit):
+        bx = lx + (i % 2) * (half + 10)
+        by = vy2 + (i // 2) * 56
+        panel(im, (bx, by, bx + half, by + 48), inset=True, c=4)
+        put(im, g, bx + 10, by + 7)
+        text(im, (bx + 38, by + 17), nm, font("bodyb", 15), PAL["text"], "lm")
+        text(im, (bx + half - 10, by + 17), val, font("headb", 16), "#ffffff", "rm")
+        bar(im, (bx + 10, by + 34, bx + half - 10, by + 40), fr, k)
+    sy = vy2 + 2 * 56 + 2
+    panel(im, (lx, sy, LX1 - 14, sy + 34), inset=True, c=4)
+    x = lx + 12
+    for k, v in (("Strength", "34"), ("Crit", "12%"), ("Speed", "+8%")):
+        x = rich(im, x, sy + 17, [(k + " ", font("body", 14), PAL["dim"]), (v, font("headb", 15), PAL["green"])]) + 16
+    button(im, (lx, CY1 - 54, LX1 - 14, CY1 - 14), "Stats by source", "secondary")
+
+    # ================= CENTRE: top panel (Craft or pocket) + hanging tab row + inventory
+    TOP1 = 490
+    if mode == "craft":
+        craft_section(im, CX0, CX1, CY0, TOP1)
+    else:
+        # bench tabs are part of Craft; a pocket uses the full height
+        pocket_section(im, CX0, CX1, CY0, TOP1)
+    hang_tabs(im, CX0 + 8, TOP1, CX1 - 8, 38, POCKETS, 0 if mode == "craft" else 1)
+    IY0 = TOP1 + 46
+    panel(im, (CX0, IY0, CX1, CY1))
+    gx = CX0 + (CX1 - CX0 - (9 * P - 2)) // 2
+    hy = IY0 + 18
+    put(im, g_diamond(9, A["base"], A["hi"]), gx, hy - 4)
+    text(im, (gx + 16, hy), "INVENTORY", font("head", 15), PAL["title"], "lm", track=1.5)
+    text(im, (gx + 130, hy), "27 / 36", font("bodyb", 14), PAL["dim"], "lm")
+    button(im, (gx + 9 * P - 2 - 64, hy - 14, gx + 9 * P - 2, hy + 14), "Sort", "secondary", fsize=14)
+    button(im, (gx + 9 * P - 2 - 196, hy - 14, gx + 9 * P - 2 - 72, hy + 14), "Stash to Void", "secondary", fsize=14)
+    gy = IY0 + 38
+    inv = {0: (I_ENCH % "iron-ingot", 12, None), 1: (I_ENCH % "copper-ingot", 23, None), 2: (I_ENCH % "oak-log", 41, None),
+           3: (I_ENCH % "maple-log", 12, None), 4: (I_FISH % "frost_cod", 6, "Normal"), 5: (I_FISH % "cinderfin", 2, "Rare"),
+           6: (I_EGG % "Combat_Rare", 1, None), 8: (I_ARM % "Foraging_Oak_Chest", None, "Normal"), 9: (I_ENCH % "wheat", 128, None),
+           10: (I_ENCH % "carrot", 37, None), 11: (I_ENCH % "potato", 9, None), 13: (I_GEAR % "rod-t2-iron", None, "Normal"),
+           14: (I_FISH % "glass_pike", 3, "Unique"), 15: (I_ACC % "feather-normal", None, "Normal"), 18: (I_ENCH % "cobblestone", 64, None),
+           19: (I_ENCH % "sand", 64, None), 20: (I_ENCH % "clay", 18, None), 22: (I_GEAR % "lure-hook-I", 4, "Normal"),
+           23: (I_EGG % "Mining_Uncommon", 1, None), 26: (I_FISH % "magma_marlin", 1, "Legendary"), 27: (I_ENCH % "sap", 5, None),
+           28: (I_ENCH % "fibre", 74, None), 31: (I_ARM % "Foraging_Oak_Legs", None, "Normal")}
+    for i in range(36):
+        it = inv.get(i)
+        x, y = gx + (i % 9) * P, gy + (i // 9) * P
+        if it:
+            slot(im, x, y, "empty", RAR.get(it[2]), it[0], it[1])
+        else:
+            slot(im, x, y)
+    hyb = gy + 4 * P + 8
+    hot = [(I_GEAR % "rod-t3-thorium", None, "Normal"), (I_ABIL % "Archer_ArrowRain", None, None),
+           (I_ABIL % "Archer_RapidFire", None, None), (I_ABIL % "Archer_HuntersNet", None, None),
+           (I_ENCH % "iron-ingot", 12, None), None, (I_FISH % "frost_cod", 6, "Normal"), None, (I_ACC % "lantern-unique", None, "Unique")]
+    panel(im, (gx - 6, hyb - 6, gx + 9 * P + 3, hyb + 74 + 9), inset=True, c=5)
+    for i in range(9):
+        it = hot[i]
+        st = "selected" if i == 0 else "empty"
+        if it:
+            slot(im, gx + i * P, hyb, st, RAR.get(it[2]), it[0], it[1], keycap=str(i + 1))
+        else:
+            slot(im, gx + i * P, hyb, st, keycap=str(i + 1))
+    hotbar_marker(im, gx, hyb)
+    ty = hyb + 74 + 16
+    text(im, (gx, ty + 19), "TELEPORT", font("head", 14), PAL["dim"], "lm", track=1.2)
+    tx = gx + 92
+    for nm, ic in (("Island", I_HUB % "world_island"), ("Hub", I_HUB % "hubrow_home")):
+        button(im, (tx, ty, tx + 130, ty + 38), "", "secondary")
+        paste_icon(im, ic, tx + 14, ty + 7, 24)
+        text(im, (tx + 46, ty + 20), nm, font("head", 16), PAL["row"], "lm")
+        tx += 138
+    button(im, (tx, ty, tx + 42, ty + 38), "", "secondary", glyph=g_plus(16, "#9fb3cc"))
+    button(im, (gx + 9 * P - 2 - 100, ty, gx + 9 * P - 2, ty + 38), "Edit", "secondary", glyph=g_pencil(16, "#c2d1e2"))
+
+    # ================= RIGHT: compact Skills + Right now
+    panel(im, (RX0, CY0, RX1, TOP1), "Skills", link="Open")
+    rows = SKILLS + [("Total level", None, sum(s[2] for s in SKILLS))]
+    ry = CY0 + 38
+    rh = 29
+    for i, (nm, ic, lv) in enumerate(rows):
+        y = ry + i * rh
+        if i % 2 == 0:
+            ImageDraw.Draw(im, "RGBA").rectangle((RX0 + 10, y, RX1 - 10, y + rh - 2), fill=(255, 255, 255, 7))
+        if ic:
+            paste_icon(im, ic, RX0 + 14, y + 1, 24)
+            text(im, (RX0 + 46, y + 13), nm, font("bodyb", 14), PAL["row"], "lm")
+            bar(im, (RX0 + 168, y + 11, RX1 - 60, y + 16), ((lv * 37) % 100) / 100.0, "xp")
+            text(im, (RX1 - 16, y + 13), str(lv), font("headb", 15), PAL["xp"], "rm")
+        else:
+            put(im, g_diamond(20, PAL["gold"], PAL["goldHi"]), RX0 + 16, y + 3)
+            text(im, (RX0 + 46, y + 13), nm, font("bodyb", 14), "#ffffff", "lm")
+            text(im, (RX1 - 16, y + 13), str(lv), font("headb", 16), PAL["xp"], "rm")
+    panel(im, (RX0, IY0, RX1, CY1), "Right now")
+    rn = [(g_quest(20, PAL["action"]), "Quest:", "Visit the Farming island", PAL["action"], None),
+          (I_WARP % "Foraging", "11", "points in Foraging tree", PAL["xp"], None),
+          (I_WARP % "Mining", "5", "points in Mining tree", PAL["xp"], None),
+          (I_EMB % "Archer", "2", "points in Archer tree", PAL["xp"], None),
+          (I_WARP % "Fishing", "Daily:", "Catch fish", PAL["action"], (12, 20)),
+          (I_EGG % "Combat_Rare", "Egg:", "Rare Combat - hatch", PAL["green"], None),
+          (I_ENCH % "iron-ingot", "Furnace:", "64 Iron Ingot ready", PAL["green"], None),
+          (I_HUB % "market_bazaar", "Bazaar:", "2 orders filled", PAL["green"], None),
+          (g_envelope(20, "#c2d1e2"), "Mail:", "2 new letters", PAL["text"], None)]
+    y = IY0 + 38
+    for i, (ic, tag, msg, tc, prog) in enumerate(rn):
+        row(im, (RX0 + 10, y, RX1 - 10, y + 31), "hover" if i == 0 else "normal")
+        if isinstance(ic, str):
+            paste_icon(im, ic, RX0 + 16, y + 4, 24)
+        else:
+            put(im, ic, RX0 + 18, y + 6)
+        x = rich(im, RX0 + 48, y + 16, [(tag + " ", font("bodyb", 14), tc), (msg, font("body", 14), PAL["row"])])
+        if prog:
+            text(im, (RX1 - 34, y + 16), "%d / %d" % prog, font("headb", 14), PAL["xp"], "rm")
+        put(im, g_chev(14, A["hi"] if i == 0 else "#7f93a6"), RX1 - 28, y + 9)
+        y += 36
+    text(im, ((RX0 + RX1) // 2, CY1 - 20), "Click a row to go there", font("body", 13), PAL["dim"], "mm")
+
+    # ================= key hints
+    hy2 = 1044
+    hints = [("LMB", "Take"), ("RMB", "Take one"), ("Shift", "Move"), ("1-9", "To hotbar"), ("Q", "Drop"),
+             ("S", "Sort"), ("Tab / Esc", "Close")]
+    fh = font("body", 15)
+    total = sum(max(22, tw(k, font("headb", 14)) + 10) + 6 + tw(v, fh) + 26 for k, v in hints)
+    x = (W - total) // 2
+    for k, v in hints:
+        w = key_cap(im, x, hy2 - 11, k)
+        text(im, (x + w + 6, hy2), v, fh, "#aebfd3", "lm")
+        x += w + 6 + tw(v, fh) + 26
+    return im
+
+
 # ----------------------------------------------------------------------------------------------------------------- theme sheet
 
 def label(im, x, y, s, size_txt=None):
@@ -1254,7 +1732,7 @@ def make_sheet():
     y += 3 * 66 + 50
 
     # ---- slots
-    y = section(im, y, "Item slots", "74 x 74 = the engine grid pitch (no gap); icon 64; rarity = frame colour + inner glow + corner gem")
+    y = section(im, y, "Item slots", "slot 74 + spacing 2 = 76 pitch (vanilla ItemGrid); icon 64; rarity = frame colour + inner glow + corner gem")
     for i, (st, nm) in enumerate((("empty", "Empty"), ("hover", "Hover"), ("selected", "Selected"))):
         slot(im, 40 + i * 110, y + 10, st)
         label(im, 40 + i * 110, y + 94, nm, "74 x 74")
@@ -1301,7 +1779,7 @@ def make_sheet():
         text(im, (x, y + 133), hx_.upper(), font("body", 13), PAL["dim"])
     y += 170
     text(im, (40, y), "Frame = rarity colour at 62 % over the panel (2 px) + 7 px inner glow; gem 11 x 11 top right; a 1 px dark edge keeps it crisp on any "
-                      "background. Readable at 74 px (shown 1:1).", font("body", 15), PAL["dim"])
+                      "background. Readable at 74 px (shown 1:1). v2 mockups use the 76 px pitch.", font("body", 15), PAL["dim"])
     y += 40
 
     # ---- controls
@@ -1407,7 +1885,9 @@ def make_accents():
 
 
 def main():
-    out = {"theme-sheet.png": make_sheet, "inventory-mockup.png": make_mockup, "accent-options.png": make_accents}
+    out = {"theme-sheet.png": make_sheet, "inventory-mockup-v1.png": make_mockup_v1,
+           "inventory-mockup.png": lambda: make_mockup("craft"), "inventory-mockup-mining.png": lambda: make_mockup("mining"),
+           "accent-options.png": make_accents}
     only = sys.argv[1:]
     for fn, maker in out.items():
         if only and fn not in only:

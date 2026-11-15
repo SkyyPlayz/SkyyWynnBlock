@@ -13,10 +13,60 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## v2 (2026-11-14, after Skyy's review)
+Skyy's review, recorded in docs/answered/ui.md:
+- The accent was chosen: Sky Azure, LOCKED. The gold trim and "Stash to Void" stay.
+- Mockup notes, word for word: "what is on the right side of the character? and im not seeing the thing to pick what goes in the off
+  hand. for crafting, id keep the vanilla look, and add vanilla style tabs for every bench you add. (the normal crafting bench adds to the
+  default crafting section. but all the others get their own tab. but keep the search and the toggle to only show craftable. and above
+  the inventory it has an inventory button, swap those out, so you have craft, to show the crafting section you show in that picture,
+  next to it have the pocket dimensions. make a new image showing what ittl look like when you pick the mining pocket."
+- Also: "the skills and righht now things on the side are way to big".
+
+What changed:
+- **Character slot column, now labelled.** Every slot has a caption under it: Head / Chest / Hands / Legs on the left;
+  **Off-hand**, Utility, Utility, Tool on the right.
+  - **Off-hand** is vanilla's utility slot under the character (CharacterPanel.ui `#ItemGridSpecialSlot`, with its key-binding label).
+    It is the item held in the off hand: a lantern, a shield, a torch and so on.
+  - Clicking it opens **"Pick off-hand"**, a list of the items you own that can go in the off hand, plus Empty. This mirrors vanilla's
+    item-slot selector popover. The Craft mockup shows the picker open; the Mining mockup shows a Lantern equipped.
+  - **Utility** = the other utility-section items you can swap to with the off-hand key.
+  - **Tool** = our tool slot (the Multitool / tool fetch). That one is a proposal; see the open questions.
+- **Inventory crafting now uses the VANILLA crafting layout,** drawn in our colours. I read only the layout and sizes from
+  `Client/.../Pages/Inventory/BasicCraftingPanel.ui`, `BasicCraftingIngredient.ui` and `Common/Container.ui`; no pixels were copied.
+  - Icon-only bench tabs sit on the panel's top edge. Vanilla's are 82 x 62 with a 44 icon; ours are 72 x 52 with a 36 icon.
+  - The title reads "CRAFTING > Default", like vanilla's category arrow.
+  - Search and the Craftable-only toggle sit in the header.
+  - Then the recipe ItemGrid (vanilla has 3 per row; ours has 4, and it scrolls), the ingredient list (item name as the title,
+    then rows of slot + name + have / need), and the item preview with Craft, then Craft x10 | Craft All.
+  - **First tab = Default** (hand recipes + the Workbench talisman's recipes merged). **One more tab per other equipped bench talisman**
+    (Armor, Weapon, Alchemy, Arcane, Farming ...).
+- **The row above the inventory is now `[Craft][Mining][Foraging][Farming][Fishing][Combat][Smithing]`.** The Inventory tab is gone.
+  - The row sits **between the top panel and the grid**, and its tabs hang from the top panel's bottom edge: the selected tab is part
+    of the panel above. This keeps it where Skyy saw the old row and shows that it switches the top panel.
+  - **Craft** shows crafting in the top panel.
+  - **A pocket** shows that Void bag in the top panel: its space bar + Upgrades link, search + filter chips, the bag grid (6 per row,
+    scrolls), the selected item, ONE amount box above the buttons (Skyy 10-10), Withdraw / Deposit / Sell / Unpack, the sell / unpack
+    values and Auto-compact.
+  - The player's 9 x 4 inventory, the hotbar and the teleport row always stay below.
+  - The inventory header now holds "27 / 36", "Stash to Void" and Sort.
+- **New image:** `inventory-mockup-mining.png`, with the Mining pocket selected. It holds our own Enchanted ingot / stone icons, because
+  no ore icons of ours exist.
+- **Compact right column.**
+  - Skills is a list: one 29 px row each with a 24 px icon, name, thin XP line and level, plus Total level.
+  - Right now has 32 px rows.
+  - The column is 400 wide, down from 684.
+- **The window is narrower:** 1644 wide and centred, with 76 px grid pitch. The freed width went to the centre column (760).
+- **Fix:** the vanilla ItemGrid is a **74 px slot + 2 px spacing = 76 px pitch** (InGame/Common.ui `DefaultItemSlotSize 74`,
+  `DefaultItemSlotSpacing 2`). v1 said 74 with no gap. The 9 x 4 grid is 682 px wide.
+- v1 is kept as `inventory-mockup-v1.png`. The generator still draws it, byte for byte the same as the committed v1.
+
 ## Files
 | File | What it is |
 |---|---|
-| `inventory-mockup.png` | 1920 x 1080. The Inventory tab of the new screen at UI scale 1. |
+| `inventory-mockup.png` | v2. 1920 x 1080. The Inventory tab with Craft selected (the off-hand picker open). |
+| `inventory-mockup-mining.png` | v2. The same screen with the Mining pocket selected in the top panel. |
+| `inventory-mockup-v1.png` | v1, kept for comparison. |
 | `theme-sheet.png` | The kit. Every part is labelled with its size in px. It shows the palette with hex codes, the window frame + 9-slice cut, the title plate, the tab bar, buttons (3 kinds x 4 states), slots, the rarity frames, the controls and the tooltip. |
 | `accent-options.png` | The same panel, tab bar, slot row and buttons in 3 accents, so Skyy can pick one. |
 | `make_ui_theme.py` | The generator. It is deterministic: two runs give the same bytes (checked). |
@@ -66,7 +116,7 @@ Runeteria's screen gave the ideas only. Its art, colours and layout details were
 | Page chip | height 30, width = text + 24 | 6 |
 | Button | 40 high (small 32), chamfer 5; Primary / Secondary / Danger x Normal / Hover / Pressed / Disabled; + a green "Ready" state | 8 |
 | Close / icon button | 40 x 40, glyph 16-20 | 8 |
-| Item slot | **74 x 74** (the engine grid pitch, no gap), icon 64, chamfer 4 | none (fixed size) |
+| Item slot | **74 x 74**, spacing 2 = **76 pitch** (vanilla ItemGrid), icon 64, chamfer 4 | none (fixed size) |
 | Rarity frame | 2 px frame in the rarity colour (62 % over the panel) + 7 px inner glow + 11 x 11 corner gem top right | none |
 | Hotbar marker | the selected-slot frame + 28 x 6 notch under the slot | none |
 | Key cap | 22 high (18 inside slots), width = text + 10 | 4 |
@@ -78,7 +128,7 @@ Runeteria's screen gave the ideas only. Its art, colours and layout details were
 | List row | 40-52 high, selected = 3 px accent bar + tint | 6 |
 | Tooltip | 372 wide; rarity hairline + top glow + 2 corner gems | 12 |
 
-## The Inventory tab (mockup)
+## The Inventory tab (v1 mockup; v2 changes above)
 - **Top row:** the 12 tabs (Inventory selected) with our hub-tab icons, then COINS, BANK, mail (with a badge) and close.
 - **Left: Character.**
   - 4 armour slots on the left and Off-hand / Utility / Utility / Tool on the right, with the player preview in the middle.
@@ -107,7 +157,7 @@ Runeteria's screen gave the ideas only. Its art, colours and layout details were
 
 ## How to regenerate
 ```
-python research/ui-theme-art/make_ui_theme.py            # all three PNGs (needs Pillow; ~10 s)
+python research/ui-theme-art/make_ui_theme.py            # all five PNGs (needs Pillow; ~15 s)
 python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
 ```
 - Pillow is not installed on Skyy's system Python. For this round it was installed into a scratch folder (`pip install --target`) and
@@ -123,7 +173,7 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
   - Glyphs (search, X, +, pencil, chevron, heart, drop, bolt, shield, coin, mail) become small 2x icons.
 - **9-slice borders:** see the sizes table. Chamfers live inside the corner patches, and every stretch strip is flat colour or a
   vertical gradient only, so it stretches cleanly.
-- **Slot pitch is 74** (the engine ItemGrid). The 9 x 4 grid + hotbar = 666 px wide. The slot art is the ItemGrid `SlotBackground`
+- **Slot 74 + spacing 2 = 76 pitch** (the engine ItemGrid). The 9 x 4 grid + hotbar = 682 px wide. The slot art is the ItemGrid `SlotBackground`
   (k1h proved it shows on empty slots).
 - **Rarity frames:**
   - real items: through the quality textures under `UI/ItemQualities/...` (engine rule from uiprobe05);
@@ -132,7 +182,19 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
   accent is one line.
 - The page must stay under ~1,600 elements (plan section 7). The mockup has about 36 + 9 + 15 grid slots plus about 120 other parts.
 
-## Open questions for Skyy (default in [brackets])
+## Open questions for Skyy - v2 (default in [brackets])
+1. **Bench tabs icon-only** (vanilla style, with the bench name in the title "CRAFTING > Armor bench" and a tooltip), or icon + name?
+   [Icon-only, like vanilla.]
+2. **Where the Craft / pocket row sits:** between the top panel and the grid, hanging from the panel (as drawn), or on top of the
+   top panel? [Between them, as drawn.]
+3. **The Tool slot** under the utility slots is our proposal (Multitool / tool fetch); vanilla has no tool slot in survival. Keep it,
+   or show a third Utility slot? [Keep Tool if SkyyGear's Multitool can live there; otherwise Utility.]
+4. **The off-hand picker** lists items from the bag only, or from the bag + Void pockets? [Bag + Void.]
+5. **Bag tab for Supplies** (plan: "+ Supplies if fitting"): 7 tabs fit at 760 wide; an 8th would need narrower labels. [Leave it out;
+   Supplies stays in Storage.]
+6. **Pocket grid filter chips** (All / Ingots / Stone per pocket)? [Yes, per pocket kind.]
+
+## Open questions for Skyy - v1 (default in [brackets]; 1 and 8 answered 11-14)
 1. **Accent colour?** Sky Azure / Sun Gold / Aurora Teal (`accent-options.png`). [Sky Azure `#45A8FF`: it fits the name SkyWynn and
    reads as "sky". Gold stays as the trim, so gold is not doubled. It stays clear of the Unique yellow and the Untiered orange, and Teal
    would sit next to the Legendary cyan.]
@@ -148,9 +210,11 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
 
 ## UNVERIFIED
 - The client fonts available to custom UI. The sheet uses stand-in fonts, and the game font is narrower.
-- That 12 tabs at 117 px fit with the game font at 16 px ("Collections" is the longest label).
+- That 12 tabs at 104 px (v2) fit with the game font ("Collections" is the longest label); v2 uses a condensed stand-in.
+- That an ItemGrid can be 4 wide (recipes) / 6 wide (pocket) with SlotsPerRow and scroll like vanilla's 3-wide recipe grid (vanilla does this, so likely).
+- That the off-hand picker can list items and set the utility slot from a server page (the probe moved items between sections, not a picker).
 - A live 3D player preview inside a custom page. Fallback: the class emblem + a static portrait.
 - Whether Off-hand / Utility / Tool map onto real inventory sections. The plan says utility -5; the Tool slot may be ours (Multitool).
-- The 74 px pitch for the Void Charms row (5 per row fits; the full bag stays in Storage).
+- The Void Charms row at 76 px pitch (5 per row fits; the full bag stays in Storage).
 - That every 9-slice border above holds at the drawn sizes. This needs a probe page with every texture, like the k1 probes.
 - The 1,600-element budget with all panels live.
