@@ -13,6 +13,61 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## Full UI redesign: fewer tabs, one screen each (2026-11-14)
+Skyy (docs/answered/ui.md "FULL UI REDESIGN, ONE SCREEN PER TAB"): "clicking any button in the top bar of the inventory takes me to the old
+system, we are going to need a full ui redesign. while we are at it, lets try to do what we did with the farming and mining menus, and
+compact everything into as few tabs as posible. like in pets. 1 tab with your pets your eggs the hatchery,, ecc crafting, pet fusing. i want
+it all on 1 screen." Generator: `make_tab_pages.py` (imports the kit; deterministic; every older picture stays byte-identical).
+- **`tab-plan.png`:** the top bar goes from 12 tabs to 7: **Inventory, Skills, Pets, Market, World, Social, Settings**. The old and new
+  rows are at the top, with one card per tab: what its ONE screen holds, and which old menus fold in.
+- **`pets-page.png`:** the Pets tab as ONE screen with no sub-tabs:
+  - EQUIPPED: the PET slot (Legendary Wolf - a Fighter, so it fights from the pet slot) and the MOUNT slot (Epic Plain Dragon, Summon = ride).
+  - YOUR PETS: 20 / 120 in a 7-wide grid with rarity frames, levels, and Fighter (sword) / Mount (U) marks. Filters: All / Bonus / Fighter / Mount + skill chips, search, sort.
+  - SELECTED PET: kind tags, level bar, buffs now, where it works, rebirth / next rarity, at Lv 50.
+  - PET FUSING: 4 of the same pet -> next rarity; keeps the highest level; Mythic only from eggs.
+  - HATCHERY: 4 / 6 slots with timers, Hatch and Beastmastery-locked slots.
+  - EGGS: your eggs, CRAFT for Common eggs only (costs in the "(need N)" style), UPGRADE THE SELECTED EGG to the next rarity.
+  Pets are real SkyyPets kinds; the dragons are Fighter + Mount. Icons are from art/pets, art/dragons and art/pet-eggs.
+  The levels, buffs and egg costs are placeholders.
+
+Why these 7: the skill pages already hold each skill's tools / armor upgrades, collections, tree and shard. So Upgrade and Collections
+stop being tabs, and Class becomes one more card in the Skills grid (your class = your combat "skill" page: loadout, abilities, class
+tree). Everything you carry or wear lives in Inventory (pocket tabs, Vault, charms, Requip, crafting). Money goes to Market. Places
+and tasks go to World. People and your own profile go to Social.
+
+| Old menu (today) | New home |
+|---|---|
+| Inventory (grid, crafting benches, Furnace / Cooking / Tanning) | Inventory |
+| Character > Stats | Social (your profile card) + each skill page's stat column |
+| Character > Skills, Trees | Skills (one page per skill: tree included) |
+| Character > Class (loadout, abilities, class tree, switch) | Skills (Class card in the skill grid) |
+| Character > Pets (pets, eggs, hatchery, fusing, summon) | Pets (one screen) |
+| Character > Accessories / Void Charms | Inventory (charms row) + Upgrade on each skill page |
+| Character > Collections | Skills (each skill's collection path) + World (bestiary / drops codex) |
+| Character > Profiles | Social |
+| Storage > Pocket, Supplies | Inventory (pocket tabs) |
+| Storage > Requip | Inventory (Requip presets) + Requip button on each skill page |
+| Storage > Vault | Inventory (Vault as a pocket tab) |
+| Storage > Bank | Market (Bank) |
+| Upgrade tab, Smithing > Gear / Reforge / Upgrade / Multitool / Identify | Skills (each skill page's tool + armor area) |
+| Smithing > Recipes (/craft) | Inventory crafting |
+| Market > Bazaar, Auctions, Merchants | Market |
+| Quests | World (quest log + tracked quest) |
+| World > Teleport, Island, Explore | World |
+| World > Shards | Skills (each skill's shard card -> clicker) |
+| Social > Players, Party, Guild | Social |
+| Settings > Settings, HUD, Menu layout, Mods, Server Setup | Settings |
+
+Every command (/pets, /bz, /quests, /stats ...) stays and opens the new tab at the right spot.
+
+Open questions for Skyy (default in [brackets]):
+1. 7 tabs: Inventory, Skills, Pets, Market, World, Social, Settings? [yes]
+2. Class as a card inside Skills instead of its own tab? [yes - it is the combat build page; a separate tab if Skyy prefers]
+3. Quests inside World (log beside the map) instead of their own tab? [yes]
+4. Bank under Market and Vault as an Inventory pocket tab? [yes]
+5. Egg FUSING (several eggs -> next rarity, answered 2026-10-16) is replaced by the 11-14 egg UPGRADE? [yes - fusing is for pets only]
+6. Pets grid click: click selects, Shift-click puts it in the pet slot, right-click in the mount slot? [yes]
+
 ## Skill pages v2 + Mining quarry (2026-11-14, after Skyy's review)
 Skyy (docs/answered/world.md newest line), on skill-page-mining.png: "show the alloys too. and in the mining shard we will add a
 upgrade/addon with a smithy. the smithy makes all ares auto smelt to bars, and with an upgrade allow you to automatically smelt some of your
@@ -274,6 +329,9 @@ What changed:
 | `inventory-mockup-mining.png` | v4. The Mining pocket in the top panel. |
 | `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
 | `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
+| `tab-plan.png` | 2026-11-14. The compacted top bar (12 -> 7 tabs): one card per tab, what it holds, what folds in. |
+| `pets-page.png` | 2026-11-14. The Pets tab as one screen: slots, pets grid, selected pet, fusing, hatchery, eggs (craft + upgrade). |
+| `make_tab_pages.py` | 2026-11-14. Generator of the two pictures above (deterministic; imports the kit). |
 | `skill-page-mining.png` | v2 2026-11-14. One page per skill, Mining Lv 31: stats, gear + charms, the full metal path by zone with alloys marked, whole Mining tree, 4-skill grid, shard card with the Smithy. |
 | `skill-page-mining-v1.png`, `skill-page-mining-locked-v1.png` | v1 of the two skill pages (7 vanilla metals), kept. |
 | `shard-clicker-mining.png` | 2026-11-14. Mining shard = Zone 1 quarry: one block to click, miner spirits, the Smithy add-on (auto-smelt + alloy slider), storage, upgrades. |
