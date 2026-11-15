@@ -92,3 +92,4 @@ tests always come first.
 283. Armory 0.1.52: gauntlets + wraps show in first person while idle / walking (fists-up stance)
 284. Inventory screen (Tab), shard storage grid, simpler Bazaar buy / sell
 285. Inventory Craft button - no crash, next Tab opens crafting; creative Tab vanilla
+286. Death costs no coins; bank levels + upgrade + deposit cap; vault page limit by bank level

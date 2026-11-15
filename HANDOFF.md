@@ -8,11 +8,11 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 |---|---|---|
 | SkyyHud | 0.3.37 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
 | SkyySacks | 0.8.37 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void |
-| SkyyCoins | 0.1.11 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal |
+| SkyyCoins | 0.1.12 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal; death penalty 0/0 |
 | SkyyCollections | 0.2.36 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.10 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyCore | 1.0.1 | shared library (merge phase 1): Server Setup kit runtime per mod, UiKit, MoveSync, HubBar, CfgText, Sky Window art once; MUST be first in SET while any jar depends on it; tools/CORE-CONTRACT.md |
-| SkyyBank | 0.1.16 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
+| SkyyBank | 0.1.17 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush; bank levels 1-10 (capacity + interest) |
 | SkyyIslands | 0.5.26 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.2.5 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products; 4 big buttons + one step; metals under Smithing |
 | SkyyGear | 0.3.55 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
@@ -26,7 +26,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyTrees | 0.6.7 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.3.4 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.13 | guilds + guild bank; writes off the lock |
-| SkyyVault | 0.1.9 | vault pages |
+| SkyyVault | 0.1.10 | vault pages; start with 1 page; pages limited by bank level |
 | SkyyAuctions | 0.1.16 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
 | SkyyQuests | 0.4.4 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
