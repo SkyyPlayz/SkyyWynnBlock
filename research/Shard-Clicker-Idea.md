@@ -50,6 +50,12 @@ once built. Related: research/Inventory-Screen-Plan.md (12 tabs), research/ui-th
 - Farming: one island per crop; Foraging: one per wood - grouped in a cluster per ZONE (zone 2 crops / woods in a separate zone 2
   cluster that opens with zone 2). The zoomed-out map shows the clusters.
 
+## Mining Smithy add-on + art bar (Skyy 2026-11-14)
+- A SMITHY upgrade / add-on in the Mining shard: every ore auto-smelts to bars; an upgrade adds an alloy slider (% of ore auto-smelted
+  into the zone's alloy, e.g. Bronze in zone 1).
+- The skill page ore path shows the alloys too.
+- The mockups are the basic designs; the real game art must look clearly better.
+
 ## Steps
 1. Art round: the Farming skill page + the Foraging clicker island (small / grown / zoomed out) as mockups for Skyy.
 2. Probe: click speed and picture swaps in a test page (SkyyUiProbe), element count.
