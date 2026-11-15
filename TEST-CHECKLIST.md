@@ -93,3 +93,4 @@ tests always come first.
 284. Inventory screen (Tab), shard storage grid, simpler Bazaar buy / sell
 285. Inventory Craft button - no crash, next Tab opens crafting; creative Tab vanilla
 286. Death costs no coins; bank levels + upgrade + deposit cap; vault page limit by bank level
+287. Our own crafting in the Tab inventory (Craft / x10 / All, search, bench tabs) + new layout
