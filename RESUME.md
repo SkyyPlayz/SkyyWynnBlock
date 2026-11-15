@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-11-14; TEST 282 live, nothing running)
+# SkyWynn - RESUME HERE (updated 2026-11-14; TEST 283 live, round inv1 running)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions = `HANDOFF.md` section 1 = `tools/deploy_set.py` SET.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-11.md` (October: `2026-10.md`). Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -22,7 +22,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - Players' world: Subcaverna has 0.5.2 + 0.5.3 in Mods (fine while off). NoCube Orchard benches broken on 0.7.4 (theirs; Skyy: "leave it alone and wait").
 
 ## RUNNING
-- Nothing running. Inventory screen: P0 probe PASS (TEST 282; retire SkyyUiProbe from SET when done); P0b art v2 in research/ui-theme-art/ waits on Skyy's typed notes (their 11-14 video has no voice), then v3 / approval -> P1 shell. Armory 0.1.52 LIVE (TEST 283 gauntlets visible). Plan: research/Inventory-Screen-Plan.md v2.
+- RUNNING: round inv1 (workflow wf_37a084df-1f0): Inventory screen P1 shell = SkyyMenu 0.3.50 (Tab -> our page, real grids, read-only character column, Craft button -> vanilla pocket crafting until P3, switch menu.inventory.replace ON) + additive Skyglass theme in tools/skyyui.py. Art v5 APPROVED (research/ui-theme-art/). Armory 0.1.52 LIVE (TEST 283 gauntlets). SkyyUiProbe retires after P1.
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
