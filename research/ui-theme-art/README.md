@@ -13,6 +13,16 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## v5 HUD (2026-11-14, Skyy's review of the HUD editor)
+Skyy: "the game already has a compass, so if we do anything thewre it has to be below ithe vanilla one, or a mod to the vanilla one. try to
+keep things out of the center of the screen put pets to the left of the hot bar and mount to the right."
+- **`hud-editor-mockup.png` (v5):** our compass is gone; the game's own compass stays top-centre (shown as a ghost) and we only add a thin
+  quest-distance strip BELOW it. The zone title sits on the top edge and fades. The Skill XP popup is shown being dragged out of the centre
+  to snap under the Party list. The PET card is left of the vanilla hotbar, the MOUNT card right of it with a Summon button.
+- The old picture is kept as `hud-editor-mockup-v4.png` (same generator, `make_hud_editor(False)`).
+- Pet / mount change behind the cards (docs/answered/pets.md 2026-11-14): the mount slot is for riding - summon (button / key / Z bar) puts
+  you on it, hopping off makes it vanish; pet-slot pets follow, and combat pets now fight from the pet slot. That is a SkyyPets round, queued.
+
 ## v4 (2026-11-14, Upgrade tab + Requip presets + Furnace + HUD editor)
 Skyy's words are in docs/answered/ui.md (newest lines): "remove crafting from the top row, all crafting will be handled in the normal
 inventory crafting now. and replace it with a single upgrade tab, that combines all there here, smithing, anvil, and upgrade ...
@@ -186,7 +196,8 @@ What changed:
 | `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
 | `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
 | `upgrade-mockup.png` | v4. The Upgrade tab (Smithing + Anvil + Upgrade), Mining picked. |
-| `hud-editor-mockup.png` | v4. The HUD layout editor with every widget, one being dragged. |
+| `hud-editor-mockup.png` | v5. The HUD layout editor: vanilla compass kept, centre clear, pet left / mount right of the hotbar. |
+| `hud-editor-mockup-v4.png` | v4 of the HUD editor (kept). |
 | `*-v3.png` | v3, kept. |
 | `inventory-mockup-v2.png`, `inventory-mockup-mining-v2.png` | v2, kept. |
 | `inventory-mockup-v1.png` | v1, kept for comparison. |

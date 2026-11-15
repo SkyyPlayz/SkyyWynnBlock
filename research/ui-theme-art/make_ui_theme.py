@@ -2742,7 +2742,69 @@ def dashed(im, pts, col, alpha=170, dash=10, gap=6, width=1):
             d.line([(x, y0), (min(x1, x + dash), y0)], fill=rgb(col, alpha), width=width)
 
 
-def make_hud_editor():
+def _hud_v4_petdrag(im, W):
+    gbox = (20, 480, 288, 556)
+    brackets(im, gbox, "", ghost=True)
+    text(im, (154, 518), "old place", font("body", 13), "#8fa6c0", "mm")
+    nx0, ny0 = 330, 290
+    nb = (nx0, ny0, nx0 + 264, ny0 + 72)
+    shadow(im, nb, 10, 200, 6)
+    hud_panel(im, nb, 235)
+    slot(im, nx0 + 6, ny0 + 6, "empty", RAR["Legendary"], I_PET % "Hawk", size=60)
+    text(im, (nx0 + 76, ny0 + 20), "Hawk", font("headb", 16), RAR["Legendary"], "lm")
+    text(im, (nx0 + 254, ny0 + 20), "Lv 42", font("headb", 14), PAL["xp"], "rm")
+    bar(im, (nx0 + 76, ny0 + 40, nx0 + 254, ny0 + 47), 0.35, "xp")
+    text(im, (nx0 + 76, ny0 + 60), "+5% Combat XP", font("body", 13), PAL["green"], "lm")
+    brackets(im, (nb[0] - 4, nb[1] - 4, nb[2] + 4, nb[3] + 4), "Pet card  -  dragging", active=True)
+    dashed(im, ((0, ny0 - 4), (W, ny0 - 4)), A["base"], 230, 6, 4, 2)
+    grad_fill(im, (nb[2] + 14, ny0 - 16, nb[2] + 170, ny0 + 6), A["btnTop"], A["btnBot"], c=3)
+    text(im, (nb[2] + 22, ny0 - 5), "Snap: top of Party", font("bodyb", 13), "#ffffff", "lm", shadow=False)
+
+
+def _hud_v4_compass(im, d):
+    # ---- compass + quest marker (top centre)
+    cb = (720, 34, 1200, 70)
+    hud_panel(im, cb)
+    d = ImageDraw.Draw(im, "RGBA")
+    for i, lab in enumerate(("W", "", "NW", "", "N", "", "NE", "", "E")):
+        x = 744 + i * 54
+        d.line([(x, 60), (x, 66 if lab else 63)], fill=rgb("#8fa6c0"))
+        if lab:
+            text(im, (x, 48), lab, font("headb", 14 if lab == "N" else 13), "#ffffff" if lab == "N" else "#9fb3cc", "mm")
+    put(im, g_diamond(14, PAL["action"]), 1031, 39)
+    text(im, (1038, 82), "240 m", font("headb", 13), PAL["action"], "mm")
+    brackets(im, (716, 30, 1204, 92), "Compass")
+    # ---- zone title
+    text(im, (960, 128), "THE FARMING ISLAND", font("headb", 26), "#ffffff", "mm", track=2)
+    text(im, (960, 156), "Recommended Lv 10-20", font("bodyb", 15), PAL["xp"], "mm")
+    brackets(im, (790, 108, 1130, 170), "Zone title")
+    # ---- skills XP popup
+    sb = (820, 200, 1100, 244)
+    hud_panel(im, sb)
+    paste_icon(im, I_WARP % "Mining", 830, 206, 32)
+    rich(im, 870, 222, [("+120 ", font("headb", 16), PAL["green"]), ("Mining XP", font("bodyb", 15), PAL["row"])])
+    bar(im, (1010, 218, 1090, 226), 0.62, "xp")
+    brackets(im, (816, 196, 1104, 248), "Skill XP popup")
+
+
+def pet_mount_card(im, x0, y0, cap, ic, nm, lv, r, sub, subcol, keycap=None):
+    """v5 bottom cards beside the hotbar (Skyy 11-14: pets left of the hotbar, mount right)."""
+    nb = (x0, y0, x0 + 264, y0 + 72)
+    hud_panel(im, nb, 225)
+    slot(im, x0 + 6, y0 + 6, "empty", RAR[r], I_PET % ic, size=60)
+    text(im, (x0 + 76, y0 + 18), nm, font("headb", 16), RAR[r], "lm")
+    text(im, (x0 + 254, y0 + 18), lv, font("headb", 14), PAL["xp"], "rm")
+    text(im, (x0 + 76, y0 + 38), cap, font("head", 12), PAL["dim"], "lm", track=1.2)
+    text(im, (x0 + 76, y0 + 58), sub, font("body", 13), subcol, "lm")
+    if keycap:
+        button(im, (x0 + 176, y0 + 28, x0 + 256, y0 + 50), "Summon", "primary", fsize=13)
+    return nb
+
+
+def make_hud_editor(v5=True):
+    """v4 = first HUD editor; v5 = Skyy 11-14 review: "the game already has a compass, so if we do anything thewre it has to be below
+    ithe vanilla one" + "try to keep things out of the center of the screen put pets to the left of the hot bar and mount to the right."
+    """
     set_accent("Sky Azure")
     W, H = 1920, 1080
     im = hud_world(W, H)
@@ -2778,46 +2840,43 @@ def make_hud_editor():
         text(im, (272, y + 9), "Lv %d" % (20 + i * 3), font("headb", 13), PAL["xp"], "rm")
         bar(im, (74, y + 22, 272, y + 28), hp, "health")
     brackets(im, (20, py - 4, 288, py + 154), "Party")
-    # ---- pet card: being dragged (ghost = old place, accent outline, snap guide)
-    gbox = (20, 480, 288, 556)
-    brackets(im, gbox, "", ghost=True)
-    text(im, (154, 518), "old place", font("body", 13), "#8fa6c0", "mm")
-    nx0, ny0 = 330, 290
-    nb = (nx0, ny0, nx0 + 264, ny0 + 72)
-    shadow(im, nb, 10, 200, 6)
-    hud_panel(im, nb, 235)
-    slot(im, nx0 + 6, ny0 + 6, "empty", RAR["Legendary"], I_PET % "Hawk", size=60)
-    text(im, (nx0 + 76, ny0 + 20), "Hawk", font("headb", 16), RAR["Legendary"], "lm")
-    text(im, (nx0 + 254, ny0 + 20), "Lv 42", font("headb", 14), PAL["xp"], "rm")
-    bar(im, (nx0 + 76, ny0 + 40, nx0 + 254, ny0 + 47), 0.35, "xp")
-    text(im, (nx0 + 76, ny0 + 60), "+5% Combat XP", font("body", 13), PAL["green"], "lm")
-    brackets(im, (nb[0] - 4, nb[1] - 4, nb[2] + 4, nb[3] + 4), "Pet card  -  dragging", active=True)
-    dashed(im, ((0, ny0 - 4), (W, ny0 - 4)), A["base"], 230, 6, 4, 2)
-    grad_fill(im, (nb[2] + 14, ny0 - 16, nb[2] + 170, ny0 + 6), A["btnTop"], A["btnBot"], c=3)
-    text(im, (nb[2] + 22, ny0 - 5), "Snap: top of Party", font("bodyb", 13), "#ffffff", "lm", shadow=False)
-    # ---- compass + quest marker (top centre)
-    cb = (720, 34, 1200, 70)
-    hud_panel(im, cb)
+    if v5:
+        # ---- Skill XP popup: dragged OFF the centre (ghost = its v4 place under the compass), snapping under the Party list
+        brackets(im, (816, 236, 1104, 288), "", ghost=True)
+        text(im, (960, 262), "old place (centre - moved out)", font("body", 13), "#8fa6c0", "mm")
+        sx0, sy0 = 24, 480
+        sb = (sx0, sy0, sx0 + 280, sy0 + 44)
+        shadow(im, sb, 10, 200, 6)
+        hud_panel(im, sb, 235)
+        paste_icon(im, I_WARP % "Mining", sx0 + 10, sy0 + 6, 32)
+        rich(im, sx0 + 50, sy0 + 22, [("+120 ", font("headb", 16), PAL["green"]), ("Mining XP", font("bodyb", 15), PAL["row"])])
+        bar(im, (sx0 + 190, sy0 + 18, sx0 + 270, sy0 + 26), 0.62, "xp")
+        brackets(im, (sb[0] - 4, sb[1] - 4, sb[2] + 4, sb[3] + 4), "Skill XP popup  -  dragging", active=True)
+        dashed(im, ((0, sy0 - 4), (W, sy0 - 4)), A["base"], 230, 6, 4, 2)
+        grad_fill(im, (sb[2] + 14, sy0 - 16, sb[2] + 190, sy0 + 6), A["btnTop"], A["btnBot"], c=3)
+        text(im, (sb[2] + 22, sy0 - 5), "Snap: under Party", font("bodyb", 13), "#ffffff", "lm", shadow=False)
+        d = ImageDraw.Draw(im, "RGBA")
+        d.line([(816, 262), (sb[2] + 8, sy0 + 22)], fill=rgb(A["hi"], 110), width=1)
+    else:
+        _hud_v4_petdrag(im, W)
     d = ImageDraw.Draw(im, "RGBA")
-    for i, lab in enumerate(("W", "", "NW", "", "N", "", "NE", "", "E")):
-        x = 744 + i * 54
-        d.line([(x, 60), (x, 66 if lab else 63)], fill=rgb("#8fa6c0"))
-        if lab:
-            text(im, (x, 48), lab, font("headb", 14 if lab == "N" else 13), "#ffffff" if lab == "N" else "#9fb3cc", "mm")
-    put(im, g_diamond(14, PAL["action"]), 1031, 39)
-    text(im, (1038, 82), "240 m", font("headb", 13), PAL["action"], "mm")
-    brackets(im, (716, 30, 1204, 92), "Compass")
-    # ---- zone title
-    text(im, (960, 128), "THE FARMING ISLAND", font("headb", 26), "#ffffff", "mm", track=2)
-    text(im, (960, 156), "Recommended Lv 10-20", font("bodyb", 15), PAL["xp"], "mm")
-    brackets(im, (790, 108, 1130, 170), "Zone title")
-    # ---- skills XP popup
-    sb = (820, 200, 1100, 244)
-    hud_panel(im, sb)
-    paste_icon(im, I_WARP % "Mining", 830, 206, 32)
-    rich(im, 870, 222, [("+120 ", font("headb", 16), PAL["green"]), ("Mining XP", font("bodyb", 15), PAL["row"])])
-    bar(im, (1010, 218, 1090, 226), 0.62, "xp")
-    brackets(im, (816, 196, 1104, 248), "Skill XP popup")
+    if v5:
+        # ---- the game's OWN compass stays (ghost); ours only adds a thin quest marker strip BELOW it
+        cb = (720, 4, 1200, 40)
+        d.rectangle(cb, fill=(0, 0, 0, 60))
+        dashed(im, ((cb[0], cb[3]), (cb[2], cb[3])), "#8fa6c0", 120)
+        text(im, (960, 22), "vanilla compass (game's own, not ours)", font("body", 13), "#8fa6c0", "mm")
+        qb = (900, 74, 1020, 98)
+        hud_panel(im, qb)
+        put(im, g_diamond(12, PAL["action"]), 908, 80)
+        text(im, (928, 86), "Quest  240 m", font("headb", 13), PAL["action"], "lm")
+        brackets(im, (896, 70, 1024, 102), "Quest marker (below compass)")
+        # ---- zone title: a slim banner under the compass strip, top edge only (fades after a few seconds)
+        text(im, (960, 140), "THE FARMING ISLAND", font("headb", 22), "#ffffff", "mm", track=2)
+        text(im, (960, 164), "Recommended Lv 10-20", font("bodyb", 14), PAL["xp"], "mm")
+        brackets(im, (800, 122, 1120, 176), "Zone title (top edge, fades)")
+    else:
+        _hud_v4_compass(im, d)
     # ---- minimap + coins / overall level (top-right)
     mb = (1696, 34, 1896, 234)
     panel(im, mb, inset=True, c=6)
@@ -2888,6 +2947,13 @@ def make_hud_editor():
     d.rectangle(hb, fill=(0, 0, 0, 60))
     dashed(im, ((hb[0], hb[1]), (hb[2], hb[1])), "#8fa6c0", 120)
     text(im, (960, 1028), "vanilla hotbar (game's own, not moved)", font("body", 13), "#8fa6c0", "mm")
+    if v5:
+        pb = pet_mount_card(im, hb[0] - 280, 984, "PET  -  follows + fights", "Hawk", "Hawk", "Lv 42", "Legendary",
+                            "+5% Combat XP", PAL["green"])
+        brackets(im, (pb[0] - 4, pb[1] - 4, pb[2] + 4, pb[3] + 4), "Pet (left of hotbar)")
+        mb2 = pet_mount_card(im, hb[2] + 16, 984, "MOUNT", "Horse", "Horse", "Lv 18", "Rare", "+40% ride speed", PAL["mana"],
+                             keycap="Z")
+        brackets(im, (mb2[0] - 4, mb2[1] - 4, mb2[2] + 4, mb2[3] + 4), "Mount (right of hotbar)")
     # ---- full-width XP bar
     bar(im, (8, 1066, 1911, 1073), 0.41, "xp", segs=20)
     brackets(im, (4, 1062, 1915, 1077), "")
@@ -3207,7 +3273,7 @@ def main():
            "inventory-mockup-mining.png": lambda: make_mockup_v3("mining", True),
            "inventory-mockup-chest.png": lambda: make_mockup_v3("chest", True),
            "inventory-mockup-furnace.png": lambda: make_mockup_v3("furnace", True),
-           "upgrade-mockup.png": make_upgrade, "hud-editor-mockup.png": make_hud_editor,
+           "upgrade-mockup.png": make_upgrade, "hud-editor-mockup.png": make_hud_editor, "hud-editor-mockup-v4.png": lambda: make_hud_editor(False),
            "accent-options.png": make_accents}
     only = sys.argv[1:]
     for fn, maker in out.items():

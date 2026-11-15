@@ -114,6 +114,7 @@ Hytale 0.7 server can do it). Ideas and layout only - never Runeteria's art, tex
 - **P5 Crafting tab** pages in the station layout + craft result popup (Gear, Sacks, Cooking).
 - **P6 Other tabs** moved to the theme one by one (Class, Pets, Collections + drops codex, Quests, World, Market, Social, Settings).
 - **P7 HUD** (locked ability slots with level + key, class XP bar, objective + distance under the compass, portrait frame).
+  Skyy 11-14 (HUD v5): never draw over the vanilla compass (only below it, or mod it); keep the screen centre clear; pet card LEFT of the hotbar, mount card RIGHT (with Summon).
 - **P8 First-join class picker** (Runeteria's "Create your character" idea: preview, crests, what you'll do, first ability).
 
 ## 7. Risks

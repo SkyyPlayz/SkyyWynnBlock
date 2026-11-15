@@ -35,6 +35,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - After Skyy plays: skill `skywynn-logs` + the SHARED-EXECUTOR check (SackBeat 'shared scheduler stalls' + 'tick max').
 
 ## NEXT (in order; Gear / Mobs rounds one at a time; launch with Workflow `skywynn-round`, Skyy's own words in quotes)
+0a. PETS round (Skyy 11-14, docs/answered/pets.md): mount slot = ride only (summon -> seats you, hop off -> vanishes; summon button on the HUD mount card / key / Z bar later); combat pets FIGHT from the pet slot; dragons fight in the pet slot, ride from the mount slot. Replaces the 10-10 summon-slot rule. HUD v5: pet card left of the hotbar, mount right, nothing of ours on the vanilla compass (only below it), centre clear.
 0. From 11-08: next Bazaar rebuild MUST move the 18 Enchanted metals from its Mining tab to Smithing (it asserts BAG_OF == EN.cat_of against the pinned Sacks). Trees 0.6.8: DefaultOk on the sickle Replace (Skyy_Tree_HarvR_HE SEVERE, docs/log 11-08). Armory ArmoryCheck one-shot boot check needs the same retry as Skills PACK_MAX. Economy check: Bazaar Enchanted sell price vs 100x base, for compressed shard stock. Gear SX_PACK row for DualRuneBlade (The Armory 1.25.1 removed its Ability 1).
 1. sig3b Gear half: Weapon_Staff_Doomed into ut_vanilla LOOKS, sig.ut defaults (Paperweight -20, Ricochet +25), C+ charge rules, orange
    signature names, gear:fn:elemPower (apply(UUID) -> "Earth:0,Thunder:3,...", Menu 0.3.49 already reads it), GearPool.leanHit full-family fix
