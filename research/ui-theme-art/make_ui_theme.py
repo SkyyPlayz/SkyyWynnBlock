@@ -217,6 +217,37 @@ def px_icon(name):
     elif name == "stick":
         d.line([(3, 13), (12, 3)], fill=wood, width=2)
         d.point([(11, 4)], fill=woodL)
+    elif name.startswith("ingot:"):
+        c = name[6:]
+        d.polygon([(2, 10), (5, 6), (14, 6), (11, 10)], fill=rgb(c))
+        d.polygon([(2, 10), (11, 10), (11, 12), (2, 12)], fill=rgb(mix(c, "#000000", 0.35)))
+        d.line([(5, 7), (12, 7)], fill=rgb(mix(c, "#ffffff", 0.5)))
+    elif name.startswith("ore:"):
+        c = name[4:]
+        d.polygon([(2, 9), (4, 4), (9, 2), (13, 5), (14, 11), (9, 14), (4, 13)], fill=rgb("#6f747c"))
+        d.point([(5, 6), (9, 5), (11, 9), (6, 10), (8, 8)], fill=rgb(c))
+        d.point([(6, 6), (10, 9)], fill=rgb(mix(c, "#ffffff", 0.4)))
+    elif name == "coal":
+        d.polygon([(2, 9), (5, 4), (10, 3), (14, 7), (12, 13), (5, 13)], fill=rgb("#3a3a44"))
+        d.point([(6, 6), (10, 6), (8, 10)], fill=rgb("#9a9aaa"))
+    elif name == "furnace":
+        d.rectangle((1, 2, 14, 14), fill=rgb("#7c818a"))
+        d.line([(1, 6), (14, 6)], fill=rgb("#5c6068"))
+        d.line([(1, 10), (14, 10)], fill=rgb("#5c6068"))
+        d.rectangle((4, 8, 11, 13), fill=rgb("#1a1a1e"))
+        d.rectangle((5, 10, 10, 13), fill=rgb("#ff8a2e"))
+        d.point([(7, 10), (8, 11)], fill=rgb("#ffe27a"))
+    elif name == "pot":
+        d.chord((1, 3, 14, 15), 0, 180, fill=rgb("#4a4f58"))
+        d.rectangle((1, 7, 14, 9), fill=rgb("#4a4f58"))
+        d.ellipse((2, 6, 13, 9), fill=rgb("#c8582e"))
+        d.line([(0, 8), (1, 8)], fill=rgb("#4a4f58"))
+        d.line([(14, 8), (15, 8)], fill=rgb("#4a4f58"))
+        d.point([(5, 3), (9, 2), (11, 4)], fill=rgb("#d6e4ee"))
+    elif name == "hide":
+        d.polygon([(3, 2), (12, 2), (14, 5), (12, 8), (14, 13), (9, 14), (6, 14), (1, 13), (3, 8), (1, 5)], fill=rgb("#b07a46"))
+        d.line([(5, 5), (10, 5)], fill=rgb("#8a5a2b"))
+        d.line([(5, 10), (10, 10)], fill=rgb("#8a5a2b"))
     a = im.getchannel("A").load()
     px = im.load()
     edge = [(x, y) for y in range(16) for x in range(16) if a[x, y] == 0 and any(
@@ -1767,13 +1798,16 @@ BENCH3 = [("Default", "hand + Workbench", I_MENU % "Crafting"), ("Armor bench", 
           ("Arcane bench", "", I_NODE % "Mage_B1R1a"), ("Farming bench", "", I_WARP % "Farming")]
 
 
-def craft_v3(im, X0, X1, Y0, Y1):
+BENCH4_EXTRA = [("Furnace", "", "px:furnace"), ("Cooking", "", "px:pot"), ("Tanning", "", "px:hide")]
+
+
+def craft_v3(im, X0, X1, Y0, Y1, v4=False, sel=0):
     panel(im, (X0, Y0, X1, Y1))
     # icon category / bench tabs (square icon buttons, selected = accent)
     tx = X0 + 12
-    for i, (nm, sub, ic) in enumerate(BENCH3):
+    for i, (nm, sub, ic) in enumerate(BENCH4 if v4 else BENCH3):
         box = (tx, Y0 + 10, tx + 47, Y0 + 57)
-        if i == 0:
+        if i == sel:
             glow(im, box, A["base"], 4, 150, 4, 2)
             grad_fill(im, box, mix(A["base"], "#111b2d", 0.6), mix(A["base"], "#111b2d", 0.8), c=4)
             outline(im, box, A["base"], c=4)
@@ -1783,7 +1817,10 @@ def craft_v3(im, X0, X1, Y0, Y1):
             outline(im, box, "#2b3d5b", c=4)
             paste_icon(im, ic, tx + 8, Y0 + 18, 32, 0.8)
         tx += 52
-    text(im, (tx + 6, Y0 + 34), "+ one tab per bench talisman", font("body", 13), PAL["dim"], "lm")
+    if not v4:
+        text(im, (tx + 6, Y0 + 34), "+ one tab per bench talisman", font("body", 13), PAL["dim"], "lm")
+    if sel != 0:
+        return
     toggle(im, X1 - 176, Y0 + 22, True)
     text(im, (X1 - 124, Y0 + 34), "Craftable only", font("bodyb", 14), PAL["row"], "lm")
     # bench name + search
@@ -1914,7 +1951,86 @@ def pocket_v3(im, X0, X1, Y0, Y1):
     toggle(im, ax0 + 10, Y1 - 46, True, "Auto-compact")
 
 
-def make_mockup_v3(mode="craft"):
+BENCH4 = BENCH3 + BENCH4_EXTRA   # v4: + Furnace / Cooking / Tanning (Skyy 11-14 "yes")
+
+
+def furnace_v4(im, X0, X1, Y0, Y1):
+    """The Furnace tab of inventory crafting in OUR pack's style (SkyySacks furnace: fuel, timed queue, Furnace Charm)."""
+    craft_v3(im, X0, X1, Y0, Y1, True, 6)
+    text(im, (X1 - 14, Y0 + 26), "Furnace Charm T3", font("headb", 15), PAL["xp"], "rm")
+    text(im, (X1 - 14, Y0 + 46), "4x speed  -  queue up to 1,000", font("body", 13), PAL["text"], "rm")
+    hy = Y0 + 82
+    put(im, g_diamond(9, A["base"], A["hi"]), X0 + 14, hy - 4)
+    text(im, (X0 + 30, hy), "FURNACE", font("head", 17), PAL["title"], "lm", track=1.5)
+    text(im, (X0 + 30 + tw("FURNACE", font("head", 17), 1.5) + 10, hy + 1), "ingots first, by tier", font("body", 13), PAL["dim"], "lm")
+    search_box(im, (X1 - 300, hy - 15, X1 - 12, hy + 15), "Search...")
+    taper_line(im, X0 + 12, X1 - 12, hy + 22, PAL["gold"], 150, 0.8)
+    cy0, cy1 = hy + 32, Y1 - 12
+    # --- list of smeltables
+    lx0, lx1 = X0 + 12, X0 + 262
+    panel(im, (lx0, cy0, lx1, cy1), inset=True, c=5)
+    items = [("Copper Ingot", "T1", "#d0803c", "1,792"), ("Iron Ingot", "T2", "#b8c2cc", "1,262"), ("Bronze Ingot", "T3", "#c99a4a", "0"),
+             ("Thorium Ingot", "T4", "#7fc46a", "86"), ("Charcoal", "", "", "640"), ("Glass", "", "", "512")]
+    y = cy0 + 6
+    for i, (nm, t_, c_, have) in enumerate(items):
+        row(im, (lx0 + 6, y, lx1 - 6, y + 34), "selected" if i == 1 else "normal")
+        pic = "px:ingot:" + c_ if c_ else ("px:coal" if nm == "Charcoal" else "px:planks")
+        if nm == "Glass":
+            pic = "px:ingot:#a8e0f0"
+        paste_icon(im, pic, lx0 + 12, y + 1, 32)
+        text(im, (lx0 + 50, y + 17), nm, font("bodyb", 14), PAL["row"] if have != "0" else PAL["dim"], "lm")
+        if t_:
+            text(im, (lx1 - 14, y + 11), t_, font("headb", 13), c_, "rm")
+        text(im, (lx1 - 14, y + 26), have, font("body", 13), PAL["dim"] if have == "0" else PAL["text"], "rm")
+        y += 38
+    # --- selected recipe
+    rx0, rx1 = lx1 + 10, lx1 + 262
+    panel(im, (rx0, cy0, rx1, cy1), inset=True, c=5)
+    slot(im, rx0 + 8, cy0 + 8, "empty", None, "px:ingot:#b8c2cc", size=64)
+    text(im, (rx0 + 82, cy0 + 22), "Iron Ingot", font("headb", 17), "#ffffff", "lm")
+    rich(im, rx0 + 82, cy0 + 44, [("T2 Iron", font("bodyb", 13), "#b8c4d0"), ("   2 s each", font("body", 13), PAL["text"])])
+    paste_icon(im, "px:ore:#d9dee6", rx0 + 10, cy0 + 82, 32)
+    text(im, (rx0 + 48, cy0 + 90), "Iron Ore", font("body", 14), PAL["row"], "lm")
+    text(im, (rx1 - 10, cy0 + 90), "1,262 / 688", font("headb", 14), PAL["green"], "rm")
+    text(im, (rx0 + 48, cy0 + 108), "bag 12 + Void 1,250", font("body", 13), PAL["dim"], "lm")
+    paste_icon(im, "px:coal", rx0 + 10, cy0 + 124, 32)
+    text(im, (rx0 + 48, cy0 + 132), "Fuel: Charcoal", font("body", 14), PAL["row"], "lm")
+    text(im, (rx1 - 10, cy0 + 132), "640 / 86", font("headb", 14), PAL["green"], "rm")
+    text(im, (rx0 + 48, cy0 + 150), "1 per 8 smelts  -  Change", font("body", 13), PAL["dim"], "lm")
+    ay = cy0 + 170
+    bw = (rx1 - rx0 - 20 - 8) // 3
+    for j, lab in enumerate(("1", "x10", "All")):
+        bx = rx0 + 10 + j * (bw + 4)
+        chip_box = (bx, ay, bx + bw, ay + 28)
+        if lab == "All":
+            grad_fill(im, chip_box, mix(A["base"], "#111b2d", 0.62), mix(A["base"], "#111b2d", 0.78), c=4)
+            outline(im, chip_box, A["base"], c=4)
+        else:
+            grad_fill(im, chip_box, "#18253c", "#121c2f", c=4)
+            outline(im, chip_box, "#2b3d5b", c=4)
+        text(im, (bx + bw // 2, ay + 15), lab, font("headb", 14), "#ffffff" if lab == "All" else "#a9bad0", "mm")
+    text(im, (rx1 - 10, ay + 15), "", font("body", 13), PAL["dim"], "rm")
+    button(im, (rx0 + 10, cy1 - 44, rx1 - 10, cy1 - 10), "Smelt 688  (room left)", "primary", fsize=15)
+    # --- queue
+    qx0, qx1 = rx1 + 10, X1 - 12
+    panel(im, (qx0, cy0, qx1, cy1), inset=True, c=5)
+    text(im, (qx0 + 10, cy0 + 16), "QUEUE", font("head", 13), PAL["dim"], "lm", track=1.5)
+    text(im, (qx1 - 10, cy0 + 16), "312 / 1,000", font("headb", 13), PAL["text"], "rm")
+    qs = [("Iron Ingot", "#b8c2cc", 22, 64, "0:44"), ("Copper Ingot", "#d0803c", 128, 128, "done"), ("Thorium Ingot", "#7fc46a", 0, 120, "next")]
+    y = cy0 + 32
+    for nm, c_, dn, tot, t_ in qs:
+        paste_icon(im, "px:ingot:" + c_, qx0 + 8, y, 32)
+        text(im, (qx0 + 46, y + 9), "%s x%d" % (nm, tot), font("bodyb", 13), PAL["row"], "lm")
+        fin = dn >= tot
+        text(im, (qx1 - 10, y + 9), "%d / %d" % (dn, tot) if not fin else "Ready", font("headb", 13),
+             PAL["green"] if fin else PAL["text"], "rm")
+        bar(im, (qx0 + 46, y + 22, qx1 - 10, y + 28), dn / tot, "green" if fin else "accent")
+        text(im, (qx0 + 46, y + 40), t_ if t_ != "done" else "Collect", font("body", 13), PAL["green"] if fin else PAL["dim"], "lm")
+        y += 54
+    button(im, (qx0 + 8, cy1 - 44, qx1 - 8, cy1 - 10), "Collect all", "green", fsize=15)
+
+
+def make_mockup_v3(mode="craft", v4=False):
     set_accent("Sky Azure")
     W, H = 1920, 1080
     im = bg_world(W, H, 205)
@@ -1925,7 +2041,7 @@ def make_mockup_v3(mode="craft"):
     hline(im, WX0 + 6, WX1 - 6, TB1, PAL["lineHi"])
     taper_line(im, WX0 + 20, WX1 - 20, TB1 + 1, PAL["gold"], 120, 0.8)
     tx = WX0 + 16
-    for i, (nm, ic) in enumerate(TABS):
+    for i, (nm, ic) in enumerate(TABS_V4 if v4 else TABS):
         stacked_tab(im, (tx, TB0 + 2, tx + 69, TB1 - 1), nm, ic, i == 0)
         tx += 72
     rx = WX1 - 18
@@ -1952,9 +2068,15 @@ def make_mockup_v3(mode="craft"):
     RX0, RX1 = CX1 + 16, WX1 - 16
 
     # ================= LEFT: character (off-hand column right of the preview)
-    panel(im, (LX0, CY0, LX1, CY1), "Character")
-    text(im, (LX1 - 14, CY0 + 18), "Islander", font("bodyb", 15), PAL["text"], "rm")
-    ey = CY0 + 42
+    if v4:
+        # v4: the header row = Requip preset buttons (one per armor-set family; click = swap to that loadout)
+        panel(im, (LX0, CY0, LX1, CY1))
+        requip_row(im, LX0 + 14, CY0 + 8, LX1 - 14, "Foraging")
+        ey = CY0 + 62
+    else:
+        panel(im, (LX0, CY0, LX1, CY1), "Character")
+        text(im, (LX1 - 14, CY0 + 18), "Islander", font("bodyb", 15), PAL["text"], "rm")
+        ey = CY0 + 42
     pitch = 92
     lx = LX0 + 14
     for i, (nm, ic, r) in enumerate([("Head", I_ARM % "Foraging_Maple_Head", "Rare"), ("Chest", I_ARM % "Foraging_Maple_Chest", "Rare"),
@@ -2057,7 +2179,10 @@ def make_mockup_v3(mode="craft"):
     # ================= CENTRE
     TOP1 = 490
     if mode == "craft":
-        craft_v3(im, CX0, CX1, CY0, TOP1)
+        craft_v3(im, CX0, CX1, CY0, TOP1, v4)
+        tabs, sel = POCKETS, 0
+    elif mode == "furnace":
+        furnace_v4(im, CX0, CX1, CY0, TOP1)
         tabs, sel = POCKETS, 0
     elif mode == "mining":
         pocket_v3(im, CX0, CX1, CY0, TOP1)
@@ -2072,13 +2197,14 @@ def make_mockup_v3(mode="craft"):
     hy = IY0 + 20
     put(im, g_diamond(9, A["base"], A["hi"]), gx, hy - 4)
     text(im, (gx + 16, hy), "INVENTORY", font("head", 15), PAL["title"], "lm", track=1.5)
-    up = {"craft": None, "mining": "pocket", "chest": "chest"}[mode]
+    cmode = "craft" if mode == "furnace" else mode
+    up = {"craft": None, "mining": "pocket", "chest": "chest"}[cmode]
     btns = [(g_sort(18, "#c2d1e2"), "Sort"), (g_arrows(18, "#c2d1e2", True, False, True), "Quick-stack"),
             (g_arrows(18, "#c2d1e2", True, True), "Put all"), (g_void(20), "Stash to Void")]
-    hov = {"craft": "Stash to Void", "mining": "Quick-stack", "chest": None}[mode]
+    hov = {"craft": "Stash to Void", "mining": "Quick-stack", "chest": None}[cmode] if mode != "furnace" else None
     lxh = header_icons(im, gx + 9 * P - 2, hy, btns, hover=hov)
     hint = {"craft": "up arrows go to the Void (no chest open)", "mining": "up arrows go to the Mining pocket",
-            "chest": "up arrows go to the chest"}[mode]
+            "chest": "up arrows go to the chest"}[cmode]
     text(im, (lxh - 8, hy), hint, font("body", 13), PAL["dim"], "rm")
     gy = IY0 + 40
     inv = {0: (I_ENCH % "iron-ingot", 12, None), 1: (I_ENCH % "copper-ingot", 23, None), 2: (I_ENCH % "oak-log", 41, None),
@@ -2210,6 +2336,577 @@ def make_mockup_v3(mode="craft"):
         w = key_cap(im, x, hy2 - 11, k)
         text(im, (x + w + 6, hy2), v, fh, "#aebfd3", "lm")
         x += w + 6 + tw(v, fh) + 26
+    return im
+
+
+# ----------------------------------------------------------------------------------------------------------------- v4: requip + upgrade
+# v4 (Skyy 2026-11-14, docs/answered/ui.md newest line): Character header -> Requip presets; top-row Crafting tab -> Upgrade tab
+# (Smithing + Anvil + Upgrade in one page).
+TABS_V4 = [t if t[0] != "Crafting" else ("Upgrade", I_HUB % "smithing_upgrade") for t in TABS]
+FAMILIES = [("Combat", I_WARP % "Combat"), ("Mining", I_WARP % "Mining"), ("Farming", I_WARP % "Farming"),
+            ("Foraging", I_WARP % "Foraging"), ("Fishing", I_WARP % "Fishing")]
+
+
+def requip_row(im, x0, y0, x1, active):
+    """Requip preset buttons: icon over name, active one in the accent, a small save / edit button at the end."""
+    ew = 30
+    n = len(FAMILIES)
+    w = (x1 - x0 - ew - 6 - (n - 1) * 4) // n
+    for i, (nm, ic) in enumerate(FAMILIES):
+        bx = x0 + i * (w + 4)
+        box = (bx, y0, bx + w - 1, y0 + 45)
+        if nm == active:
+            glow(im, box, A["base"], 4, 140, 4, 2)
+            grad_fill(im, box, mix(A["base"], "#111b2d", 0.6), mix(A["base"], "#111b2d", 0.8), c=4)
+            outline(im, box, A["base"], c=4)
+            col, alpha = "#ffffff", 1.0
+        else:
+            grad_fill(im, box, "#18253c", "#121c2f", c=4)
+            outline(im, box, "#2b3d5b", c=4)
+            col, alpha = "#a9bad0", 0.8
+        paste_icon(im, ic, bx + w // 2 - 11, y0 + 3, 22, alpha)
+        text(im, (bx + w // 2, y0 + 35), nm, font("headc", 14), col, "mm")
+    button(im, (x1 - ew + 1, y0 + 7, x1, y0 + 38), "", "secondary", glyph=g_pencil(14, "#c2d1e2"))
+
+
+def px_armor(name, metal="#b8c2cc", dark="#6c7888"):
+    im = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    m, k, hi = rgb(metal), rgb(dark), rgb("#eef3f8")
+    if name == "head":
+        d.chord((2, 2, 13, 14), 180, 360, fill=m)
+        d.rectangle((2, 8, 13, 11), fill=m)
+        d.rectangle((5, 8, 10, 9), fill=k)
+        d.rectangle((3, 12, 5, 13), fill=k)
+        d.rectangle((10, 12, 12, 13), fill=k)
+        d.ellipse((10, 0, 13, 4), fill=rgb("#ffd76a"))
+        d.line([(4, 4), (7, 3)], fill=hi)
+    elif name == "chest":
+        d.polygon([(2, 3), (5, 2), (10, 2), (13, 3), (14, 7), (12, 8), (12, 14), (3, 14), (3, 8), (1, 7)], fill=m)
+        d.line([(7, 3), (7, 13)], fill=k)
+        d.line([(4, 9), (11, 9)], fill=k)
+        d.line([(3, 4), (5, 3)], fill=hi)
+    elif name == "hands":
+        d.rectangle((2, 5, 6, 13), fill=m)
+        d.rectangle((9, 5, 13, 13), fill=m)
+        d.rectangle((2, 5, 6, 7), fill=k)
+        d.rectangle((9, 5, 13, 7), fill=k)
+        d.point([(3, 9), (10, 9)], fill=hi)
+    elif name == "legs":
+        d.rectangle((3, 2, 12, 5), fill=k)
+        d.rectangle((3, 5, 7, 14), fill=m)
+        d.rectangle((8, 5, 12, 14), fill=m)
+        d.point([(4, 7), (9, 7)], fill=hi)
+    a = im.getchannel("A").load()
+    px = im.load()
+    edge = [(x, y) for y in range(16) for x in range(16) if a[x, y] == 0 and any(
+        0 <= x + dx < 16 and 0 <= y + dy < 16 and a[x + dx, y + dy] > 0 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+    for x, y in edge:
+        px[x, y] = (8, 10, 16, 255)
+    return im
+
+
+def put_px(im, pic, x, y, size=64):
+    g = pic.resize((size, size), Image.NEAREST)
+    im.paste(g, (x, y), g)
+
+
+def pips(im, x, y, have, total, w=8, gap=3):
+    d = ImageDraw.Draw(im, "RGBA")
+    for i in range(total):
+        bx = x + i * (w + gap)
+        d.rectangle((bx, y, bx + w - 1, y + 9), fill=rgb(A["base"] if i < have else "#1a2638"),
+                    outline=rgb(A["hi"] if i < have else "#2b3d5b"))
+
+
+def item_tip(im, x, y, w, title, tcol, header, stats, extra, foot):
+    """Sectioned item tooltip (Style Guide 15): name, header block, STATS, extra lines, dim / action footer."""
+    h = 40 + 21 * len(header) + 16 + 21 + 21 * len(stats) + 16 + 21 + 21 * len(extra) + 14 + 21 * len(foot) + 8
+    x1, y1 = x + w - 1, y + h - 1
+    shadow(im, (x, y, x1, y1), 10, 210, 4)
+    grad_fill(im, (x, y, x1, y1), "#0e1729", "#0a111e", c=6)
+    outline(im, (x, y, x1, y1), PAL["edge"], c=6)
+    outline(im, (x + 1, y + 1, x1 - 1, y1 - 1), mix(tcol, "#0c1422", 0.35), c=5)
+    d = ImageDraw.Draw(im, "RGBA")
+    for i in range(10):
+        d.line([(x + 6, y + 2 + i), (x1 - 6, y + 2 + i)], fill=rgb(tcol, int(40 * (1 - i / 10))))
+    put(im, g_diamond(11, tcol), x + 6, y + 6)
+    put(im, g_diamond(11, tcol), x1 - 16, y + 6)
+    cy = y + 24
+    text(im, (x + w // 2, cy), title, font("headb", 19), tcol, "mm")
+    cy += 26
+    for k, v, c in header:
+        text(im, (x + 16, cy), k, font("body", 14), PAL["dim"], "lm")
+        text(im, (x + 120, cy), v, font("bodyb", 14), c, "lm")
+        cy += 21
+    taper_line(im, x + 12, x1 - 12, cy, PAL["gold"], 170, 0.6)
+    cy += 14
+    text(im, (x + 16, cy), "STATS", font("head", 13), PAL["dim"], "lm", track=1.5)
+    cy += 21
+    for v, nm, good in stats:
+        text(im, (x + 16, cy), v, font("bold", 14), PAL["green"] if good else PAL["red"], "lm")
+        text(im, (x + 66, cy), nm, font("body", 14), PAL["row"], "lm")
+        cy += 21
+    taper_line(im, x + 12, x1 - 12, cy, PAL["gold"], 170, 0.6)
+    cy += 14
+    text(im, (x + 16, cy), "REFORGE & SIGIL", font("head", 13), PAL["dim"], "lm", track=1.5)
+    cy += 21
+    for parts in extra:
+        rich(im, x + 16, cy, parts)
+        cy += 21
+    cy += 2
+    for s_, c in foot:
+        text(im, (x + 16, cy), s_, font("bodyb", 13) if c == PAL["action"] else font("body", 13), c, "lm")
+        cy += 21
+    return h
+
+
+def window_v4(sel_name):
+    set_accent("Sky Azure")
+    W, H = 1920, 1080
+    im = bg_world(W, H, 205)
+    WX0, WY0, WX1, WY1 = 138, 12, 1781, 1067
+    window_frame(im, (WX0, WY0, WX1, WY1))
+    TB0, TB1 = WY0 + 8, WY0 + 62
+    grad_fill(im, (WX0 + 5, TB0, WX1 - 5, TB1), "#0a111e", "#0c1525", c=4)
+    hline(im, WX0 + 6, WX1 - 6, TB1, PAL["lineHi"])
+    taper_line(im, WX0 + 20, WX1 - 20, TB1 + 1, PAL["gold"], 120, 0.8)
+    tx = WX0 + 16
+    for nm, ic in TABS_V4:
+        stacked_tab(im, (tx, TB0 + 2, tx + 69, TB1 - 1), nm, ic, nm == sel_name)
+        tx += 72
+    rx = WX1 - 18
+    button(im, (rx - 40, TB0 + 9, rx, TB0 + 49), "", "secondary", glyph=g_x(18, "#d6e4ee"))
+    rx -= 48
+    button(im, (rx - 40, TB0 + 9, rx, TB0 + 49), "", "secondary", glyph=g_envelope(20, "#c2d1e2"))
+    put(im, ss_glyph(18, 18, lambda d, s: d.ellipse((0, 0, 18 * s - 1, 18 * s - 1), fill=rgb(PAL["red"]))), rx - 12, TB0 + 3)
+    text(im, (rx - 3, TB0 + 12), "2", font("headb", 13), "#ffffff", "mm", shadow=False)
+    rx -= 50
+    fv, fk = font("headb", 16), font("head", 13)
+    panel(im, (rx - 104, TB0 + 9, rx, TB0 + 49), inset=True, c=4)
+    paste_icon(im, I_HUB % "storage_bank", rx - 98, TB0 + 17, 24)
+    text(im, (rx - 68, TB0 + 21), "BANK", fk, PAL["dim"], "lm", track=1)
+    text(im, (rx - 68, TB0 + 38), "3.2M", fv, "#e9eef7", "lm")
+    rx -= 112
+    panel(im, (rx - 128, TB0 + 9, rx, TB0 + 49), inset=True, c=4)
+    put(im, g_coin(22), rx - 120, TB0 + 18)
+    text(im, (rx - 90, TB0 + 21), "COINS", fk, PAL["dim"], "lm", track=1)
+    text(im, (rx - 90, TB0 + 38), "1,245,210", fv, "#ffd76a", "lm")
+    return im, (WX0, WY0, WX1, WY1)
+
+
+def req_row(im, x0, x1, y, name, have, need, unit=""):
+    ok = have >= need
+    put(im, g_check(14, PAL["green"]) if ok else g_x(14, PAL["red"], 2.2), x0, y - 7)
+    text(im, (x0 + 22, y), name, font("body", 14), PAL["row"], "lm")
+    text(im, (x1, y), "%s / %s%s" % (format(have, ","), format(need, ","), unit), font("headb", 14),
+         PAL["green"] if ok else PAL["red"], "rm")
+
+
+def make_upgrade():
+    im, (WX0, WY0, WX1, WY1) = window_v4("Upgrade")
+    X0, X1 = WX0 + 16, WX1 - 16
+    CY0, CY1 = 86, 1020
+    # ---- family buttons (small icon buttons) + title
+    fx = X0
+    for nm, ic in FAMILIES:
+        box = (fx, CY0, fx + 47, CY0 + 47)
+        if nm == "Mining":
+            glow(im, box, A["base"], 4, 150, 4, 2)
+            grad_fill(im, box, mix(A["base"], "#111b2d", 0.6), mix(A["base"], "#111b2d", 0.8), c=4)
+            outline(im, box, A["base"], c=4)
+            paste_icon(im, ic, fx + 6, CY0 + 6, 36)
+        else:
+            grad_fill(im, box, "#18253c", "#121c2f", c=4)
+            outline(im, box, "#2b3d5b", c=4)
+            paste_icon(im, ic, fx + 8, CY0 + 8, 32, 0.8, grey=True)
+        fx += 52
+    text(im, (fx + 14, CY0 + 16), "MINING", font("headb", 22), PAL["title"], "lm", track=2)
+    text(im, (fx + 14, CY0 + 38), "Your mining tool and the mining armor you wear. Hover an item for its stats.", font("body", 14),
+         PAL["dim"], "lm")
+    taper_line(im, X0, X1, CY0 + 58, PAL["gold"], 160, 0.85)
+    PY0 = CY0 + 70
+
+    # ================= TOOL card
+    TX0, TX1 = X0, X0 + 600
+    panel(im, (TX0, PY0, TX1, CY1), "Tool")
+    text(im, (TX1 - 14, PY0 + 18), "Lifelong - grows with you", font("body", 13), PAL["dim"], "rm")
+    tx, ty = TX0 + 14, PY0 + 40
+    slot(im, tx, ty, "empty", None, "px:pickaxe")
+    text(im, (tx + 88, ty + 14), "Copper Pickaxe", font("headb", 20), "#ffffff", "lm")
+    rich(im, tx + 88, ty + 38, [("T1 Copper", font("bodyb", 14), "#e08a4a"), ("   Tool", font("body", 14), PAL["text"])])
+    level_pill(im, tx + 88, ty + 50, "Lv 14")
+    bar(im, (tx + 152, ty + 58, TX1 - 14, ty + 66), 0.58, "xp")
+    text(im, (TX1 - 14, ty + 46), "580 / 1,000 XP", font("bodyb", 13), PAL["xp"], "rs")
+    # points
+    uy = ty + 96
+    panel(im, (tx, uy, TX1 - 14, uy + 232), inset=True, c=5)
+    text(im, (tx + 12, uy + 20), "UPGRADE POINTS", font("head", 14), PAL["text"], "lm", track=1.5)
+    rich(im, tx + 170, uy + 20, [("2", font("headb", 17), A["hi"]), (" free", font("body", 14), PAL["text"])])
+    button(im, (TX1 - 26 - 120, uy + 6, TX1 - 26, uy + 34), "Reset points", "secondary", fsize=14)
+    rows = [("Breaking Speed", 3, 10, "+15% speed"), ("Fortune", 2, 10, "+10 Mining Fortune"), ("Wisdom", 0, 5, "+0% Mining XP")]
+    ry = uy + 54
+    for nm, have, tot, eff in rows:
+        row(im, (tx + 8, ry, TX1 - 22, ry + 52), "normal")
+        text(im, (tx + 20, ry + 16), nm, font("bodyb", 16), PAL["row"], "lm")
+        text(im, (tx + 20, ry + 37), eff, font("body", 13), PAL["green"] if have else PAL["dim"], "lm")
+        pips(im, tx + 190, ry + 11, have, tot)
+        text(im, (tx + 190, ry + 37), "Lv %d / %d" % (have, tot), font("headb", 13), PAL["text"], "lm")
+        button(im, (TX1 - 22 - 112, ry + 9, TX1 - 32, ry + 43), "+1  (1 PT)", "primary" if have < tot else "secondary", fsize=14)
+        ry += 58
+    # tool stats
+    sy0 = uy + 248
+    panel(im, (tx, sy0, TX1 - 14, sy0 + 150), inset=True, c=5)
+    text(im, (tx + 12, sy0 + 20), "TOOL STATS", font("head", 14), PAL["text"], "lm", track=1.5)
+    for j, (k_, v_, c_) in enumerate((("Breaking power", "T1 Copper", "#e08a4a"), ("Mining Speed", "+15%", PAL["green"]),
+                                      ("Mining Fortune", "+10", PAL["green"]), ("Durability", "Never breaks (lifelong)", PAL["row"]))):
+        text(im, (tx + 14, sy0 + 50 + j * 26), k_, font("body", 14), PAL["row"], "lm")
+        text(im, (TX1 - 30, sy0 + 50 + j * 26), v_, font("headb", 14), c_, "rm")
+    # next tier
+    ny = sy0 + 166
+    panel(im, (tx, ny, TX1 - 14, CY1 - 14), inset=True, c=5)
+    text(im, (tx + 12, ny + 20), "NEXT TIER", font("head", 14), PAL["text"], "lm", track=1.5)
+    put_px(im, px_icon("pickaxe"), tx + 128, ny + 6, 32)
+    rich(im, tx + 166, ny + 20, [("Iron Pickaxe", font("headb", 16), "#ffffff"), ("   T2 Iron", font("bodyb", 14), "#b8c4d0")])
+    rq = [("Mining level 8", 31, 8), ("Copper Ingot collection II", 365, 100), ("Iron Ingot", 40, 75), ("Stick", 20, 20)]
+    yy = ny + 52
+    for nm, h_, n_ in rq:
+        req_row(im, tx + 14, TX1 - 30, yy, nm, h_, n_)
+        yy += 26
+    text(im, (tx + 14, yy + 2), "Keeps its level, points and upgrades.", font("body", 13), PAL["dim"], "lm")
+    button(im, (tx + 12, CY1 - 62, TX1 - 26, CY1 - 26), "TIER UP  -  missing 35 Iron Ingot", "primary", "disabled")
+
+    # ================= ARMOR
+    AX0, AX1 = TX1 + 16, X1
+    panel(im, (AX0, PY0, AX1, CY1), "Armor you wear", link="Requip")
+    pieces = [("head", "Iron Mining Helmet", "Rare", "Head"), ("chest", "Iron Mining Chestplate", "Rare", "Chest"),
+              ("hands", "Iron Mining Gauntlets", "Unique", "Hands"), ("legs", "Iron Mining Greaves", "Normal", "Legs")]
+    ay = PY0 + 42
+    rh = 140
+    for i, (k, nm, r, slotname) in enumerate(pieces):
+        y = ay + i * (rh + 8)
+        row(im, (AX0 + 14, y, AX1 - 14, y + rh), "hover" if i == 1 else "normal")
+        slot(im, AX0 + 26, y + 33, "hover" if i == 1 else "empty", RAR[r])
+        put_px(im, px_armor(k), AX0 + 26 + 5, y + 33 + 5, 64)
+        y += 6
+        text(im, (AX0 + 116, y + 26), nm, font("headb", 18), RAR[r] if r != "Normal" else "#ffffff", "lm")
+        rich(im, AX0 + 116, y + 50, [(slotname, font("body", 14), PAL["dim"]), ("   T2 Iron", font("bodyb", 14), "#b8c4d0"),
+                                      ("   Mining Lv 8-15", font("bodyb", 14), PAL["xp"]), ("   " + r, font("bodyb", 14), RAR[r])])
+        # one-line cost to the next tier (have / need)
+        okb = i != 3
+        st_ = [("+9", " Defense"), ("+5%", " Mining Speed"), ("+4", " Mining Fortune")] if i != 1 else             [("+14", " Defense"), ("+8%", " Mining Speed"), ("+6", " Mining Fortune")]
+        parts = []
+        for v_, n_ in st_:
+            parts += [(v_, font("bold", 14), PAL["green"]), (n_ + "    ", font("body", 14), PAL["row"])]
+        rich(im, AX0 + 116, y + 76, parts)
+        rich(im, AX0 + 116, y + 104, [("Next: T3 Bronze   ", font("body", 14), PAL["text"]),
+                                      ("Mining 15 ", font("bodyb", 14), PAL["green"]), ("(you 31)   ", font("body", 13), PAL["dim"]),
+                                      ("Bronze Ingot ", font("body", 14), PAL["row"]),
+                                      ("%d / 60" % (60 if okb else 18), font("headb", 14), PAL["green"] if okb else PAL["red"])])
+        bx = AX1 - 26
+        y += 6
+        button(im, (bx - 150, y + 8, bx, y + 40), "Upgrade", "primary", "normal" if okb else "disabled", fsize=15)
+        button(im, (bx - 150, y + 44, bx, y + 74), "Reforge", "secondary", fsize=14, glyph=g_anvil(16, "#c2d1e2"))
+        button(im, (bx - 150, y + 78, bx, y + 108), "Apply Sigil", "secondary", fsize=14, glyph=g_sigil(16))
+    # set bonus + full set
+    sy = ay + 4 * (rh + 8) + 6
+    panel(im, (AX0 + 14, sy, AX1 - 14, sy + 74), inset=True, c=5)
+    put(im, g_check(14, PAL["green"]), AX1 - 50, sy + 13)
+    text(im, (AX0 + 28, sy + 20), "SET BONUS", font("head", 14), PAL["text"], "lm", track=1.5)
+    rich(im, AX0 + 150, sy + 20, [("Full set (4 / 4):  ", font("bodyb", 15), PAL["xp"]), ("Mining Fortune ", font("body", 15), PAL["row"]),
+                                   ("+22.5", font("bold", 15), PAL["green"]), ("   Mining Speed ", font("body", 15), PAL["row"]),
+                                   ("+10%", font("bold", 15), PAL["green"])])
+    text(im, (AX0 + 28, sy + 50), "Keeps rarity, reforge and sigil when a piece tiers up.", font("body", 13), PAL["dim"], "lm")
+    fy = sy + 86
+    panel(im, (AX0 + 14, fy, AX1 - 14, CY1 - 14), inset=True, c=5)
+    text(im, (AX0 + 28, fy + 22), "UPGRADE FULL SET TO T3 BRONZE", font("head", 15), PAL["title"], "lm", track=1.2)
+    rich(im, AX0 + 28, fy + 50, [("Total: ", font("body", 14), PAL["dim"]), ("Bronze Ingot ", font("body", 14), PAL["row"]),
+                                  ("198 / 240", font("headb", 14), PAL["red"]), ("    Coins ", font("body", 14), PAL["row"]),
+                                  ("12,000 / 12,000", font("headb", 14), PAL["green"]), ("    Mining 15 ", font("body", 14), PAL["row"]),
+                                  ("(you 31)", font("headb", 14), PAL["green"])])
+    text(im, (AX0 + 28, fy + 76), "Missing 42 Bronze Ingot - or upgrade the pieces one by one.", font("bodyb", 13), PAL["red"], "lm")
+    button(im, (AX1 - 30 - 260, fy + 14, AX1 - 30, fy + 56), "UPGRADE FULL SET", "primary", "disabled")
+    # hover tooltip on the chestplate
+    tip_x, tip_y = AX1 - 26 - 150 - 14 - 330, ay + (rh + 8) + 40
+    item_tip(im, tip_x, tip_y, 330, "Iron Mining Chestplate", RAR["Rare"],
+             [("Slot", "Chest", PAL["row"]), ("Tier", "T2 Iron", "#b8c4d0"), ("Set", "Mining armor", PAL["row"]),
+              ("Rarity", "Rare", RAR["Rare"]), ("Level", "Mining Lv 8-15", PAL["xp"])],
+             [("+14", "Defense", True), ("+8%", "Mining Speed", True), ("+6", "Mining Fortune", True), ("-2%", "Walk Speed", False)],
+             [[("Reforge: ", font("body", 14), PAL["dim"]), ("Sturdy", font("bodyb", 14), PAL["row"]),
+               ("  +2 Defense", font("bold", 14), PAL["green"])],
+              [("Sigil: ", font("body", 14), PAL["dim"]), ("empty - Apply Sigil to add one", font("body", 14), PAL["dim"])]],
+             [("Click: select   Shift-click: upgrade", PAL["action"])])
+    # key hints
+    hy2 = 1044
+    hints = [("LMB", "Select"), ("Hover", "Stats"), ("Shift+LMB", "Upgrade all you can"), ("Tab / Esc", "Close")]
+    fh = font("body", 15)
+    total = sum(max(22, tw(k, font("headb", 14)) + 10) + 6 + tw(v, fh) + 26 for k, v in hints)
+    x = (1920 - total) // 2
+    for k, v in hints:
+        w = key_cap(im, x, hy2 - 11, k)
+        text(im, (x + w + 6, hy2), v, fh, "#aebfd3", "lm")
+        x += w + 6 + tw(v, fh) + 26
+    return im
+
+
+def g_anvil(size, col):
+    def f(d, s):
+        n = size * s
+        d.polygon([(n * 0.05, n * 0.3), (n * 0.95, n * 0.3), (n * 0.8, n * 0.5), (n * 0.62, n * 0.5), (n * 0.62, n * 0.7),
+                   (n * 0.8, n * 0.9), (n * 0.2, n * 0.9), (n * 0.38, n * 0.7), (n * 0.38, n * 0.5), (n * 0.25, n * 0.5)], fill=rgb(col))
+    return ss_glyph(size, size, f)
+
+
+def g_sigil(size):
+    def f(d, s):
+        n = size * s
+        import math
+        pts = []
+        for i in range(10):
+            r = n * (0.48 if i % 2 == 0 else 0.2)
+            a = -math.pi / 2 + i * math.pi / 5
+            pts.append((n / 2 + r * math.cos(a), n / 2 + r * math.sin(a)))
+        d.polygon(pts, fill=rgb("#c9a8ff"))
+        d.ellipse((n * 0.4, n * 0.4, n * 0.6, n * 0.6), fill=rgb("#ffffff"))
+    return ss_glyph(size, size, f)
+
+
+# ----------------------------------------------------------------------------------------------------------------- v4: HUD editor
+# Skyy 2026-11-14: "and lets try to make our hud editor look and work like theirs." (Runeteria's layout editor: ideas only)
+I_ABI = "art/ability-icons/Common/Icons/Abilities/Archer/%s.png"
+
+
+def hud_world(W, H):
+    """A simple dark painted placeholder world (no screenshot pixels)."""
+    im = Image.new("RGB", (W, H))
+    g = Image.linear_gradient("L").resize((W, H))
+    im.paste(Image.composite(Image.new("RGB", (W, H), rgb("#2c3f2a")[:3]), Image.new("RGB", (W, H), rgb("#5d86b8")[:3]), g))
+    d = ImageDraw.Draw(im, "RGBA")
+    d.polygon([(0, 640), (260, 560), (520, 610), (820, 520), (1120, 600), (1420, 540), (1700, 590), (1920, 560), (1920, 1080),
+               (0, 1080)], fill=(52, 84, 56, 255))
+    d.polygon([(0, 760), (400, 700), (900, 760), (1400, 690), (1920, 740), (1920, 1080), (0, 1080)], fill=(70, 104, 62, 255))
+    for cx, cy, r in ((300, 220, 120), (1300, 170, 160), (900, 300, 90)):
+        d.ellipse((cx - r, cy - r // 4, cx + r, cy + r // 4), fill=(255, 255, 255, 50))
+    for x in (380, 520, 1460, 1580):
+        d.rectangle((x - 6, 640, x + 6, 720), fill=(70, 50, 34, 255))
+        d.ellipse((x - 46, 560, x + 46, 660), fill=(40, 90, 50, 255))
+    d.rectangle((0, 0, W, H), fill=(4, 7, 13, 120))
+    for x in range(0, W, 40):
+        for y in range(0, H, 40):
+            d.point((x, y), fill=(140, 170, 210, 70))
+    return im
+
+
+def brackets(im, box, label, active=False, ghost=False):
+    x0, y0, x1, y1 = box
+    d = ImageDraw.Draw(im, "RGBA")
+    col = rgb(A["base"]) if active else (rgb("#8fa6c0", 120) if ghost else rgb("#9fb3cc", 200))
+    if active:
+        glow(im, box, A["base"], 5, 150, 0, 2)
+        d.rectangle(box, outline=rgb(A["base"], 220))
+    if ghost:
+        for x in range(x0, x1, 8):
+            d.line([(x, y0), (x + 4, y0)], fill=col)
+            d.line([(x, y1), (x + 4, y1)], fill=col)
+        for y in range(y0, y1, 8):
+            d.line([(x0, y), (x0, y + 4)], fill=col)
+            d.line([(x1, y), (x1, y + 4)], fill=col)
+    L = 12
+    for cx, cy, sx, sy in ((x0, y0, 1, 1), (x1, y0, -1, 1), (x0, y1, 1, -1), (x1, y1, -1, -1)):
+        d.line([(cx, cy), (cx + sx * L, cy)], fill=col, width=2)
+        d.line([(cx, cy), (cx, cy + sy * L)], fill=col, width=2)
+    if label:
+        f = font("headb", 13)
+        w = tw(label, f) + 12
+        lx, ly = x0, y0 - 20
+        grad_fill(im, (lx, ly, lx + w, ly + 17), A["btnBot"] if active else "#16233a", A["btnBot"] if active else "#101a2c", c=3)
+        outline(im, (lx, ly, lx + w, ly + 17), A["base"] if active else "#34496b", c=3)
+        text(im, (lx + 6, ly + 9), label, f, "#ffffff" if active else "#c2d1e2", "lm", shadow=False)
+
+
+def hud_panel(im, box, alpha=210):
+    x0, y0, x1, y1 = box
+    grad_fill(im, box, "#121d30", "#0c1422", c=5, alpha=alpha)
+    outline(im, box, "#2a3c58", c=5)
+    hline(im, x0 + 5, x1 - 5, y0 + 1, "#ffffff", 16)
+
+
+def dashed(im, pts, col, alpha=170, dash=10, gap=6, width=1):
+    d = ImageDraw.Draw(im, "RGBA")
+    (x0, y0), (x1, y1) = pts
+    if x0 == x1:
+        for y in range(y0, y1, dash + gap):
+            d.line([(x0, y), (x0, min(y1, y + dash))], fill=rgb(col, alpha), width=width)
+    else:
+        for x in range(x0, x1, dash + gap):
+            d.line([(x, y0), (min(x1, x + dash), y0)], fill=rgb(col, alpha), width=width)
+
+
+def make_hud_editor():
+    set_accent("Sky Azure")
+    W, H = 1920, 1080
+    im = hud_world(W, H)
+    # centre guides
+    dashed(im, ((960, 0), (960, H)), A["hi"], 120)
+    dashed(im, ((0, 540), (W, 540)), A["hi"], 120)
+
+    # ---- player frame (top-left)
+    box = (24, 34, 384, 130)
+    hud_panel(im, box)
+    panel(im, (32, 42, 112, 122), inset=True, c=5)
+    paste_icon(im, I_EMB % "Archer", 40, 50, 64)
+    text(im, (124, 58), "Islander", font("headb", 18), "#ffffff", "lm")
+    rich(im, 124, 82, [("Archer ", font("bodyb", 14), "#a8e07a"), ("Lv 23", font("headb", 14), PAL["xp"])])
+    bar(im, (124, 100, 372, 108), 0.62, "xp")
+    text(im, (372, 82), "62%", font("bodyb", 13), PAL["xp"], "rm")
+    brackets(im, (20, 30, 388, 134), "Player frame")
+    # ---- buffs
+    bx = 24
+    for i, ic in enumerate((I_ACC % "speed-rare", I_ACC % "health-unique", I_ACC % "mana-rare", I_WARP % "Mining", I_ENCH % "wheat")):
+        slot(im, bx + i * 46, 168, "empty", None, ic, size=44)
+        text(im, (bx + i * 46 + 22, 222), ("2:30", "0:45", "5:00", "1:12", "12:00")[i], font("headb", 13), "#ffffff", "mm")
+    brackets(im, (20, 164, 254, 232), "Buffs")
+    # ---- party list
+    py = 290
+    hud_panel(im, (24, py, 284, py + 150))
+    text(im, (36, py + 16), "PARTY  3", font("head", 13), PAL["dim"], "lm", track=1.2)
+    for i, (nm, cl, hp, col) in enumerate((("Skyrider", "Mage", 0.9, PAL["mana"]), ("Mossbeard", "Warrior", 0.42, PAL["health"]),
+                                          ("Lumen", "Priest", 1.0, PAL["green"]))):
+        y = py + 34 + i * 38
+        paste_icon(im, I_EMB % cl, 34, y, 32)
+        text(im, (74, y + 9), nm, font("bodyb", 14), "#ffffff", "lm")
+        text(im, (272, y + 9), "Lv %d" % (20 + i * 3), font("headb", 13), PAL["xp"], "rm")
+        bar(im, (74, y + 22, 272, y + 28), hp, "health")
+    brackets(im, (20, py - 4, 288, py + 154), "Party")
+    # ---- pet card: being dragged (ghost = old place, accent outline, snap guide)
+    gbox = (20, 480, 288, 556)
+    brackets(im, gbox, "", ghost=True)
+    text(im, (154, 518), "old place", font("body", 13), "#8fa6c0", "mm")
+    nx0, ny0 = 330, 290
+    nb = (nx0, ny0, nx0 + 264, ny0 + 72)
+    shadow(im, nb, 10, 200, 6)
+    hud_panel(im, nb, 235)
+    slot(im, nx0 + 6, ny0 + 6, "empty", RAR["Legendary"], I_PET % "Hawk", size=60)
+    text(im, (nx0 + 76, ny0 + 20), "Hawk", font("headb", 16), RAR["Legendary"], "lm")
+    text(im, (nx0 + 254, ny0 + 20), "Lv 42", font("headb", 14), PAL["xp"], "rm")
+    bar(im, (nx0 + 76, ny0 + 40, nx0 + 254, ny0 + 47), 0.35, "xp")
+    text(im, (nx0 + 76, ny0 + 60), "+5% Combat XP", font("body", 13), PAL["green"], "lm")
+    brackets(im, (nb[0] - 4, nb[1] - 4, nb[2] + 4, nb[3] + 4), "Pet card  -  dragging", active=True)
+    dashed(im, ((0, ny0 - 4), (W, ny0 - 4)), A["base"], 230, 6, 4, 2)
+    grad_fill(im, (nb[2] + 14, ny0 - 16, nb[2] + 170, ny0 + 6), A["btnTop"], A["btnBot"], c=3)
+    text(im, (nb[2] + 22, ny0 - 5), "Snap: top of Party", font("bodyb", 13), "#ffffff", "lm", shadow=False)
+    # ---- compass + quest marker (top centre)
+    cb = (720, 34, 1200, 70)
+    hud_panel(im, cb)
+    d = ImageDraw.Draw(im, "RGBA")
+    for i, lab in enumerate(("W", "", "NW", "", "N", "", "NE", "", "E")):
+        x = 744 + i * 54
+        d.line([(x, 60), (x, 66 if lab else 63)], fill=rgb("#8fa6c0"))
+        if lab:
+            text(im, (x, 48), lab, font("headb", 14 if lab == "N" else 13), "#ffffff" if lab == "N" else "#9fb3cc", "mm")
+    put(im, g_diamond(14, PAL["action"]), 1031, 39)
+    text(im, (1038, 82), "240 m", font("headb", 13), PAL["action"], "mm")
+    brackets(im, (716, 30, 1204, 92), "Compass")
+    # ---- zone title
+    text(im, (960, 128), "THE FARMING ISLAND", font("headb", 26), "#ffffff", "mm", track=2)
+    text(im, (960, 156), "Recommended Lv 10-20", font("bodyb", 15), PAL["xp"], "mm")
+    brackets(im, (790, 108, 1130, 170), "Zone title")
+    # ---- skills XP popup
+    sb = (820, 200, 1100, 244)
+    hud_panel(im, sb)
+    paste_icon(im, I_WARP % "Mining", 830, 206, 32)
+    rich(im, 870, 222, [("+120 ", font("headb", 16), PAL["green"]), ("Mining XP", font("bodyb", 15), PAL["row"])])
+    bar(im, (1010, 218, 1090, 226), 0.62, "xp")
+    brackets(im, (816, 196, 1104, 248), "Skill XP popup")
+    # ---- minimap + coins / overall level (top-right)
+    mb = (1696, 34, 1896, 234)
+    panel(im, mb, inset=True, c=6)
+    d.ellipse((1720, 60, 1850, 150), fill=rgb("#3d6a3e"))
+    d.ellipse((1760, 120, 1880, 214), fill=rgb("#4f7d45"))
+    d.ellipse((1704, 160, 1770, 226), fill=rgb("#2f5a86"))
+    d.polygon([(1796, 124), (1806, 144), (1796, 138), (1786, 144)], fill=rgb("#ffffff"))
+    put(im, g_diamond(12, PAL["action"]), 1840, 70)
+    text(im, (1888, 224), "120, 64, -88", font("bodyb", 13), "#ffffff", "rs")
+    brackets(im, (1692, 30, 1900, 238), "Minimap")
+    cbx = (1696, 262, 1896, 318)
+    hud_panel(im, cbx)
+    put(im, g_coin(20), 1706, 270)
+    text(im, (1734, 280), "1,245,210", font("headb", 16), "#ffd76a", "lm")
+    rich(im, 1706, 306, [("Overall ", font("body", 13), PAL["dim"]), ("Lv 23", font("headb", 14), PAL["xp"])])
+    brackets(im, (1692, 258, 1900, 322), "Coins + level")
+    # ---- quest tracker (Right now style)
+    qx0, qy0 = 1560, 372
+    hud_panel(im, (qx0, qy0, 1896, qy0 + 176))
+    put(im, g_quest(18, PAL["action"]), qx0 + 10, qy0 + 10)
+    text(im, (qx0 + 36, qy0 + 19), "The Farming Island", font("headb", 15), PAL["action"], "lm")
+    yy = qy0 + 46
+    for done, s_, r_ in ((True, "Harvest Wheat", "20 / 20"), (False, "Travel to the island", "240 m")):
+        put(im, g_check(14, PAL["green"]) if done else g_tri(14, A["base"]), qx0 + 12, yy - 7)
+        text(im, (qx0 + 34, yy), s_, font("body", 14), PAL["dim"] if done else "#ffffff", "lm")
+        text(im, (1884, yy), r_, font("headb", 13), PAL["green"] if done else A["hi"], "rm")
+        yy += 24
+    taper_line(im, qx0 + 10, 1886, yy, PAL["gold"], 120, 0.7)
+    yy += 18
+    for tag, msg, pr in (("Daily:", "Catch 20 fish", "12 / 20"), ("TO DO:", "11 points in Foraging", "")):
+        rich(im, qx0 + 12, yy, [(tag + " ", font("bodyb", 14), PAL["action"] if tag != "TO DO:" else PAL["xp"]),
+                                (msg, font("body", 14), PAL["row"])])
+        text(im, (1884, yy), pr, font("headb", 13), PAL["xp"], "rm")
+        yy += 24
+    brackets(im, (qx0 - 4, qy0 - 4, 1900, qy0 + 180), "Quest tracker")
+    # ---- notification stack
+    ny = 610
+    for i, (ic, t1, t2, c) in enumerate(((I_ENCH % "iron-ingot", "Furnace", "64 Iron Ingot ready", PAL["green"]),
+                                         (I_HUB % "market_bazaar", "Bazaar", "Buy order filled", PAL["green"]),
+                                         (I_EGG % "Combat_Rare", "Egg", "Ready to hatch", PAL["xp"]))):
+        y = ny + i * 50
+        hud_panel(im, (1600, y, 1896, y + 44), 200 - i * 40)
+        paste_icon(im, ic, 1608, y + 6, 32)
+        rich(im, 1648, y + 22, [(t1 + ": ", font("bodyb", 14), c), (t2, font("body", 14), PAL["row"])])
+    brackets(im, (1596, ny - 4, 1900, ny + 148), "Notifications")
+    # ---- ability bar + vitals (bottom centre) above the vanilla hotbar
+    ab_x0 = 960 - 190
+    vy = 860
+    bar(im, (ab_x0, vy, ab_x0 + 380, vy + 10), 1.0, "health")
+    text(im, (ab_x0 + 190, vy + 5), "412 / 412", font("headb", 13), "#ffffff", "mm")
+    bar(im, (ab_x0, vy + 16, ab_x0 + 186, vy + 24), 0.69, "mana")
+    bar(im, (ab_x0 + 194, vy + 16, ab_x0 + 380, vy + 24), 1.0, "stamina")
+    ay = vy + 34
+    slot(im, ab_x0, ay, "selected", None, I_ABI % "ArrowRain", size=74)
+    text(im, (ab_x0 + 37, ay + 86), "Signature", font("bodyb", 13), PAL["xp"], "mm")
+    for i, (ic, key) in enumerate((("RapidFire", "Q"), ("PinningShot", "E"), ("HuntersNet", "R"), ("ExplosiveArrow", "T"))):
+        x = ab_x0 + 86 + i * 74
+        slot(im, x, ay + 8, "empty", None, I_ABI % ic, size=66)
+        key_cap(im, x + 22, ay + 64, key)
+        if i == 3:
+            g = Image.new("RGBA", (66, 66), (0, 0, 0, 140))
+            ImageDraw.Draw(g).pieslice((-30, -30, 96, 96), -90, 120, fill=(0, 0, 0, 0))
+            im.paste(Image.new("RGB", (66, 66), (0, 0, 0)), (x, ay + 8), g)
+            text(im, (x + 33, ay + 41), "4s", font("headb", 18), "#ffffff", "mm")
+    brackets(im, (ab_x0 - 6, vy - 6, ab_x0 + 386, ay + 96), "Abilities + vitals")
+    # vanilla hotbar ghost (not ours, shown for position)
+    hb = (960 - 340, 1000, 960 + 340, 1056)
+    d.rectangle(hb, fill=(0, 0, 0, 60))
+    dashed(im, ((hb[0], hb[1]), (hb[2], hb[1])), "#8fa6c0", 120)
+    text(im, (960, 1028), "vanilla hotbar (game's own, not moved)", font("body", 13), "#8fa6c0", "mm")
+    # ---- full-width XP bar
+    bar(im, (8, 1066, 1911, 1073), 0.41, "xp", segs=20)
+    brackets(im, (4, 1062, 1915, 1077), "")
+    text(im, (12, 1052), "XP BAR", font("headb", 13), "#c2d1e2", "lm")
+    # ---- floating editor bar
+    eb = (960 - 330, 600, 960 + 330, 690)
+    shadow(im, eb, 12, 220, 6)
+    grad_fill(im, eb, "#16233a", "#0c1422", c=8)
+    outline(im, eb, PAL["edge"], c=8)
+    outline(im, (eb[0] + 1, eb[1] + 1, eb[2] - 1, eb[3] - 1), PAL["gold"], c=7)
+    put(im, g_diamond(10, A["base"], A["hi"]), eb[0] + 16, eb[1] + 15)
+    text(im, (eb[0] + 32, eb[1] + 20), "HUD LAYOUT", font("head", 15), PAL["title"], "lm", track=1.5)
+    text(im, (eb[2] - 16, eb[1] + 20), "Drag to move  -  scroll to scale  -  right-click to hide", font("body", 13), PAL["dim"], "rm")
+    by_ = eb[1] + 40
+    button(im, (eb[0] + 14, by_, eb[0] + 124, by_ + 36), "Reset", "secondary", fsize=15)
+    toggle(im, eb[0] + 140, by_ + 6, True, "Snap")
+    button(im, (eb[0] + 260, by_, eb[0] + 420, by_ + 36), "Hide widget", "secondary", fsize=15)
+    button(im, (eb[0] + 430, by_, eb[0] + 520, by_ + 36), "Cancel", "secondary", fsize=15)
+    button(im, (eb[0] + 530, by_, eb[2] - 14, by_ + 36), "Save", "primary", fsize=15)
     return im
 
 
@@ -2504,8 +3201,13 @@ def make_accents():
 def main():
     out = {"theme-sheet.png": make_sheet, "inventory-mockup-v1.png": make_mockup_v1,
            "inventory-mockup-v2.png": lambda: make_mockup("craft"), "inventory-mockup-mining-v2.png": lambda: make_mockup("mining"),
-           "inventory-mockup.png": lambda: make_mockup_v3("craft"), "inventory-mockup-mining.png": lambda: make_mockup_v3("mining"),
-           "inventory-mockup-chest.png": lambda: make_mockup_v3("chest"),
+           "inventory-mockup-v3.png": lambda: make_mockup_v3("craft"), "inventory-mockup-mining-v3.png": lambda: make_mockup_v3("mining"),
+           "inventory-mockup-chest-v3.png": lambda: make_mockup_v3("chest"),
+           "inventory-mockup.png": lambda: make_mockup_v3("craft", True),
+           "inventory-mockup-mining.png": lambda: make_mockup_v3("mining", True),
+           "inventory-mockup-chest.png": lambda: make_mockup_v3("chest", True),
+           "inventory-mockup-furnace.png": lambda: make_mockup_v3("furnace", True),
+           "upgrade-mockup.png": make_upgrade, "hud-editor-mockup.png": make_hud_editor,
            "accent-options.png": make_accents}
     only = sys.argv[1:]
     for fn, maker in out.items():

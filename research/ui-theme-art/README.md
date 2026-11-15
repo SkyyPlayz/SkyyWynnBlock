@@ -13,6 +13,67 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## v4 (2026-11-14, Upgrade tab + Requip presets + Furnace + HUD editor)
+Skyy's words are in docs/answered/ui.md (newest lines): "remove crafting from the top row, all crafting will be handled in the normal
+inventory crafting now. and replace it with a single upgrade tab, that combines all there here, smithing, anvil, and upgrade ...
+(basically we need a clean simple way to turn smithing, anvil, and upgrade into 1 easy upgrade menu."; "and lets try to make our hud
+editor look and work like theirs."; and on processing tabs "yes" + "but furnace and tanning will have a custom look and work more like
+they do in our pack than they do in vanilla".
+
+- **Requip presets replace the Character header** (all 4 inventory images).
+  - The buttons are Combat, Mining, Farming, Foraging, Fishing: icon over name, one for each armor-set family.
+  - The active one is in the accent; Foraging is active in the images because the armor shown is Foraging.
+  - Clicking a button swaps to that loadout. The pencil at the end saves / edits it.
+- **Top row: Crafting is gone, UPGRADE is in its place** (still 12 tabs).
+- **Inventory crafting bench row:** the 6 bench tabs plus **Furnace, Cooking, Tanning**. Their icons are original placeholder pictures
+  (stone furnace, pot, hide).
+- **New `inventory-mockup-furnace.png`:** the Furnace tab in OUR pack's style, matching what SkyySacks 0.8.37 does today.
+  - A list of smeltables with ingots first, by tier: Copper T1, Iron T2, Bronze T3, Thorium T4, then Charcoal and Glass. Each row
+    shows how much ore you have.
+  - The selected recipe: Iron Ore have / need from bag + Void, the fuel line (Charcoal, 1 per 8 smelts, Change), amount 1 / x10 / All,
+    and "Smelt 688 (room left)".
+  - A timed QUEUE (312 / 1,000) with progress bars, Ready / Collect, and Collect all.
+  - The Furnace Charm tier line: T3, 4x speed, queue up to 1,000.
+- **New `upgrade-mockup.png`:** the Upgrade tab (Smithing + Anvil + Upgrade in one page), with Mining picked.
+  - Small family icon buttons sit on top.
+  - **TOOL card:** Copper Pickaxe (lifelong) with tool Lv + XP.
+    - Upgrade Points (2 free) as rows with pips and "+1 (1 PT)" buttons for Breaking Speed / Fortune / Wisdom, plus Reset points.
+    - Tool stats.
+    - Next tier (Iron Pickaxe, T2 Iron) with have / need requirements and TIER UP. TIER UP is disabled because 35 Iron Ingot are
+      missing.
+  - **ARMOR:** the 4 worn Mining pieces, one row each.
+    - Each row has a rarity frame, name, slot / tier / level band / rarity, the main stats, and a one-line next-tier cost (have / need).
+    - Each row has its own button column: **Upgrade**, **Reforge**, **Apply Sigil**. One button set per piece is the simplest clean
+      layout: nothing to select first.
+    - A hover tooltip is shown on the chestplate: sectioned, with stats, reforge and sigil.
+  - **SET BONUS** line (Full set 4 / 4), then **UPGRADE FULL SET** with the total cost (missing 42 Bronze Ingot, so disabled).
+  - The pickaxe and Mining armor pictures are original placeholders. Our Mining armor uses vanilla art, which can't go in the repo.
+- **New `hud-editor-mockup.png`:** every SkyWynn HUD widget at once over a simple painted placeholder world (no screenshot pixels).
+  - Each widget has thin corner brackets and a small label.
+  - There are dashed vertical + horizontal centre guides.
+  - The **Pet card is shown being dragged**: accent outline, the "old place" ghost, and a snap guide with a "Snap: top of Party" tag.
+  - A floating **HUD LAYOUT** bar has Reset, Snap on / off, Hide widget, Cancel and Save, with the hint "drag to move, scroll to scale,
+    right-click to hide".
+  - Widgets shown: player frame (portrait, class + level, class XP), buffs with timers, party list with health bars, compass with a
+    quest marker + distance, zone title + recommended level, skill XP popup, minimap with coordinates, coins + overall level, quest
+    tracker (Right now style), notification stack, ability bar (Signature + 4 abilities with keys, one on cooldown) with Health / Mana /
+    Stamina, and a full-width XP bar.
+  - The vanilla hotbar position is shown as a ghost.
+- v3 images are kept as `*-v3.png`, byte-identical to the committed v3. The generator draws v1 to v4.
+
+## Open questions for Skyy - v4 (default in [brackets])
+1. Furnace, Cooking and Tanning live as bench tabs in inventory crafting. [Yes - Skyy said yes; Furnace and Tanning get our custom
+   look.]
+2. Where new armor sets / weapons are FIRST crafted. [Inventory crafting, Armor / Weapon bench tabs. The Upgrade tab only tiers them up.]
+3. On the Combat page, the TOOL card shows your weapon instead (weapon upgrades / tier up). [Yes.]
+4. Reforge / Apply Sigil: one button set per piece (as drawn) or one pair acting on the selected piece? [Per piece.]
+5. Do Requip presets also save the hotbar, pet and abilities (Wardrobe v2), or only armor? [Armor + hotbar + pet + abilities, like
+   Wardrobe v2 loadouts.]
+6. Should "UPGRADE FULL SET" upgrade only the pieces you can afford when you are short? [No - it needs the full cost; pieces upgrade one
+   by one.]
+7. The HUD editor's scale step: scroll wheel in 10 % steps, range 50-150 %. [Yes.]
+8. Cooking queue: timed like the Furnace? [Yes, the same queue look.]
+
 ## v3 (2026-11-14, after Skyy's voice review)
 Skyy's review is in `skyy-review-1114.md`: the transcript, plus the 10-point reading. Skyy also added: "perfect but make the teleport row
 like a mini hot bar, with icons instead of names."
@@ -120,9 +181,13 @@ What changed:
 ## Files
 | File | What it is |
 |---|---|
-| `inventory-mockup.png` | v3. 1920 x 1080. The Inventory tab with Craft selected (off-hand picker + teleport tooltip shown). |
-| `inventory-mockup-mining.png` | v3. The Mining pocket in the top panel (Quick-stack tooltip shown). |
-| `inventory-mockup-chest.png` | v3. The screen opened on a chest (Take all tooltip shown). |
+| `inventory-mockup.png` | v4. 1920 x 1080. The Inventory tab with Craft selected (Requip presets, off-hand picker, teleport tooltip). |
+| `inventory-mockup-mining.png` | v4. The Mining pocket in the top panel. |
+| `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
+| `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
+| `upgrade-mockup.png` | v4. The Upgrade tab (Smithing + Anvil + Upgrade), Mining picked. |
+| `hud-editor-mockup.png` | v4. The HUD layout editor with every widget, one being dragged. |
+| `*-v3.png` | v3, kept. |
 | `inventory-mockup-v2.png`, `inventory-mockup-mining-v2.png` | v2, kept. |
 | `inventory-mockup-v1.png` | v1, kept for comparison. |
 | `theme-sheet.png` | The kit. Every part is labelled with its size in px. It shows the palette with hex codes, the window frame + 9-slice cut, the title plate, the tab bar, buttons (3 kinds x 4 states), slots, the rarity frames, the controls and the tooltip. |
@@ -215,7 +280,7 @@ What changed:
 
 ## How to regenerate
 ```
-python research/ui-theme-art/make_ui_theme.py            # all eight PNGs (needs Pillow; ~25 s)
+python research/ui-theme-art/make_ui_theme.py            # all PNGs (needs Pillow; ~40 s)
 python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
 ```
 - Pillow is not installed on Skyy's system Python. For this round it was installed into a scratch folder (`pip install --target`) and
@@ -278,6 +343,8 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
    Void bag. Keep both.]
 
 ## UNVERIFIED
+- v4: dragging HUD widgets in a custom page (today's SkyyHud editor moves widgets by buttons / numbers); the real
+  Harvester / Pickaxe point-upgrade names per tool; Furnace numbers (2 s each, 1 fuel per 8) are samples.
 - v3: an ItemGrid with SlotSize 44 for the teleport strip (vanilla grids use 74; the style sets SlotSize, so likely); opening our screen on a chest (catching the container window like the Tab hook in P0) - needs a probe.
 - The client fonts available to custom UI. The sheet uses stand-in fonts, and the game font is narrower.
 - That 12 tabs at 104 px (v2) fit with the game font ("Collections" is the longest label); v2 uses a condensed stand-in.
