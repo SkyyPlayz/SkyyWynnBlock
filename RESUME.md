@@ -27,7 +27,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 - LIVE TEST 285 PASS: SkyyMenu 0.3.51 Craft crash fix.
 - RUNNING: round inv3 (wf_0431319b-efc): SkyyMenu 0.3.52 = OUR OWN crafting in the inventory (bench tabs, search, Craftable only, x10 / All, Void-first) + the approved Inventory layout (7-tab bar at the top, Requip presets, pets / mount, charms, pocket tabs, teleport row, Right now).
 - RUNNING: round bank2 (wf_196e7129-58c): no coin death penalty (Coins 0.1.12), bank levels 1-10 = capacity + interest (Bank 0.1.17), vault pages limited by bank level, start with 1 (Vault 0.1.10).
-- RUNNING: art - compacted tab plan + Pets one-screen page (Skyy 11-14 "full ui redesign"; docs/answered/ui.md).
+- ART SET APPROVED (11-14): 7 tabs, one screen each - research/ui-theme-art/ (inventory v5 + requip/charms panels, skill pages, shard clickers, pets, market, world v2, social, settings). NEXT after inv3: build the tab screens one round each (Skills pages: Mining first; Pets; Market incl. bank; World; Social; Settings), then the shard clicker games (Foraging / Mining quarry / Farming / Combat town defense; Shard Link pocket upgrade).
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
