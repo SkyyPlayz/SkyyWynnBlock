@@ -46,6 +46,10 @@ once built. Related: research/Inventory-Screen-Plan.md (12 tabs), research/ui-th
   upgrades, following vanilla's spread (Silver most common in zone 3).
 - Upgrades: miner spirits + quarry (mine speed), chance of something good per block mined. Every block also gives the zone's stone types.
 
+## Farming + Foraging = island clusters per zone (Skyy 2026-11-14)
+- Farming: one island per crop; Foraging: one per wood - grouped in a cluster per ZONE (zone 2 crops / woods in a separate zone 2
+  cluster that opens with zone 2). The zoomed-out map shows the clusters.
+
 ## Steps
 1. Art round: the Farming skill page + the Foraging clicker island (small / grown / zoomed out) as mockups for Skyy.
 2. Probe: click speed and picture swaps in a test page (SkyyUiProbe), element count.

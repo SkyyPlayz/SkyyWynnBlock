@@ -90,3 +90,4 @@ tests always come first.
 281. UiProbe 0.10: our own inventory page with real items + Tab hook + probe bag (one session, then /uiprobe tab off)
 282. UiProbe 0.11: /uiprobe inv opens without the QualityOverride disconnect, then TEST 281 steps
 283. Armory 0.1.52: gauntlets + wraps show in first person while idle / walking (fists-up stance)
+284. Inventory screen (Tab), shard storage grid, simpler Bazaar buy / sell

@@ -395,3 +395,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyUiProbe 0.10 - inventory screen P0 probe (DEPLOYED 2026-11-14, backup deploy-20261114-1207) | [2026-11](2026-11.md) |
 | SkyyUiProbe 0.11 - inventory probe disconnect fix (DEPLOYED 2026-11-14, backup deploy-20261114-1628) | [2026-11](2026-11.md) |
 | SkyyArmory 0.1.52 - gauntlets / wraps visible in first person (DEPLOYED 2026-11-14, backup deploy-20261114-1706) | [2026-11](2026-11.md) |
+| Inventory screen P1 + shard grid + simpler Bazaar (DEPLOYED 2026-11-14, backup deploy-20261114-2109) | [2026-11](2026-11.md) |
