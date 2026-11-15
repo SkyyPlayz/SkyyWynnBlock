@@ -7755,3 +7755,312 @@ def java_node_map_keep_methods(types=None):
             raise ValueError("java_node_map_keep_methods: unfilled placeholder in %s" % s[:80])
         out.append(s)
     return out
+
+
+# =====================================================================================================================================
+# KIT 1.10 (2026-11-14): THE SKYGLASS THEME - SkyWynn's own look (Skyy 2026-11-12 popups: "Custom look" for "Every SkyWynn menu";
+# art v5 APPROVED 2026-11-14 "Yes, build it"; Sky Azure accent LOCKED). research/ui-theme-art/ (README.md, theme-sheet.png,
+# inventory-mockup.png; colours = make_ui_theme.py PAL + ACCENTS["Sky Azure"]). research/Inventory-Screen-Plan.md P0b / P1.
+# ADDITIVE ONLY: nothing above reads it; THEMES / KIT_THEME / KIT_VERSION are unchanged, so every existing page builds byte-identical.
+# The textures are OUR OWN drawings, generated here from code at build time (never vanilla pixels; nothing committed): a jar that
+# uses the theme ships glass_texture_files() under Common/UI/Custom/SkyyGlass/ (a texture outside Common/UI/Custom disconnects the
+# client - probe k1b). Markup names them "SkyyGlass/<Name>.png" (the @2x file is the one shipped, like SkyyKit/).
+# Proven tokens only: Group Background patches (TexturePath + Border, the sky theme's), Label styles, TextButtonStyle, ItemGrid with
+# SlotBackground (a custom-root texture: SkyyUiProbe 0.10 / 0.11 drop zone, TEST 282 PASS), LayoutMode Top / Left.
+# =====================================================================================================================================
+KIT_GLASS_VERSION = "1.10"
+GLASS_THEME = "skyglass"
+GLASS_DIR = "SkyyGlass/"                     # inline TexturePath prefix (relative to Common/UI/Custom/, written without @2x)
+GLASS_JAR_DIR = CUSTOM + GLASS_DIR           # Common/UI/Custom/SkyyGlass/<Name>@2x.png in the jar
+# the approved palette (make_ui_theme.py PAL) + the LOCKED Sky Azure accent (ACCENTS["Sky Azure"]: base, hi, lo, deep, btnTop, btnBot)
+GLASS_COLOR = {
+    "screen": "#070b13", "window": "#0c1422", "window2": "#101a2c", "panel": "#111b2d", "panel2": "#152138",
+    "inset": "#09101c", "line": "#22324b", "lineHi": "#34496b", "edge": "#04070d",
+    "gold": "#c9a04e", "goldHi": "#f1d58c", "goldLo": "#6b5122",
+    "title": "#eef5ff", "text": "#c2d1e2", "row": "#d6e4ee", "dim": "#7f93a6", "placeholder": "#6e7da1",
+    "green": "#4fd88a", "red": "#ff6b6b", "xp": "#e8c25a", "action": "#ffcc00",
+    "health": "#e5484d", "mana": "#4d8dff", "stamina": "#f0c53a", "defense": "#9fb0c6",
+    "accent": "#45a8ff", "accentHi": "#8fcbff", "accentLo": "#2a78c8", "accentDeep": "#123a5e",
+    "btnTop": "#2f86d8", "btnBot": "#1c5ea6",
+}
+# rarity frames (standing rule 2026-10-24: a rarity shows its colour on the frame): the engine qualities (QUALITY) + the gear rarities
+GLASS_RARITY = dict([("Quality" + _k, _v) for _k, _v in QUALITY.items() if _k in ("Junk", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic")]
+                    + [("Rarity" + _k, _v) for _k, _v in RARITY_WYNN.items() if re.fullmatch(r"[A-Za-z]+", _k)])
+GLASS_SLOT = GRID_SLOT                       # the item cell = the client inventory slot (74)
+# (name, UI width, UI height, 9-slice border in UI units or None for a plain picture) - every texture the theme draws
+GLASS_ELEMENTS = (
+    ("Window", 48, 48, 14), ("Panel", 24, 24, 6), ("Inset", 24, 24, 6), ("Header", 24, 24, 6),
+    ("Tab", 32, 32, 8), ("TabHovered", 32, 32, 8), ("TabSelected", 32, 32, 8),
+    ("Primary", 32, 32, 8), ("PrimaryHovered", 32, 32, 8), ("PrimaryPressed", 32, 32, 8), ("PrimaryDisabled", 32, 32, 8),
+    ("Secondary", 32, 32, 8), ("SecondaryHovered", 32, 32, 8), ("SecondaryPressed", 32, 32, 8), ("SecondaryDisabled", 32, 32, 8),
+    ("Close", 32, 32, 8), ("CloseHovered", 32, 32, 8),
+    ("Slot", GLASS_SLOT, GLASS_SLOT, None), ("KeyCap", 24, 24, 6), ("Separator", 8, 2, None), ("Clear", 8, 8, None),
+) + tuple((_k, 24, 24, 4) for _k in sorted(GLASS_RARITY))
+GLASS_EL = dict((_e[0], _e[1:]) for _e in GLASS_ELEMENTS)
+GLASS_ROLES = {   # role -> the texture behind it (slot / clear: bare SlotBackground strings, the rest 9-slice patches)
+    "frame": "Window", "panel": "Panel", "inset": "Inset", "header": "Header", "tab": "Tab", "tabHovered": "TabHovered",
+    "tabSelected": "TabSelected", "primary": "Primary", "primaryHovered": "PrimaryHovered", "primaryPressed": "PrimaryPressed",
+    "primaryDisabled": "PrimaryDisabled", "secondary": "Secondary", "secondaryHovered": "SecondaryHovered",
+    "secondaryPressed": "SecondaryPressed", "secondaryDisabled": "SecondaryDisabled", "close": "Close", "closeHovered": "CloseHovered",
+    "keyCap": "KeyCap", "separator": "Separator", "slot": "Slot", "clear": "Clear",
+}
+_GLASS_BARE = ("slot", "clear", "separator")
+
+
+def glass_path(name):
+    """The inline TexturePath of a Skyglass texture ("SkyyGlass/<Name>.png"; the jar ships <Name>@2x.png)."""
+    if name not in GLASS_EL:
+        raise ValueError("Skyglass texture %r (one of %s)" % (name, ", ".join(sorted(GLASS_EL))))
+    return GLASS_DIR + name + ".png"
+
+
+def glass_patch(name):
+    """(TexturePath: "SkyyGlass/<Name>.png", Border: n) - the 9-slice Background of a Skyglass texture."""
+    b = GLASS_EL[name][2] if name in GLASS_EL else None
+    if b is None:
+        raise ValueError("Skyglass %r is a plain picture, not a patch (use glass_path)" % (name,))
+    return '(TexturePath: "%s", Border: %d)' % (glass_path(name), b)
+
+
+# the new THEME entry (THEMES is NOT extended: the vanilla / sky theme_* helpers keep their two themes byte for byte)
+THEME[GLASS_THEME] = dict((_r, ('"%s"' % glass_path(_n)) if _r in _GLASS_BARE else glass_patch(_n)) for _r, _n in GLASS_ROLES.items())
+THEME_PAD[GLASS_THEME] = 16
+
+
+def glass_bg(role):
+    """The Background value of a Skyglass role (GLASS_ROLES)."""
+    if role not in THEME[GLASS_THEME]:
+        raise ValueError("Skyglass role %r (one of %s)" % (role, ", ".join(sorted(GLASS_ROLES))))
+    return THEME[GLASS_THEME][role]
+
+
+def glass_col(c):
+    """A Skyglass colour token (GLASS_COLOR name) or a literal #rrggbb."""
+    return GLASS_COLOR[c] if c in GLASS_COLOR else color(c)
+
+
+# ---- the drawings (pure Python PNG, deterministic bytes: zlib level 9, no time stamps)
+def _glass_rgb(h):
+    h = h.lstrip("#")
+    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+
+def _glass_mix(a, b, t):
+    return tuple(int(round(a[i] + (b[i] - a[i]) * t)) for i in range(3))
+
+
+def _glass_png(w, h, px):
+    """RGBA PNG bytes of a w x h picture; px(x, y) -> (r, g, b, a)."""
+    import zlib
+    import struct
+    raw = bytearray()
+    for y in range(h):
+        raw.append(0)
+        for x in range(w):
+            raw.extend(bytes(px(x, y)))
+
+    def chunk(t, d):
+        c = struct.pack(">I", len(d)) + t + d
+        return c + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 6, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(bytes(raw), 9)) + chunk(b"IEND", b""))
+
+
+def _glass_box(W, H, s, fill_top, fill_bot, rings, top_line=None, bottom_line=None, alpha=255, corner=0):
+    """A framed box at scale s (@2x = 2): rings = [(colour, alpha, width UI)] from the outside in; a vertical fill gradient;
+    optional top / bottom accent lines inside the rings (colour, width UI); corner = cut corners (UI) for a softer edge."""
+    w, h = W * s, H * s
+    ft, fb = _glass_rgb(fill_top), _glass_rgb(fill_bot)
+    rr = [(_glass_rgb(c), a, int(round(wd * s))) for c, a, wd in rings]
+    r0 = rr[0][2] if rr else 0
+    tl = (_glass_rgb(top_line[0]), int(round(top_line[1] * s))) if top_line else None
+    bl = (_glass_rgb(bottom_line[0]), int(round(bottom_line[1] * s))) if bottom_line else None
+    cc = int(round(corner * s))
+
+    def px(x, y):
+        d = min(x, y, w - 1 - x, h - 1 - y)
+        if cc and (min(x, w - 1 - x) + min(y, h - 1 - y)) < cc:
+            return (0, 0, 0, 0)
+        if tl and y < r0 + tl[1] and d >= r0:
+            return tl[0] + (255,)
+        if bl and y >= h - r0 - bl[1] and d >= r0:
+            return bl[0] + (255,)
+        acc = 0
+        for col, a, wd in rr:
+            if d < acc + wd:
+                return col + (a,)
+            acc += wd
+        t = y / float(max(1, h - 1))
+        return _glass_mix(ft, fb, t) + (alpha,)
+    return _glass_png(w, h, px)
+
+
+def _glass_draw(name, s=2):
+    C = GLASS_COLOR
+    W, H, _b = GLASS_EL[name]
+    if name == "Window":
+        return _glass_box(W, H, s, C["window"], C["window2"], [(C["edge"], 255, 1), (C["gold"], 230, 1), (C["edge"], 255, 1), (C["line"], 255, 1)])
+    if name == "Panel":
+        return _glass_box(W, H, s, C["panel2"], C["panel"], [(C["line"], 255, 1)], top_line=(C["lineHi"], 1))
+    if name == "Inset":
+        return _glass_box(W, H, s, C["inset"], C["inset"], [(C["line"], 255, 1)])
+    if name == "Header":
+        return _glass_box(W, H, s, C["panel2"], C["window2"], [(C["line"], 255, 1)], bottom_line=(C["goldLo"], 1))
+    if name == "Tab":
+        return _glass_box(W, H, s, C["window2"], C["window2"], [], alpha=0)
+    if name == "TabHovered":
+        return _glass_box(W, H, s, C["panel2"], C["panel"], [], bottom_line=(C["lineHi"], 2), alpha=200)
+    if name == "TabSelected":
+        return _glass_box(W, H, s, C["panel2"], C["panel"], [(C["line"], 255, 1)], top_line=(C["accent"], 3))
+    if name.startswith("Primary"):
+        top, bot, ring = {"Primary": (C["btnTop"], C["btnBot"], C["accentHi"]),
+                          "PrimaryHovered": (C["accent"], C["accentLo"], C["title"]),
+                          "PrimaryPressed": (C["btnBot"], C["accentDeep"], C["accentLo"]),
+                          "PrimaryDisabled": ("#1d2736", "#161e2b", C["line"])}[name]
+        return _glass_box(W, H, s, top, bot, [(C["edge"], 255, 1), (ring, 200, 1)], corner=2)
+    if name.startswith("Secondary") or name.startswith("Close"):
+        top, bot, ring = {"Secondary": (C["panel2"], C["panel"], C["lineHi"]),
+                          "SecondaryHovered": ("#1c2b47", C["panel2"], C["accent"]),
+                          "SecondaryPressed": (C["window2"], C["inset"], C["accentLo"]),
+                          "SecondaryDisabled": ("#121a28", "#0e1420", C["line"]),
+                          "Close": (C["panel2"], C["panel"], C["lineHi"]),
+                          "CloseHovered": ("#4a1c22", "#2c1014", C["red"])}[name]
+        return _glass_box(W, H, s, top, bot, [(C["edge"], 255, 1), (ring, 220, 1)], corner=2)
+    if name == "Slot":
+        return _glass_box(W, H, s, "#0f1a2c", "#0b1322", [(C["edge"], 255, 1), (C["line"], 255, 1)], top_line=("#16233a", 2))
+    if name == "KeyCap":
+        return _glass_box(W, H, s, "#1f2f4c", "#162238", [(C["edge"], 255, 1), (C["lineHi"], 255, 1)], bottom_line=(C["edge"], 2), corner=2)
+    if name == "Separator":
+        return _glass_box(W, H, s, C["gold"], C["goldLo"], [])
+    if name == "Clear":
+        return _glass_box(W, H, s, C["edge"], C["edge"], [], alpha=0)
+    if name in GLASS_RARITY:
+        return _glass_box(W, H, s, C["inset"], C["inset"], [(C["edge"], 255, 1), (GLASS_RARITY[name], 255, 2)], alpha=0)
+    raise ValueError("Skyglass: no drawing for %r" % name)
+
+
+_GLASS_CACHE = {}
+
+
+def glass_texture_files():
+    """{jar path: PNG bytes} of every Skyglass texture (Common/UI/Custom/SkyyGlass/<Name>@2x.png) - generated, deterministic."""
+    if not _GLASS_CACHE:
+        for e in GLASS_ELEMENTS:
+            _GLASS_CACHE[GLASS_JAR_DIR + e[0] + "@2x.png"] = _glass_draw(e[0])
+    return dict(_GLASS_CACHE)
+
+
+def glass_texture_digest():
+    """sha256 over every Skyglass file (name + bytes) - a harness pins the theme with it."""
+    h = hashlib.sha256()
+    for k, v in sorted(glass_texture_files().items()):
+        h.update(k.encode("ascii") + b"\x00" + v)
+    return h.hexdigest()
+
+
+# ---- the builders (markup strings; every id through check_id; static text = TEXT_OK or a b.set)
+def glass_text_style(size=16, col="text", bold=False, halign=None, valign="Center", upper=False, spacing=None, shrink=None):
+    return text_style(size, glass_col(col), bold=bold, upper=upper, halign=halign, valign=valign, spacing=spacing, shrink=shrink)
+
+
+def glass_label(ident=None, text="", size=16, col="text", bold=False, w=None, h=None, halign=None, valign="Center", upper=False,
+                anchor=None, spacing=None, shrink=None):
+    """A Skyglass label (text = proven static text, or "" and b.set it)."""
+    if text and not TEXT_OK.fullmatch(text):
+        raise ValueError("Skyglass label text with unproven characters (b.set it): %r" % text)
+    head = ("Label #%s { " % check_id(ident)) if ident else "Label { "
+    return head + _anchor(w, h, _merge(None, anchor)) + ('Text: "%s"; ' % text if text else "") + \
+        "Style: %s; }" % glass_text_style(size, col, bold, halign, valign, upper, spacing, shrink)
+
+
+def glass_group(ident=None, w=None, h=None, role=None, layout="Top", pad=None, anchor=None, inner=""):
+    """A Group with an optional Skyglass Background role (panel / inset / header / frame / keyCap ...), a LayoutMode and inner
+    markup (more elements may be appended into #ident later)."""
+    head = ("Group #%s { " % check_id(ident)) if ident else "Group { "
+    bg = ("Background: %s; " % glass_bg(role)) if role else ""
+    return head + _anchor(w, h, _merge(None, anchor)) + _layout(layout) + _padding(pad) + bg + (inner + " " if inner else "") + "}"
+
+
+def glass_button_style(kind="secondary", size=15, disabled=False, sound=None):
+    """TextButtonStyle in the Skyglass look: primary = the Sky Azure gradient (white label), secondary = the dark glass button
+    (soft label, azure ring on hover), tab / tabSelected = the top-row tab (selected: the azure bar), close = the X."""
+    if kind not in ("primary", "secondary", "tab", "tabSelected", "close"):
+        raise ValueError("Skyglass button kind %r" % kind)
+    labc = {"primary": "title", "secondary": "row", "tab": "text", "tabSelected": "title", "close": "row"}[kind]
+    lab = lambda c: glass_text_style(size, c, bold=True, halign="Center")
+    snd = sounds(sound or ("cancel" if kind == "close" else "light"))
+    st = lambda bg, c: "(Background: %s, LabelStyle: %s)" % (bg, lab(c))
+    if kind in ("tab", "tabSelected"):
+        d = glass_bg("tabSelected" if kind == "tabSelected" else "tab")
+        hv = glass_bg("tabSelected" if kind == "tabSelected" else "tabHovered")
+        return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (
+            st(d, labc), st(hv, "title"), st(glass_bg("tabSelected"), "title"), snd)
+    if kind == "close":
+        return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (
+            st(glass_bg("close"), labc), st(glass_bg("closeHovered"), "title"), st(glass_bg("closeHovered"), "title"), snd)
+    dis = "(Background: %s, LabelStyle: %s)" % (glass_bg(kind + "Disabled"), lab("dim"))
+    if disabled:
+        return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Disabled: %s);" % (dis, dis, dis, dis)
+    return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Disabled: %s, Sounds: %s);" % (
+        st(glass_bg(kind), labc), st(glass_bg(kind + "Hovered"), "title"), st(glass_bg(kind + "Pressed"), labc), dis, snd)
+
+
+def glass_button(ident, text="", kind="secondary", w=BTN_MIN_W, h=40, size=15, disabled=False, sound=None, anchor=None):
+    """A Skyglass TextButton (text = proven static text; bind Activating on #ident)."""
+    if text and not TEXT_OK.fullmatch(text):
+        raise ValueError("Skyglass button text with unproven characters: %r" % text)
+    return "TextButton #%s { %s%s%s }" % (check_id(ident), _anchor(w, h, _merge(None, anchor)),
+                                          ('Text: "%s"; ' % text) if text else "", glass_button_style(kind, size, disabled, sound))
+
+
+def glass_grid_size(cols, rows, slot=GLASS_SLOT, spacing=GRID_SPACING):
+    return cols * slot + (cols - 1) * spacing, rows * slot + (rows - 1) * spacing
+
+
+def glass_grid(ident, cols, rows, drag=False, tooltips=True, anchor=None, slot=GLASS_SLOT, icon=GRID_ICON, spacing=GRID_SPACING):
+    """An ItemGrid on the Skyglass slot art (SlotBackground = SkyyGlass/Slot.png). Fill it ONLY with metadata-free copies
+    (new ItemStack(id, qty, durability, maxDurability, (BsonDocument) null) - HANDOFF 2: metadata AND the quality override disconnect)."""
+    check_id(ident)
+    w, h = glass_grid_size(cols, rows, slot, spacing)
+    return ("ItemGrid #%s { %sSlotsPerRow: %d; AreItemsDraggable: %s; %sStyle: (SlotSize: %d, SlotIconSize: %d, SlotSpacing: %d, "
+            'SlotBackground: "%s"); }' % (ident, _anchor(w, h, _merge(None, anchor)), cols, "true" if drag else "false",
+                                          "" if tooltips else "InfoDisplay: None; ", slot, icon, spacing, glass_path("Slot")))
+
+
+def glass_key_hint(ident, key, text, key_w=None, h=30, size=15):
+    """[KEY] text - a key cap (SkyyGlass/KeyCap) and its word in a LayoutMode Left group: returns (markup, width)."""
+    kw = key_w or max(36, int(text_width(key, 14, bold=True)) + 18)
+    tw = int(text_width(text, size)) + 10
+    ww = kw + 8 + tw + 22
+    mk = ("Group #%s { %sLayoutMode: Left; Group #%sK { %sBackground: %s; %s } %s }"
+          % (check_id(ident), _anchor(ww, h), ident, _anchor(kw, h - 4, {"top": 2}), glass_bg("keyCap"),
+             glass_label(ident + "KL", key, 14, "title", bold=True, w=kw, h=h - 4, halign="Center"),
+             glass_label(ident + "T", text, size, "text", w=tw, h=h, anchor={"left": 8})))
+    return mk, ww
+
+
+def glass_item_cell(ident, rarity=None, size=GLASS_SLOT, item=None, icon=GRID_ICON):
+    """An item cell in its rarity frame (a QualityX / RarityX frame over the slot art) holding an ItemIcon #<ident>I (b.set
+    #<ident>I.ItemId at run time when item=None)."""
+    fr = None
+    if rarity is not None:
+        fr = rarity if rarity in GLASS_RARITY else ("Rarity" + rarity if ("Rarity" + rarity) in GLASS_RARITY else "Quality" + rarity)
+        if fr not in GLASS_RARITY:
+            raise ValueError("Skyglass rarity %r (one of %s)" % (rarity, ", ".join(sorted(GLASS_RARITY))))
+    pad = (size - icon) // 2
+    inner = "ItemIcon #%sI { %s%s}" % (ident, _anchor(icon, icon, {"left": pad, "top": pad}),
+                                         ('ItemId: "%s"; ' % _item_id(item)) if item else "")
+    frame = (" Group #%sF { %sBackground: %s; }" % (ident, _anchor(size, size, {"left": 0, "top": 0}), glass_patch(fr))) if fr else ""
+    return 'Group #%s { %sBackground: "%s"; %s%s }' % (check_id(ident), _anchor(size, size), glass_path("Slot"), inner, frame)
+
+
+def assert_glass_paths(markups):
+    """Every SkyyGlass/ path in the markups names a Skyglass texture (the jar must ship glass_texture_files()). Returns the count."""
+    n = 0
+    for mk in _flat_markups(markups):
+        for m in re.finditer(r'"(SkyyGlass/[^"]+)"', render(mk)):
+            p = m.group(1)
+            if not p.endswith(".png") or p[len(GLASS_DIR):-4] not in GLASS_EL:
+                raise ValueError("unknown Skyglass texture path %s" % p)
+            n += 1
+    return n

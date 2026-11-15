@@ -2803,6 +2803,49 @@ def phase_snapshot():
     return items
 
 
+def phase_glass():
+    """kit 1.10: the Skyglass theme - additive (the two old themes untouched), every texture drawn by code, deterministic, valid PNGs
+    at @2x, every builder's markup passes check_markup / proven tokens, paths only to Skyglass textures."""
+    import struct
+    check(UI.THEMES == ("vanilla", "sky") and UI.KIT_THEME == "vanilla", "glass: THEMES / KIT_THEME unchanged (additive)")
+    check(sorted(UI.THEME["vanilla"]) == sorted(UI.THEME["sky"]) == list(UI.THEME_ROLES), "glass: vanilla + sky roles unchanged")
+    check(UI.GLASS_THEME in UI.THEME and sorted(UI.THEME[UI.GLASS_THEME]) == sorted(UI.GLASS_ROLES), "glass: the THEME entry")
+    check(UI.GLASS_COLOR["accent"] == "#45a8ff", "glass: Sky Azure accent LOCKED (#45a8ff)")
+    raises(lambda: UI._theme(UI.GLASS_THEME), ValueError, "glass: the old theme_* helpers do not take skyglass")
+    f1 = UI.glass_texture_files()
+    UI._GLASS_CACHE.clear()
+    f2 = UI.glass_texture_files()
+    check(f1 == f2 and len(f1) == len(UI.GLASS_ELEMENTS), "glass: textures deterministic, one per element (%d)" % len(f1))
+    for k, v in sorted(f1.items()):
+        nm = k[len(UI.GLASS_JAR_DIR):-len("@2x.png")]
+        W, H, _b = UI.GLASS_EL[nm]
+        ok = v[:8] == b"\x89PNG\r\n\x1a\n" and struct.unpack(">II", v[16:24]) == (2 * W, 2 * H)
+        check(ok and k.startswith("Common/UI/Custom/SkyyGlass/") and k.endswith("@2x.png"), "glass: %s is a %dx%d @2x PNG" % (k, 2 * W, 2 * H))
+    mks = [UI.glass_button(P + "Gb", "Craft", "primary", w=160), UI.glass_button(P + "Gs", "Sort", "secondary", w=120),
+           UI.glass_button(P + "Gd", "Later", "secondary", w=120, disabled=True), UI.glass_button(P + "Gt", "Skills", "tab", w=110),
+           UI.glass_button(P + "Gu", "Inventory", "tabSelected", w=110), UI.glass_button(P + "Gx", "X", "close", w=40, h=40),
+           UI.glass_label(P + "Gl", "INVENTORY", 15, "title", bold=True, w=200, h=24), UI.glass_grid(P + "Gg", 9, 4, drag=True),
+           UI.glass_key_hint(P + "Gk", "Tab / Esc", "Close")[0], UI.glass_item_cell(P + "Gc", "Rare"),
+           UI.glass_item_cell(P + "Gq", "Epic", item="Rock_Stone"),
+           UI.glass_group(P + "Gp", 300, 200, role="panel", inner=UI.glass_label(P + "Gpl", "Hello", w=100, h=20))]
+    for mk in mks:
+        try:
+            UI.check_markup(mk, prefix=P)
+            check(True, "glass markup")
+        except Exception as e:
+            check(False, "glass: check_markup %s: %s" % (mk[:60], e))
+    found = UI.proven_tokens(mks)
+    bad = sorted(k for k, g in found.items() if g == "unknown" or (g is not None and k != "SlotBackground"))
+    check(not bad, "glass: only proven tokens (+ SlotBackground, proven in game by the SkyyUiProbe P0 drop zone): %s" % bad)
+    check(UI.assert_glass_paths(mks) >= 10, "glass: every SkyyGlass path names a theme texture")
+    raises(lambda: UI.assert_glass_paths(['Group #SkyyTZ { Background: "SkyyGlass/Nope.png"; }']), ValueError, "glass: unknown path refused")
+    raises(lambda: UI.glass_label(P + "Gz", "a, b"), ValueError, "glass: unproven inline text refused")
+    raises(lambda: UI.glass_item_cell(P + "Gy", "Purple"), ValueError, "glass: unknown rarity refused")
+    check(UI.glass_grid_size(9, 4) == (9 * 74 + 16, 4 * 74 + 6), "glass: grid size = the client inventory pitch")
+    print("glass theme: %d textures (%d bytes, sha256 %s), %d builder markups checked" % (
+        len(f1), sum(len(v) for v in f1.values()), UI.glass_texture_digest()[:12], len(mks)))
+
+
 def main():
     if "--print-snapshot" in sys.argv:
         UI.verify(quiet=True)
@@ -2839,6 +2882,7 @@ def main():
         samples = phase_builders()
         phase_kit13(samples)
         phase_kit14(samples)
+        phase_glass()                         # kit 1.10: the Skyglass theme (additive)
         probes = phase_probes()
         phase_guide()
         phase_lint()
