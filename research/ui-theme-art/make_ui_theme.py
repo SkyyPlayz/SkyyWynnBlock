@@ -1954,6 +1954,9 @@ def pocket_v3(im, X0, X1, Y0, Y1):
 BENCH4 = BENCH3 + BENCH4_EXTRA   # v4: + Furnace / Cooking / Tanning (Skyy 11-14 "yes")
 
 
+V5 = True   # v5 (Skyy 11-14): Furnace fuel slot + search above Copper; Apply Sigil on the tool. False = the kept v4 pictures.
+
+
 def furnace_v4(im, X0, X1, Y0, Y1):
     """The Furnace tab of inventory crafting in OUR pack's style (SkyySacks furnace: fuel, timed queue, Furnace Charm)."""
     craft_v3(im, X0, X1, Y0, Y1, True, 6)
@@ -1963,7 +1966,8 @@ def furnace_v4(im, X0, X1, Y0, Y1):
     put(im, g_diamond(9, A["base"], A["hi"]), X0 + 14, hy - 4)
     text(im, (X0 + 30, hy), "FURNACE", font("head", 17), PAL["title"], "lm", track=1.5)
     text(im, (X0 + 30 + tw("FURNACE", font("head", 17), 1.5) + 10, hy + 1), "ingots first, by tier", font("body", 13), PAL["dim"], "lm")
-    search_box(im, (X1 - 300, hy - 15, X1 - 12, hy + 15), "Search...")
+    if not V5:
+        search_box(im, (X1 - 300, hy - 15, X1 - 12, hy + 15), "Search...")
     taper_line(im, X0 + 12, X1 - 12, hy + 22, PAL["gold"], 150, 0.8)
     cy0, cy1 = hy + 32, Y1 - 12
     # --- list of smeltables
@@ -1972,6 +1976,9 @@ def furnace_v4(im, X0, X1, Y0, Y1):
     items = [("Copper Ingot", "T1", "#d0803c", "1,792"), ("Iron Ingot", "T2", "#b8c2cc", "1,262"), ("Bronze Ingot", "T3", "#c99a4a", "0"),
              ("Thorium Ingot", "T4", "#7fc46a", "86"), ("Charcoal", "", "", "640"), ("Glass", "", "", "512")]
     y = cy0 + 6
+    if V5:   # Skyy 11-14: "move the search to the top of the metal row, above coper"
+        search_box(im, (lx0 + 6, y, lx1 - 6, y + 30), "Search...")
+        y += 38
     for i, (nm, t_, c_, have) in enumerate(items):
         row(im, (lx0 + 6, y, lx1 - 6, y + 34), "selected" if i == 1 else "normal")
         pic = "px:ingot:" + c_ if c_ else ("px:coal" if nm == "Charcoal" else "px:planks")
@@ -1993,11 +2000,20 @@ def furnace_v4(im, X0, X1, Y0, Y1):
     text(im, (rx0 + 48, cy0 + 90), "Iron Ore", font("body", 14), PAL["row"], "lm")
     text(im, (rx1 - 10, cy0 + 90), "1,262 / 688", font("headb", 14), PAL["green"], "rm")
     text(im, (rx0 + 48, cy0 + 108), "bag 12 + Void 1,250", font("body", 13), PAL["dim"], "lm")
-    paste_icon(im, "px:coal", rx0 + 10, cy0 + 124, 32)
-    text(im, (rx0 + 48, cy0 + 132), "Fuel: Charcoal", font("body", 14), PAL["row"], "lm")
-    text(im, (rx1 - 10, cy0 + 132), "640 / 86", font("headb", 14), PAL["green"], "rm")
-    text(im, (rx0 + 48, cy0 + 150), "1 per 8 smelts  -  Change", font("body", 13), PAL["dim"], "lm")
-    ay = cy0 + 170
+    if V5:   # Skyy 11-14: "i donty see how you add the fuel" -> a real FUEL slot: drag fuel in (or click it to pick from bag + Void)
+        text(im, (rx0 + 10, cy0 + 124), "FUEL", font("head", 13), PAL["dim"], "lm", track=1.5)
+        text(im, (rx1 - 10, cy0 + 124), "needs 86", font("headb", 13), PAL["green"], "rm")
+        slot(im, rx0 + 10, cy0 + 136, "hover", None, "px:coal", "640", size=48)
+        text(im, (rx0 + 68, cy0 + 146), "Charcoal  x640", font("bodyb", 14), PAL["row"], "lm")
+        text(im, (rx0 + 68, cy0 + 164), "Drag fuel in, or click", font("body", 13), A["hi"], "lm")
+        text(im, (rx0 + 68, cy0 + 180), "1 per 8 smelts", font("body", 13), PAL["dim"], "lm")
+        ay = cy0 + 198
+    else:
+        paste_icon(im, "px:coal", rx0 + 10, cy0 + 124, 32)
+        text(im, (rx0 + 48, cy0 + 132), "Fuel: Charcoal", font("body", 14), PAL["row"], "lm")
+        text(im, (rx1 - 10, cy0 + 132), "640 / 86", font("headb", 14), PAL["green"], "rm")
+        text(im, (rx0 + 48, cy0 + 150), "1 per 8 smelts  -  Change", font("body", 13), PAL["dim"], "lm")
+        ay = cy0 + 170
     bw = (rx1 - rx0 - 20 - 8) // 3
     for j, lab in enumerate(("1", "x10", "All")):
         bx = rx0 + 10 + j * (bw + 4)
@@ -2537,6 +2553,8 @@ def make_upgrade():
     rich(im, tx + 88, ty + 38, [("T1 Copper", font("bodyb", 14), "#e08a4a"), ("   Tool", font("body", 14), PAL["text"])])
     level_pill(im, tx + 88, ty + 50, "Lv 14")
     bar(im, (tx + 152, ty + 58, TX1 - 14, ty + 66), 0.58, "xp")
+    if V5:   # Skyy 11-14: "the pickaxe needs an apply sigils button too"
+        button(im, (TX1 - 14 - 150, ty + 2, TX1 - 14, ty + 32), "Apply Sigil", "secondary", fsize=14, glyph=g_sigil(16))
     text(im, (TX1 - 14, ty + 46), "580 / 1,000 XP", font("bodyb", 13), PAL["xp"], "rs")
     # points
     uy = ty + 96
@@ -2556,14 +2574,17 @@ def make_upgrade():
         ry += 58
     # tool stats
     sy0 = uy + 248
-    panel(im, (tx, sy0, TX1 - 14, sy0 + 150), inset=True, c=5)
+    panel(im, (tx, sy0, TX1 - 14, sy0 + (176 if V5 else 150)), inset=True, c=5)
     text(im, (tx + 12, sy0 + 20), "TOOL STATS", font("head", 14), PAL["text"], "lm", track=1.5)
-    for j, (k_, v_, c_) in enumerate((("Breaking power", "T1 Copper", "#e08a4a"), ("Mining Speed", "+15%", PAL["green"]),
-                                      ("Mining Fortune", "+10", PAL["green"]), ("Durability", "Never breaks (lifelong)", PAL["row"]))):
+    st_rows = [("Breaking power", "T1 Copper", "#e08a4a"), ("Mining Speed", "+15%", PAL["green"]),
+               ("Mining Fortune", "+10", PAL["green"]), ("Durability", "Never breaks (lifelong)", PAL["row"])]
+    if V5:
+        st_rows.append(("Sigil", "empty - from your Smithing pocket", PAL["dim"]))
+    for j, (k_, v_, c_) in enumerate(st_rows):
         text(im, (tx + 14, sy0 + 50 + j * 26), k_, font("body", 14), PAL["row"], "lm")
         text(im, (TX1 - 30, sy0 + 50 + j * 26), v_, font("headb", 14), c_, "rm")
     # next tier
-    ny = sy0 + 166
+    ny = sy0 + (192 if V5 else 166)
     panel(im, (tx, ny, TX1 - 14, CY1 - 14), inset=True, c=5)
     text(im, (tx + 12, ny + 20), "NEXT TIER", font("head", 14), PAL["text"], "lm", track=1.5)
     put_px(im, px_icon("pickaxe"), tx + 128, ny + 6, 32)
@@ -2634,7 +2655,7 @@ def make_upgrade():
              [("+14", "Defense", True), ("+8%", "Mining Speed", True), ("+6", "Mining Fortune", True), ("-2%", "Walk Speed", False)],
              [[("Reforge: ", font("body", 14), PAL["dim"]), ("Sturdy", font("bodyb", 14), PAL["row"]),
                ("  +2 Defense", font("bold", 14), PAL["green"])],
-              [("Sigil: ", font("body", 14), PAL["dim"]), ("empty - Apply Sigil to add one", font("body", 14), PAL["dim"])]],
+              [("Sigil: ", font("body", 14), PAL["dim"]), ("empty - Apply Sigil (Smithing pocket)" if V5 else "empty - Apply Sigil to add one", font("body", 14), PAL["dim"])]],
              [("Click: select   Shift-click: upgrade", PAL["action"])])
     # key hints
     hy2 = 1044
@@ -3264,6 +3285,15 @@ def make_accents():
     return im
 
 
+def _v4(fn):
+    global V5
+    V5 = False
+    try:
+        return fn()
+    finally:
+        V5 = True
+
+
 def main():
     out = {"theme-sheet.png": make_sheet, "inventory-mockup-v1.png": make_mockup_v1,
            "inventory-mockup-v2.png": lambda: make_mockup("craft"), "inventory-mockup-mining-v2.png": lambda: make_mockup("mining"),
@@ -3273,7 +3303,9 @@ def main():
            "inventory-mockup-mining.png": lambda: make_mockup_v3("mining", True),
            "inventory-mockup-chest.png": lambda: make_mockup_v3("chest", True),
            "inventory-mockup-furnace.png": lambda: make_mockup_v3("furnace", True),
-           "upgrade-mockup.png": make_upgrade, "hud-editor-mockup.png": make_hud_editor, "hud-editor-mockup-v4.png": lambda: make_hud_editor(False),
+           "upgrade-mockup.png": make_upgrade,
+           "upgrade-mockup-v4.png": lambda: _v4(make_upgrade),
+           "inventory-mockup-furnace-v4.png": lambda: _v4(lambda: make_mockup_v3("furnace", True)), "hud-editor-mockup.png": make_hud_editor, "hud-editor-mockup-v4.png": lambda: make_hud_editor(False),
            "accent-options.png": make_accents}
     only = sys.argv[1:]
     for fn, maker in out.items():

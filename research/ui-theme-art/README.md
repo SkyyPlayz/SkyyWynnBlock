@@ -13,6 +13,15 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## v5 Furnace + Upgrade (2026-11-14)
+Skyy: "i donty see how you add the fuel. and move the search to the top of the metal row, above coper." + "the pickaxe needs an apply
+sigils button too. sigils should go in the pocket dimension in the smithing bag."
+- **`inventory-mockup-furnace.png`:** a real FUEL slot (drag fuel in, or click it to pick fuel from bag + Void; count + "needs 86"); the
+  search box is at the top of the ingot list, above Copper.
+- **`upgrade-mockup.png`:** the pickaxe card has its own Apply Sigil button, and Tool stats shows its Sigil row. Sigils live in the
+  Smithing pocket; every Apply Sigil picks from there.
+- v4 pictures kept as `inventory-mockup-furnace-v4.png` and `upgrade-mockup-v4.png` (generator flag `V5`).
+
 ## v5 HUD (2026-11-14, Skyy's review of the HUD editor)
 Skyy: "the game already has a compass, so if we do anything thewre it has to be below ithe vanilla one, or a mod to the vanilla one. try to
 keep things out of the center of the screen put pets to the left of the hot bar and mount to the right."
@@ -160,7 +169,7 @@ What changed:
   - **Utility** = the other utility-section items you can swap to with the off-hand key.
   - **Tool** = our tool slot (the Multitool / tool fetch). That one is a proposal; see the open questions.
 - **Inventory crafting now uses the VANILLA crafting layout,** drawn in our colours. I read only the layout and sizes from
-  `Client/.../Pages/Inventory/BasicCraftingPanel.ui`, `BasicCraftingIngredient.ui` and `Common/Container.ui`; no pixels were copied.
+  the game's BasicCraftingPanel, BasicCraftingIngredient and Container .ui files (inside Assets.zip); no pixels were copied.
   - Icon-only bench tabs sit on the panel's top edge. Vanilla's are 82 x 62 with a 44 icon; ours are 72 x 52 with a 36 icon.
   - The title reads "CRAFTING > Default", like vanilla's category arrow.
   - Search and the Craftable-only toggle sit in the header.
