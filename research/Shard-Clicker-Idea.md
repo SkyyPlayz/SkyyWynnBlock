@@ -56,6 +56,10 @@ once built. Related: research/Inventory-Screen-Plan.md (12 tabs), research/ui-th
 - The skill page ore path shows the alloys too.
 - The mockups are the basic designs; the real game art must look clearly better.
 
+## Shard Link (Skyy 2026-11-14, LOCKED)
+- A late-game upgrade of each skill's POCKET: that skill's shard sends its items straight into the pocket (no Collect). Collection
+  credit + XP as if collected; pocket full -> the rest waits in the shard (Collect all still works).
+
 ## Steps
 1. Art round: the Farming skill page + the Foraging clicker island (small / grown / zoomed out) as mockups for Skyy.
 2. Probe: click speed and picture swaps in a test page (SkyyUiProbe), element count.
