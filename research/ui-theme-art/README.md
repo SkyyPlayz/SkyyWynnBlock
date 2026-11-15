@@ -13,6 +13,35 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## Skill pages v2 + Mining quarry (2026-11-14, after Skyy's review)
+Skyy (docs/answered/world.md newest line), on skill-page-mining.png: "show the alloys too. and in the mining shard we will add a
+upgrade/addon with a smithy. the smithy makes all ares auto smelt to bars, and with an upgrade allow you to automatically smelt some of your
+ores into an alloy (slider for % of ore auto smelted to an alloy." and on shard-clicker-foraging-grown.png: "these look good for baic
+designs, lets make all the real art look better". Quarry: docs/answered/world.md "MINING SHARD = QUARRY, ONE ISLAND PER ZONE".
+- **These mockups are BASIC DESIGNS (layout + flow).** The real in-game art for these pages (islands, spirits, totems, trees, quarry, smithy,
+  icons) must be clearly better: more detail, shading and polish than these code drawings.
+- **`skill-page-mining.png` / `-locked.png` (v2):** the COLLECTIONS row is now the full 16-metal ladder from tools/tier_tags.py LADDER,
+  grouped by ZONE (Zone 1 Copper / Iron / Bronze ... Zone 5 Mithril / Titanium / Lumen, then Onyxium as LATER). The 5 alloys (Bronze, Dusk,
+  Azurvane, Cinder, Lumen) carry a gold ALLOY tag, show their two parent metals as coloured dots (Copper + Iron etc., research/Zone-Ores-
+  Alloys-Spec.md) and "no collection" (only base metals have collections, per that spec). Every metal shows the Mining level that opens it
+  (gear level bands: zone start + 0 / 8 / 15) and, for base metals, the collection bar. Two lines below: SELECTED (Iron Ore II 365 / 500 ->
+  next: Iron recipes) and NEXT TIER (Dusk alloy at Mining 35). Ingot icons: our Enchanted ingot art where it exists (Copper, Iron, Thorium,
+  Cobalt, Adamantite, Mithril, Onyxium), else a plain placeholder ingot in the metal colour (spec palette). The shard card gets a SMITHY
+  box: "Ores auto-smelt to bars ON", "Alloy [slider] 25% Bronze".
+- **New `shard-clicker-mining.png`:** the Mining shard as a big terraced QUARRY on the Zone 1 island ("Zone 1 Quarry - Copper + Iron"):
+  one block to click ("Hits 1 / 3 - your Copper Pickaxe", "+2 Cobblestone", "+1 Copper Ingot - Smithy: ore smelted"), 3 miner spirits,
+  a spirit totem, ore specks in the walls (Copper, Iron, Silver, Gold), and the SMITHY hut (forge glow, chimney smoke, anvil). Storage:
+  Cobblestone, Rubble, Shale, Copper / Iron / Bronze / Silver / Gold Ingot. Right column: SMITHY (add-on) Lv 2 / 5 panel (auto-smelt toggle
+  ON, Alloy slider 25% of the ore -> Bronze, "Next Lv 3: alloy up to 50%", cost + Upgrade) and UPGRADES: Miner spirits, Quarry speed,
+  Lucky finds ("something good per block"), Iron vein (bought - the zone 1 upgrade), Silver + Gold.
+- v1 pictures kept as `skill-page-mining-v1.png` and `skill-page-mining-locked-v1.png` (generator flag `V2 = False`, same bytes as before).
+
+Open questions (default in [brackets]):
+1. Alloy slider: one % for the whole zone alloy, max 25% at Smithy Lv 2 rising per level? [yes: 25 / 50 / 75 / 100%]
+2. Does the Smithy smelt for free, or burn fuel / coins? [free - it is a paid add-on]
+3. Zone 1 quarry stone types = Cobblestone, Rubble, Shale (Stone drops Cobblestone)? [yes; each zone its own rocks, checked in Assets.zip at build]
+4. Placeholder colours for Lead / Chromium / Slag / Titanium / Dusk / Azurvane / Cinder / Lumen ingots until their art exists? [yes]
+
 ## Skill pages + shard clicker (2026-11-14)
 Skyy's words (docs/answered/ui.md "SKILL PAGE LAYOUT", docs/answered/world.md "SHARDS -> MENU CLICKER"): "at the top is shows your mining
 level, your tools armor, and charms. (with the ability to upgrade the charms there or go to the charms page.) below that it will show the
@@ -245,12 +274,14 @@ What changed:
 | `inventory-mockup-mining.png` | v4. The Mining pocket in the top panel. |
 | `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
 | `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
-| `skill-page-mining.png` | 2026-11-14. One page per skill, Mining Lv 31: stats, gear + charms, ore collections path, whole Mining tree, 4-skill grid, shard card. |
+| `skill-page-mining.png` | v2 2026-11-14. One page per skill, Mining Lv 31: stats, gear + charms, the full metal path by zone with alloys marked, whole Mining tree, 4-skill grid, shard card with the Smithy. |
+| `skill-page-mining-v1.png`, `skill-page-mining-locked-v1.png` | v1 of the two skill pages (7 vanilla metals), kept. |
+| `shard-clicker-mining.png` | 2026-11-14. Mining shard = Zone 1 quarry: one block to click, miner spirits, the Smithy add-on (auto-smelt + alloy slider), storage, upgrades. |
 | `skill-page-mining-locked.png` | 2026-11-14. The same page for a Mining Lv 6 player: shard card locked (Lv 10). |
 | `shard-clicker-foraging.png` | 2026-11-14. Foraging shard clicker: small T1 Oak Island, one tree, one spirit totem, storage, 6 upgrades. |
 | `shard-clicker-foraging-grown.png` | 2026-11-14. The same island upgraded (4 trees, 2 spirit totems, weather totem, decorations, bridge). |
 | `shard-clicker-zoomed-out.png` | 2026-11-14. Zoomed-out island map (T1 Oak, T2 Beech, T3 Maple + T4 Dry locked) + islands list. |
-| `make_skill_pages.py` | 2026-11-14. Generator of the 5 pictures above (deterministic; imports the kit from make_ui_theme.py). |
+| `make_skill_pages.py` | 2026-11-14. Generator of the skill-page / shard pictures above (deterministic; imports the kit from make_ui_theme.py). |
 | `upgrade-mockup.png` | v4. The Upgrade tab (Smithing + Anvil + Upgrade), Mining picked. |
 | `hud-editor-mockup.png` | v5. The HUD layout editor: vanilla compass kept, centre clear, pet left / mount right of the hotbar. |
 | `hud-editor-mockup-v4.png` | v4 of the HUD editor (kept). |

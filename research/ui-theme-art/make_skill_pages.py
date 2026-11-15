@@ -38,6 +38,7 @@ TV3 = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(TV3)
 MINING_TREE = [t for t in TV3.TREES if t["name"] == "Mining"][0]
 
+V2 = True   # v2 (Skyy 11-14 review): full metal ladder with alloys + the Smithy line on the shard card. False = the kept v1 pictures.
 TREE_COL = "#8fc8ff"     # SUI.TREE_COLOR["Mining"] (tools/skyyui.py)
 GOLD = "#E8A93B"         # skyymap ART gold
 TIER = {"Copper": "#e08a4a", "Iron": "#b8c4d0", "Thorium": "#7fd07a", "Cobalt": "#6f9cff", "Adamantite": "#e0675a",
@@ -98,9 +99,13 @@ class Art:
             return
         r = min(r, (x1 - x0) / 2.0, (y1 - y0) / 2.0)
         b = (x0 * s, y0 * s, x1 * s, y1 * s)
-        self._local([b[0], b[2]], [b[1], b[3]], w * s + 2, lambda d, ox, oy: d.rounded_rectangle(
-            (b[0] - ox, b[1] - oy, b[2] - ox, b[3] - oy), radius=r * s, fill=C(fill), outline=C(ol),
-            width=max(1, int(round(w * s))) if ol else 0))
+        def f(d, ox, oy):
+            bb = (b[0] - ox, b[1] - oy, b[2] - ox, b[3] - oy)
+            try:
+                d.rounded_rectangle(bb, radius=r * s, fill=C(fill), outline=C(ol), width=max(1, int(round(w * s))) if ol else 0)
+            except ValueError:   # very small box: a plain rectangle
+                d.rectangle(bb, fill=C(fill), outline=C(ol))
+        self._local([b[0], b[2]], [b[1], b[3]], w * s + 2, f)
 
     def arc(self, box, a0, a1, fill, w=1.0):
         s = self.s
@@ -616,7 +621,9 @@ PLAYER = {
                       (1, 0, "r1a"): 3, (1, 0, "r1b"): 1, (1, 1, "r2a"): 1, (2, 0, "r1a"): 2, (2, 0, "r1b"): 1, (2, 2, "r3a"): 1},
                sel=(0, 3, "r4a"),
                colls=[("Copper Ore VI", 2140, 2500, "Next: Enchanted Copper"), ("Iron Ore II", 365, 500, "Next: Iron recipes"),
-                      ("Thorium Ore I", 37, 50, "Next: Thorium recipes")]),
+                      ("Thorium Ore I", 37, 50, "Next: Thorium recipes")],
+               colls2={"Copper": ("VI", 2140, 2500), "Iron": ("II", 365, 500), "Thorium": ("I", 37, 50), "Lead": ("I", 12, 50)},
+               sel2=("Iron", "Iron Ore II", 365, 500, "Iron recipes (Iron armor + Enchanted Iron)")),
     "lo": dict(lv=6, xp=(410, 900), skills={"Combat": 4, "Mining": 6, "Farming": 3, "Foraging": 5},
                metal="#e08a4a", set_name="Copper Mining set", set_n="2 / 4",
                armor=[("head", "Normal"), ("chest", "Normal"), (None, None), (None, None)],
@@ -631,7 +638,9 @@ PLAYER = {
                fort=[("Tool", 4, "#e08a4a"), ("Gear", 4, "#8fc8ff"), ("Charms", 1, "#ff8fe0"), ("Pets", 0, "#7cf0ad")],
                ranks={(0, 0, "r1a"): 3, (0, 0, "r1b"): 1, (1, 0, "r1a"): 1},
                sel=(0, 1, "r2a"),
-               colls=[("Copper Ore II", 82, 100, "Next: Copper Pocket Shard")]),
+               colls=[("Copper Ore II", 82, 100, "Next: Copper Pocket Shard")],
+               colls2={"Copper": ("II", 82, 100)},
+               sel2=("Copper", "Copper Ore II", 82, 100, "Copper Pocket Shard")),
 }
 
 PATH = [("Copper", "T1 Copper", 1, "copper"), ("Iron", "T2 Iron", 8, "iron"), ("Thorium", "T4 Thorium", 20, "thorium"),
@@ -743,13 +752,36 @@ def shard_picture(w, h, locked=False):
     return img
 
 
+METAL = {"Copper": "#e08a4a", "Iron": "#b8c4d0", "Bronze": "#c99a52", "Thorium": "#7fd07a", "Lead": "#8593ab", "Dusk": "#9a6ab8",
+         "Cobalt": "#6f9cff", "Chromium": "#bfe6ee", "Azurvane": "#2f7bd8", "Adamantite": "#e0675a", "Slag": "#8a5a40",
+         "Cinder": "#c0392b", "Mithril": "#8fe6ff", "Titanium": "#efe2b0", "Lumen": "#fff4c2", "Onyxium": "#b98ae8",
+         "Silver": "#dfe7f0", "Gold": "#f2c84a"}
+ALLOY_OF = {"Bronze": ("Copper", "Iron"), "Dusk": ("Thorium", "Lead"), "Azurvane": ("Cobalt", "Chromium"), "Cinder": ("Adamantite", "Slag"),
+            "Lumen": ("Mithril", "Titanium")}
+ENCH_INGOT = ("Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium", "Silver", "Gold")
+
+
+def ingot_icon(metal):
+    """our Enchanted ingot icon where one exists, else a plain ingot drawn in the metal colour (placeholder)"""
+    return I_ENCH % ("%s-ingot" % metal.lower()) if metal in ENCH_INGOT else "px:ingot:%s" % METAL[metal]
+
+
+def slider(im, x, yc, w, frac, col=None):
+    col = col or A["base"]
+    panel(im, (x, yc - 3, x + w, yc + 3), inset=True, c=2)
+    fx = x + int(w * frac)
+    grad_fill(im, (x + 1, yc - 2, max(x + 2, fx), yc + 2), A["hi"], A["lo"], c=1)
+    k = ss_glyph(16, 16, lambda d, s: d.ellipse((s, s, 15 * s, 15 * s), fill=rgb("#ffffff"), outline=rgb(col), width=int(2.5 * s)))
+    put(im, k, fx - 8, yc - 8)
+
+
 def shard_card(im, P, x0, y0, x1, y1, locked):
     panel(im, (x0, y0, x1, y1), "Mining shard")
     if not locked:
         text(im, (x1 - 14, y0 + 18), "Open", font("head", 15), A["hi"], "rm")
         put(im, g_chev(14, A["hi"]), x1 - 12, y0 + 11)
     px0, py0 = x0 + 12, y0 + 38
-    pw, ph = x1 - x0 - 24, 330
+    pw, ph = x1 - x0 - 24, (290 if V2 else 330)
     pic = shard_picture(pw, ph, locked)
     im.paste(pic, (px0, py0), pic)
     outline(im, (px0, py0, px0 + pw - 1, py0 + ph - 1), "#ffffff" if not locked else "#3a4658", c=8, alpha=60 if not locked else 255)
@@ -765,12 +797,25 @@ def shard_card(im, P, x0, y0, x1, y1, locked):
     if not locked:
         rich(im, x0 + 14, y, [("Mining Shard", font("headb", 18), "#ffffff"), ("  -  ", fk, PAL["dim"]), ("open", font("headb", 18), PAL["green"])])
         y += 32
-        for k, v, c in (("Spirits", "2  (Totem Lv 3)", PAL["row"]), ("Stored", "1,284 items (no limit)", PAL["row"]),
-                        ("Rate", "42 Iron Ore / h", PAL["green"]), ("Offline", "35% for 12 h", PAL["row"]),
-                        ("Clicks", "25% of world XP", PAL["xp"])):
+        lines = [("Spirits", "2  (Totem Lv 3)", PAL["row"]), ("Stored", "1,284 items (no limit)", PAL["row"]),
+                 ("Rate", "42 Iron Ore / h", PAL["green"]), ("Offline", "35% for 12 h", PAL["row"]), ("Clicks", "25% of world XP", PAL["xp"])]
+        if V2:
+            lines = [lines[0], lines[1], ("Rate", "38 Copper Ingot / h", PAL["green"]), lines[4]]
+        for k, v, c in lines:
             text(im, (x0 + 14, y), k, fk, PAL["dim"], "lm")
             text(im, (x0 + 84, y), v, fv, c, "lm")
             y += 24
+        if V2:   # Skyy 11-14: the Smithy add-on
+            sb = (x0 + 12, y - 4, x1 - 12, y + 80)
+            panel(im, sb, inset=True, c=5)
+            outline(im, sb, "#6b5122", c=5)
+            put(im, K.g_anvil(18, PAL["goldHi"]), sb[0] + 10, sb[1] + 9)
+            text(im, (sb[0] + 34, sb[1] + 18), "SMITHY", font("headb", 14), PAL["goldHi"], "lm", track=1.5)
+            text(im, (sb[2] - 10, sb[1] + 18), "add-on  Lv 2", font("bodyb", 13), PAL["xp"], "rm")
+            rich(im, sb[0] + 10, sb[1] + 41, [("Ores auto-smelt to bars  ", font("body", 14), PAL["row"]), ("ON", font("bold", 14), PAL["green"])])
+            rich(im, sb[0] + 10, sb[1] + 64, [("Alloy ", font("body", 14), PAL["row"])])
+            slider(im, sb[0] + 52, sb[1] + 64, 70, 0.25)
+            rich(im, sb[0] + 130, sb[1] + 64, [("25%", font("bold", 14), "#ffffff"), (" Bronze", font("bodyb", 14), METAL["Bronze"])])
         button(im, (x0 + 14, y1 - 58, x1 - 14, y1 - 22), "Open shard", "primary", fsize=17)
         text(im, (x0 + (x1 - x0) // 2, y1 - 8), "or click the picture", font("body", 13), PAL["dim"], "ms")
     else:
@@ -943,6 +988,101 @@ def collections_panel(im, P, x0, y0, x1, y1):
                 text(im, (cx, ly + 74), "opens at Mining %d" % need, font("body", 13), "#aebfd3", "mm")
             else:
                 text(im, (cx, ly + 56), "locked", font("body", 13), "#5d6a7c", "mm")
+
+
+def tier_level(i):
+    """ladder index 0..15 -> the Mining level that opens it (gear level bands: zone z starts at 20 (z - 1), steps +0 / +8 / +15)"""
+    if i >= 15:
+        return 100
+    z, st = divmod(i, 3)
+    return max(1, 20 * z + (0, 8, 15)[st])
+
+
+def kfmt(n):
+    return format(n, ",") if n < 1000 else ("%.1fk" % (n / 1000.0)).replace(".0k", "k")
+
+
+def collections_panel_v2(im, P, x0, y0, x1, y1):
+    """Skyy 11-14 "show the alloys too": the full 16-metal ladder (tools/tier_tags.py LADDER) grouped by zone, alloys marked."""
+    from tier_tags import LADDER
+    panel(im, (x0, y0, x1, y1), "Collections - metal path", link="Collections page")
+    text(im, (x0 + 300, y0 + 18), "Tiers open with your Mining LEVEL;  recipes + rewards with the COLLECTION", font("body", 14), PAL["dim"], "lm")
+    lv = P["lv"]
+    c2 = P["colls2"]
+    nxt = next(i for i in range(16) if tier_level(i) > lv)
+    ow, gap = 84, 8
+    zw = (x1 - x0 - 28 - ow - 5 * gap) // 5
+    by0, by1 = y0 + 36, y0 + 186
+    fz, fn_, fl = font("head", 12), font("headc", 14), font("bodyb", 13)
+    d = ImageDraw.Draw(im, "RGBA")
+    for z in range(6):
+        bx0 = x0 + 14 + z * (zw + gap)
+        bx1 = bx0 + (zw if z < 5 else ow) - 1
+        idx = list(range(3 * z, 3 * z + 3)) if z < 5 else [15]
+        zone_open = tier_level(idx[0]) <= lv
+        panel(im, (bx0, by0, bx1, by1), inset=True, c=5)
+        outline(im, (bx0, by0, bx1, by1), "#2b4466" if zone_open else "#1e2a3c", c=5)
+        if z < 5:
+            text(im, (bx0 + 8, by0 + 12), "ZONE %d" % (z + 1), fz, PAL["title"] if zone_open else "#6b7788", "lm", track=1.2)
+            text(im, (bx1 - 8, by0 + 12), "Mining %d+" % tier_level(idx[0]), font("body", 12), PAL["dim"], "rm")
+        else:
+            text(im, ((bx0 + bx1) // 2, by0 + 12), "LATER", fz, "#6b7788", "mm", track=1.2)
+        step = (bx1 - bx0) / float(len(idx))
+        cxs = [int(bx0 + step * (k + 0.5)) for k in range(len(idx))]
+        for k in range(len(idx) - 1):   # link line inside the zone
+            lit = tier_level(idx[k + 1]) <= lv
+            d.line([(cxs[k] + 26, by0 + 50), (cxs[k + 1] - 26, by0 + 50)], fill=rgb(GOLD if lit else "#3a4658"), width=2)
+        for k, i in enumerate(idx):
+            m = LADDER[i]
+            cx = cxs[k]
+            need = tier_level(i)
+            open_ = need <= lv
+            alloy = m in ALLOY_OF
+            sel = open_ and m == P["sel2"][0]
+            sy = by0 + 29
+            if open_:
+                slot(im, cx - 24, sy, "selected" if sel else "empty", METAL[m], ingot_icon(m), size=48)
+            else:
+                slot(im, cx - 24, sy, "empty", None, ingot_icon(m), size=48, dim=True)
+                put(im, g_lock(16, "#c2d1e2"), cx + 9, sy + 31)
+            if alloy:   # ALLOY tag on the slot
+                tw_ = tw("ALLOY", font("headb", 10), 1) + 8
+                tx0 = cx - tw_ // 2
+                grad_fill(im, (tx0, sy - 7, tx0 + tw_, sy + 6), "#4a3410", "#2b1e08", c=3)
+                outline(im, (tx0, sy - 7, tx0 + tw_, sy + 6), PAL["gold"], c=3)
+                text(im, (cx, sy), "ALLOY", font("headb", 10), PAL["goldHi"], "mm", shadow=False, track=1)
+            text(im, (cx, by0 + 88), m, fn_, METAL[m] if open_ else "#6b7788", "mm")
+            ly = by0 + 106
+            if open_:
+                text(im, (cx, ly), "Lv %d" % need, fl, PAL["green"], "mm")
+            elif i == nxt:
+                text(im, (cx, ly), "Lv %d / %d" % (lv, need), font("headb", 13), PAL["xp"], "mm")
+            else:
+                text(im, (cx, ly), "Lv %d" % need, fl, "#5d6a7c", "mm")
+            if alloy:   # the two parent metals
+                a_, b_ = ALLOY_OF[m]
+                put(im, g_diamond(10, METAL[a_]), cx - 22, by0 + 118)
+                text(im, (cx, by0 + 123), "+", font("headb", 13), PAL["dim"], "mm")
+                put(im, g_diamond(10, METAL[b_]), cx + 12, by0 + 118)
+                text(im, (cx, by0 + 140), "no collection", font("body", 11), "#6b7788", "mm")
+            else:
+                c = c2.get(m)
+                bar(im, (cx - 26, by0 + 118, cx + 26, by0 + 125), (c[1] / float(c[2])) if c else 0, "green")
+                if c:
+                    text(im, (cx, by0 + 140), "%s/%s" % (kfmt(c[1]), kfmt(c[2])), font("headb", 11), PAL["xp"], "mm")
+                else:
+                    text(im, (cx, by0 + 140), "-", font("body", 11), "#5d6a7c", "mm")
+    # detail lines
+    m, cn, have, want, nx = P["sel2"]
+    yy = by1 + 20
+    rich(im, x0 + 14, yy, [("SELECTED  ", font("head", 13), PAL["dim"]), (cn + "  ", font("bodyb", 15), METAL[m]),
+                           ("%s / %s" % (format(have, ","), format(want, ",")), font("headb", 15), PAL["xp"]),
+                           ("   ->  next: ", font("body", 15), PAL["dim"]), (nx, font("bodyb", 15), PAL["green"])])
+    nm = LADDER[nxt]
+    rich(im, x0 + 14, yy + 24, [("NEXT TIER  ", font("head", 13), PAL["dim"]), (nm, font("bodyb", 15), METAL[nm]),
+                                ((" alloy" if nm in ALLOY_OF else " ore") + " at Mining %d  (you %d)" % (tier_level(nxt), lv), font("body", 15), PAL["row"]),
+                                ("      ALLOY", font("headb", 12), PAL["goldHi"]),
+                                (" = smelted from the zone's two metals; only base metals have collections", font("body", 14), PAL["dim"])])
 
 
 def node_pic(size, state, k=0, m=1, cap=False, diamond=False):
@@ -1173,8 +1313,12 @@ def make_skill_page(key="hi"):
     MX0, MX1 = LX1 + 12, RX0 - 12
     stats_column(im, P, X0, Y0, LX1, Y1)
     top_panel(im, P, MX0, Y0, MX1, Y0 + 236)
-    collections_panel(im, P, MX0, Y0 + 246, MX1, Y0 + 456)
-    tree_panel(im, P, MX0, Y0 + 466, MX1, Y1)
+    if V2:
+        collections_panel_v2(im, P, MX0, Y0 + 246, MX1, Y0 + 490)
+        tree_panel(im, P, MX0, Y0 + 500, MX1, Y1)
+    else:
+        collections_panel(im, P, MX0, Y0 + 246, MX1, Y0 + 456)
+        tree_panel(im, P, MX0, Y0 + 466, MX1, Y1)
     gy = skills_grid(im, P, RX0, Y0, X1)
     shard_card(im, P, RX0, gy + 10, X1, Y1, locked=P["lv"] < 10)
     footer(im, [("LMB", "Select / learn"), ("Hover", "Details"), ("Shift+LMB", "Learn max"), ("Tab / Esc", "Close")])
@@ -1491,9 +1635,286 @@ def make_zoomed():
     return im
 
 
+# ================================================================================================================ mining shard = quarry
+def stone_icon(col, spots=None):
+    def f(a, n):
+        ol = "#14100c"
+        a.poly([(n * 0.14, n * 0.6), (n * 0.26, n * 0.3), (n * 0.56, n * 0.18), (n * 0.84, n * 0.36), (n * 0.88, n * 0.66), (n * 0.6, n * 0.84),
+                (n * 0.26, n * 0.8)], col, ol, 1.6)
+        a.poly([(n * 0.26, n * 0.3), (n * 0.56, n * 0.18), (n * 0.84, n * 0.36), (n * 0.5, n * 0.42)], (mix(col, "#ffffff", 0.25), 255))
+        for fx, fy, c in (spots or []):
+            a.poly([(n * fx - 4, n * fy), (n * fx, n * fy - 4), (n * fx + 4, n * fy), (n * fx, n * fy + 4)], c, ol, 1)
+    return f
+
+
+def ic_rubble(a, n):
+    for fx, fy, r in ((0.32, 0.62, 0.17), (0.64, 0.66, 0.15), (0.5, 0.4, 0.16), (0.74, 0.38, 0.1)):
+        a.ell(n * fx, n * fy, n * r, n * r * 0.8, "#9a9690", "#14100c", 1.4)
+        a.ell(n * fx - n * r * 0.3, n * fy - n * r * 0.3, n * r * 0.35, n * r * 0.22, ("#ffffff", 80))
+
+
+def ic_miner(a, n):
+    spirit(a, n * 0.45, n * 0.45, n * 0.24, body="#a8ecff", deep="#3a8ed8", hat="miner")
+
+
+def ic_quarry(a, n):
+    for k in range(4):
+        rx, ry = n * (0.44 - k * 0.09), n * (0.26 - k * 0.05)
+        a.ell(n * 0.5, n * 0.5 + k * 4, rx, ry, mix("#5a5650", "#2a2622", k / 4.0), "#14100c", 1.2)
+        a.ell(n * 0.5, n * 0.5 + k * 4 + ry * 0.18, rx * 0.95, ry * 0.8, mix("#9a958c", "#5a554e", k / 4.0))
+
+
+def ic_lucky(a, n):
+    a.glow(n * 0.5, n * 0.5, n * 0.3, n * 0.3, "#ffe27a", 170, 6)
+    a.poly([(n * 0.5, n * 0.14), (n * 0.78, n * 0.42), (n * 0.5, n * 0.88), (n * 0.22, n * 0.42)], "#7fe0d0", "#10302a", 1.6)
+    a.poly([(n * 0.5, n * 0.14), (n * 0.62, n * 0.42), (n * 0.5, n * 0.88), (n * 0.38, n * 0.42)], ("#c8fff4", 200))
+    for fx, fy in ((0.2, 0.2), (0.82, 0.24), (0.8, 0.8)):
+        a.ell(n * fx, n * fy, 2.5, 2.5, "#ffffff")
+
+
+def px_ingot_art(metal):
+    def f(a, n):
+        c = METAL[metal]
+        ol = "#14100c"
+        a.poly([(n * 0.12, n * 0.62), (n * 0.3, n * 0.4), (n * 0.88, n * 0.4), (n * 0.7, n * 0.62)], mix(c, "#ffffff", 0.15), ol, 1.4)
+        a.poly([(n * 0.12, n * 0.62), (n * 0.7, n * 0.62), (n * 0.7, n * 0.76), (n * 0.12, n * 0.76)], mix(c, "#000000", 0.3), ol, 1.4)
+        a.poly([(n * 0.7, n * 0.62), (n * 0.88, n * 0.4), (n * 0.88, n * 0.54), (n * 0.7, n * 0.76)], mix(c, "#000000", 0.45), ol, 1.4)
+        a.line([(n * 0.34, n * 0.45), (n * 0.78, n * 0.45)], ("#ffffff", 150), 1.4)
+    return f
+
+
+def smithy_hut(a, cx, by, sc=1.0):
+    """our own little smithy: stone base, plank roof, chimney with smoke, glowing forge mouth, anvil out front"""
+    ol = "#14100c"
+    a.ell(cx, by + 4 * sc, 95 * sc, 18 * sc, ("#000000", 70))
+    a.rect((cx - 70 * sc, by - 70 * sc, cx + 70 * sc, by), "#8c8a86", 4, ol, 1.6)
+    for r in range(4):   # stone courses
+        y = by - 70 * sc + r * 17.5 * sc
+        a.line([(cx - 68 * sc, y), (cx + 68 * sc, y)], ("#5c5a56", 200), 1.2)
+        for k in range(5):
+            x = cx - 70 * sc + (k * 30 + (r % 2) * 15) * sc
+            a.line([(x, y), (x, y + 17.5 * sc)], ("#5c5a56", 160), 1.0)
+    # chimney + smoke
+    a.rect((cx + 30 * sc, by - 140 * sc, cx + 52 * sc, by - 80 * sc), "#7a7874", 2, ol, 1.4)
+    for k, (dx, dy, r, al) in enumerate(((44, -158, 12, 170), (52, -182, 16, 140), (64, -210, 20, 110), (80, -240, 24, 80))):
+        a.ell(cx + dx * sc, by + dy * sc, r * sc, r * sc * 0.85, ("#e8edf2", al))
+    # roof
+    a.poly([(cx - 84 * sc, by - 66 * sc), (cx, by - 122 * sc), (cx + 84 * sc, by - 66 * sc)], "#9a5a32", ol, 1.6)
+    for k in range(1, 5):
+        t = k / 5.0
+        a.line([(cx - 84 * sc + 84 * sc * t, by - 66 * sc - 56 * sc * t), (cx - 84 * sc + 84 * sc * t + 6 * sc, by - 66 * sc)], ("#6a3a1c", 170), 1.2)
+    # forge mouth
+    a.glow(cx - 18 * sc, by - 26 * sc, 34 * sc, 24 * sc, "#ff9a3a", 190, 10)
+    a.rect((cx - 40 * sc, by - 46 * sc, cx + 4 * sc, by - 6 * sc), "#2a160c", 8, ol, 1.4)
+    a.ell(cx - 18 * sc, by - 16 * sc, 16 * sc, 8 * sc, "#ffb04a")
+    a.ell(cx - 18 * sc, by - 18 * sc, 9 * sc, 5 * sc, "#fff0a0")
+    # window with a bar rack
+    a.rect((cx + 16 * sc, by - 50 * sc, cx + 50 * sc, by - 26 * sc), "#3a2a1a", 3, ol, 1.2)
+    for k, m in enumerate(("Copper", "Iron", "Bronze")):
+        a.rect((cx + 19 * sc + k * 10 * sc, by - 36 * sc, cx + 27 * sc + k * 10 * sc, by - 30 * sc), METAL[m], 1, ol, 0.8)
+    # anvil
+    ax_, ay_ = cx + 70 * sc, by + 18 * sc
+    a.rect((ax_ - 8 * sc, ay_ - 14 * sc, ax_ + 8 * sc, ay_), "#3a3c44", 2, ol, 1.2)
+    a.poly([(ax_ - 26 * sc, ay_ - 24 * sc), (ax_ + 18 * sc, ay_ - 24 * sc), (ax_ + 26 * sc, ay_ - 18 * sc), (ax_ + 14 * sc, ay_ - 14 * sc),
+            (ax_ - 14 * sc, ay_ - 14 * sc)], "#4a4c56", ol, 1.2)
+    a.line([(ax_ - 20 * sc, ay_ - 23 * sc), (ax_ + 16 * sc, ay_ - 23 * sc)], ("#9aa0aa", 200), 1.2)
+
+
+def quarry_scene(a, cx, cy):
+    island(a, cx, cy, 500, 215, 220, grass="#6fb04a", rock="#77706a",
+           ores=[(-0.6, 0.15, METAL["Copper"]), (0.3, 0.3, METAL["Iron"]), (-0.1, 0.55, METAL["Silver"]), (0.62, 0.12, METAL["Gold"])])
+    # the pit: terraces stepping down (far wall faces = darker crescents)
+    qx, qy = cx + 20, cy + 6
+    ores = []
+    for k in range(6):
+        rx, ry = 380 - k * 58, 168 - k * 25
+        fy = qy + k * 14
+        wall = mix("#6a645c", "#2e2a26", k / 6.0)
+        floor = mix("#a49e94", "#6a655e", k / 6.0)
+        a.ell(qx, fy, rx, ry, wall, "#1a1410", 1.6)
+        a.ell(qx, fy + ry * 0.2, rx * 0.97, ry * 0.8, floor)
+        for j in range(4):   # ore specks in the far wall
+            ang = math.radians(200 + j * 40 + k * 9)
+            ores.append((qx + rx * 0.9 * math.cos(ang), fy + ry * 0.75 * math.sin(ang) + 2,
+                         [METAL["Copper"], METAL["Iron"], "#c2c0bc", METAL["Copper"], METAL["Silver"], METAL["Gold"]][(j + k) % 6]))
+    for ox, oy, c in ores:
+        a.poly([(ox - 5, oy), (ox, oy - 5), (ox + 5, oy), (ox, oy + 5)], c, "#1a1410", 1)
+    # ramp down the near-left side
+    a.poly([(qx - 330, qy + 120), (qx - 270, qy + 136), (qx - 120, qy + 120), (qx - 150, qy + 104)], ("#8a847a", 230), "#1a1410", 1.2)
+    # the clicked block (a stone cube with copper) at the bottom of the pit
+    bx, byy, sz = qx, qy + 92, 44
+    top = [(bx, byy - sz * 0.9), (bx + sz, byy - sz * 0.45), (bx, byy), (bx - sz, byy - sz * 0.45)]
+    a.poly(top, "#b4aea4", "#1a1410", 1.6)
+    a.poly([(bx - sz, byy - sz * 0.45), (bx, byy), (bx, byy + sz * 0.9), (bx - sz, byy + sz * 0.45)], "#8a847a", "#1a1410", 1.6)
+    a.poly([(bx, byy), (bx + sz, byy - sz * 0.45), (bx + sz, byy + sz * 0.45), (bx, byy + sz * 0.9)], "#6f6a62", "#1a1410", 1.6)
+    for fx, fy in ((-0.5, 0.15), (-0.25, 0.5), (0.45, 0.2), (0.6, 0.5), (0.0, -0.45)):
+        ox, oy = bx + fx * sz, byy + fy * sz
+        a.poly([(ox - 5, oy), (ox, oy - 5), (ox + 5, oy), (ox, oy + 5)], METAL["Copper"], "#1a1410", 1)
+    a.line([(bx - 20, byy - 30), (bx - 4, byy - 12), (bx - 12, byy + 4), (bx + 6, byy + 24)], ("#2a2622", 230), 2)
+    for k in range(7):
+        ang = math.radians(-170 + k * 27)
+        a.line([(bx + 72 * math.cos(ang), byy - 6 + 60 * math.sin(ang)), (bx + 92 * math.cos(ang), byy - 6 + 78 * math.sin(ang))], ("#ffffff", 230), 3)
+    for k, (dx, dy) in enumerate(((-60, -40), (52, -50), (-30, -70), (70, -20))):
+        a.rect((bx + dx - 4, byy + dy - 4, bx + dx + 4, byy + dy + 4), "#9a958c", 1, "#1a1410", 1)
+    # miner spirits on the terraces + the spirit totem on the rim
+    spirit(a, qx - 230, qy - 40, 24, body="#a8ecff", deep="#3a8ed8", hat="miner", carry="pick")
+    spirit(a, qx + 170, qy + 84, 22, body="#a8ecff", deep="#3a8ed8", hat="miner", carry="pick")
+    spirit(a, qx + 40, qy - 110, 20, body="#a8ecff", deep="#3a8ed8", hat="miner", arms_up=True)
+    totem(a, cx + 420, cy + 40, 120, "#45a8ff", top="picks")
+    smithy_hut(a, cx - 400, cy + 70, 0.95)
+    rock_pile(a, cx + 330, cy + 150, 1.0, METAL["Iron"])
+    crystal(a, cx + 250, cy - 160, 0.9, "#7fe0d0")
+
+
+def make_quarry():
+    im, (WX0, WY0, WX1, WY1) = window_v4("Skills")
+    X0, X1 = WX0 + 16, WX1 - 16
+    y = 86
+    button(im, (X0, y, X0 + 140, y + 36), "Mining page", "secondary", fsize=15, glyph=g_back(14, "#c2d1e2"))
+    paste_icon(im, I_WARP % "Mining", X0 + 156, y - 2, 40)
+    text(im, (X0 + 204, y + 18), "MINING SHARD", font("headb", 24), PAL["title"], "lm", track=2)
+    x = X0 + 204 + tw("MINING SHARD", font("headb", 24), 2) + 16
+    x += level_pill(im, x, y + 7, "Mining Lv 31") + 10
+    chip(im, x, y + 3, "Zone 1 Quarry  -  Copper + Iron", True)
+    text(im, (X1 - 190, y + 10), "Clicks: 25% of world XP", font("bodyb", 14), PAL["xp"], "rm")
+    text(im, (X1 - 190, y + 28), "Spirits: 0 XP", font("body", 14), PAL["dim"], "rm")
+    button(im, (X1 - 174, y, X1, y + 36), "Zoom out", "secondary", fsize=15, glyph=g_search(16, "#c2d1e2"))
+    taper_line(im, X0, X1, y + 50, PAL["gold"], 150, 0.85)
+    VX0, VY0, VX1, VY1 = X0, 148, X1 - 350, 876
+    w, h = VX1 - VX0 + 1, VY1 - VY0 + 1
+    a = sky_view(w, h)
+    cx, cy = w // 2 - 10, h // 2 - 40
+    quarry_scene(a, cx, cy)
+    view = a.done()
+    m = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(m).rounded_rectangle((0, 0, w - 1, h - 1), radius=8, fill=255)
+    im.paste(view, (VX0, VY0), m)
+    outline(im, (VX0, VY0, VX1, VY1), PAL["edge"], c=8)
+    outline(im, (VX0 + 1, VY0 + 1, VX1 - 1, VY1 - 1), "#34496b", c=7)
+    gx, gy = VX0 + cx + 20, VY0 + cy + 6 + 92   # the clicked block
+    hx, hy = gx - 160, VY0 + 22
+    grad_fill(im, (hx, hy, hx + 330, hy + 34), "#0e1729", "#0a111e", c=6)
+    outline(im, (hx, hy, hx + 330, hy + 34), "#34496b", c=6)
+    ex = rich(im, hx + 12, hy + 17, [("Hits ", font("body", 15), PAL["dim"]), ("1 / 3", font("headb", 16), "#ffffff"),
+                                     ("  -  your Copper Pickaxe", font("bodyb", 15), METAL["Copper"])])
+    K.pips(im, ex + 10, hy + 12, 1, 3, w=10, gap=3)
+    # drops pop (stone + ore, ore auto-smelted by the Smithy)
+    px_, py_ = gx + 100, gy - 120
+    for k, (pic, s_, col) in enumerate(((art_icon(stone_icon("#9a958c"), 32), "+2 Cobblestone", "#ffffff"),
+                                         (art_icon(px_ingot_art("Copper"), 32), "+1 Copper Ingot", METAL["Copper"]))):
+        im.paste(pic, (px_, py_ - 16 + k * 34), pic)
+        text(im, (px_ + 38, py_ + k * 34), s_, font("headb", 20), col, "lm")
+    text(im, (px_ + 38, py_ + 58), "Smithy: ore smelted", font("bodyb", 13), PAL["goldHi"], "lm")
+    put(im, g_cursor(28), gx + 14, gy - 4)
+    for (lx, ly), s_ in (((VX0 + cx - 400, VY0 + cy + 96), "SMITHY Lv 2 - auto-smelt ON"), ((VX0 + cx + 420, VY0 + cy + 62), "Spirit totem Lv 3"),
+                         ((VX0 + cx - 210, VY0 + cy - 108), "Miner spirit")):
+        bw = tw(s_, font("bodyb", 13)) + 18
+        grad_fill(im, (lx - bw // 2, ly, lx + bw // 2, ly + 24), "#0e1729", "#0a111e", c=5, alpha=225)
+        outline(im, (lx - bw // 2, ly, lx + bw // 2, ly + 24), "#6b5122" if "SMITHY" in s_ else "#34496b", c=5)
+        text(im, (lx, ly + 12), s_, font("bodyb", 13), PAL["goldHi"] if "SMITHY" in s_ else "#ffffff", "mm")
+    view_caption(im, VX0 + 18, VY1 - 22, "Click the block: hits use your real pickaxe; every block gives stone, ore is a chance (Copper, Iron, Silver, Gold)")
+    # storage
+    x0, y0, x1, y1 = VX0, VY1 + 10, VX1, 1020
+    panel(im, (x0, y0, x1, y1), "Shard storage")
+    text(im, (x0 + 200, y0 + 18), "no stack limit  -  ores arrive as bars (Smithy)", font("body", 14), PAL["dim"], "lm")
+    items = [(stone_icon("#9a958c"), "3,410", None), (ic_rubble, "822", None), (stone_icon("#5e6470"), "512", None),
+             (px_ingot_art("Copper"), "1,104", "Normal"), (px_ingot_art("Iron"), "286", "Normal"), (px_ingot_art("Bronze"), "94", "Normal"),
+             (px_ingot_art("Silver"), "12", None), (px_ingot_art("Gold"), "3", None)]
+    names = ["Cobblestone", "Rubble", "Shale", "Copper Ingot", "Iron Ingot", "Bronze Ingot", "Silver Ingot", "Gold Ingot"]
+    sx = x0 + 14
+    for (fn, cnt, _r), nm in zip(items, names):
+        slot(im, sx, y0 + 36, "empty", None, None, size=64)
+        p_ = art_icon(fn, 48)
+        im.paste(p_, (sx + 8, y0 + 44), p_)
+        text(im, (sx + 59, y0 + 96), cnt, font("headb", 15), "#ffffff", "rs")
+        sx += 70
+    rx = sx + 14
+    yy = y0 + 46
+    for k, v, c in (("Spirits", "3 at work", PAL["row"]), ("Rate", "96 blocks / min", PAL["green"]), ("Offline", "35% for 12 h", PAL["row"])):
+        text(im, (rx, yy), k, font("body", 15), PAL["dim"], "lm")
+        text(im, (rx + 66, yy), v, font("bodyb", 15), c, "lm")
+        yy += 23
+    button(im, (x1 - 150, y0 + 36, x1 - 14, y0 + 72), "Collect all", "primary", fsize=16)
+    button(im, (x1 - 150, y0 + 80, x1 - 14, y0 + 108), "Send to Void", "secondary", fsize=14)
+    # right column: SMITHY add-on + UPGRADES
+    x0, x1 = VX1 + 12, X1
+    sy0, sy1 = VY0, VY0 + 300
+    panel(im, (x0, sy0, x1, sy1), "Smithy  (add-on)")
+    text(im, (x1 - 14, sy0 + 18), "Lv 2 / 5", font("headb", 14), PAL["xp"], "rm")
+    ic = art_icon(lambda a_, n: smithy_hut(a_, n * 0.42, n * 0.84, n / 230.0), 56)
+    slot(im, x0 + 14, sy0 + 36, "empty", None, None, size=64)
+    im.paste(ic, (x0 + 18, sy0 + 40), ic)
+    text(im, (x0 + 92, sy0 + 52), "Every ore you mine here", font("body", 14), PAL["row"], "lm")
+    text(im, (x0 + 92, sy0 + 72), "is smelted into its bar.", font("body", 14), PAL["row"], "lm")
+    text(im, (x0 + 92, sy0 + 92), "No fuel, no Furnace trip.", font("body", 14), PAL["dim"], "lm")
+    row(im, (x0 + 10, sy0 + 112, x1 - 10, sy0 + 146), "normal")
+    text(im, (x0 + 20, sy0 + 129), "Auto-smelt ores to bars", font("bodyb", 15), "#ffffff", "lm")
+    toggle(im, x1 - 66, sy0 + 118, True, w=44, h=22)
+    row(im, (x0 + 10, sy0 + 152, x1 - 10, sy0 + 222), "normal")
+    rich(im, x0 + 20, sy0 + 170, [("Alloy  ", font("bodyb", 15), "#ffffff"), ("of the ore -> ", font("body", 14), PAL["dim"]),
+                                  ("Bronze", font("bold", 15), METAL["Bronze"])])
+    text(im, (x1 - 20, sy0 + 170), "25%", font("headb", 17), "#ffffff", "rm")
+    slider(im, x0 + 22, sy0 + 196, x1 - x0 - 100, 0.25)
+    text(im, (x1 - 20, sy0 + 196), "max 25%", font("body", 13), PAL["dim"], "rm")
+    text(im, (x0 + 20, sy0 + 212), "Copper + Iron  ->  Bronze Ingot", font("body", 13), PAL["dim"], "lm")
+    rich(im, x0 + 14, sy0 + 242, [("Next  Lv 3:  ", font("bodyb", 14), PAL["xp"]), ("alloy up to 50%", font("bodyb", 14), PAL["green"])])
+    put(im, g_coin(16), x0 + 14, sy0 + 264)
+    text(im, (x0 + 36, sy0 + 272), "40,000", font("headb", 14), "#ffd76a", "lm")
+    paste_icon(im, I_ENCH % "copper-ingot", x0 + 98, sy0 + 261, 22)
+    text(im, (x0 + 124, sy0 + 272), "18 / 16", font("headb", 14), PAL["green"], "lm")
+    button(im, (x1 - 122, sy0 + 256, x1 - 16, sy0 + 288), "Upgrade", "primary", fsize=14)
+    uy0 = sy1 + 10
+    panel(im, (x0, uy0, x1, 1020), "Upgrades")
+    text(im, (x1 - 14, uy0 + 18), "coins + Ench. Cobblestone", font("body", 13), PAL["dim"], "rm")
+    rows = [("Miner spirits", ic_miner, "Lv 3 / 10", [("Swing  ", None), ("2.0 s -> 1.8 s", "g"), (",  3 spirits", None)], "15,000", 12, True),
+            ("Quarry speed", ic_quarry, "Lv 2 / 10", [("Blocks / min  ", None), ("96 -> 120", "g")], "20,000", 16, True),
+            ("Lucky finds", ic_lucky, "Lv 1 / 10", [("Something good / block  ", None), ("2% -> 3%", "g")], "25,000", 20, True),
+            ("Iron vein", px_ingot_art("Iron"), "bought", [("Iron Ore in the quarry  ", None), ("ON", "g")], "-", 0, "done"),
+            ("Silver + Gold", px_ingot_art("Silver"), "Lv 1 / 5", [("Silver ", None), ("0.5% -> 0.8%", "g"), (", Gold 0.2%", None)], "30,000", 40, False)]
+    rh = (1020 - uy0 - 44) // len(rows)
+    ench = I_ENCH % "cobblestone"
+    for i, (nm, icf, lvl, eff, coins, need_e, ok) in enumerate(rows):
+        ry0 = uy0 + 38 + i * rh
+        ry1 = ry0 + rh - 6
+        row(im, (x0 + 10, ry0, x1 - 10, ry1), "normal")
+        slot(im, x0 + 16, ry0 + 8, "empty", None, None, size=48)
+        icp = art_icon(icf, 40)
+        im.paste(icp, (x0 + 20, ry0 + 12), icp)
+        tx = x0 + 74
+        text(im, (tx, ry0 + 16), nm, font("headb", 16), "#ffffff", "lm")
+        text(im, (x1 - 20, ry0 + 16), lvl, font("headb", 13), PAL["xp"], "rm")
+        rich(im, tx, ry0 + 38, [(s_, font("bodyb", 13) if c == "g" else font("body", 13), PAL["green"] if c == "g" else PAL["row"]) for s_, c in eff])
+        cy_ = ry0 + 62
+        if ok == "done":
+            put(im, g_check(14, PAL["green"]), tx, cy_ - 7)
+            text(im, (tx + 20, cy_), "Zone 1 upgrade - done", font("bodyb", 13), PAL["green"], "lm")
+            continue
+        put(im, g_coin(14), tx, cy_ - 7)
+        text(im, (tx + 18, cy_), coins, font("headb", 13), "#ffd76a", "lm")
+        ex = tx + 26 + tw(coins, font("headb", 13))
+        paste_icon(im, ench, ex, cy_ - 10, 20)
+        have = 31
+        text(im, (ex + 24, cy_), "%d / %d" % (have, need_e), font("headb", 13), PAL["green"] if have >= need_e else PAL["red"], "lm")
+        button(im, (x1 - 112, ry1 - 30, x1 - 18, ry1 - 6), "Upgrade" if ok else "Need more", "primary", "normal" if ok else "disabled", fsize=13)
+    footer(im, [("LMB", "Mine / select"), ("Drag", "Alloy slider"), ("Shift+LMB", "Upgrade max"), ("Tab / Esc", "Close")])
+    return im
+
+
+def _v1(fn):
+    global V2
+    V2 = False
+    try:
+        return fn()
+    finally:
+        V2 = True
+
+
 def main():
     out = {"skill-page-mining.png": lambda: make_skill_page("hi"),
            "skill-page-mining-locked.png": lambda: make_skill_page("lo"),
+           "skill-page-mining-v1.png": lambda: _v1(lambda: make_skill_page("hi")),
+           "skill-page-mining-locked-v1.png": lambda: _v1(lambda: make_skill_page("lo")),
+           "shard-clicker-mining.png": make_quarry,
            "shard-clicker-foraging.png": lambda: make_clicker(False),
            "shard-clicker-foraging-grown.png": lambda: make_clicker(True),
            "shard-clicker-zoomed-out.png": make_zoomed}
