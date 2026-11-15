@@ -41,6 +41,11 @@ once built. Related: research/Inventory-Screen-Plan.md (12 tabs), research/ui-th
 - Each of the first four skills has its own game: Foraging (tree clicker), Mining (rock / ore node), Farming (crop plots), Combat (town
   defense). Others later.
 
+## Mining = quarry (Skyy 2026-11-14, docs/answered/world.md)
+- A big quarry; one island per ZONE (not per ore). Zone 1: Copper, Iron with an upgrade. Silver + Gold on every island, more common with
+  upgrades, following vanilla's spread (Silver most common in zone 3).
+- Upgrades: miner spirits + quarry (mine speed), chance of something good per block mined. Every block also gives the zone's stone types.
+
 ## Steps
 1. Art round: the Farming skill page + the Foraging clicker island (small / grown / zoomed out) as mockups for Skyy.
 2. Probe: click speed and picture swaps in a test page (SkyyUiProbe), element count.
