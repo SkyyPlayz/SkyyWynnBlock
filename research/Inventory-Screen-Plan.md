@@ -64,6 +64,7 @@ Hytale 0.7 server can do it). Ideas and layout only - never Runeteria's art, tex
   you can add more"): buttons under the hotbar, default Island + Hub, an Edit button adds / removes / reorders (like Edit shortcuts).
 
 ## 3. The 12 tabs and what each holds (nothing lost, as few windows as possible)
+**SUPERSEDED 2026-11-14 (Skyy "Yes, both"): 7 tabs - Inventory, Skills, Pets, Market, World, Social, Settings; each ONE screen. See research/ui-theme-art/tab-plan.png + README (nothing-lost table). The table below is the old plan.**
 | Tab | Pages inside (today's owner mod) |
 |---|---|
 | Inventory | the screen above (Menu draws it; Sacks bags + crafting, Accessories charms, Pets, Skills data) |
