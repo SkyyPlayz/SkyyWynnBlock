@@ -72,7 +72,7 @@ Hytale 0.7 server can do it). Ideas and layout only - never Runeteria's art, tex
 | Pets | pets, eggs, hatchery, summon, dragon settings; card grid + 3D preview + Summon (Pets) |
 | Collections | collections, bestiary / drops codex (Runeteria's lootbag codex idea: every bag and mob's drops with %), memories-style milestones (Collections, Mobs, Gear loot) |
 | Storage | Pocket management, Supplies, Requip (loadouts), Vault, Bank (Sacks, Cooking, Wardrobe, Vault, Bank) |
-| Crafting | station pages: Smithing, Cooking, Smelting, Tanning, Upgrade, Identify, Reforge, Anvil, Multitool (Gear, Sacks, Cooking) |
+| Upgrade (replaces Crafting, Skyy 11-14) | ONE page = Smithing + Anvil + Upgrade: icon buttons Combat / Mining / Farming / Foraging / Fishing; the family's tool + its upgrade points / tier up, worn armor pieces each with Upgrade, Upgrade full set, Reforge, Apply Sigil, hover stats (Gear, Trees tools). All crafting = inventory crafting. |
 | Market | Bazaar, Auctions, Merchants (Bazaar, Auctions, Merchants) |
 | Quests | log left (story chapters, side, dailies, weeklies, achievements; follow filter), details right (steps, rewards, reset timers) (Quests) |
 | World | Teleport, Island, Shards (all kinds incl. Combat), Explore - travel as cards with danger + cost (Menu, Islands, Shards, Exploration) |
@@ -129,4 +129,5 @@ Hytale 0.7 server can do it). Ideas and layout only - never Runeteria's art, tex
   bench, Craftable-only kept; inventory crafting = ~99 %; Crafting tab = processing (smithing, cooking, smelting, tanning, upgrade,
   identify ...); simple, good-looking, full pages, fewest menus.
 - 2026-11-14: Right now panel right of the inventory; teleport row under the hotbar (Island + Hub, editable); P0 probe PASS (TEST 282); P0b art started.
+- 2026-11-14 (v3 review): Character header = Requip presets (Combat, Mining, Farming, Foraging, Fishing); Crafting tab removed -> Upgrade tab; charms / pets keep their own crafting pages; Fishing table -> Smithing; teleport row = icon mini hotbar; art v3 in research/ui-theme-art/.
 - Open (defaults): ALT opens the Inventory tab [yes]; Home tiles retire into the tabs [yes]; Supplies as a bag tab [if it fits].
