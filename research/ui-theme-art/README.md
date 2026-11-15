@@ -13,12 +13,44 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## Requip + Charms inside the inventory, world v2 (2026-11-14, after Skyy's review)
+Skyy (docs/answered/ui.md newest lines): on world-page.png "there is no separate hub island, there is a hub per zone island." and on
+requip-page.png "no no no. the inventory tab takes you to the inventory we build earlier." Popup: Requip / Charms editing = "Inside the
+inventory (Recommended)" -> the preset pencil swaps the inventory screen's CRAFTING panel (top middle of inventory-mockup.png v5) for a
+Requip panel, like the pocket tabs swap that panel; the charm row's 'All charms' link does the same with a Charms panel. The bag, hotbar
+and character column stay visible, so gear and charms are dragged straight in. No separate Requip / Charms pages, no breadcrumb.
+- **`inventory-mockup-requip.png`:** the approved v5 inventory screen (drawn by make_ui_theme.py's own code; the new 7-tab bar on top),
+  with the preset pencil lit and the crafting panel swapped for **Requip - editing Mining**:
+  - Preset list: Combat (WORN), Mining (1 missing), Farming, Foraging, Fishing, Boss fight, Night caves (+ New preset).
+  - Slots of the preset: 4 armor pieces, tool, pet, the 9-slot hotbar, charms and abilities. Each has a mark: on you / in storage /
+    missing (legend at the top).
+  - Smart hints (missing Greaves + where last seen, better helmet in storage, out of stew) and Equip Mining / Save from what I wear /
+    Rename. A Done button returns the panel to Craft.
+  - A REQUIP STORAGE strip (18 / 45) with Take out / Salvage.
+- **`inventory-mockup-charms.png`:** the same screen with 'All charms' lit and the panel swapped for **Void charms 13 / 23**:
+  - The charm bag grid (duplicates marked with a red x), bag rarity Rare x1.20 + Upgrade bag, Done.
+  - The selected Unique Lantern with TIER UP -> Rare costs (need N) + Tier up / Merge 3.
+  - ALL CHARMS TOGETHER (summed stats).
+- **`world-page.png` (v2):** no separate Hub island. Every zone island has its own HUB TOWN (little town drawing + a "Hub town" tag),
+  plus its warp pin, label and danger colour; the selected card reads "Hub town + warps".
+- Kept: `world-page-v1.png`, `requip-page-v1.png`, `charms-page-v1.png` (the separate-page versions; same bytes as before).
+- `tab-plan.png`: the Inventory card says "Requip + Charms panels open INSIDE it (preset pencil, 'All charms')".
+- Note: the character column's charm row still shows the v5 numbers (9 / 18). The Charms panel shows the newer 13 / 23; in the
+  build both come from the same data.
+
+Open questions (default in [brackets]):
+1. While the Requip panel is open, does dragging a bag item onto a preset slot save it into the preset right away? [yes, Save not
+   needed for drags]
+2. Requip storage strip: one row with scroll, or the full grid when you click its title? [one row; click the title for the full grid]
+3. Zone hub towns: one warp each named after the town (e.g. Oasis camp)? [yes]
+
 ## Tab pages: Market, World, Social, Settings + Charms + Requip (2026-11-14)
 Skyy approved the 7 tabs + pets-page.png ("Yes, both"), then: on Market "perfect.", on the Skills card "class is combat.", on pets-page.png
 "i like this! lets see a plan for a charms one too." and "and id like to see an upgraded/ improved reequip page too". Generator:
 `make_tab_pages.py` (deterministic; every older picture byte-identical; `tab-plan-v1.png` = the first tab plan, flag `V2 = False`).
 - **`tab-plan.png` (v2):** the Skills card now says "One page per skill - Combat = your class"; the COMBAT page holds your class
-  (loadout, abilities, class tree, combat gear). No separate Class card. The Inventory card names the 'Charms page' link.
+  (loadout, abilities, class tree, combat gear). No separate Class card. The Inventory card names the 'Charms page' link
+  (later: Requip + Charms panels open INSIDE the inventory - see the section above).
 - **`market-page.png`:** one screen, no sub-tabs:
   - LEFT: search + Bazaar categories.
   - CENTRE: the category's items with buy / sell prices and the 24 h change, sorted by tier.
@@ -45,7 +77,7 @@ Skyy approved the 7 tabs + pets-page.png ("Yes, both"), then: on Market "perfect
   - SETTINGS: search + Gameplay / Chat / Interface toggles.
   - HUD LAYOUT: preview + Open HUD editor. TOP TAB ORDER: the 7 tabs with up / down, Settings always last, Reset order.
   - MODS: list with Help. SERVER SETUP: admin badge, search, categories, Open Server Setup; locked for non-admins.
-- **`charms-page.png`:** VOID CHARMS on one screen.
+- **`charms-page.png`** (now `charms-page-v1.png`, REPLACED by inventory-mockup-charms.png): VOID CHARMS on one screen.
   - YOUR CHARM BAG: 13 / 23 slots with rarity frames, duplicates marked "not counting", locked slots.
   - BAG UPGRADE: Rare x1.20 -> Legendary x1.35, needs + costs (research/Hubs-Spec.md 4.2).
   - SELECTED CHARM: Unique Lantern, what it gives now, TIER UP Unique -> Rare (the charm + materials + coins), or MERGE 3, Take out.
@@ -54,7 +86,7 @@ Skyy approved the 7 tabs + pets-page.png ("Yes, both"), then: on Market "perfect
     Lantern) with the best rarity you own + Craft / Tier up.
   - WHERE IT LIVES: in the Inventory tab. The Inventory's charm row 'Charms page' link (and a skill page's Charms page link) opens it.
     A breadcrumb "INVENTORY > VOID CHARMS" is shown and the top tab row stays - no back button (Skyy 10-16).
-- **`requip-page.png`:** REQUIP on one screen (Inventory tab).
+- **`requip-page.png`** (now `requip-page-v1.png`, REPLACED by inventory-mockup-requip.png): REQUIP on one screen.
   - PRESETS: Combat (Archer), Mining, Farming, Foraging, Fishing (keys 1-5) + custom presets (Boss fight, Night caves), each WORN /
     ready / N missing, + New preset.
   - THE SELECTED PRESET as a paper doll: 4 armor pieces, tool, off-hand, pet + mount, the 9-slot hotbar, charms in use, abilities.
@@ -396,8 +428,11 @@ What changed:
 | `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
 | `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
 | `market-page.png`, `world-page.png`, `social-page.png`, `settings-page.png` | 2026-11-14. The other tabs, one screen each. |
-| `charms-page.png` | 2026-11-14. Void Charms on one screen (reached from the Inventory charm row). |
-| `requip-page.png` | 2026-11-14. Requip loadouts on one screen (presets, paper doll with on you / storage / missing, hints, storage). |
+| `inventory-mockup-requip.png` | 2026-11-14. The v5 inventory with the crafting panel swapped for the Requip panel (preset pencil). |
+| `inventory-mockup-charms.png` | 2026-11-14. The v5 inventory with the crafting panel swapped for the Charms panel (All charms). |
+| `charms-page-v1.png` | Separate Void Charms page (replaced), kept. |
+| `requip-page-v1.png` | Separate Requip page (replaced), kept. |
+| `world-page-v1.png` | World page with a separate Hub island (replaced by v2), kept. |
 | `tab-plan-v1.png` | v1 of the tab plan (Class as its own card), kept. |
 | `tab-plan.png` | v2 2026-11-14. The compacted top bar (12 -> 7 tabs): one card per tab, what it holds, what folds in; Class = Combat page. |
 | `pets-page.png` | 2026-11-14. The Pets tab as one screen: slots, pets grid, selected pet, fusing, hatchery, eggs (craft + upgrade). |

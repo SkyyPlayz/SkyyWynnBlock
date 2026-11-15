@@ -113,7 +113,7 @@ PLAN_V1 = list(PLAN)
 PLAN_V2 = list(PLAN)
 PLAN_V2[0] = ("Inventory", I_HUB % "hubrow_character", "Your bag + everything you carry or wear",
               ["Inventory grid, hotbar, armor + off-hand", "Crafting (all benches, Furnace, Cooking, Tanning)", "Pocket tabs (bags, Vault)",
-               "Charm row + Requip presets ('Charms page' link)", "Teleport row + Right now panel"],
+               "Requip + Charms panels open INSIDE it (preset pencil, 'All charms')", "Teleport row + Right now panel"],
               ["Storage: Pocket", "Storage: Vault", "Requip", "Accessories / Void Charms", "Smithing: Recipes"])
 PLAN_V2[1] = ("Skills", I_HUB % "character_skills", "One page per skill - Combat = your class",
               ["Skill grid: Combat, Mining, Farming, Foraging ...", "COMBAT page = your class: loadout, abilities, class tree, combat gear",
@@ -666,6 +666,43 @@ ZONES = [("Zone 1", "Emerald Wilds", "Lv 1-20", "#4fd88a", "Safe"), ("Zone 2", "
          ("Zone 5", "(name TBD)", "Lv 80-100", "#ff5c6c", "Deadly")]
 
 
+def hub_town(a, cx, by, sc=1.0):
+    """a tiny hub town: 3 houses + a little tower (our own drawing)"""
+    ol = "#14100c"
+    for dx, dy, hw, hh, roof in ((-16, 4, 12, 10, "#c0563a"), (2, 0, 14, 12, "#3a6ec0"), (19, 5, 11, 9, "#c08a3a")):
+        x, y = cx + dx * sc, by + dy * sc
+        a.rect((x - hw * sc / 2, y - hh * sc, x + hw * sc / 2, y), "#efe6d2", 1, ol, 0.8)
+        a.poly([(x - hw * sc / 2 - 2, y - hh * sc), (x, y - hh * sc - 8 * sc), (x + hw * sc / 2 + 2, y - hh * sc)], roof, ol, 0.8)
+    a.rect((cx + 30 * sc, by - 22 * sc, cx + 37 * sc, by + 4 * sc), "#b8b0a0", 1, ol, 0.8)
+    a.poly([(cx + 28 * sc, by - 22 * sc), (cx + 33.5 * sc, by - 31 * sc), (cx + 39 * sc, by - 22 * sc)], "#c0563a", ol, 0.8)
+
+
+SPOTS_V2 = [(0.16, 0.27, 68, "#5cbf4a", "#7a6a58"), (0.34, 0.68, 68, "#d9c27a", "#9a7a50"), (0.55, 0.22, 68, "#e6f0f8", "#7a8a9a"),
+            (0.83, 0.36, 68, "#8a5a40", "#4a3a30"), (0.57, 0.77, 64, "#3f8a3a", "#5a4a38"), (0.1, 0.76, 40, "#5cbf4a", "#7a6a58")]
+
+
+def world_map_v2(w, h):
+    from make_skill_pages import Art, island, tree, cloud, crystal
+    a = Art(w, h, 2, bg=rgb("#7fc0f0"))
+    for k in range(20):
+        t = k / 19.0
+        a.rect((0, h * t, w, h * (t + 1 / 19.0) + 1), mix("#8fd0ff", "#3a78c0", t))
+    for fx, fy, sc in ((0.1, 0.1, 0.6), (0.72, 0.06, 0.7), (0.4, 0.95, 1.0), (0.94, 0.62, 0.6)):
+        cloud(a, w * fx, h * fy, sc, 120)
+    for i, (fx, fy, r, g, rk) in enumerate(SPOTS_V2):
+        island(a, w * fx, h * fy, r * 1.5, r * 0.6, r * 0.9, grass=g, rock=rk, cliff_steps=5)
+        if i == 5:
+            tree(a, w * fx - r * 0.3, h * fy + 2, r / 380.0, "oak")
+            continue
+        deco = ["oak", "dry", "ice", "fire", "beech"][i]
+        if deco in ("ice", "fire"):
+            crystal(a, w * fx - r * 0.55, h * fy + 4, r / 70.0, "#bfe6ff" if deco == "ice" else "#ff8a4a")
+        else:
+            tree(a, w * fx - r * 0.55, h * fy + 2, r / 430.0, deco)
+        hub_town(a, w * fx + r * 0.25, h * fy - 2, r / 60.0)
+    return a.done(), SPOTS_V2
+
+
 def world_map(w, h):
     from make_skill_pages import Art, island, tree, cloud, crystal
     a = Art(w, h, 2, bg=rgb("#7fc0f0"))
@@ -691,7 +728,7 @@ def world_map(w, h):
     return a.done(), spots
 
 
-def make_world():
+def make_world(v2=True):
     im, (WX0, WY0, WX1, WY1) = window_new("World")
     X0, X1 = WX0 + 16, WX1 - 16
     Y0, Y1 = 86, 1020
@@ -702,14 +739,16 @@ def make_world():
         cx += chip(im, cx, Y0 + 6, lab, True, h=26, fsize=13) + 6
     VX0, VY0, VX1, VY1 = X0 + 12, Y0 + 38, MX1 - 12, 664
     w, h = VX1 - VX0 + 1, VY1 - VY0 + 1
-    mp, spots = world_map(w, h)
+    mp, spots = world_map_v2(w, h) if v2 else world_map(w, h)
     m = __import__("PIL.Image", fromlist=["Image"]).new("L", (w, h), 0)
     ImageDraw.Draw(m).rounded_rectangle((0, 0, w - 1, h - 1), radius=8, fill=255)
     im.paste(mp, (VX0, VY0), m)
     outline(im, (VX0, VY0, VX1, VY1), "#34496b", c=8)
     labels = [("HUB", "Spawn, shops, Bazaar", "#ffffff", None), ("Zone 1", None, None, 0), ("Zone 2", None, None, 1), ("Zone 3", None, None, 2),
               ("Zone 4", None, None, 3), ("Zone 5", None, None, 4), ("YOUR ISLAND", "Home", "#8fe08a", None)]
-    order = [0, 1, 2, 3, 4, 5, 6]
+    if v2:   # Skyy 11-14: "there is no separate hub island, there is a hub per zone island."
+        labels = labels[1:]
+    order = list(range(len(labels)))
     for i in order:
         fx, fy, r, _g, _rk = spots[i]
         lx, ly = VX0 + int(w * fx), VY0 + int(h * fy) + int(r * 0.35)
@@ -718,6 +757,10 @@ def make_world():
             zn, name, lv, dc, dang = ZONES[zi]
             t1, t2 = "%s  %s" % (zn, name), "%s  -  danger: %s" % (lv, dang)
             col = dc
+            if v2:
+                hx_, hy_ = VX0 + int(w * fx) + int(r * 0.25), VY0 + int(h * fy) - int(r * 0.62)
+                grad_fill(im, (hx_ - 30, hy_ - 9, hx_ + 30, hy_ + 8), "#0e1729", "#0a111e", c=4, alpha=220)
+                text(im, (hx_, hy_), "Hub town", font("bodyb", 11), "#ffe9a8", "mm", shadow=False)
         bw = max(tw(t1, font("headb", 14)), tw(t2, font("body", 13))) + 22
         grad_fill(im, (lx - bw // 2, ly, lx + bw // 2, ly + 40), "#0e1729", "#0a111e", c=5, alpha=230)
         outline(im, (lx - bw // 2, ly, lx + bw // 2, ly + 40), col if zi is not None else "#34496b", c=5)
@@ -730,13 +773,13 @@ def make_world():
                                                                     d.ellipse((7 * s, 7 * s, 15 * s, 15 * s), fill=rgb("#ffffff"))))
         put(im, pin, px_ - 11, py_ - 30)
     # you-are-here + quest marker
-    fx, fy, r, _g, _rk = spots[1]
-    hx, hy = VX0 + int(w * fx) + 40, VY0 + int(h * fy) - 10
+    fx, fy, r, _g, _rk = spots[0 if v2 else 1]
+    hx, hy = VX0 + int(w * fx) - (60 if v2 else -40), VY0 + int(h * fy) - 10
     glow(im, (hx - 8, hy - 8, hx + 8, hy + 8), A["base"], 6, 200, 8, 3)
     dot(im, hx, hy, A["base"], 8)
     dot(im, hx, hy, "#ffffff", 3)
     text(im, (hx + 14, hy), "You", font("headb", 14), "#ffffff", "lm")
-    fx, fy, r, _g, _rk = spots[2]
+    fx, fy, r, _g, _rk = spots[1 if v2 else 2]
     qx, qy = VX0 + int(w * fx) + 30, VY0 + int(h * fy) - 20
     put(im, K.g_quest(26, PAL["action"]), qx - 13, qy - 13)
     # selected warp card (on the map)
@@ -744,7 +787,7 @@ def make_world():
     grad_fill(im, (cx0, cy0, VX1 - 12, cy0 + 116), "#0e1729", "#0a111e", c=6, alpha=238)
     outline(im, (cx0, cy0, VX1 - 12, cy0 + 116), A["base"], c=6)
     text(im, (cx0 + 14, cy0 + 18), "Zone 2  Howling Sands", font("headb", 16), "#ffffff", "lm")
-    text(im, (cx0 + 14, cy0 + 40), "Warps: Oasis camp, Dune gate", font("body", 13), PAL["row"], "lm")
+    text(im, (cx0 + 14, cy0 + 40), "Hub town + warps: Oasis camp, Dune gate" if v2 else "Warps: Oasis camp, Dune gate", font("body", 13), PAL["row"], "lm")
     rich(im, cx0 + 14, cy0 + 60, [("Danger ", font("body", 13), PAL["dim"]), ("Low", font("bodyb", 13), "#f0c53a"),
                                   ("    Cost ", font("body", 13), PAL["dim"]), ("free", font("bodyb", 13), PAL["green"])])
     button(im, (cx0 + 14, cy0 + 78, cx0 + 134, cy0 + 106), "Teleport", "primary", fsize=14)
@@ -1363,6 +1406,192 @@ def make_requip():
 
 
 
+# ================================================================================================================ inventory panels (v5 screen)
+def _inventory_with(panel_fn, highlight):
+    """Draw the approved v5 inventory screen (make_ui_theme.make_mockup_v3(.., v4=True)) with its top-middle crafting panel replaced by
+    panel_fn(im, X0, X1, Y0, Y1); the new 7-tab bar; the Craft / pocket tabs below show nothing selected. Monkeypatches are undone."""
+    saved = (K.furnace_v4, K.TABS_V4, K.hang_tabs, K.requip_row)
+    orig_hang, orig_req = K.hang_tabs, K.requip_row
+
+    def hang(im, x0, y0, x1, h, items, sel, fsize=16):
+        return orig_hang(im, x0, y0, x1, h, items, -1, fsize)
+
+    def req(im, x0, y0, x1, active):
+        orig_req(im, x0, y0, x1, active)
+        if highlight == "requip":   # the pencil is ON: this panel edits presets
+            ew = 30
+            box = (x1 - ew + 1, y0 + 7, x1, y0 + 38)
+            glow(im, box, A["base"], 5, 200, 5, 2)
+            button(im, box, "", "primary", glyph=K.g_pencil(14, "#ffffff"))
+    try:
+        K.furnace_v4 = panel_fn
+        K.TABS_V4 = NEW_TABS
+        K.hang_tabs = hang
+        K.requip_row = req
+        im = K.make_mockup_v3("furnace", True)
+    finally:
+        K.furnace_v4, K.TABS_V4, K.hang_tabs, K.requip_row = saved
+    if highlight == "charms":   # the charm row's 'All charms' link is ON
+        lx1 = 138 + 16 + 420
+        vy = 86 + 62 + 4 * 92 + 2
+        grad_fill(im, (lx1 - 128, vy - 2, lx1 - 14, vy + 22), mix(A["base"], "#111b2d", 0.6), mix(A["base"], "#111b2d", 0.8), c=4)
+        outline(im, (lx1 - 128, vy - 2, lx1 - 14, vy + 22), A["base"], c=4)
+        text(im, (lx1 - 30, vy + 10), "All charms", font("head", 14), "#ffffff", "rm")
+        put(im, g_chev(13, "#ffffff"), lx1 - 28, vy + 4)
+    return im
+
+
+def requip_panel(im, X0, X1, Y0, Y1):
+    panel(im, (X0, Y0, X1, Y1), "Requip  -  editing Mining")
+    text(im, (X1 - 110, Y0 + 18), "drag gear in from the bag", font("body", 13), PAL["dim"], "rm")
+    button(im, (X1 - 98, Y0 + 6, X1 - 12, Y0 + 30), "Done", "secondary", fsize=13)
+    # presets
+    px1 = X0 + 168
+    yy = Y0 + 36
+    for i, (nm, ic, sub, st) in enumerate(PRESETS):
+        sel = nm == "Mining"
+        row(im, (X0 + 10, yy, px1, yy + 31), "selected" if sel else "normal")
+        paste_icon(im, ic, X0 + 16, yy + 4, 22)
+        text(im, (X0 + 44, yy + 16), nm, font("headb", 13), "#ffffff" if sel else PAL["row"], "lm")
+        col = {"worn": A["hi"], "ready": PAL["green"]}.get(st, PAL["red"])
+        text(im, (px1 - 6, yy + 16), {"worn": "WORN", "1 missing": "1 miss", "2 missing": "2 miss"}.get(st, st), font("headb", 11), col, "rm")
+        yy += 34
+    button(im, (X0 + 10, yy + 2, px1, yy + 28), "+ New preset", "secondary", fsize=12)
+    # selected preset slots
+    sx0 = px1 + 14
+    lx = sx0
+    for st, lab in (("on", "on you"), ("store", "in storage"), ("miss", "missing")):
+        state_mark(im, lx, Y0 + 38, st)
+        text(im, (lx + 22, Y0 + 47), lab, font("body", 12), PAL["row"], "lm")
+        lx += 30 + tw(lab, font("body", 12)) + 10
+    ay = Y0 + 64
+    arm = [("head", "Rare", "store"), ("chest", "Rare", "store"), ("hands", "Unique", "store"), ("legs", "Normal", "miss")]
+    for i, (pc, rr, st) in enumerate(arm):
+        x = sx0 + i * 60
+        slot(im, x, ay, "empty", K.RAR[rr] if st != "miss" else None, None, size=56)
+        K.put_px(im, K.px_armor(pc) if st != "miss" else K.px_armor(pc, "#3a4658", "#26324a"), x + 4, ay + 4, 48)
+        state_mark(im, x + 38, ay + 2, st)
+    x = sx0 + 4 * 60 + 10
+    slot(im, x, ay, "empty", None, None, size=56)
+    K.put_px(im, px_icon("pickaxe"), x + 4, ay + 4, 48)
+    state_mark(im, x + 38, ay + 2, "store")
+    slot(im, x + 60, ay, "empty", RAR["Epic"], I_PET % "Goat", size=56)
+    state_mark(im, x + 98, ay + 2, "store")
+    text(im, (sx0, ay + 70), "Armor - tool - pet", font("body", 12), PAL["dim"], "lm")
+    hy = ay + 86
+    hot = [("pickaxe", "store"), ("shovel", "on"), ("torch", "on"), ("bread", "on"), ("sword", "on"), (None, None), ("chest", "on"), (None, None), ("stew", "miss")]
+    for i, (ic, st) in enumerate(hot):
+        x = sx0 + i * 40
+        slot(im, x, hy, "empty", None, ("px:" + ic) if ic else None, size=36)
+        if st:
+            state_mark(im, x + 22, hy - 4, st)
+    text(im, (sx0, hy + 48), "Hotbar", font("body", 12), PAL["dim"], "lm")
+    cy = hy + 62
+    for i, (k, r) in enumerate((("stonehide", "rare"), ("lantern", "unique"), ("speed", "rare"), ("health", "legendary"))):
+        slot(im, sx0 + i * 44, cy, "empty", dict(K.GEAR_RARITY)[r.capitalize()], I_ACC % ("%s-%s" % (k, r)), size=40)
+    for i, ab in enumerate(("RapidFire", "PinningShot", "HuntersNet", "ArrowRain")):
+        slot(im, sx0 + 192 + i * 44, cy, "empty", None, K.I_ABI % ab, size=40)
+    text(im, (sx0, cy + 52), "Charms", font("body", 12), PAL["dim"], "lm")
+    text(im, (sx0 + 192, cy + 52), "Abilities (off: class loadout stays)", font("body", 12), PAL["dim"], "lm")
+    # hints + actions (right)
+    hx0 = sx0 + 4 * 60 + 10 + 132
+    yy = Y0 + 64
+    for kind, t1, t2 in (("miss", "Greaves not on you", "last seen: Mining pocket"), ("better", "Better helmet in storage", "+3 Fortune - Swap"),
+                         ("miss", "Hearty Stew: 0 left", "cook more")):
+        if kind == "better":
+            put(im, K.g_arrows(14, PAL["green"], up=True), hx0, yy + 2)
+        else:
+            state_mark(im, hx0 - 2, yy, kind)
+        text(im, (hx0 + 22, yy + 8), t1, font("bodyb", 13), "#ffffff", "lm")
+        text(im, (hx0 + 22, yy + 26), t2, font("body", 12), PAL["green"] if kind == "better" else PAL["dim"], "lm")
+        yy += 46
+    button(im, (hx0 - 2, yy + 2, X1 - 12, yy + 32), "Equip Mining", "primary", fsize=15)
+    button(im, (hx0 - 2, yy + 38, X1 - 12, yy + 64), "Save from what I wear", "secondary", fsize=12)
+    button(im, (hx0 - 2, yy + 70, X1 - 12, yy + 96), "Rename", "secondary", fsize=12)
+    # requip storage strip
+    sy = Y1 - 66
+    sub_title(im, X0 + 14, sy - 10, "REQUIP STORAGE  18 / 45", X1 - 14)
+    store = [("head", "Rare"), ("hands", "Unique"), ("chest", "Unique"), ("legs", "Unique"), ("head", "Rare"), ("chest", "Rare"), ("hands", "Normal"),
+             ("legs", "Normal"), ("sword", "Rare"), ("pet", "Rare"), ("head", "Normal"), ("chest", "Normal")]
+    for i in range(14):
+        x = X0 + 14 + i * 46
+        if i < len(store):
+            pc, rr = store[i]
+            if pc == "pet":
+                slot(im, x, sy + 4, "empty", K.RAR[rr], I_PET % "Horse", size=42)
+            elif pc == "sword":
+                slot(im, x, sy + 4, "empty", K.RAR[rr], "px:sword", size=42)
+            else:
+                slot(im, x, sy + 4, "empty", K.RAR[rr], None, size=42)
+                K.put_px(im, K.px_armor(pc), x + 5, sy + 9, 32)
+        else:
+            slot(im, x, sy + 4, "empty", None, None, size=42)
+    button(im, (X1 - 82, sy + 6, X1 - 12, sy + 30), "Take out", "secondary", fsize=12)
+    button(im, (X1 - 82, sy + 34, X1 - 12, sy + 56), "Salvage", "danger", fsize=12)
+
+
+def charms_panel(im, X0, X1, Y0, Y1):
+    panel(im, (X0, Y0, X1, Y1), "Void charms  13 / 23")
+    rich(im, X0 + 240, Y0 + 18, [("Bag ", font("body", 13), PAL["dim"]), ("Rare", font("headb", 14), dict(K.GEAR_RARITY)["Rare"]),
+                                 (" x1.20 power", font("bodyb", 13), PAL["green"])])
+    button(im, (X1 - 196, Y0 + 6, X1 - 106, Y0 + 30), "Upgrade bag", "secondary", fsize=12)
+    button(im, (X1 - 98, Y0 + 6, X1 - 12, Y0 + 30), "Done", "secondary", fsize=13)
+    items = [(k, OWN[k]) for k, _n, _s in CHARM_LINES] + [("speed", "unique"), ("health", "rare")]
+    gx0, gy0 = X0 + 14, Y0 + 40
+    for i in range(24):
+        x = gx0 + (i % 8) * 56
+        y = gy0 + (i // 8) * 58
+        if i < len(items):
+            k, r = items[i]
+            dup = i >= len(CHARM_LINES)
+            slot(im, x, y, "selected" if k == "lantern" and not dup else "empty", dict(K.GEAR_RARITY)[r.capitalize()],
+                 I_ACC % ("%s-%s" % (k, r)), size=52, dim=dup)
+            if dup:
+                state_mark(im, x + 2, y + 32, "miss")
+        elif i < 23:
+            slot(im, x, y, "empty", None, None, size=52)
+        else:
+            slot(im, x, y, "empty", None, None, size=52)
+            put(im, g_lock(16, "#5a6a80"), x + 18, y + 18)
+    text(im, (gx0, gy0 + 3 * 58 + 8), "Best of each line counts; red x = duplicate. Drag charms in.", font("body", 12), PAL["dim"], "lm")
+    # selected charm (right)
+    sx0 = gx0 + 8 * 56 + 10
+    grad_fill(im, (sx0, Y0 + 40, X1 - 12, Y0 + 262), "#0e1729", "#0a111e", c=6)
+    outline(im, (sx0, Y0 + 40, X1 - 12, Y0 + 262), "#2b3d5b", c=6)
+    slot(im, sx0 + 10, Y0 + 50, "empty", dict(K.GEAR_RARITY)["Unique"], I_ACC % "lantern-unique", size=52)
+    text(im, (sx0 + 72, Y0 + 66), "Unique Lantern", font("headb", 16), dict(K.GEAR_RARITY)["Unique"], "lm")
+    text(im, (sx0 + 72, Y0 + 86), "+3 Light radius", font("bodyb", 13), PAL["green"], "lm")
+    text(im, (sx0 + 10, Y0 + 120), "TIER UP  ->  Rare  (+4 Light)", font("head", 12), PAL["xp"], "lm", track=1)
+    yy = Y0 + 140
+    for lab, ok in (("this Unique Lantern", True), ("64 Tree Sap", True), ("16 Ench. Iron  (need 9)", False), ("2,500 coins", True)):
+        put(im, g_check(12, PAL["green"]) if ok else g_x(12, PAL["red"], 2.0), sx0 + 10, yy - 6)
+        text(im, (sx0 + 28, yy), lab, font("body", 13), PAL["green"] if ok else PAL["red"], "lm")
+        yy += 19
+    button(im, (sx0 + 10, Y0 + 226, sx0 + 120, Y0 + 254), "Tier up", "primary", "disabled", fsize=13)
+    button(im, (sx0 + 128, Y0 + 226, X1 - 22, Y0 + 254), "Merge 3", "secondary", "disabled", fsize=13)
+    # totals
+    ty = Y0 + 272
+    sub_title(im, X0 + 14, ty, "ALL CHARMS TOGETHER", X1 - 14)
+    tot = [("Health", "+62"), ("Stamina", "+18"), ("Mana", "+12%"), ("Speed", "+9%"), ("Regen", "1.4/2s"), ("Strength", "+14"),
+           ("Magic", "+4"), ("Defense", "+22"), ("Crit", "+7%"), ("Fall dmg", "-40%"), ("Light", "+3")]
+    cw = (X1 - X0 - 28) // 4
+    for i, (n_, v) in enumerate(tot):
+        x = X0 + 14 + (i % 4) * cw
+        y = ty + 22 + (i // 4) * 26
+        row(im, (x, y - 11, x + cw - 6, y + 11), "normal")
+        text(im, (x + 8, y), n_, font("body", 13), PAL["row"], "lm")
+        text(im, (x + cw - 14, y), v, font("bold", 13), PAL["green"], "rm")
+
+
+def make_inv_requip():
+    return _inventory_with(requip_panel, "requip")
+
+
+def make_inv_charms():
+    return _inventory_with(charms_panel, "charms")
+
+
+
 def _v1(fn):
     global V2
     V2 = False
@@ -1376,7 +1605,9 @@ def _v1(fn):
 def main():
     out = {"tab-plan.png": make_tab_plan, "tab-plan-v1.png": lambda: _v1(make_tab_plan), "pets-page.png": make_pets,
            "market-page.png": make_market, "world-page.png": make_world, "social-page.png": make_social, "settings-page.png": make_settings,
-           "charms-page.png": make_charms, "requip-page.png": make_requip}
+           "world-page-v1.png": lambda: make_world(False),
+           "charms-page-v1.png": make_charms, "requip-page-v1.png": make_requip,
+           "inventory-mockup-requip.png": make_inv_requip, "inventory-mockup-charms.png": make_inv_charms}
     only = sys.argv[1:]
     for fn, maker in out.items():
         if only and fn not in only:
