@@ -24,6 +24,7 @@ Leftover local jobs (beta bugs): `LOCAL-RESUME.md`. Older RESUME detail: git his
 ## RUNNING
 - RUNNING: round inv1 (workflow wf_37a084df-1f0): Inventory screen P1 shell = SkyyMenu 0.3.50 (Tab -> our page, real grids, read-only character column, Craft button -> vanilla pocket crafting until P3, switch menu.inventory.replace ON) + additive Skyglass theme in tools/skyyui.py. Art v5 APPROVED (research/ui-theme-art/). Armory 0.1.52 LIVE (TEST 283 gauntlets). SkyyUiProbe retires after P1.
 - RUNNING: round shard1 (wf_2db24e96-110): SkyyShards 0.4.22 - every shard's Collect tab shows its stored items as a chest-like grid with full counts before collecting; click a cell = collect that item (Skyy 11-14, docs/answered/world.md).
+- RUNNING: round bz1 (wf_199eca13-309): SkyyBazaar 0.2.5 - item panel = 4 big buttons (Buy now / Sell now / Buy order / Sell offer) -> one step: amount, price, total, Confirm (Skyy popup 11-14, docs/answered/economy.md) + the NEXT 0 Enchanted-metals move to Smithing.
 
 ## WAITING ON SKYY
 - TEST 266-280 (TEST-CHECKLIST); the Shards 0.4.21 questions are in OPEN-QUESTIONS.md. TEST 271 step 4: does the dragon absorbing staff orbs in fights feel bad? [default: keep]. TEST 270 steps 7-8: `/armory debug sig probe` (W + A probes) -> PASS unlocks sig5.
