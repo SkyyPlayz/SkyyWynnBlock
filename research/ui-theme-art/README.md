@@ -13,6 +13,47 @@ Skyy's words behind it (docs/answered/ui.md):
 
 Runeteria's screen gave the ideas only. Its art, colours and layout details were not copied.
 
+## Skill pages + shard clicker (2026-11-14)
+Skyy's words (docs/answered/ui.md "SKILL PAGE LAYOUT", docs/answered/world.md "SHARDS -> MENU CLICKER"): "at the top is shows your mining
+level, your tools armor, and charms. (with the ability to upgrade the charms there or go to the charms page.) below that it will show the
+collections ... lets base ours on level and collection numbers ... below the collection show the skill tree. keep the current style, but scale
+it up, and make it all fir so there is no zooming or scrolling. show all your stats with that mining gear equipped on the left. and where the
+right now tab is on our design, put the shard. lets lock it to lvl 10." + "and we will do a different one for each. (start with combat,
+farming, mining, and foraging. we can worry about the others later." Ideas from the other server's Professions page only; nothing copied.
+Generator: `make_skill_pages.py` (imports the kit from `make_ui_theme.py`, whose pictures stay byte-identical; deterministic, checked).
+- **`skill-page-mining.png`** (Mining Lv 31): Skills tab. LEFT = every stat with the Mining set on (Style Guide 15 colours) + where Mining
+  Fortune comes from (tool / gear / charms / pets). TOP = Mining icon, LEVEL badge, XP bar, NEXT UNLOCK; tool card, the 4 Mining armor pieces
+  + Requip, 4 charms with Upgrade on the selected one + "Charms page". COLLECTIONS = the ore path T1 Copper -> T2 Iron -> T4 Thorium ->
+  T7 Cobalt -> T10 Adamantite -> T13 Mithril -> T16 Onyxium: each tier opens at a Mining LEVEL (the gear level bands: 1 / 8 / 20 / 40 /
+  60 / 80 / 100), its collection bar + "Next:" reward below; the next tier shows "Mining 31 / 40". SKILL TREE = the real Mining tree
+  (tools/trees_v3_data.py, our node icons, pips in the ring, gold lit lines, padlocks, star capstones) as a fan from the emblem, all 3 branches
+  visible with no zoom / scroll; talent card + Learn, Respec. RIGHT = the 4-skill grid (Combat, Mining, Farming, Foraging; "more later") and
+  the Mining shard card: our own cartoon spirit (miner helmet + pickaxe) in front of a rocky floating island with ore, a mine entrance and
+  a crossed-pickaxe totem; stored / rate / offline / click-XP lines; Open shard.
+- **`skill-page-mining-locked.png`** (Mining Lv 6): same page; the shard card is grey with a padlock, "Unlocks at Mining Lv 10", 6 / 10 bar.
+  Only Copper is open (Iron = NEXT TIER at Mining 8), tree rows 1-2 open.
+- **`shard-clicker-foraging.png`**: header (Foraging page back button, Foraging Lv 27, "T1 Oak Island - Small", "Clicks: 25% of world XP /
+  Spirits: 0 XP", Zoom out). A top-down floating island with ONE big oak being clicked ("+3 Oak Log", "Hits 2 / 4 - your Copper Hatchet"),
+  one spirit totem with its leaf-sprout spirit carrying a log, an empty "Tree spot 2". Storage strip (Oak Log, Stick, Tree Sap, Oak Sapling,
+  Apple; Collect all / Send to Void; spirits, rate, offline). UPGRADES: Tree size, Tree count, Spirit totem, Weather totem (Buy), Island size,
+  Decorations - level, effect, cost (coins + Enchanted Oak Log have / need), button.
+- **`shard-clicker-foraging-grown.png`**: the same island upgraded to Medium: 4 trees, 2 spirit totems with spirits (one new pole at Lv 1),
+  a weather totem, a pond, fence, lamps, flowers, mushrooms, and a bridge off the edge to T2 Beech Island.
+- **`shard-clicker-zoomed-out.png`**: all islands: T1 Oak (here), T2 Beech (owned, Go), T3 Maple (locked: Maple Log collection II, buy
+  250,000), T4 Dry (locked); built bridges in wood, future ones as ghost outlines; an ISLANDS list on the right.
+- Combat, Farming and Foraging pages follow the same layout with their own collections path, tree and their own spirit / island look
+  (Farming = the farm ghost mascot, Foraging = the leaf-sprout tree spirit, Combat = its own); other skills get pages later.
+
+Open questions for Skyy (default in [brackets]):
+1. Ore path: only the 7 vanilla metals (Copper .. Onyxium), or every step of the 16-metal ladder (Bronze, Lead, Dusk ...)? [7 vanilla metals;
+   the alloys show inside their zone's node]
+2. Tier unlock levels = the gear level bands (Iron 8, Thorium 20, Cobalt 40, Adamantite 60, Mithril 80, Onyxium 100)? [yes]
+3. Tree as a fan from the emblem (all 3 branches, 44 px nodes, no names on nodes - the talent card shows them)? [yes]
+4. Stats column: Mining + Survival + Combat groups, plus the 4-source Fortune bar? [yes]
+5. Spirit names: give each skill's spirit a name (e.g. a pet-like name shown on the card)? [no name for now: "Mining spirit"]
+6. Clicker storage shows Apple / Oak Sapling as oak drops - keep only what the world oak really drops? [only real oak drops; check in game]
+7. Island buying: level + collection like the world tier, plus a coin price? [yes, 250,000 for T3 as a placeholder]
+
 ## v5 Furnace + Upgrade (2026-11-14)
 Skyy: "i donty see how you add the fuel. and move the search to the top of the metal row, above coper." + "the pickaxe needs an apply
 sigils button too. sigils should go in the pocket dimension in the smithing bag."
@@ -204,6 +245,12 @@ What changed:
 | `inventory-mockup-mining.png` | v4. The Mining pocket in the top panel. |
 | `inventory-mockup-chest.png` | v4. The screen opened on a chest. |
 | `inventory-mockup-furnace.png` | v4. The Craft panel on the Furnace tab (our pack's furnace: list, fuel, queue, Collect). |
+| `skill-page-mining.png` | 2026-11-14. One page per skill, Mining Lv 31: stats, gear + charms, ore collections path, whole Mining tree, 4-skill grid, shard card. |
+| `skill-page-mining-locked.png` | 2026-11-14. The same page for a Mining Lv 6 player: shard card locked (Lv 10). |
+| `shard-clicker-foraging.png` | 2026-11-14. Foraging shard clicker: small T1 Oak Island, one tree, one spirit totem, storage, 6 upgrades. |
+| `shard-clicker-foraging-grown.png` | 2026-11-14. The same island upgraded (4 trees, 2 spirit totems, weather totem, decorations, bridge). |
+| `shard-clicker-zoomed-out.png` | 2026-11-14. Zoomed-out island map (T1 Oak, T2 Beech, T3 Maple + T4 Dry locked) + islands list. |
+| `make_skill_pages.py` | 2026-11-14. Generator of the 5 pictures above (deterministic; imports the kit from make_ui_theme.py). |
 | `upgrade-mockup.png` | v4. The Upgrade tab (Smithing + Anvil + Upgrade), Mining picked. |
 | `hud-editor-mockup.png` | v5. The HUD layout editor: vanilla compass kept, centre clear, pet left / mount right of the hotbar. |
 | `hud-editor-mockup-v4.png` | v4 of the HUD editor (kept). |
