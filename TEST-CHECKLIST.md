@@ -96,3 +96,4 @@ tests always come first.
 287. Our own crafting in the Tab inventory (Craft / x10 / All, search, bench tabs) + new layout
 288. Inventory: Requip presets + Requip panel, pocket tabs (withdraw / deposit / sell / unpack), Summon
 289. Inventory: Charms panel (All charms -> charm grid, Tier up, Take out, drag in, rarity-coloured name)
+290. Inventory: drag / shift-click armour + off-hand, edit the teleport row (per profile), pocket Upgrades + Compact
