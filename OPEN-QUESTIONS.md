@@ -48,3 +48,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-08 (Shards 0.4.21): Soul Cages now make unidentified bags at 2 % per drop, up to 64 per island; that is new gear income, not balance-checked. OK? [yes; combat.bagPct 0 = none] -> docs/answered/world.md.
 - 2026-11-08 (Shards 0.4.21): the Soul Cage still never stores armor, weapons, tools, ores, ingots, crystals, rock, Void Essence or Voidheart (they come only from fighting). Keep it? [keep; combat.cageSkip edits the list] -> docs/answered/world.md.
 - 2026-11-08 (Sacks 0.8.37): Silver, Gold and Prisma Ingots have no tier, so the Furnace list puts them after the tiered ingots. OK? [keep] -> docs/answered/ui.md.
+- 2026-11-20 (Accessories 0.5.37): the Charms panel art shows Merge 3 and Upgrade bag, but Accessories has no merge rule and no per-player bag upgrade (slot count is a server setting). What should they cost? [leave both out until you set costs] -> docs/answered/ui.md.
