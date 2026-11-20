@@ -399,3 +399,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyMenu 0.3.51 Craft crash fix (DEPLOYED 2026-11-14, backup deploy-20261114-2149) | [2026-11](2026-11.md) |
 | No coin death penalty + bank levels + vault page limits (DEPLOYED 2026-11-14, backup deploy-20261114-2232) | [2026-11](2026-11.md) |
 | Our own crafting + v5 inventory layout (DEPLOYED 2026-11-14, backup deploy-20261114-2319) | [2026-11](2026-11.md) |
+| Requip presets + Requip panel + pocket tabs (DEPLOYED 2026-11-20, backup deploy-20261120-0627) | [2026-11](2026-11.md) |
