@@ -102,3 +102,4 @@ tests always come first.
 293. Pets: Summon mount (seats you, vanishes on hop off), dragon fights from the pet slot, Common egg -> Uncommon upgrade
 294. Shards: Foraging clicker (chop trees, storage, Tree size + upgrades, zone map with locks)
 295. HUD v5: pet card left / mount card right of the hotbar, nothing on the compass or centre, editor boxes
+296. Skills tab: per-skill pages (Mining path + alloys + locked zones, Combat abilities, Requip / Charms links), Mods list without death penalty
