@@ -408,3 +408,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shards: Foraging shard clicker (DEPLOYED 2026-11-21, backup deploy-20261121-1411) | [2026-11](2026-11.md) |
 | HUD v5: pet card left of the hotbar, mount card right (DEPLOYED 2026-11-21, backup deploy-20261121-1415) | [2026-11](2026-11.md) |
 | Skills tab: one page per skill (Mining path with alloys) (DEPLOYED 2026-11-21, backup deploy-20261121-1440) | [2026-11](2026-11.md) |
+| Mining quarry clicker + Gear signatures (Shards 0.4.24, Skills 0.4.72, Gear 0.3.56) (DEPLOYED 2026-11-21, backup deploy-20261121-1546) | [2026-11](2026-11.md) |
