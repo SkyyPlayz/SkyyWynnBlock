@@ -29,6 +29,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
 # FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
+# FIX1 (2026-11-21): SkyyAuctions 0.1.17 (no coins-lost-on-death texts), SkyyTrees 0.6.8 (sickle Right Replace DefaultOk, asset only), SkyyArmory 0.1.53 (pack check retries like Skills) - no saved data; each rolls back alone.
 # INV6 (2026-11-20): SkyyMenu 0.3.55 (editable armour / off-hand, teleport row editing saved per profile in Skyy_SkyyMenu/invtp/, pocket Upgrades + Auto-compact) + SkyySacks 0.8.39 (sacks:fn:pocket ops cmp / cmpst, sacks:fn:openPocket) - new invtp/ files only, ignored by 0.3.54 (row back to Island + Hub); pin together, each works without the other; roll back Menu first.
 # INV5 (2026-11-20): SkyyMenu 0.3.54 (Charms panel inside the inventory, rarity-coloured charm name) + SkyyAccessories 0.5.37 (bridge acc:fn:charms: vc:list / tier / take / put with profile key) - no saved-data change; pin TOGETHER (Menu 0.3.54 without Accessories 0.5.37 falls back to the old Void Charms page); roll back Menu first, each then alone.
 # INV4 (2026-11-17): SkyyMenu 0.3.53 (Requip presets + Requip panel, pocket tabs, Summon card, editable armour / off-hand, teleport editing) + bridges SkyySacks 0.8.38 (pocket list / actions with profile token) + SkyyWardrobe 0.2.14 (presets bridge) + SkyyPets 0.4.26 - no saved-data change; Menu 0.3.53 needs the three bridge versions (pin together; roll back Menu first).
@@ -101,7 +102,7 @@ SET = [
     ("SkyyHud", "0.3.37"), ("SkyySacks", "0.8.39"), ("SkyyCoins", "0.1.12"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.17"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.5"), ("SkyyGear", "0.3.55"), ("SkyySkills", "0.4.70"),
     ("SkyyAccessories", "0.5.37"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.55"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
-    ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.7"),
+    ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.8"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -116,7 +117,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.10"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.16"),
+    ("SkyyAuctions", "0.1.17"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -244,7 +245,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.52"),
+    ("SkyyArmory", "0.1.53"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
