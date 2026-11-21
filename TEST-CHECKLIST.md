@@ -104,3 +104,4 @@ tests always come first.
 295. HUD v5: pet card left / mount card right of the hotbar, nothing on the compass or centre, editor boxes
 296. Skills tab: per-skill pages (Mining path + alloys + locked zones, Combat abilities, Requip / Charms links), Mods list without death penalty
 297. Mining quarry clicker (Mining Shard -> Shard clicker), Smithy + alloy slider, Mining zone locks; Gear Untiered charge rules + orange signature names + Element Power
+298. Pets tab = one screen (pets, slots + Summon, fusing, hatchery, egg craft / upgrade)
