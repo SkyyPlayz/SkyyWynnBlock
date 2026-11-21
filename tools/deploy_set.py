@@ -29,6 +29,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
 # FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
+# TAB2 (2026-11-21): SkyyMenu 0.3.58 (Pets tab = one Skyglass screen: pets, slots, fusing, hatchery, eggs) + SkyyPets 0.4.28 (pets:fn:tab read + pets:fn:tabact through the Pets page doors). No saved data; each rolls back alone (Menu 0.3.57 = old Pets page; Pets 0.4.27 = Menu falls back to the old page).
 # MINE1 (2026-11-21): SkyyShards 0.4.24 (Mining quarry clicker, Smithy + alloy slider, Mining zone locks 0/20/40/60/80) + SkyySkills 0.4.72 (read-only skill:fn:fortune). New keys mining.i<n>.nsize/.luck/.smithy/.alloyPct/.drops, no migration. Before rolling Shards back to 0.4.23 press Collect all on the Mining Shard (0.4.23 never pays mining .drops). Skills 0.4.72 rolls back alone.
 # SIG3B (2026-11-21): SkyyGear 0.3.56 (C+ Untiered charge rules, orange signature names, gear:fn:elemPower, class lean = longest prefix, Doomed staff out of the bags, armory sigfx owns: guard) needs SkyyArmory >= 0.1.50 live. One-time migrateSig56 adds sig.ut Paperweight -20 / Ricochet +25 (Undo them in Server Setup -> Changes before rolling back to 0.3.55 for the old charge rates). No saved player data; rolls back alone to 0.3.55.
 # TAB1 (2026-11-21): SkyyMenu 0.3.57 (Skills tab = one Skyglass page per skill, Mining path with alloys + locked zones, Combat abilities line; Mods list without the coin death penalty) - display only, no saved data; rolls back alone to 0.3.56.
@@ -108,7 +109,7 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.39"), ("SkyySacks", "0.8.40"), ("SkyyCoins", "0.1.12"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.17"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.5"), ("SkyyGear", "0.3.56"), ("SkyySkills", "0.4.72"),
-    ("SkyyAccessories", "0.5.37"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.57"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
+    ("SkyyAccessories", "0.5.37"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.58"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.18"),
     ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.8"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -166,7 +167,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.27"),
+    ("SkyyPets", "0.4.28"),
     ("SkyyWardrobe", "0.2.14"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
