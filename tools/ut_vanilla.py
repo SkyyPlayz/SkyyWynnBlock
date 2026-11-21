@@ -91,8 +91,12 @@ GEAR_IDS = [r[0] for r in rows() if r[4] == "gear"]
 ARMORY_IDS = [r[0] for r in rows() if r[4] == "armory"]
 # the vanilla looks now worn by a SkyyGear UT copy: out of the random bags. An "armory" row's look stays IN the bags until SkyyArmory ships
 # that copy (gl1fix: else Z2 Mage bags lose the Doomed staff while Doomcaller cannot drop either) - move the row's look here in that round.
-LOOKS = sorted(set(w[8] for w in WEAPONS if w[6] == "gear"))
-ARMORY_LOOKS = sorted(set(w[8] for w in WEAPONS if w[6] == "armory") - set(LOOKS))          # waiting for SkyyArmory: still in the bags
+# ARMORY_SHIPPED = the "armory" rows SkyyArmory has built (their look leaves the bags like a SkyyGear copy's). SkyyGear 0.3.56 (round sig3b):
+# Doomcaller = SkyyArmory 0.1.50 (pinned 0.1.53) -> Weapon_Staff_Doomed joins LOOKS. LOOKS_GL1 = the list SkyyGear 0.3.53-0.3.55 were built with.
+ARMORY_SHIPPED = {"Weapon_Staff_UT_Doomcaller": "SkyyArmory 0.1.50"}
+LOOKS_GL1 = sorted(set(w[8] for w in WEAPONS if w[6] == "gear"))
+LOOKS = sorted(set(w[8] for w in WEAPONS if w[6] == "gear" or w[1] in ARMORY_SHIPPED))
+ARMORY_LOOKS = sorted(set(w[8] for w in WEAPONS if w[6] == "armory") - set(LOOKS))          # waiting for SkyyArmory: still in the bags (none since 0.3.56)
 LO = dict((w[1], w[12]) for w in WEAPONS)
 CLASS = dict((w[1], w[4]) for w in WEAPONS)
 SIG_LATER = dict([(w[1], w[13]) for w in WEAPONS] + [(m[0], m[2]) for m in MYTHIC])
@@ -155,6 +159,8 @@ def check():
             bad.append("%s: a look a 0.3.47 UT wears gets the darker map (and only those)" % w[1])
     if set(COVERED) & set(LOOKS) or not set(COVERED) <= used28:
         bad.append("COVERED")
+    if not set(ARMORY_SHIPPED) <= set(ARMORY_IDS) or set(LOOKS) - set(LOOKS_GL1) != set(w[8] for w in WEAPONS if w[1] in ARMORY_SHIPPED):
+        bad.append("ARMORY_SHIPPED: only built armory rows, and their looks join LOOKS")
     return bad
 
 
