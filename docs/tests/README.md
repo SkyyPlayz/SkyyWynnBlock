@@ -404,3 +404,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Inventory: armour / off-hand editing, teleport row editing, pocket Auto-compact (DEPLOYED 2026-11-20, backup deploy-20261120-1415) | [2026-11](2026-11.md) |
 | Small fixes: Auctions death texts, sickle SEVERE, Armory pack check (DEPLOYED 2026-11-21, backup deploy-20261121-1306) | [2026-11](2026-11.md) |
 | Inventory: themed Furnace / Tanning panel, skill XP bars (DEPLOYED 2026-11-21, backup deploy-20261121-1313) | [2026-11](2026-11.md) |
+| Pets: ride-only mount summon, pet-slot dragon fights, egg upgrades (DEPLOYED 2026-11-21, backup deploy-20261121-1329) | [2026-11](2026-11.md) |
