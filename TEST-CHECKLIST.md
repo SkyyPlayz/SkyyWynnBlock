@@ -100,3 +100,4 @@ tests always come first.
 291. Small fixes: AH Claim all / /ah claim texts (no death penalty), sickle right-swing SEVERE gone, Armory pack check INFO
 292. Inventory: Furnace / Tanning panel (search, queue, fuel slot, Collect all), skill icons + XP bars, class XP bar
 293. Pets: Summon mount (seats you, vanishes on hop off), dragon fights from the pet slot, Common egg -> Uncommon upgrade
+294. Shards: Foraging clicker (chop trees, storage, Tree size + upgrades, zone map with locks)
