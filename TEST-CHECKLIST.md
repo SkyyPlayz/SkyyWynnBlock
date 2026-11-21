@@ -98,3 +98,4 @@ tests always come first.
 289. Inventory: Charms panel (All charms -> charm grid, Tier up, Take out, drag in, rarity-coloured name)
 290. Inventory: drag / shift-click armour + off-hand, edit the teleport row (per profile), pocket Upgrades + Compact
 291. Small fixes: AH Claim all / /ah claim texts (no death penalty), sickle right-swing SEVERE gone, Armory pack check INFO
+292. Inventory: Furnace / Tanning panel (search, queue, fuel slot, Collect all), skill icons + XP bars, class XP bar

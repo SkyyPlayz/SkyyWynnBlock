@@ -7,7 +7,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | Mod | Version | What it does |
 |---|---|---|
 | SkyyHud | 0.3.37 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
-| SkyySacks | 0.8.39 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void; pocket list / action bridges with profile token |
+| SkyySacks | 0.8.40 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void; pocket list / action bridges with profile token |
 | SkyyCoins | 0.1.12 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal; death penalty 0/0 |
 | SkyyCollections | 0.2.36 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.10 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
@@ -16,10 +16,10 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyIslands | 0.5.26 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.2.5 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products; 4 big buttons + one step; metals under Smithing |
 | SkyyGear | 0.3.55 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
-| SkyySkills | 0.4.70 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
+| SkyySkills | 0.4.71 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.37 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
 | SkyyClasses | 0.1.53 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
-| SkyyMenu | 0.3.55 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer; Tab = SkyWynn inventory (Skyglass), switch menu.inventory.replace; Craft no longer opens the vanilla screen from the server (client crash); own crafting in the inventory, 7 tabs, v5 layout; Requip presets + panel, pocket tabs, Summon |
+| SkyyMenu | 0.3.56 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer; Tab = SkyWynn inventory (Skyglass), switch menu.inventory.replace; Craft no longer opens the vanilla screen from the server (client crash); own crafting in the inventory, 7 tabs, v5 layout; Requip presets + panel, pocket tabs, Summon |
 | SkyyEssentials | 0.1.16 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.18 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.17 | Cooking dishes + food Grade; XP by craft difficulty |
