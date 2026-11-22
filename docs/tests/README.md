@@ -422,3 +422,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Social tab (Menu 0.3.63), Ranching + Orchard clickers (Shards 0.4.28) (DEPLOYED 2026-11-22, backup deploy-20261122-1356) | [2026-11](2026-11.md) |
 | Foraging Island size pays logs (Shards 0.4.29) (DEPLOYED 2026-11-22, backup deploy-20261122-1428) | [2026-11](2026-11.md) |
 | Settings tab (Menu 0.3.64), Bazaar skips augmented gear (Bazaar 0.2.7) (DEPLOYED 2026-11-22, backup deploy-20261122-1559) | [2026-11](2026-11.md) |
+| Drop from the new inventory (Menu 0.3.65) (DEPLOYED 2026-11-22, backup deploy-20261122-1602) | [2026-11](2026-11.md) |

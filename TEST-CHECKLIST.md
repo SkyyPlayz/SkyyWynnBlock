@@ -117,3 +117,4 @@ tests always come first.
 308. Social tab: players online + 8 actions, your card, profiles switch, party, guild; Ranching + Orchard clickers replace the old menus (islands / totems / items carried over)
 309. Foraging Island size asks for the island's own logs instead of saplings; new islands still need their sapling
 310. Settings tab: switches / search / Reset all / HUD editor / Server Setup per mod; Bazaar never sells augmented gear (note says how many kept)
+311. DROP slot under Right now: drag an item onto it, or click an item then DROP
