@@ -420,3 +420,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shards clicker-only + inline skill tree + tooltip colours (DEPLOYED 2026-11-22, backup deploy-20261122-1009) | [2026-11](2026-11.md) |
 | World tab + Combat clicker class XP + Loophole Lance (DEPLOYED 2026-11-22, backup deploy-20261122-1208) | [2026-11](2026-11.md) |
 | Social tab (Menu 0.3.63), Ranching + Orchard clickers (Shards 0.4.28) (DEPLOYED 2026-11-22, backup deploy-20261122-1356) | [2026-11](2026-11.md) |
+| Foraging Island size pays logs (Shards 0.4.29) (DEPLOYED 2026-11-22, backup deploy-20261122-1428) | [2026-11](2026-11.md) |
