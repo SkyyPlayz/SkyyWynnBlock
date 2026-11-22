@@ -31,6 +31,11 @@ check and expensive to get wrong:
         / a lock or busy flag cleared) while the try body leaves through break / continue: javassist does not run that finally (SkyyShards
         0.4.14 busy bug). Checked in every PINNED script (tools/deploy_set.py SET) and the newest scripts; // lock-jump-ok skips a line.
         python tools/ci/lint.py --lockjump <scripts>  lists hits; --lockjump-selftest runs the rule's own test cases
+  FAIL  (ui_budget, 2026-11-21) the NEXT set's UI pictures (each SET mod's newest built jar newer than its pin, else the pin;
+        Common/UI/Custom/*.png, a shared path once) > 60 Mpx: the client's UI texture atlas overflows and pictures draw red / white
+        (client log 2026-11-21, 912 rejected at ~76 Mpx); WARN > 45 Mpx (past the last set known to fit, 11-14 ~45 Mpx), or when only
+        the PINNED set is over 60 (pin the lean jars). Thresholds unproven (atlas size unknown; pack mods + vanilla not counted). Per-mod table
+        printed; skipped where no jar is built (GitHub Actions). Details + --top: python tools/ci/ui_budget.py
 Exit code 1 on any FAIL.
 Files checked = tracked + untracked-but-not-ignored (what `git add -A` would commit), so a new, not yet committed build script counts.
 Extra: python tools/ci/lint.py --perm <build script> ...   runs only the permission-group check on the given files (old / pinned ones).
@@ -846,9 +851,22 @@ for _f in sorted(set(_pinned_scripts()) | set(newest.values())):
 for _f, _h in sorted(_lj_hits.items()):
     (fails if LOCK_JUMP_FAIL else warns).extend("lock_finally_jump: " + x for x in _h)
 
+# ---- ui_budget (2026-11-21, round atlas1): the client UI texture atlas (tools/ci/ui_budget.py)
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import ui_budget as _ub
+    _ubw, _ubf, _ubl = _ub.lint_check(ROOT)
+    warns.extend(_ubw)
+    fails.extend(_ubf)
+except Exception as e:      # the tool itself failing is reported, never a FAIL of this rule
+    _ubl = []
+    warns.append("ui_budget: could not run tools/ci/ui_budget.py (%s)" % e)
+
 print("SkyWynn lint: %d files, newest build scripts: %s" % (len(files), ", ".join("%s %s" % (m, vkey(p)) for m, p in sorted(newest.items()))))
 if missing:
     print("note: %d tracked file(s) deleted in the working tree (not git rm-ed) were skipped: %s" % (len(missing), ", ".join(missing[:8]) + (" ..." if len(missing) > 8 else "")))
+for _ln in _ubl:
+    print(_ln)
 for w in warns:
     print("WARN  " + w)
 for x in fails:
