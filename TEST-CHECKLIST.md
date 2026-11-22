@@ -110,3 +110,4 @@ tests always come first.
 301. Shields = Warrior off-hand gear: rarity, level, Defense, Smithing Shields card, shield bags
 302. Market tab = one screen (Bazaar buy / sell now by tier, orders, Auction House + Merchants cards, Bank panel)
 303. Red / white pictures gone (Trees map pictures shrunk); Combat Shard town-defense clicker
+304. Every wild mob kill pays coins (Lv 10 = 25, elites x3, bosses x20, party half, cap 5M / h)

@@ -60,3 +60,5 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-21 (Gear 0.3.58): shield base Defense 6 and shield slot power 19.5 % (like Hands) - right? [keep until tested; Server Setup -> Gear -> Combat] -> docs/answered/gear.md.
 - 2026-11-21 (Gear 0.3.58): should The Armory's 85 shield recolours drop from our bags? [not yet - later as one pack set] -> docs/answered/gear.md.
 - 2026-11-21 (Shards 0.4.26): Combat town clicks give class XP - that needs SkyySkills to accept class skills from shards; until then the XP waits (owed). Grant it in a later Skills round? [yes] -> docs/answered/world.md.
+- 2026-11-21 (Mobs 0.1.26): kill coins pay for ANY kill, even with a fist or a non-class weapon that gives no combat XP. OK? [yes] -> docs/answered/economy.md.
+- 2026-11-21 (Mobs 0.1.26): kill coins cap 5,000,000 per player per hour (spawner farms pay full up to it); tamed / baby / island animals pay nothing. OK? [yes; Server Setup > Mobs > Kill coins] -> docs/answered/economy.md.
