@@ -112,3 +112,4 @@ tests always come first.
 303. Red / white pictures gone (Trees map pictures shrunk); Combat Shard town-defense clicker
 304. Every wild mob kill pays coins (Lv 10 = 25, elites x3, bosses x20, party half, cap 5M / h)
 305. Skyy 11-21 inventory fixes: crafting / Requip / pocket / charm clicks work, top bar strip, skill tiles, multitool, Fortune, real pocket counts, compact charm rows
+306. Shards clicker-only (portals open the clicker, Upgrades view, Spirit totem, have / need costs, Smithy I, Combat kill coins) + skill tree on each skill page + tooltip colours (Gear / Pocket / mob coins)

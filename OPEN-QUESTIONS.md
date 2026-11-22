@@ -60,5 +60,10 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-21 (Gear 0.3.58): shield base Defense 6 and shield slot power 19.5 % (like Hands) - right? [keep until tested; Server Setup -> Gear -> Combat] -> docs/answered/gear.md.
 - 2026-11-21 (Gear 0.3.58): should The Armory's 85 shield recolours drop from our bags? [not yet - later as one pack set] -> docs/answered/gear.md.
 - 2026-11-21 (Shards 0.4.26): Combat town clicks give class XP - that needs SkyySkills to accept class skills from shards; until then the XP waits (owed). Grant it in a later Skills round? [yes] -> docs/answered/world.md.
+- 2026-11-22 (Shards 0.4.27): Totem Bench and booster items you already own stay as items (no refund). Convert them later? [no refund for now] -> docs/answered/world.md.
+- 2026-11-22 (Shards 0.4.27): "Place one" on the Upgrades view puts a totem item you carry onto the shown island (data only). Keep it, or turn old totem items into a Spirit tier / modifier instead? [keep] -> docs/answered/world.md.
+- 2026-11-22 (Shards 0.4.27): Enchanted items for clicker upgrades come from crafting the clicker's own items or the Auto-Compactor. Self-sustaining enough? [yes] -> docs/answered/world.md.
+- 2026-11-22 (Shards 0.4.27): Combat town kill coins have no hourly cap (world kills cap at 5,000,000 / h). Add one? [no cap until coins inflate] -> docs/answered/world.md.
+- 2026-11-22 (Shards 0.4.27): the old walkable shard world folder (about 28 MB) stays on disk, no longer loaded. Delete it later? [leave it for now] -> docs/answered/world.md.
 - 2026-11-21 (Mobs 0.1.26): kill coins pay for ANY kill, even with a fist or a non-class weapon that gives no combat XP. OK? [yes] -> docs/answered/economy.md.
 - 2026-11-21 (Mobs 0.1.26): kill coins cap 5,000,000 per player per hour (spawner farms pay full up to it); tamed / baby / island animals pay nothing. OK? [yes; Server Setup > Mobs > Kill coins] -> docs/answered/economy.md.

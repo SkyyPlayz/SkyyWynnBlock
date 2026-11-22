@@ -417,3 +417,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Atlas fix + Combat town clicker (Trees 0.6.9, Shards 0.4.26) (DEPLOYED 2026-11-21, backup deploy-20261121-1852) | [2026-11](2026-11.md) |
 | Mob kill coins (Mobs 0.1.26) (DEPLOYED 2026-11-21, backup deploy-20261121-1912) | [2026-11](2026-11.md) |
 | Inventory test fixes (Menu 0.3.60, Accessories 0.5.38) (DEPLOYED 2026-11-21, backup deploy-20261121-2005) | [2026-11](2026-11.md) |
+| Shards clicker-only + inline skill tree + tooltip colours (DEPLOYED 2026-11-22, backup deploy-20261122-1009) | [2026-11](2026-11.md) |
