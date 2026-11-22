@@ -56,3 +56,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-21 (Shards 0.4.24): should the quarry's alloy slider also need the Furnace Charm tier like the Furnace tab? [no - Smithy II is the unlock] -> docs/answered/world.md.
 - 2026-11-21 (Shards 0.4.24): a zone's ores share the quarry rocks equally (Copper / Iron alternate). OK? [yes] -> docs/answered/world.md.
 - 2026-11-21 (Shards 0.4.24): Silver / Gold find weights by zone 10,10,20,10,5 and 8,8,15,3,3 (Silver most in zone 3, as in vanilla). OK? [yes; Server Setup -> Shards -> Shard clicker] -> docs/answered/world.md.
+- 2026-11-21 (Shards 0.4.25): the Farming clicker gives the crop + vanilla's 0.5 % Eternal seed bag per plant, no Life Essence, Fortune not on seed bags. OK? [yes; Server Setup -> Shards -> Shard clicker] -> docs/answered/world.md.
