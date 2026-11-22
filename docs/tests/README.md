@@ -414,3 +414,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Augment salvage confirm + socketed loot (Gear 0.3.57, Wardrobe 0.2.15) (DEPLOYED 2026-11-21, backup deploy-20261121-1707) | [2026-11](2026-11.md) |
 | Shields as Warrior off-hand gear (Gear 0.3.58) (DEPLOYED 2026-11-21, backup deploy-20261121-1833) | [2026-11](2026-11.md) |
 | Market tab on one screen (Menu 0.3.59, Bazaar 0.2.6) (DEPLOYED 2026-11-21, backup deploy-20261121-1838) | [2026-11](2026-11.md) |
+| Atlas fix + Combat town clicker (Trees 0.6.9, Shards 0.4.26) (DEPLOYED 2026-11-21, backup deploy-20261121-1852) | [2026-11](2026-11.md) |

@@ -109,3 +109,4 @@ tests always come first.
 300. Requip Salvage asks 'This item has N augments' (OK / Cancel); Salvagebench refuses augmented pieces; re-identify keeps augments; socketed loot 10 %
 301. Shields = Warrior off-hand gear: rarity, level, Defense, Smithing Shields card, shield bags
 302. Market tab = one screen (Bazaar buy / sell now by tier, orders, Auction House + Merchants cards, Bank panel)
+303. Red / white pictures gone (Trees map pictures shrunk); Combat Shard town-defense clicker
