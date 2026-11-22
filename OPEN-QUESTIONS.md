@@ -57,3 +57,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-21 (Shards 0.4.24): a zone's ores share the quarry rocks equally (Copper / Iron alternate). OK? [yes] -> docs/answered/world.md.
 - 2026-11-21 (Shards 0.4.24): Silver / Gold find weights by zone 10,10,20,10,5 and 8,8,15,3,3 (Silver most in zone 3, as in vanilla). OK? [yes; Server Setup -> Shards -> Shard clicker] -> docs/answered/world.md.
 - 2026-11-21 (Shards 0.4.25): the Farming clicker gives the crop + vanilla's 0.5 % Eternal seed bag per plant, no Life Essence, Fortune not on seed bags. OK? [yes; Server Setup -> Shards -> Shard clicker] -> docs/answered/world.md.
+- 2026-11-21 (Gear 0.3.58): shield base Defense 6 and shield slot power 19.5 % (like Hands) - right? [keep until tested; Server Setup -> Gear -> Combat] -> docs/answered/gear.md.
+- 2026-11-21 (Gear 0.3.58): should The Armory's 85 shield recolours drop from our bags? [not yet - later as one pack set] -> docs/answered/gear.md.
+- 2026-11-21 (Shards 0.4.26): Combat town clicks give class XP - that needs SkyySkills to accept class skills from shards; until then the XP waits (owed). Grant it in a later Skills round? [yes] -> docs/answered/world.md.
