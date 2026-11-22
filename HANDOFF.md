@@ -19,7 +19,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyySkills | 0.4.73 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.38 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
 | SkyyClasses | 0.1.53 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
-| SkyyMenu | 0.3.62 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer; Tab = SkyWynn inventory (Skyglass), switch menu.inventory.replace; Craft no longer opens the vanilla screen from the server (client crash); own crafting in the inventory, 7 tabs, v5 layout; Requip presets + panel, pocket tabs, Summon |
+| SkyyMenu | 0.3.63 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer; Tab = SkyWynn inventory (Skyglass), switch menu.inventory.replace; Craft no longer opens the vanilla screen from the server (client crash); own crafting in the inventory, 7 tabs, v5 layout; Requip presets + panel, pocket tabs, Summon |
 | SkyyEssentials | 0.1.16 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.18 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.17 | Cooking dishes + food Grade; XP by craft difficulty |
@@ -32,7 +32,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyQuests | 0.4.4 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
 | SkyyRebirth | 0.5.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
 | SkyyZones | 0.3.3 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
-| SkyyShards | 0.4.27 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new; Collect tab storage grid |
+| SkyyShards | 0.4.28 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new; Collect tab storage grid |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.11 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |

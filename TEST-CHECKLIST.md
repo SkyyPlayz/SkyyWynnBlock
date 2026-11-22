@@ -114,3 +114,4 @@ tests always come first.
 305. Skyy 11-21 inventory fixes: crafting / Requip / pocket / charm clicks work, top bar strip, skill tiles, multitool, Fortune, real pocket counts, compact charm rows
 306. Shards clicker-only (portals open the clicker, Upgrades view, Spirit totem, have / need costs, Smithy I, Combat kill coins) + skill tree on each skill page + tooltip colours (Gear / Pocket / mob coins)
 307. World tab (Travel, Quests, island, Explore) + Combat town class XP + Loophole Lance
+308. Social tab: players online + 8 actions, your card, profiles switch, party, guild; Ranching + Orchard clickers replace the old menus (islands / totems / items carried over)
