@@ -616,3 +616,4 @@ python research/ui-theme-art/make_ui_theme.py theme-sheet.png   # just one
 - The Void Charms row at 76 px pitch (5 per row fits; the full bag stays in Storage).
 - That every 9-slice border above holds at the drawn sizes. This needs a probe page with every texture, like the k1 probes.
 - The 1,600-element budget with all panels live.
+- 2026-11-22 Hytale-look clicker art (Skyy "match the Hytale look and feel"): make_clicker_art.py (generator, reads Assets.zip read-only), clicker-art-README.md (plan + questions), clicker-hytale-samples-own.png (our own drawing, committed); clicker-art/ = vanilla-derived sheets, git-ignored, local only.

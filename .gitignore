@@ -24,6 +24,8 @@ backups/
 tools/dev/scratch/
 # Skyy's reference images (other people's art - local only, never public)
 research/refs/
+# vanilla-derived clicker art samples (Hytale textures + model icons read from Assets.zip by research/ui-theme-art/make_clicker_art.py) - local only
+research/ui-theme-art/clicker-art/
 # agent worktrees (Claude Code)
 .claude/worktrees/
 
