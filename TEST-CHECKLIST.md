@@ -106,3 +106,4 @@ tests always come first.
 297. Mining quarry clicker (Mining Shard -> Shard clicker), Smithy + alloy slider, Mining zone locks; Gear Untiered charge rules + orange signature names + Element Power
 298. Pets tab = one screen (pets, slots + Summon, fusing, hatchery, egg craft / upgrade)
 299. Farming shard clicker (Farming Shard -> Shard clicker): crop plots, Plot size, zone clusters + Farming zone locks
+300. Requip Salvage asks 'This item has N augments' (OK / Cancel); Salvagebench refuses augmented pieces; re-identify keeps augments; socketed loot 10 %
