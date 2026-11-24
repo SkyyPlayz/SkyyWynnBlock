@@ -425,3 +425,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Drop from the new inventory (Menu 0.3.65) (DEPLOYED 2026-11-22, backup deploy-20261122-1602) | [2026-11](2026-11.md) |
 | Mining one island per zone (Shards 0.4.30), inventory fixes (Menu 0.3.66) (DEPLOYED 2026-11-23, backup deploy-20261123-2134) | [2026-11](2026-11.md) |
 | Island per zone for Foraging / Farming / Ranching / Orchard (DEPLOYED 2026-11-23, backup deploy-20261123-2253) | [2026-11](2026-11.md) |
+| Requip slot picker (Empty / Keep / Auto best) (DEPLOYED 2026-11-23, backup deploy-20261123-2330) | [2026-11](2026-11.md) |
