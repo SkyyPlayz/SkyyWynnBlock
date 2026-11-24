@@ -129,3 +129,4 @@ tests always come first.
 320. Old menu 2: Settings All mods + per-mod help; Pets tab first-pet choice, every Hatchery slot (< >), Fuse eggs; Market Bank typed amount (2.5k / all); Bank page -> Vault
 321. Social tab: Accept / Deny TP, Message box, All stats, Manage profiles (New / Rename / Delete / Restore), Manage party (invite / accept / promote / kick / disband); Full page gone (Guild page still old)
 322. Guild page still works as before (bridge op only; the Social tab guild view comes later)
+323. C:/Program Files/Git/ah works exactly as before (browse, buy, create BIN, cancel, claim into a full inventory, claim all) - its click code was moved to share it with the coming Market tab

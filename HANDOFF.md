@@ -27,7 +27,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyExploration | 0.3.4 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.14 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.10 | vault pages; start with 1 page; pages limited by bank level |
-| SkyyAuctions | 0.1.17 | auction house (buy-it-now); owed-count index |
+| SkyyAuctions | 0.1.18 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
 | SkyyQuests | 0.4.4 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
 | SkyyRebirth | 0.5.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
