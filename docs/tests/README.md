@@ -433,3 +433,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Mining quarry Silver / Gold + zone stones (DEPLOYED 2026-11-24, backup deploy-20261124-0314) | [2026-11](2026-11.md) |
 | Old-menu follow-ups 2 (Mods help, Pets, Bank amount) (DEPLOYED 2026-11-24, backup deploy-20261124-0406) | [2026-11](2026-11.md) |
 | Social tab (stats, profiles, party, message) + market bridge ops (DEPLOYED 2026-11-24, backup deploy-20261124-0546) | [2026-11](2026-11.md) |
+| Guild bridge ops (DEPLOYED 2026-11-24, backup deploy-20261124-0640) | [2026-11](2026-11.md) |

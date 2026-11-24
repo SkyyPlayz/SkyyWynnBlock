@@ -25,7 +25,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyCooking | 0.1.17 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.6.10 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.3.4 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
-| SkyyGuilds | 0.1.13 | guilds + guild bank; writes off the lock |
+| SkyyGuilds | 0.1.14 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.10 | vault pages; start with 1 page; pages limited by bank level |
 | SkyyAuctions | 0.1.17 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
