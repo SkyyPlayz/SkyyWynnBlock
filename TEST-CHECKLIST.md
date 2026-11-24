@@ -118,3 +118,4 @@ tests always come first.
 309. Foraging Island size asks for the island's own logs instead of saplings; new islands still need their sapling
 310. Settings tab: switches / search / Reset all / HUD editor / Server Setup per mod; Bazaar never sells augmented gear (note says how many kept)
 311. DROP slot under Right now: drag an item onto it, or click an item then DROP
+312. Mining map = one quarry per zone, ores are Add ore upgrades (your Iron island folded into Zone 1); inventory: Furnace / Tanning tabs, coloured tooltips, rarity tint, Beastmastery, pocket Deposit
