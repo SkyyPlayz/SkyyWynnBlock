@@ -435,3 +435,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Social tab (stats, profiles, party, message) + market bridge ops (DEPLOYED 2026-11-24, backup deploy-20261124-0546) | [2026-11](2026-11.md) |
 | Guild bridge ops (DEPLOYED 2026-11-24, backup deploy-20261124-0640) | [2026-11](2026-11.md) |
 | Auction House bridge ops (DEPLOYED 2026-11-24, backup deploy-20261124-0714) | [2026-11](2026-11.md) |
+| Market tab: Bazaar orders + Merchants (DEPLOYED 2026-11-24, backup deploy-20261124-0725) | [2026-11](2026-11.md) |
