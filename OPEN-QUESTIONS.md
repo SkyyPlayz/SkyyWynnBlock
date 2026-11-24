@@ -82,6 +82,9 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-24 (Shards 0.4.33): should Combat town coins and unidentified bags also go automatically with Shard Link? [no, they stay for Collect all] -> docs/answered/world.md.
 - 2026-11-24 (Menu 0.3.69 old-menu switch): switch the old SkyWynn menu OFF on your test server now (a few buttons still open old pages), or wait until the follow-up rounds move the rest in? [wait; Server Setup -> Menu -> "Old SkyWynn menu" stays ON] -> docs/answered/ui.md.
 - 2026-11-24 (Menu 0.3.69): with the old menu OFF, should Alt / the crouch open the Inventory tab or the tab you used last? [Inventory tab] -> docs/answered/ui.md.
+- 2026-11-24 (Shards 0.4.34 Mining quarry): each block gives 1 stone - the node's own rock 50 % of the time, the rest split over the zone's other vanilla stones. Right mix? [50 %; Server Setup click.mine.hostPercent] -> docs/answered/world.md.
+- 2026-11-24 (Shards 0.4.34): spirits also bring 1 stone per ore they mine (vanilla ore blocks drop ore + rock), which fills storage faster. Keep? [yes, 100 %; click.mine.spiritStonePercent] -> docs/answered/world.md.
+- 2026-11-24 (Shards 0.4.34): the new Precious finds row costs the same as Lucky finds at each level. OK? [same] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): Foraging Island size asks for saplings its clicker never gives. Same fruit / log swap next round? [yes, next round] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): a new Ranching island needs 2 Capture Crates (vanilla, caught in the world) + 64 of its product. Right "find the animal first" gate? [keep] -> docs/answered/world.md.
 - 2026-11-22 (Menu 0.3.63): the Social tab has Trade but no Message / Add friend button (message needs a typed text box; friends need an engine check). Add them next round? [yes, Message first; Add friend after checking the game's friends list] -> docs/answered/social.md.
