@@ -440,3 +440,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Island settings bridge ops (DEPLOYED 2026-11-24, backup deploy-20261124-0835) | [2026-11](2026-11.md) |
 | Guild view + Auction House view (DEPLOYED 2026-11-24, backup deploy-20261124-0915) | [2026-11](2026-11.md) |
 | World tab views: Quests, Collections, Explore, Island (Menu 0.3.74) (DEPLOYED 2026-11-24, backup deploy-20261124-1113) | [2026-11](2026-11.md) |
+| World Travel view + bank bridge ops (Menu 0.3.75, Bank 0.1.18) (DEPLOYED 2026-11-24, backup deploy-20261124-1243) | [2026-11](2026-11.md) |
