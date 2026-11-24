@@ -29,6 +29,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
 # FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
+# WBR1 (2026-11-24): SkyyQuests 0.4.5 (quest:fn:act) + SkyyCollections 0.2.37 (coll:fn:act) + SkyyExploration 0.3.5 (explore:fn:act) - page code, bridge ops only, no saved data; each rolls back alone. Islands held for its own round.
 # OLDMENU4 (2026-11-24): SkyyMenu 0.3.72 (Market tab: Bazaar orders view - buy order / sell offer / my orders + cancel; Merchants view - stock only when near; Full page + Open Merchants gone; OLD_LEFT 13). No saved data; rolls back alone.
 # AH1 (2026-11-24): SkyyAuctions 0.1.18 (ah:fn:tab / tabact = the page's own clickAct; page click body moved into AhPage.clickAct, same behaviour). Bridge ops only, no saved data; rolls back alone.
 # GUILD1 (2026-11-24): SkyyGuilds 0.1.14 (guild:fn:act = the guild page's own code: state / create / invite / accept / bank / limits / ranks / kick / transfer / leave / disband). Bridge op only, no saved data; rolls back alone.
@@ -141,14 +142,14 @@ SET = [
     ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.39"), ("SkyySacks", "0.8.42"), ("SkyyCoins", "0.1.12"), ("SkyyCollections", "0.2.36"), ("SkyyParty", "0.1.11"),
+    ("SkyyHud", "0.3.39"), ("SkyySacks", "0.8.42"), ("SkyyCoins", "0.1.12"), ("SkyyCollections", "0.2.37"), ("SkyyParty", "0.1.11"),
     ("SkyyBank", "0.1.17"), ("SkyyIslands", "0.5.26"), ("SkyyBazaar", "0.2.8"), ("SkyyGear", "0.3.60"), ("SkyySkills", "0.4.73"),
     ("SkyyAccessories", "0.5.38"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.72"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.19"),
     ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.10"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.3.4"),
+    ("SkyyExploration", "0.3.5"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.14"),
@@ -206,7 +207,7 @@ SET = [
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
-    ("SkyyQuests", "0.4.4"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyQuests", "0.4.5"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.5.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyZones", "0.3.3"),  # 2026-10-20 NEW zone protection Z1 (FULL / SKYBLOCK regions, builder mode, wand); no dependency. Rollback = remove the jar (Z1 changes no world block; Skyy_SkyyZones/ stays). From Z2 on: run /zones restore all before any rollback.
     ("SkyyShards", "0.4.34"),  # 2026-11-14 shard1: Collect tab storage grid; FLOOR: rolls back alone to 0.4.21 (no migration) but run Collect all on every Combat island first - 0.4.21 ignores combat.i<n>.drops / .rolled (rolled drops hidden, unpaid, not counted until 0.4.22 is back; nothing lost)
