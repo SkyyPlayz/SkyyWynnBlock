@@ -73,6 +73,9 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-23 (Menu 0.3.67): should Requip presets get an off-hand slot (with Empty / Keep)? [not yet - needs a Requip data change; hotbar Empty covers "set the hand to empty"] -> docs/answered/ui.md.
 - 2026-11-23 (Menu 0.3.67): should the pet / mount lists be filtered by skill too? [no, all owned pets listed] -> docs/answered/ui.md.
 - 2026-11-23 (Menu 0.3.67): should Auto "best" also weigh Mining Power / Fortune within a tier? [later, once a per-item power bridge exists; now tier, then rarity, then gear level] -> docs/answered/ui.md.
+- 2026-11-24 (Shards 0.4.32 clicker art): totems are now about tree height (64x128). Bigger, like the sample (needs the 5 totem spots spread apart)? [keep this size] -> docs/answered/world.md.
+- 2026-11-24 (Shards 0.4.32): redraw the island decorations (flowers, lamp, fence, pond, clouds) and small upgrade icons in the voxel style too? [yes, a later small round] -> docs/answered/world.md.
+- 2026-11-24 (Shards 0.4.32): Mining quarry terraces in each zone's own rock (sandstone, shale, basalt)? [stone everywhere for now] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): Foraging Island size asks for saplings its clicker never gives. Same fruit / log swap next round? [yes, next round] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): a new Ranching island needs 2 Capture Crates (vanilla, caught in the world) + 64 of its product. Right "find the animal first" gate? [keep] -> docs/answered/world.md.
 - 2026-11-22 (Menu 0.3.63): the Social tab has Trade but no Message / Add friend button (message needs a typed text box; friends need an engine check). Add them next round? [yes, Message first; Add friend after checking the game's friends list] -> docs/answered/social.md.
