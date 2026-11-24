@@ -431,3 +431,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shard Link (shards deliver straight into your pocket) (DEPLOYED 2026-11-24, backup deploy-20261124-0202) | [2026-11](2026-11.md) |
 | Old-menu switch + Settings Full page gone (DEPLOYED 2026-11-24, backup deploy-20261124-0224) | [2026-11](2026-11.md) |
 | Mining quarry Silver / Gold + zone stones (DEPLOYED 2026-11-24, backup deploy-20261124-0314) | [2026-11](2026-11.md) |
+| Old-menu follow-ups 2 (Mods help, Pets, Bank amount) (DEPLOYED 2026-11-24, backup deploy-20261124-0406) | [2026-11](2026-11.md) |

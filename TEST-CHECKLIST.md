@@ -126,3 +126,4 @@ tests always come first.
 317. Shard Link: /pd on a Legendary pocket -> Shard Link box -> Buy + Pay (370k coins + Enchanted items); the shard clicker says 'Linked to pocket' and its items arrive in the pocket with collection + XP; full pocket = rest waits for Collect all
 318. Old menu: Server Setup -> Menu -> 'Old SkyWynn menu' (ON by default); OFF = Alt / /skymenu / hub commands open the new screen; Settings Full page gone; Right now tree rows open the skill page
 319. Mining quarry: Silver / Gold per block on every zone (Zone 3 most Silver), spirits too; Precious finds row 10; each block gives a zone stone; Auto-Compactor makes Enchanted stones
+320. Old menu 2: Settings All mods + per-mod help; Pets tab first-pet choice, every Hatchery slot (< >), Fuse eggs; Market Bank typed amount (2.5k / all); Bank page -> Vault
