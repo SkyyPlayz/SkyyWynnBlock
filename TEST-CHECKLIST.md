@@ -133,3 +133,4 @@ tests always come first.
 324. Market tab: Buy order / Sell offer view (typed amount + price, total before Place, two-press for big orders, My Orders Cancel); See merchants (rumours + moves-in time; stock + Buy only at the merchant); Full page + Open Merchants gone
 325. /quests, /collections, /explore work as before (bridge ops only; the World tab pages come in a Menu round)
 326. /island menu works as before (bridge op only; World tab island view comes in a Menu round)
+327. Social tab Manage guild (create / invite / members / bank / log / leave), Market tab Auction House (browse / buy now / create BIN / manage / claim all); no old Guild or AH page opens
