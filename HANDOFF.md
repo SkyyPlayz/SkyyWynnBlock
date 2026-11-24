@@ -7,7 +7,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | Mod | Version | What it does |
 |---|---|---|
 | SkyyHud | 0.3.39 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
-| SkyySacks | 0.8.41 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void; pocket list / action bridges with profile token |
+| SkyySacks | 0.8.42 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void; pocket list / action bridges with profile token |
 | SkyyCoins | 0.1.12 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal; death penalty 0/0 |
 | SkyyCollections | 0.2.36 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.10 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
@@ -32,7 +32,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyQuests | 0.4.4 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
 | SkyyRebirth | 0.5.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature ON (no dev gates, Skyy 2026-10-18), unlimited rebirths, Void Particles, Beastmastery counts for VP |
 | SkyyZones | 0.3.3 | zone protection: FULL / SKYBLOCK regions, builder mode, wand, area titles (/zones); new |
-| SkyyShards | 0.4.32 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new; Collect tab storage grid |
+| SkyyShards | 0.4.33 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new; Collect tab storage grid |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.11 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |

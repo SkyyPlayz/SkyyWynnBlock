@@ -428,3 +428,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Requip slot picker (Empty / Keep / Auto best) (DEPLOYED 2026-11-23, backup deploy-20261123-2330) | [2026-11](2026-11.md) |
 | Hytale-look clicker art (DEPLOYED 2026-11-24, backup deploy-20261124-0039) | [2026-11](2026-11.md) |
 | Skill-page workshop (upgrade / reforge / sigils) (DEPLOYED 2026-11-24, backup deploy-20261124-0119) | [2026-11](2026-11.md) |
+| Shard Link (shards deliver straight into your pocket) (DEPLOYED 2026-11-24, backup deploy-20261124-0202) | [2026-11](2026-11.md) |

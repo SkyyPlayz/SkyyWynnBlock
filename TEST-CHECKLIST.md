@@ -123,3 +123,4 @@ tests always come first.
 314. Requip picker: click a preset slot -> list of fitting gear (skill presets filtered, best first), Empty / Keep / Auto best, Auto On for skill presets fills Keep slots with your best gear on Equip; your own picks stay 'by you'
 315. Clicker art: every shard island is now blocky Hytale blocks per zone (sand / snow / burnt / ash + lava), game monster models, voxel spirit totems; check sizes fit + client log for 'Texture atlas rejected'
 316. Skill-page Workshop: Tab -> Skills -> Mining -> Workshop: Upgrade / Reforge / Level up / Apply sigil for the tool and each armour piece (same costs as the Anvil, double click pays once); no Full tree button left
+317. Shard Link: /pd on a Legendary pocket -> Shard Link box -> Buy + Pay (370k coins + Enchanted items); the shard clicker says 'Linked to pocket' and its items arrive in the pocket with collection + XP; full pocket = rest waits for Collect all
