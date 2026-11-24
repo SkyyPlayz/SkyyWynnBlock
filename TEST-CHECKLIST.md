@@ -121,3 +121,4 @@ tests always come first.
 312. Mining map = one quarry per zone, ores are Add ore upgrades (your Iron island folded into Zone 1); inventory: Furnace / Tanning tabs, coloured tooltips, rarity tint, Beastmastery, pocket Deposit
 313. Shards zone islands: each shard map shows one island per zone; your Lettuce/Carrot and Beech/Maple islands are now upgrades inside the Zone 1 island (7th row); stock, seeds + Eternal seeds in storage
 314. Requip picker: click a preset slot -> list of fitting gear (skill presets filtered, best first), Empty / Keep / Auto best, Auto On for skill presets fills Keep slots with your best gear on Equip; your own picks stay 'by you'
+315. Clicker art: every shard island is now blocky Hytale blocks per zone (sand / snow / burnt / ash + lava), game monster models, voxel spirit totems; check sizes fit + client log for 'Texture atlas rejected'
