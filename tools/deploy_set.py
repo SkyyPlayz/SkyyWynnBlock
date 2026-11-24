@@ -29,6 +29,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
 # FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
+# AH1 (2026-11-24): SkyyAuctions 0.1.18 (ah:fn:tab / tabact = the page's own clickAct; page click body moved into AhPage.clickAct, same behaviour). Bridge ops only, no saved data; rolls back alone.
 # GUILD1 (2026-11-24): SkyyGuilds 0.1.14 (guild:fn:act = the guild page's own code: state / create / invite / accept / bank / limits / ranks / kick / transfer / leave / disband). Bridge op only, no saved data; rolls back alone.
 # OLDMENU3 (2026-11-24): SkyyProfiles 0.1.19 (profile:fn:act = old Profiles page code) + SkyyParty 0.1.11 (party:fn:act = old Party page code) + SkyyMenu 0.3.71 (Social tab: Accept / Deny TP, Message, All stats, Manage profiles, Manage party; OLD_LEFT 15, guild next). No saved data; pin together, each rolls back alone.
 # MKT1 (2026-11-24): SkyyBazaar 0.2.8 (bazaar:fn:tab / tabact bid / ask / cancel + order ids, page code) + SkyyMerchants 0.1.10 (merchants:fn:tab / tabact buy; stock only when near). Bridge ops only, no saved data; each rolls back alone.
@@ -157,7 +158,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.10"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.17"),
+    ("SkyyAuctions", "0.1.18"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.

@@ -90,6 +90,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-24 (Bazaar 0.2.8): the second-press window for a big buy order is 10 s (same as the Bazaar page). OK? [10 s; your "Confirm buys from" amount still decides whether it asks] -> docs/answered/economy.md.
 - 2026-11-24 (Menu 0.3.71 Social tab): the game has no friends list, so "Add friend" is not built - Message only. Build a SkyWynn friends list later? [not now, Message only] -> docs/answered/social.md.
 - 2026-11-24 (Menu 0.3.71): Rename on every live profile (like /profiles rename), or only the active one like the old page? [every live profile] -> docs/answered/social.md.
+- 2026-11-24 (Auctions 0.1.18): the Auction House is Buy It Now only (locked 2026-09-24). Ever add real bidding auctions? [no, stay Buy It Now] -> docs/answered/economy.md.
 - 2026-11-22 (Shards 0.4.28): Foraging Island size asks for saplings its clicker never gives. Same fruit / log swap next round? [yes, next round] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): a new Ranching island needs 2 Capture Crates (vanilla, caught in the world) + 64 of its product. Right "find the animal first" gate? [keep] -> docs/answered/world.md.
 - 2026-11-22 (Menu 0.3.63): the Social tab has Trade but no Message / Add friend button (message needs a typed text box; friends need an engine check). Add them next round? [yes, Message first; Add friend after checking the game's friends list] -> docs/answered/social.md.
