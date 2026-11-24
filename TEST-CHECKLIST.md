@@ -136,3 +136,4 @@ tests always come first.
 327. Social tab Manage guild (create / invite / members / bank / log / leave), Market tab Auction House (browse / buy now / create BIN / manage / claim all); no old Guild or AH page opens
 328. World tab Quests / Collections / Explore / Island settings views in the new screen (old pages gone)
 329. World tab Travel view (Spawn, own order, Arrange) replaces the old Teleport page / Full page
+330. Market tab Bank view (deposit / withdraw / upgrade / interest) replaces the old Bank page link
