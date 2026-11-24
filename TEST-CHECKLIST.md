@@ -132,3 +132,4 @@ tests always come first.
 323. C:/Program Files/Git/ah works exactly as before (browse, buy, create BIN, cancel, claim into a full inventory, claim all) - its click code was moved to share it with the coming Market tab
 324. Market tab: Buy order / Sell offer view (typed amount + price, total before Place, two-press for big orders, My Orders Cancel); See merchants (rumours + moves-in time; stock + Buy only at the merchant); Full page + Open Merchants gone
 325. /quests, /collections, /explore work as before (bridge ops only; the World tab pages come in a Menu round)
+326. /island menu works as before (bridge op only; World tab island view comes in a Menu round)
