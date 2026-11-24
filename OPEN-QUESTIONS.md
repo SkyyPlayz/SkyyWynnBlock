@@ -77,6 +77,9 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-24 (Shards 0.4.32): redraw the island decorations (flowers, lamp, fence, pond, clouds) and small upgrade icons in the voxel style too? [yes, a later small round] -> docs/answered/world.md.
 - 2026-11-24 (Shards 0.4.32): Mining quarry terraces in each zone's own rock (sandstone, shale, basalt)? [stone everywhere for now] -> docs/answered/world.md.
 - 2026-11-24 (Menu 0.3.68 skill-page workshop): should Identify (unidentified gear) be on the skill page too? [not yet; the workshop says "Identify it first" and points to /identify] -> docs/answered/ui.md.
+- 2026-11-24 (Sacks 0.8.42 Shard Link): one link per POCKET (each item goes to its own pocket, so Ranching needs Farming + Combat + Smithing linked), or one link per SHARD covering every pocket its items go to? [per pocket] -> docs/answered/world.md.
+- 2026-11-24 (Sacks 0.8.42): Shard Link price 370,000 coins + about 112 of that pocket's Enchanted items, pocket at Legendary first - right? [yes; editable in Server Setup pd.link.*] -> docs/answered/world.md.
+- 2026-11-24 (Shards 0.4.33): should Combat town coins and unidentified bags also go automatically with Shard Link? [no, they stay for Collect all] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): Foraging Island size asks for saplings its clicker never gives. Same fruit / log swap next round? [yes, next round] -> docs/answered/world.md.
 - 2026-11-22 (Shards 0.4.28): a new Ranching island needs 2 Capture Crates (vanilla, caught in the world) + 64 of its product. Right "find the animal first" gate? [keep] -> docs/answered/world.md.
 - 2026-11-22 (Menu 0.3.63): the Social tab has Trade but no Message / Add friend button (message needs a typed text box; friends need an engine check). Add them next round? [yes, Message first; Add friend after checking the game's friends list] -> docs/answered/social.md.
