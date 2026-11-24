@@ -101,3 +101,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - 2026-11-22 (Shards 0.4.27): the old walkable shard world folder (about 28 MB) stays on disk, no longer loaded. Delete it later? [leave it for now] -> docs/answered/world.md.
 - 2026-11-21 (Mobs 0.1.26): kill coins pay for ANY kill, even with a fist or a non-class weapon that gives no combat XP. OK? [yes] -> docs/answered/economy.md.
 - 2026-11-21 (Mobs 0.1.26): kill coins cap 5,000,000 per player per hour (spawner farms pay full up to it); tamed / baby / island animals pay nothing. OK? [yes; Server Setup > Mobs > Kill coins] -> docs/answered/economy.md.
+- (ui, 2026-11-24, oldmenu10) Every old-menu page is now in the new screen (only Server Setup still uses its own page). Switch the old menu OFF by default (Server Setup menu.oldMenu)? [wait until Skyy has tested TEST 327-332, then switch it off] -> answer goes to docs/answered/ui.md

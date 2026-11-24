@@ -443,3 +443,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | World Travel view + bank bridge ops (Menu 0.3.75, Bank 0.1.18) (DEPLOYED 2026-11-24, backup deploy-20261124-1243) | [2026-11](2026-11.md) |
 | Market Bank view (Menu 0.3.76) (DEPLOYED 2026-11-24, backup deploy-20261124-1358) | [2026-11](2026-11.md) |
 | Void Charms Bag + Power in the new screen (Menu 0.3.77, Accessories 0.5.39) (DEPLOYED 2026-11-24, backup deploy-20261124-1508) | [2026-11](2026-11.md) |
+| Pocket Upgrades view + no Full page doors (Menu 0.3.78, Sacks 0.8.43) (DEPLOYED 2026-11-24, backup deploy-20261124-1657) | [2026-11](2026-11.md) |

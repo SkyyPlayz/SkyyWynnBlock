@@ -138,3 +138,4 @@ tests always come first.
 329. World tab Travel view (Spawn, own order, Arrange) replaces the old Teleport page / Full page
 330. Market tab Bank view (deposit / withdraw / upgrade / interest) replaces the old Bank page link
 331. Void Charms Bag grid + Power tab (Pick) inside the inventory; old Void Charms / Trees links gone
+332. Pocket Upgrades view (Upgrade / Compact / Link / More) inside the inventory; Furnace / Tanning without Full page
