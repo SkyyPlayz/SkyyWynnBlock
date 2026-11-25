@@ -12,21 +12,21 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyCollections | 0.2.37 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.11 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyCore | 1.0.1 | shared library (merge phase 1): Server Setup kit runtime per mod, UiKit, MoveSync, HubBar, CfgText, Sky Window art once; MUST be first in SET while any jar depends on it; tools/CORE-CONTRACT.md |
-| SkyyBank | 0.1.18 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush; bank levels 1-10 (capacity + interest) |
+| SkyyBank | 0.1.19 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush; bank levels 1-10 (capacity + interest) |
 | SkyyIslands | 0.5.27 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.2.8 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products; 4 big buttons + one step; metals under Smithing |
 | SkyyGear | 0.3.60 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.73 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.39 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
 | SkyyClasses | 0.1.53 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
-| SkyyMenu | 0.3.78 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer; Tab = SkyWynn inventory (Skyglass), switch menu.inventory.replace; Craft no longer opens the vanilla screen from the server (client crash); own crafting in the inventory, 7 tabs, v5 layout; Requip presets + panel, pocket tabs, Summon |
+| SkyyMenu | 0.3.79 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer; Tab = SkyWynn inventory (Skyglass), switch menu.inventory.replace; Craft no longer opens the vanilla screen from the server (client crash); own crafting in the inventory, 7 tabs, v5 layout; Requip presets + panel, pocket tabs, Summon |
 | SkyyEssentials | 0.1.16 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.19 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.17 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.6.10 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.3.5 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.14 | guilds + guild bank; writes off the lock |
-| SkyyVault | 0.1.10 | vault pages; start with 1 page; pages limited by bank level |
+| SkyyVault | 0.1.11 | vault pages; start with 1 page; pages limited by bank level |
 | SkyyAuctions | 0.1.18 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.2 | ranks + permissions made in game |
 | SkyyQuests | 0.4.5 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
