@@ -140,3 +140,4 @@ tests always come first.
 331. Void Charms Bag grid + Power tab (Pick) inside the inventory; old Void Charms / Trees links gone
 332. Pocket Upgrades view (Upgrade / Compact / Link / More) inside the inventory; Furnace / Tanning without Full page
 333. With the old menu OFF, /bank and Storage > Bank open the new Bank view (vault ops: nothing visible yet)
+334. Market > Vault sub-tab: click take / put, page buttons, Buy + Confirm, Open, Refresh
