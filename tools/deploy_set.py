@@ -29,6 +29,7 @@ WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from
 # FLOOR (2026-10-22, Balance P7b economy): SkyySkills 0.4.61 + SkyyTrees 0.4.9 + SkyyExploration 0.3.3 + SkyyShards 0.4.5 pin together; Skills 0.4.61 joins the P7 income set Bazaar 0.2.1 + Collections 0.2.32 (roll back as one). No saved data changed. Before a rollback Undo the P7b rows (Skills SkMigP7 levelCoins, Trees TreeMigP7 respec.curve, Exploration ExpP7Mig luggage.coinZoneMult, Shards ShMig045 14 cost lines). Exploration 0.3.2 reads a 5-number coinZoneMult as bad (WARN, uses 1,1.5,2,3); Trees 0.4.8 shows Wanderer / Cartographer coming soon again.
 # FLOOR (2026-10-22, packprep): SkyyGear 0.3.38 + SkyySacks 0.8.28 + SkyyCoins 0.1.11 + SkyyMobs 0.1.16 pin + roll back TOGETHER (Gear's lock text reads sacks:fn:craftWhy; Mobs' pack boss rows feed Gear's Mythic boss bags). No saved data, no migration. Before a rollback switch StructureV2 + Souls like Bosses OFF (older jars: pack bosses unlevelled, Structure Money stays an item, guns stay guns, Voidice back to no gear document). Gear 0.3.38 sits above the P7 floor (0.3.37).
 # FLOOR (2026-10-22, Balance P9): SkyySkills 0.4.62 moves saved XP above Lv 60 onto the P9 level list (CurveP9Mig) + rewrites up to 6 xp.properties defaults (P9Mig). Roll back to 0.4.61: stop the server, copy Skyy_SkyySkills/history/curve-p9/<stamp>/players/* back over players/ (and rebirth/ + level-floors.properties if there), Undo the 0.4.62 rows in Server Setup -> Changes (never the levels row alone), delete curve-p9.properties. Never below 0.4.60.
+# BANKROUTE (2026-11-24): Menu 0.3.79 menu:fn:bankview / menu:fn:oldmenu + Bank 0.1.19 (/bank + Storage > Bank open the new Bank view when the old menu is off).
 # OLDMENU10 (2026-11-24): Menu 0.3.78 + Sacks 0.8.43 (pocket Upgrades view via sacks:fn:upView / upAct; no Full page doors) - OLD_LEFT = Server Setup only.
 # OLDMENU9 (2026-11-24): Menu 0.3.77 + Accessories 0.5.39 (Void Charms Bag + Power tab in the inventory, vc:power / vc:pick); last old-page fallbacks are captions now.
 # OLDMENU8 (2026-11-24): Menu 0.3.76 Market Bank view on Bank 0.1.18 (storage:bank off OLD_LEFT, 6 -> 5).
@@ -151,8 +152,8 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.39"), ("SkyySacks", "0.8.43"), ("SkyyCoins", "0.1.12"), ("SkyyCollections", "0.2.37"), ("SkyyParty", "0.1.11"),
-    ("SkyyBank", "0.1.18"), ("SkyyIslands", "0.5.27"), ("SkyyBazaar", "0.2.8"), ("SkyyGear", "0.3.60"), ("SkyySkills", "0.4.73"),
-    ("SkyyAccessories", "0.5.39"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.78"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.19"),
+    ("SkyyBank", "0.1.19"), ("SkyyIslands", "0.5.27"), ("SkyyBazaar", "0.2.8"), ("SkyyGear", "0.3.60"), ("SkyySkills", "0.4.73"),
+    ("SkyyAccessories", "0.5.39"), ("SkyyClasses", "0.1.53"), ("SkyyMenu", "0.3.79"), ("SkyyEssentials", "0.1.16"), ("SkyyProfiles", "0.1.19"),
     ("SkyyCooking", "0.1.17"), ("SkyyTrees", "0.6.10"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
